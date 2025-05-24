@@ -14,7 +14,7 @@ const MessagesContainer = styled(Box)(({ theme }) => ({
 
 const MessageList = forwardRef(({ messages, loading }, ref) => {
   return (
-    <MessagesContainer>
+    <MessagesContainer className="chat-messages">
       {messages.map((message, index) => (
         <Message key={index} message={message} />
       ))}
