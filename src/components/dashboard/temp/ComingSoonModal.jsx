@@ -52,7 +52,7 @@ const ComingSoonModal = ({ open, onClose }) => {
   return (
     <StyledDialog open={open} onClose={onClose}>
       <CloseButton onClick={onClose}>
-        <Close />
+        {/* <Close /> */}
       </CloseButton>
       
       <ContentBox>
