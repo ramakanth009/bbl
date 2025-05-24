@@ -8,7 +8,7 @@ import {
   ListItemText,
   Typography,
   Drawer,
-  IconButton,
+  Badge,
 } from "@mui/material";
 import {
   WorkspacePremium,
@@ -22,7 +22,6 @@ import {
   Palette,
   Science,
   Movie,
-  Settings,
   Logout,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
@@ -70,6 +69,16 @@ const NavSection = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
 }));
 
+const SectionTitle = styled(Typography)(({ theme }) => ({
+  fontSize: '0.75rem',
+  fontWeight: 600,
+  color: theme.palette.text.disabled,
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+  marginBottom: theme.spacing(1),
+  paddingLeft: theme.spacing(2),
+}));
+
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   borderRadius: theme.spacing(1),
   marginBottom: theme.spacing(0.5),
@@ -79,33 +88,36 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   "&.active": {
     backgroundColor: theme.palette.action.hover,
     color: theme.palette.text.primary,
+    "& .MuiListItemIcon-root": {
+      color: theme.palette.primary.main,
+    },
   },
 }));
 
-const Sidebar = () => {
+const Sidebar = ({ activeSection, onSectionChange }) => {
   const { logout } = useAuth();
-  const [activeItem, setActiveItem] = useState("Discover");
   const [comingSoonOpen, setComingSoonOpen] = useState(false);
 
   const mainNavItems = [
-    { text: "Discover", icon: <Explore /> },
-    { text: "Featured", icon: <Star /> },
-    { text: "Trending", icon: <Whatshot /> },
-    { text: "For You", icon: <Favorite /> },
-    { text: "Recent", icon: <Schedule /> },
+    { text: "Discover", icon: <Explore />, badge: null },
+    { text: "Featured", icon: <Star />, badge: "IN" },
+    { text: "Trending", icon: <Whatshot />, badge: "🔥" },
+    { text: "For You", icon: <Favorite />, badge: null },
+    { text: "Recent", icon: <Schedule />, badge: null },
+  ];
+
+  const historyItems = [
+    { text: "History", icon: <History />, badge: null },
   ];
 
   const categoryItems = [
-    { text: "History", icon: <History /> },
-    { text: "Art & Culture", icon: <Palette /> },
-    { text: "Science", icon: <Science /> },
-    { text: "Entertainment", icon: <Movie /> },
+    { text: "Art & Culture", icon: <Palette />, badge: null },
+    { text: "Science", icon: <Science />, badge: null },
+    { text: "Entertainment", icon: <Movie />, badge: null },
   ];
 
-//   const settingsItems = [{ text: "Settings", icon: <Settings /> }];
-
   const handleNavClick = (text) => {
-    setActiveItem(text);
+    onSectionChange(text);
   };
 
   const handleCreateClick = () => {
@@ -114,16 +126,34 @@ const Sidebar = () => {
 
   const renderNavSection = (items, title) => (
     <NavSection>
+      {title && <SectionTitle>{title}</SectionTitle>}
       <List dense>
         {items.map((item) => (
           <StyledListItem
             key={item.text}
             button
-            className={activeItem === item.text ? "active" : ""}
+            className={activeSection === item.text ? "active" : ""}
             onClick={() => handleNavClick(item.text)}
           >
             <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
-              {item.icon}
+              {item.badge ? (
+                <Badge 
+                  badgeContent={item.badge} 
+                  color="primary"
+                  sx={{
+                    '& .MuiBadge-badge': {
+                      fontSize: '0.6rem',
+                      minWidth: '16px',
+                      height: '16px',
+                      backgroundColor: item.badge === 'IN' ? '#ff9800' : 'primary.main',
+                    }
+                  }}
+                >
+                  {item.icon}
+                </Badge>
+              ) : (
+                item.icon
+              )}
             </ListItemIcon>
             <ListItemText
               primary={item.text}
@@ -155,9 +185,9 @@ const Sidebar = () => {
           Create
         </CreateButton>
 
-        {renderNavSection(mainNavItems)}
-        {renderNavSection(categoryItems)}
-        {/* {renderNavSection(settingsItems)} */}
+        {renderNavSection(mainNavItems, "Explore")}
+        {renderNavSection(historyItems, "Activity")}
+        {renderNavSection(categoryItems, "Categories")}
 
         <Box sx={{ mt: "auto" }}>
           <StyledListItem button onClick={logout}>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Link, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Link, CircularProgress, Alert, Chip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CharacterCard from './CharacterCard';
+import ChatHistoryGrid from './ChatHistoryGrid';
 import apiService from '../../services/api';
 
 const Section = styled(Box)(({ theme }) => ({
@@ -16,8 +17,11 @@ const SectionHeader = styled(Box)(({ theme }) => ({
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
-  fontSize: '1.25rem',
+  fontSize: '1.5rem',
   fontWeight: 600,
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
 }));
 
 const ViewAllLink = styled(Link)(({ theme }) => ({
@@ -37,87 +41,200 @@ const CharacterBoxContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2),
   '& > *': {
     flex: '1 1 calc(25% - 12px)',
-    minWidth: '250px',
+    minWidth: '280px',
     maxWidth: 'calc(25% - 12px)',
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down('xl')]: {
       flex: '1 1 calc(33.333% - 12px)',
       maxWidth: 'calc(33.333% - 12px)',
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       flex: '1 1 calc(50% - 8px)',
       maxWidth: 'calc(50% - 8px)',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       flex: '1 1 100%',
       maxWidth: '100%',
     },
   },
 }));
 
-const CharacterGrid = ({ onCharacterClick }) => {
+const EmptyState = styled(Box)(({ theme }) => ({
+  textAlign: 'center',
+  padding: theme.spacing(6),
+  color: theme.palette.text.secondary,
+}));
+
+const CharacterGrid = ({ onCharacterClick, activeSection }) => {
   const [characters, setCharacters] = useState([]);
+  const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const loadCharacters = async () => {
-      try {
-        setLoading(true);
-        const apiCharacters = await apiService.getCharacters();
-        
-        // Transform API data to include additional fields for UI
-        const transformedCharacters = apiCharacters.map((char, index) => ({
-          ...char,
-          creator: extractCreator(char.description) || 'LegendsAI',
-          type: extractType(char.description) || 'Historical Figure',
-          messages: generateStats().messages,
-          likes: generateStats().likes
-        }));
-        
-        setCharacters(transformedCharacters);
-        setError(null);
-      } catch (error) {
-        console.error('Failed to load characters:', error);
-        setError('Failed to load characters. Please try again.');
-        setCharacters([]);
-      } finally {
-        setLoading(false);
+    loadData();
+  }, [activeSection]);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      if (activeSection === 'History') {
+        await loadChatHistory();
+      } else {
+        await loadCharacters();
       }
+    } catch (error) {
+      console.error('Failed to load data:', error);
+      setError('Failed to load content. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadCharacters = async () => {
+    const apiCharacters = await apiService.getCharacters();
+    const transformedCharacters = apiCharacters.map((char) => ({
+      ...char,
+      creator: extractCreator(char.name) || 'LegendsAI',
+      type: extractType(char.name) || 'Historical Figure',
+      messages: generateStats().messages,
+      likes: generateStats().likes,
+      category: extractCategory(char.name),
+      isIndian: isIndianCharacter(char.name),
+      popularity: Math.floor(Math.random() * 1000) + 100, // Simulated popularity score
+    }));
+
+    const filteredCharacters = filterCharactersBySection(transformedCharacters);
+    setCharacters(filteredCharacters);
+  };
+
+  const loadChatHistory = async () => {
+    const userSessions = await apiService.getSessions();
+    setSessions(userSessions);
+  };
+
+  const filterCharactersBySection = (characters) => {
+    switch (activeSection) {
+      case 'Discover':
+        return characters; // Show all characters
+      
+      case 'Featured':
+        return characters.filter(char => char.isIndian);
+      
+      case 'Trending':
+        return characters
+          .sort((a, b) => b.popularity - a.popularity)
+          .slice(0, 8);
+      
+      case 'For You':
+        // TODO: Implement recommendation based on user's chat history
+        return characters
+          .filter(char => ['science', 'technology', 'leadership'].includes(char.category))
+          .slice(0, 6);
+      
+      case 'Recent':
+        // TODO: Implement based on actual user interaction data
+        return characters.slice(0, 4);
+      
+      case 'Art & Culture':
+        return characters.filter(char => 
+          ['art', 'culture', 'literature', 'music'].includes(char.category)
+        );
+      
+      case 'Science':
+        return characters.filter(char => 
+          ['science', 'technology', 'medicine'].includes(char.category)
+        );
+      
+      case 'Entertainment':
+        return characters.filter(char => 
+          ['entertainment', 'sports', 'film'].includes(char.category)
+        );
+      
+      default:
+        return characters;
+    }
+  };
+
+  const extractCreator = (name) => {
+    const creatorMap = {
+      'N.T. Rama Rao': 'TeluguLegends',
+      'APJ Abdul Kalam': 'IndianPioneers',
+      'Steve Jobs': 'TechVisionaries',
+      'Albert Einstein': 'PhysicsGenius',
+      'Marie Curie': 'ScienceGreats',
+      'Leonardo da Vinci': 'Renaissance',
+      'Mahatma Gandhi': 'IndianPioneers',
+      'Rabindranath Tagore': 'LiteraryGenius',
+      'Sachin Tendulkar': 'SportsLegends',
+      'Shah Rukh Khan': 'BollywoodStars',
     };
-
-    loadCharacters();
-  }, []);
-
-  // Helper function to extract creator from description or character name
-  const extractCreator = (description) => {
-    if (description?.includes('N.T. Rama Rao')) return 'TeluguLegends';
-    if (description?.includes('APJ Abdul Kalam')) return 'IndianPioneers';
-    if (description?.includes('Steve Jobs')) return 'TechVisionaries';
-    if (description?.includes('Einstein')) return 'PhysicsGenius';
-    if (description?.includes('Marie Curie')) return 'ScienceGreats';
-    if (description?.includes('Leonardo')) return 'Renaissance';
-    return 'LegendsAI';
+    return creatorMap[name] || 'LegendsAI';
   };
 
-  // Helper function to extract type from description
-  const extractType = (description) => {
-    if (description?.includes('actor') && description?.includes('political')) return 'Actor, Politician';
-    if (description?.includes('scientist') && description?.includes('president')) return 'Scientist, President';
-    if (description?.includes('entrepreneur')) return 'Entrepreneur, Innovator';
-    if (description?.includes('physicist') && description?.includes('Nobel')) return 'Physicist, Chemist';
-    if (description?.includes('physicist')) return 'Physicist, Philosopher';
-    if (description?.includes('artist') && description?.includes('inventor')) return 'Artist, Inventor';
-    return 'Historical Figure';
+  const extractType = (name) => {
+    const typeMap = {
+      'N.T. Rama Rao': 'Actor, Politician',
+      'APJ Abdul Kalam': 'Scientist, President',
+      'Steve Jobs': 'Entrepreneur, Innovator',
+      'Albert Einstein': 'Physicist, Philosopher',
+      'Marie Curie': 'Physicist, Chemist',
+      'Leonardo da Vinci': 'Artist, Inventor',
+      'Mahatma Gandhi': 'Freedom Fighter, Philosopher',
+      'Rabindranath Tagore': 'Poet, Philosopher',
+      'Sachin Tendulkar': 'Cricket Legend',
+      'Shah Rukh Khan': 'Actor, Producer',
+    };
+    return typeMap[name] || 'Historical Figure';
   };
 
-  // Generate realistic stats for UI
+  const extractCategory = (name) => {
+    const categoryMap = {
+      'N.T. Rama Rao': 'entertainment',
+      'APJ Abdul Kalam': 'science',
+      'Steve Jobs': 'technology',
+      'Albert Einstein': 'science',
+      'Marie Curie': 'science',
+      'Leonardo da Vinci': 'art',
+      'Mahatma Gandhi': 'leadership',
+      'Rabindranath Tagore': 'literature',
+      'Sachin Tendulkar': 'sports',
+      'Shah Rukh Khan': 'entertainment',
+    };
+    return categoryMap[name] || 'general';
+  };
+
+  const isIndianCharacter = (name) => {
+    const indianCharacters = [
+      'N.T. Rama Rao', 'APJ Abdul Kalam', 'Mahatma Gandhi', 
+      'Rabindranath Tagore', 'Sachin Tendulkar', 'Shah Rukh Khan'
+    ];
+    return indianCharacters.includes(name);
+  };
+
   const generateStats = () => {
-    const messages = Math.floor(Math.random() * 300) + 50; // 50-350k
-    const likes = Math.floor(messages * 0.15); // ~15% like rate
+    const messages = Math.floor(Math.random() * 300) + 50;
+    const likes = Math.floor(messages * 0.15);
     return {
       messages: `${messages}k`,
       likes: `${likes}k`
     };
+  };
+
+  const getSectionDescription = () => {
+    const descriptions = {
+      'Discover': 'Explore all available legendary figures',
+      'Featured': 'Celebrating Indian legends and their contributions',
+      'Trending': 'Most popular characters worldwide',
+      'For You': 'Recommended based on your interests',
+      'Recent': 'Characters you recently interacted with',
+      'History': 'Your complete conversation history',
+      'Art & Culture': 'Artists, writers, and cultural icons',
+      'Science': 'Scientists, inventors, and innovators',
+      'Entertainment': 'Actors, musicians, and entertainers',
+    };
+    return descriptions[activeSection] || '';
   };
 
   if (loading) {
@@ -138,26 +255,60 @@ const CharacterGrid = ({ onCharacterClick }) => {
     );
   }
 
-  if (characters.length === 0) {
+  // Special handling for History section
+  if (activeSection === 'History') {
     return (
-      <Box py={4}>
-        <Alert severity="info">
-          No characters available. Please check back later.
-        </Alert>
-      </Box>
+      <Section>
+        <SectionHeader>
+          <SectionTitle>
+            Chat History
+            <Chip label={`${sessions.length} conversations`} size="small" />
+          </SectionTitle>
+        </SectionHeader>
+        <ChatHistoryGrid sessions={sessions} />
+      </Section>
     );
   }
 
-  const renderSection = (title, sectionCharacters, viewAllLink = '#') => (
+  if (characters.length === 0) {
+    return (
+      <EmptyState>
+        <Typography variant="h6" gutterBottom>
+          No characters found
+        </Typography>
+        <Typography variant="body2">
+          {activeSection === 'Recent' 
+            ? 'Start chatting with characters to see them here!'
+            : 'Please check back later or try a different section.'
+          }
+        </Typography>
+      </EmptyState>
+    );
+  }
+
+  return (
     <Section>
       <SectionHeader>
-        <SectionTitle>{title}</SectionTitle>
-        <ViewAllLink onClick={() => console.log(`View all ${title}`)}>
-          View all
-        </ViewAllLink>
+        <Box>
+          <SectionTitle>
+            {activeSection}
+            <Chip label={`${characters.length} characters`} size="small" />
+          </SectionTitle>
+          {getSectionDescription() && (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              {getSectionDescription()}
+            </Typography>
+          )}
+        </Box>
+        {characters.length > 8 && (
+          <ViewAllLink onClick={() => console.log(`View all ${activeSection}`)}>
+            View all
+          </ViewAllLink>
+        )}
       </SectionHeader>
+      
       <CharacterBoxContainer>
-        {sectionCharacters.map((character) => (
+        {characters.map((character) => (
           <CharacterCard 
             key={character.id} 
             character={character} 
@@ -166,25 +317,6 @@ const CharacterGrid = ({ onCharacterClick }) => {
         ))}
       </CharacterBoxContainer>
     </Section>
-  );
-
-  // Distribute characters across sections to show all 10
-  const getCharactersForSection = (section) => {
-    switch (section) {
-      case 'for-you':
-        return characters.slice(0, Math.ceil(characters.length / 2)); // First half
-      case 'featured':
-        return characters.slice(Math.ceil(characters.length / 2)); // Second half
-      default:
-        return characters;
-    }
-  };
-
-  return (
-    <Box>
-      {characters.length > 0 && renderSection('For you', getCharactersForSection('for-you'))}
-      {characters.length > 0 && renderSection('Featured', getCharactersForSection('featured'))}
-    </Box>
   );
 };
 
