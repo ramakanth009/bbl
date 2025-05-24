@@ -8,7 +8,6 @@ import {
   ListItemText,
   Typography,
   Drawer,
-  Badge,
 } from "@mui/material";
 import {
   WorkspacePremium,
@@ -136,24 +135,7 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
             onClick={() => handleNavClick(item.text)}
           >
             <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
-              {item.badge ? (
-                <Badge 
-                  badgeContent={item.badge} 
-                  color="primary"
-                  sx={{
-                    '& .MuiBadge-badge': {
-                      fontSize: '0.6rem',
-                      minWidth: '16px',
-                      height: '16px',
-                      backgroundColor: item.badge === 'IN' ? '#ff9800' : 'primary.main',
-                    }
-                  }}
-                >
-                  {item.icon}
-                </Badge>
-              ) : (
-                item.icon
-              )}
+              {item.icon}
             </ListItemIcon>
             <ListItemText
               primary={item.text}
