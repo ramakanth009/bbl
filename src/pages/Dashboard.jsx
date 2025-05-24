@@ -22,13 +22,11 @@ const MainContent = styled(Box)(({ theme }) => ({
 }));
 
 const ContentArea = styled(Box)(({ theme, chatOpen }) => ({
-  flex: chatOpen ? 0.6 : 1,
+  flex: 1,
   padding: theme.spacing(3),
   overflow: 'auto',
-  transition: 'flex 0.3s ease',
-  [theme.breakpoints.down('lg')]: {
-    flex: chatOpen ? 0.5 : 1,
-  },
+  transition: 'all 0.3s ease',
+  display: chatOpen ? 'none' : 'block', // Always hide when chat is open
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(2),
   },
@@ -47,6 +45,11 @@ const Dashboard = () => {
   const handleChatClose = () => {
     setIsChatOpen(false);
     setTimeout(() => setSelectedCharacter(null), 300); // Delay for animation
+  };
+
+  const handleBackToCharacters = () => {
+    setIsChatOpen(false);
+    // Don't clear selectedCharacter immediately to allow for potential re-opening
   };
 
   const handleSectionChange = (section) => {
@@ -71,6 +74,7 @@ const Dashboard = () => {
           open={isChatOpen}
           character={selectedCharacter}
           onClose={handleChatClose}
+          onBack={handleBackToCharacters}
         />
       </MainContent>
     </DashboardContainer>

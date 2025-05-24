@@ -16,13 +16,13 @@ import {
 } from '@mui/material';
 import { 
   Close, 
-  Refresh, 
+  Add, // Changed from Refresh to Add
   Tune,
   History as HistoryIcon,
-  Add,
   Chat,
   KeyboardArrowDown,
   KeyboardArrowUp,
+  ArrowBack, // Added for back button
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import apiService from '../../services/api';
@@ -31,26 +31,21 @@ import ChatInput from './ChatInput';
 import CreativitySettingsMenu from './CreativitySettingsMenu';
 
 const ChatContainer = styled(Box)(({ theme, open }) => ({
-  width: open ? '40%' : 0,
-  minWidth: open ? 400 : 0,
+  width: open ? 'calc(100vw - 280px)' : 0, // Full width minus sidebar
   backgroundColor: theme.palette.background.secondary,
   borderLeft: `1px solid ${theme.palette.divider}`,
   display: 'flex',
   flexDirection: 'column',
   transition: 'all 0.3s ease',
   overflow: 'hidden',
-  [theme.breakpoints.down('lg')]: {
-    width: open ? '50%' : 0,
-    minWidth: open ? 350 : 0,
-  },
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  height: '100vh',
+  zIndex: 1000,
   [theme.breakpoints.down('md')]: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    height: '100vh',
-    width: open ? '100%' : 0,
-    minWidth: open ? '100%' : 0,
-    zIndex: 1000,
+    width: open ? '100vw' : 0, // Full width on mobile
+    left: 0, // Start from left edge on mobile
   },
 }));
 
@@ -116,7 +111,12 @@ const NewSessionButton = styled(Button)(({ theme }) => ({
   borderColor: theme.palette.primary.main,
 }));
 
-const ChatPanel = ({ open, character, onClose }) => {
+const BackButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  // Always visible since chat is now always a separate page
+}));
+
+const ChatPanel = ({ open, character, onClose, onBack }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
@@ -250,6 +250,14 @@ const ChatPanel = ({ open, character, onClose }) => {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const handleBackClick = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      onClose();
+    }
+  };
+
   if (!open || !character) {
     return <ChatContainer open={false} />;
   }
@@ -259,6 +267,12 @@ const ChatPanel = ({ open, character, onClose }) => {
       <ChatHeader>
         <ChatHeaderTop>
           <ChatHeaderLeft>
+            <BackButton 
+              onClick={handleBackClick}
+              title="Back to Characters"
+            >
+              <ArrowBack />
+            </BackButton>
             <Avatar
               src={character.img}
               alt={character.name}
@@ -292,7 +306,7 @@ const ChatPanel = ({ open, character, onClose }) => {
               sx={{ color: 'text.secondary' }}
               title="New Conversation"
             >
-              <Refresh />
+              <Add />
             </IconButton>
             
             <IconButton 
