@@ -27,6 +27,7 @@ import {
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { useAuth } from "../../context/AuthContext";
+import ComingSoonModal from "./temp/ComingSoonModal";
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   "& .MuiDrawer-paper": {
@@ -84,6 +85,7 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
 const Sidebar = () => {
   const { logout } = useAuth();
   const [activeItem, setActiveItem] = useState("Discover");
+  const [comingSoonOpen, setComingSoonOpen] = useState(false);
 
   const mainNavItems = [
     { text: "Discover", icon: <Explore /> },
@@ -100,10 +102,14 @@ const Sidebar = () => {
     { text: "Entertainment", icon: <Movie /> },
   ];
 
-  const settingsItems = [{ text: "Settings", icon: <Settings /> }];
+//   const settingsItems = [{ text: "Settings", icon: <Settings /> }];
 
   const handleNavClick = (text) => {
     setActiveItem(text);
+  };
+
+  const handleCreateClick = () => {
+    setComingSoonOpen(true);
   };
 
   const renderNavSection = (items, title) => (
@@ -130,36 +136,47 @@ const Sidebar = () => {
   );
 
   return (
-    <StyledDrawer variant="permanent">
-      <Logo>
-        <LogoIcon>
-          <WorkspacePremium fontSize="small" />
-        </LogoIcon>
-        <Typography variant="h6" fontWeight="bold">
-          Bring Back Legend
-        </Typography>
-      </Logo>
+    <>
+      <StyledDrawer variant="permanent">
+        <Logo>
+          <LogoIcon>
+            <WorkspacePremium fontSize="small" />
+          </LogoIcon>
+          <Typography variant="h6" fontWeight="bold">
+            Bring Back Legend
+          </Typography>
+        </Logo>
 
-      <CreateButton variant="contained" startIcon={<Add />}>
-        Create
-      </CreateButton>
+        <CreateButton 
+          variant="contained" 
+          startIcon={<Add />}
+          onClick={handleCreateClick}
+        >
+          Create
+        </CreateButton>
 
-      {renderNavSection(mainNavItems)}
-      {renderNavSection(categoryItems)}
-      {renderNavSection(settingsItems)}
+        {renderNavSection(mainNavItems)}
+        {renderNavSection(categoryItems)}
+        {/* {renderNavSection(settingsItems)} */}
 
-      <Box sx={{ mt: "auto" }}>
-        <StyledListItem button onClick={logout}>
-          <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
-            <Logout />
-          </ListItemIcon>
-          <ListItemText
-            primary="Logout"
-            primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 500 }}
-          />
-        </StyledListItem>
-      </Box>
-    </StyledDrawer>
+        <Box sx={{ mt: "auto" }}>
+          <StyledListItem button onClick={logout}>
+            <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
+              <Logout />
+            </ListItemIcon>
+            <ListItemText
+              primary="Logout"
+              primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 500 }}
+            />
+          </StyledListItem>
+        </Box>
+      </StyledDrawer>
+
+      <ComingSoonModal 
+        open={comingSoonOpen} 
+        onClose={() => setComingSoonOpen(false)} 
+      />
+    </>
   );
 };
 
