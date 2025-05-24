@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -9,7 +9,7 @@ import {
   Typography,
   Drawer,
   IconButton,
-} from '@mui/material';
+} from "@mui/material";
 import {
   WorkspacePremium,
   Add,
@@ -24,13 +24,12 @@ import {
   Movie,
   Settings,
   Logout,
-} from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-import { useAuth } from '../../context/AuthContext';
+} from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
+import { useAuth } from "../../context/AuthContext";
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
-  width: 280,
-  '& .MuiDrawer-paper': {
+  "& .MuiDrawer-paper": {
     width: 280,
     backgroundColor: theme.palette.background.secondary,
     borderRight: `1px solid ${theme.palette.divider}`,
@@ -39,8 +38,8 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
 }));
 
 const Logo = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
+  display: "flex",
+  alignItems: "center",
   gap: theme.spacing(1.5),
   marginBottom: theme.spacing(4),
   padding: theme.spacing(0, 1),
@@ -51,17 +50,17 @@ const LogoIcon = styled(Box)(({ theme }) => ({
   height: 32,
   backgroundColor: theme.palette.primary.main,
   borderRadius: theme.spacing(1),
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: 'white',
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  color: "white",
 }));
 
 const CreateButton = styled(Button)(({ theme }) => ({
-  width: '100%',
+  width: "100%",
   backgroundColor: theme.palette.primary.main,
   marginBottom: theme.spacing(3),
-  '&:hover': {
+  "&:hover": {
     backgroundColor: theme.palette.primary.dark,
   },
 }));
@@ -73,10 +72,10 @@ const NavSection = styled(Box)(({ theme }) => ({
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   borderRadius: theme.spacing(1),
   marginBottom: theme.spacing(0.5),
-  '&:hover': {
+  "&:hover": {
     backgroundColor: theme.palette.action.hover,
   },
-  '&.active': {
+  "&.active": {
     backgroundColor: theme.palette.action.hover,
     color: theme.palette.text.primary,
   },
@@ -84,26 +83,24 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
 
 const Sidebar = () => {
   const { logout } = useAuth();
-  const [activeItem, setActiveItem] = useState('Discover');
+  const [activeItem, setActiveItem] = useState("Discover");
 
   const mainNavItems = [
-    { text: 'Discover', icon: <Explore /> },
-    { text: 'Featured', icon: <Star /> },
-    { text: 'Trending', icon: <Whatshot /> },
-    { text: 'For You', icon: <Favorite /> },
-    { text: 'Recent', icon: <Schedule /> },
+    { text: "Discover", icon: <Explore /> },
+    { text: "Featured", icon: <Star /> },
+    { text: "Trending", icon: <Whatshot /> },
+    { text: "For You", icon: <Favorite /> },
+    { text: "Recent", icon: <Schedule /> },
   ];
 
   const categoryItems = [
-    { text: 'History', icon: <History /> },
-    { text: 'Art & Culture', icon: <Palette /> },
-    { text: 'Science', icon: <Science /> },
-    { text: 'Entertainment', icon: <Movie /> },
+    { text: "History", icon: <History /> },
+    { text: "Art & Culture", icon: <Palette /> },
+    { text: "Science", icon: <Science /> },
+    { text: "Entertainment", icon: <Movie /> },
   ];
 
-  const settingsItems = [
-    { text: 'Settings', icon: <Settings /> },
-  ];
+  const settingsItems = [{ text: "Settings", icon: <Settings /> }];
 
   const handleNavClick = (text) => {
     setActiveItem(text);
@@ -116,15 +113,15 @@ const Sidebar = () => {
           <StyledListItem
             key={item.text}
             button
-            className={activeItem === item.text ? 'active' : ''}
+            className={activeItem === item.text ? "active" : ""}
             onClick={() => handleNavClick(item.text)}
           >
-            <ListItemIcon sx={{ color: 'inherit', minWidth: 36 }}>
+            <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
               {item.icon}
             </ListItemIcon>
-            <ListItemText 
-              primary={item.text} 
-              primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 500 }}
+            <ListItemText
+              primary={item.text}
+              primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 500 }}
             />
           </StyledListItem>
         ))}
@@ -151,14 +148,14 @@ const Sidebar = () => {
       {renderNavSection(categoryItems)}
       {renderNavSection(settingsItems)}
 
-      <Box sx={{ mt: 'auto' }}>
+      <Box sx={{ mt: "auto" }}>
         <StyledListItem button onClick={logout}>
-          <ListItemIcon sx={{ color: 'inherit', minWidth: 36 }}>
+          <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
             <Logout />
           </ListItemIcon>
-          <ListItemText 
-            primary="Logout" 
-            primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 500 }}
+          <ListItemText
+            primary="Logout"
+            primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 500 }}
           />
         </StyledListItem>
       </Box>

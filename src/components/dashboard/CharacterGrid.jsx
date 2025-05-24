@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Typography, Link, CircularProgress } from '@mui/material';
+import { Box, Typography, Link, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CharacterCard from './CharacterCard';
 import apiService from '../../services/api';
@@ -27,6 +27,29 @@ const ViewAllLink = styled(Link)(({ theme }) => ({
   fontSize: '0.875rem',
   '&:hover': {
     color: theme.palette.text.primary,
+  },
+}));
+
+const CharacterBoxContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: theme.spacing(2),
+  '& > *': {
+    flex: '1 1 calc(25% - 12px)',
+    minWidth: '250px',
+    maxWidth: 'calc(25% - 12px)',
+    [theme.breakpoints.down('lg')]: {
+      flex: '1 1 calc(33.333% - 12px)',
+      maxWidth: 'calc(33.333% - 12px)',
+    },
+    [theme.breakpoints.down('md')]: {
+      flex: '1 1 calc(50% - 8px)',
+      maxWidth: 'calc(50% - 8px)',
+    },
+    [theme.breakpoints.down('sm')]: {
+      flex: '1 1 100%',
+      maxWidth: '100%',
+    },
   },
 }));
 
@@ -129,13 +152,15 @@ const CharacterGrid = ({ onCharacterClick }) => {
         <SectionTitle>{title}</SectionTitle>
         <ViewAllLink href={viewAllLink}>View all</ViewAllLink>
       </SectionHeader>
-      <Grid container spacing={2}>
+      <CharacterBoxContainer>
         {characters.map((character) => (
-          <Grid item xs={12} sm={6} lg={4} key={character.id}>
-            <CharacterCard character={character} onClick={onCharacterClick} />
-          </Grid>
+          <CharacterCard 
+            key={character.id} 
+            character={character} 
+            onClick={onCharacterClick} 
+          />
         ))}
-      </Grid>
+      </CharacterBoxContainer>
     </Section>
   );
 
