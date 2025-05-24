@@ -11,7 +11,7 @@ import {
   IconButton,
 } from '@mui/material';
 import {
-  Crown,
+  WorkspacePremium,
   Add,
   Explore,
   Star,
@@ -136,7 +136,7 @@ const Sidebar = () => {
     <StyledDrawer variant="permanent">
       <Logo>
         <LogoIcon>
-          <Crown fontSize="small" />
+          <WorkspacePremium fontSize="small" />
         </LogoIcon>
         <Typography variant="h6" fontWeight="bold">
           Bring Back Legend
