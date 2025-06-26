@@ -18,7 +18,7 @@ import { styled } from '@mui/material/styles';
 import apiService from '../../services/api';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
-import CreativitySettingsMenu from './CreativitySettingsMenu';
+// import CreativitySettingsMenu from './CreativitySettingsMenu';
 import ChatHistoryPanel from './ChatHistoryPanel';
 
 const ChatContainer = styled(Box)(({ theme, open }) => ({
@@ -100,10 +100,10 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
   const [showHistory, setShowHistory] = useState(false);
   
   // Creativity settings
-  const [settingsAnchor, setSettingsAnchor] = useState(null);
-  const [temperature, setTemperature] = useState(0.7);
-  const [topP, setTopP] = useState(0.95);
-  const [topK, setTopK] = useState(40);
+  // const [settingsAnchor, setSettingsAnchor] = useState(null);
+  // const [temperature, setTemperature] = useState(0.7);
+  // const [topP, setTopP] = useState(0.95);
+  // const [topK, setTopK] = useState(40);
   
   const messagesEndRef = useRef(null);
 
@@ -183,12 +183,12 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
     setMessages(prev => [...prev, newUserMessage]);
 
     try {
-      const creativitySettings = { temperature, top_p: topP, top_k: topK };
+      // const creativitySettings = { temperature, top_p: topP, top_k: topK };
       const response = await apiService.sendMessage(
         character.name, 
         userMessage, 
-        !sessionId,
-        creativitySettings
+        !sessionId
+        // ,creativitySettings
       );
       
       if (response.chat_history) {
@@ -283,13 +283,13 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
                 <Add />
               </IconButton>
               
-              <IconButton 
+              {/* <IconButton 
                 onClick={(e) => setSettingsAnchor(e.currentTarget)}
                 sx={{ color: 'text.secondary' }}
                 title="Creativity Settings"
               >
                 <Tune />
-              </IconButton>
+              </IconButton> */}
               
               <IconButton onClick={onClose} sx={{ color: 'text.secondary' }}>
                 <Close />
@@ -327,7 +327,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
           loading={loading}
         />
 
-        <CreativitySettingsMenu
+        {/* <CreativitySettingsMenu
           anchorEl={settingsAnchor}
           open={Boolean(settingsAnchor)}
           onClose={() => setSettingsAnchor(null)}
@@ -337,7 +337,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
           setTopP={setTopP}
           topK={topK}
           setTopK={setTopK}
-        />
+        /> */}
       </ChatContainer>
 
       <ChatHistoryPanel
