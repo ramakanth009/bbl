@@ -20,6 +20,7 @@ import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import CreativitySettingsMenu from './CreativitySettingsMenu';
 import SessionHistory from './SessionHistory';
+import StarField from '../common/StarField';
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
@@ -184,100 +185,103 @@ const ChatModal = ({ open, character, onClose }) => {
   if (!character) return null;
 
   return (
-    <StyledDialog open={open} onClose={handleClose} maxWidth={false}>
-      <ChatHeader>
-        <ChatHeaderLeft>
-          <Avatar
-            src={character.img}
-            alt={character.name}
-            sx={{ width: 40, height: 40, borderRadius: 1 }}
-          />
-          <Box>
-            <Typography variant="h6" fontWeight="bold">
-              {character.name}
-            </Typography>
-            {sessionId && (
-              <Chip 
-                label={`Session ${sessionId}`} 
-                size="small" 
-                sx={{ fontSize: '0.7rem', height: 20 }} 
-              />
-            )}
+    <>
+      <StarField />
+      <StyledDialog open={open} onClose={handleClose} maxWidth={false}>
+        <ChatHeader>
+          <ChatHeaderLeft>
+            <Avatar
+              src={character.img}
+              alt={character.name}
+              sx={{ width: 40, height: 40, borderRadius: 1 }}
+            />
+            <Box>
+              <Typography variant="h6" fontWeight="bold">
+                {character.name}
+              </Typography>
+              {sessionId && (
+                <Chip 
+                  label={`Session ${sessionId}`} 
+                  size="small" 
+                  sx={{ fontSize: '0.7rem', height: 20 }} 
+                />
+              )}
+            </Box>
+          </ChatHeaderLeft>
+          
+          <ChatHeaderRight>
+            <IconButton 
+              onClick={() => setShowSessions(!showSessions)}
+              sx={{ color: 'text.secondary' }}
+              title="Session History"
+            >
+              <HistoryIcon />
+            </IconButton>
+            
+            <IconButton 
+              onClick={startNewSession}
+              sx={{ color: 'text.secondary' }}
+              title="New Conversation"
+            >
+              <Refresh />
+            </IconButton>
+            
+            <IconButton 
+              onClick={(e) => setSettingsAnchor(e.currentTarget)}
+              sx={{ color: 'text.secondary' }}
+              title="Creativity Settings"
+            >
+              <Tune />
+            </IconButton>
+            
+            <IconButton onClick={handleClose} sx={{ color: 'text.secondary' }}>
+              <Close />
+            </IconButton>
+          </ChatHeaderRight>
+        </ChatHeader>
+
+        <SessionHistory
+          showSessions={showSessions}
+          sessions={sessions}
+          sessionId={sessionId}
+          onNewSession={startNewSession}
+          onLoadSession={loadSession}
+        />
+
+        {error && (
+          <Box sx={{ p: 2 }}>
+            <Alert severity="error" onClose={() => setError(null)}>
+              {error}
+            </Alert>
           </Box>
-        </ChatHeaderLeft>
-        
-        <ChatHeaderRight>
-          <IconButton 
-            onClick={() => setShowSessions(!showSessions)}
-            sx={{ color: 'text.secondary' }}
-            title="Session History"
-          >
-            <HistoryIcon />
-          </IconButton>
-          
-          <IconButton 
-            onClick={startNewSession}
-            sx={{ color: 'text.secondary' }}
-            title="New Conversation"
-          >
-            <Refresh />
-          </IconButton>
-          
-          <IconButton 
-            onClick={(e) => setSettingsAnchor(e.currentTarget)}
-            sx={{ color: 'text.secondary' }}
-            title="Creativity Settings"
-          >
-            <Tune />
-          </IconButton>
-          
-          <IconButton onClick={handleClose} sx={{ color: 'text.secondary' }}>
-            <Close />
-          </IconButton>
-        </ChatHeaderRight>
-      </ChatHeader>
+        )}
 
-      <SessionHistory
-        showSessions={showSessions}
-        sessions={sessions}
-        sessionId={sessionId}
-        onNewSession={startNewSession}
-        onLoadSession={loadSession}
-      />
+        <MessageList 
+          messages={messages} 
+          loading={loading} 
+          ref={messagesEndRef} 
+        />
 
-      {error && (
-        <Box sx={{ p: 2 }}>
-          <Alert severity="error" onClose={() => setError(null)}>
-            {error}
-          </Alert>
-        </Box>
-      )}
+        <ChatInput
+          value={inputValue}
+          onChange={setInputValue}
+          onSend={handleSend}
+          loading={loading}
+        />
 
-      <MessageList 
-        messages={messages} 
-        loading={loading} 
-        ref={messagesEndRef} 
-      />
-
-      <ChatInput
-        value={inputValue}
-        onChange={setInputValue}
-        onSend={handleSend}
-        loading={loading}
-      />
-
-      <CreativitySettingsMenu
-        anchorEl={settingsAnchor}
-        open={Boolean(settingsAnchor)}
-        onClose={() => setSettingsAnchor(null)}
-        temperature={temperature}
-        setTemperature={setTemperature}
-        topP={topP}
-        setTopP={setTopP}
-        topK={topK}
-        setTopK={setTopK}
-      />
-    </StyledDialog>
+        <CreativitySettingsMenu
+          anchorEl={settingsAnchor}
+          open={Boolean(settingsAnchor)}
+          onClose={() => setSettingsAnchor(null)}
+          temperature={temperature}
+          setTemperature={setTemperature}
+          topP={topP}
+          setTopP={setTopP}
+          topK={topK}
+          setTopK={setTopK}
+        />
+      </StyledDialog>
+    </>
   );
 };
 

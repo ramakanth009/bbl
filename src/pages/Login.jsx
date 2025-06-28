@@ -17,162 +17,178 @@ import {
   Visibility,
   VisibilityOff,
   WorkspacePremium,
-  Google,
   Apple,
   Email,
 } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 import { useAuth } from '../context/AuthContext';
+import GoogleLogo from '../assets/google-logo.svg'; // Import the actual Google logo SVG
 
 // Import the StarField component
 const StarField = React.lazy(() => import('../components/common/StarField'));
 
-const PageContainer = styled(Container)(({ theme }) => ({
-  minHeight: '100vh',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  position: 'relative',
-  zIndex: 1,
-  padding: theme.spacing(3),
-}));
-
-const AuthCard = styled(Card)(({ theme }) => ({
-  width: '100%',
-  maxWidth: 440,
-  padding: theme.spacing(4),
-  backgroundColor: 'rgba(15, 15, 15, 0.95)',
-  backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  borderRadius: 24,
-  boxShadow: '0 32px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)',
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    transform: 'translateY(-4px)',
-    boxShadow: '0 40px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+// Styles using makeStyles
+const useStyles = makeStyles(() => ({
+  pageContainer: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    position: 'relative',
+    zIndex: 1,
+    padding: '24px',
   },
-}));
-
-const LogoContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: theme.spacing(2),
-  marginBottom: theme.spacing(4),
-}));
-
-const LogoIcon = styled(Box)(({ theme }) => ({
-  width: 48,
-  height: 48,
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-  borderRadius: 12,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  boxShadow: '0 8px 32px rgba(102, 126, 234, 0.4)',
-}));
-
-const StyledTextField = styled(TextField)(({ theme }) => ({
-  marginBottom: theme.spacing(2.5),
-  '& .MuiOutlinedInput-root': {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    transition: 'all 0.3s ease',
-    '& fieldset': {
-      border: 'none',
-    },
+  authCard: {
+    width: '100%',
+    maxWidth: 440,
+    padding: '36px 36px 32px 36px',
+    background: 'linear-gradient(135deg, #181818 0%, #232526 100%)', // black/grey gradient
+    backdropFilter: 'blur(24px)',
+    border: '1.5px solid #333',
+    borderRadius: 28,
+    boxShadow: '0 32px 64px rgba(0,0,0,0.7), 0 0 0 1px #222',
+    transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
     '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-    },
-    '&.Mui-focused': {
-      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-      border: '1px solid #667eea',
-      boxShadow: '0 0 0 4px rgba(102, 126, 234, 0.1)',
+      // transform: 'translateY(-1px) scale(1.01)',
+      // boxShadow: '0 48px 96px rgba(0,0,0,0.85), 0 0 0 1.5px #444',
     },
   },
-  '& .MuiInputLabel-root': {
-    color: 'rgba(255, 255, 255, 0.7)',
-    '&.Mui-focused': {
-      color: '#667eea',
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '18px',
+    marginBottom: '36px',
+  },
+  logoIcon: {
+    width: 52,
+    height: 52,
+    background: 'linear-gradient(135deg, #fff 0%, #bbb 100%)',
+    borderRadius: 14,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 8px 32px rgba(255,255,255,0.10)',
+  },
+  styledTextField: {
+    marginBottom: '22px',
+    '& .MuiOutlinedInput-root': {
+      backgroundColor: 'rgba(255,255,255,0.03)',
+      border: '1.5px solid #333',
+      borderRadius: 14,
+      transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
+      '& fieldset': {
+        border: 'none',
+      },
+      '&:hover': {
+        backgroundColor: 'rgba(255,255,255,0.06)',
+        border: '1.5px solid #555',
+      },
+      '&.Mui-focused': {
+        backgroundColor: 'rgba(255,255,255,0.08)',
+        border: '1.5px solid #fff',
+        boxShadow: '0 0 0 4px rgba(255,255,255,0.08)',
+      },
+    },
+    '& .MuiInputLabel-root': {
+      color: '#bbb',
+      '&.Mui-focused': {
+        color: '#fff',
+      },
+    },
+    '& .MuiInputBase-input': {
+      color: '#fff',
+      padding: '13px',
+      fontWeight: 500,
+      letterSpacing: '0.02em',
     },
   },
-  '& .MuiInputBase-input': {
-    color: '#ffffff',
-    padding: theme.spacing(1.5),
+  loginButton: {
+    width: '100%',
+    padding: '13px',
+    borderRadius: 14,
+    background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
+    color: '#111',
+    fontSize: '1.08rem',
+    fontWeight: 700,
+    textTransform: 'none',
+    marginBottom: '26px !important',
+    marginTop: '26px !important',
+    boxShadow: '0 8px 32px rgba(255,255,255,0.10)',
+    transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
+    '&:hover': {
+      background: 'linear-gradient(90deg, #eee 0%, #888 100%)',
+      color: '#000',
+      transform: 'translateY(-2px) scale(1.01)',
+      boxShadow: '0 12px 40px rgba(255,255,255,0.13)',
+    },
+    '&:disabled': {
+      background: 'rgba(255,255,255,0.08)',
+      color: '#888',
+    },
   },
-}));
-
-const LoginButton = styled(Button)(({ theme }) => ({
-  width: '100%',
-  padding: theme.spacing(1.5),
-  borderRadius: 12,
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-  color: 'white',
-  fontSize: '1rem',
-  fontWeight: 600,
-  textTransform: 'none',
-  marginBottom: theme.spacing(3),
-  boxShadow: '0 8px 32px rgba(102, 126, 234, 0.4)',
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
-    transform: 'translateY(-2px)',
-    boxShadow: '0 12px 40px rgba(102, 126, 234, 0.5)',
+  googleButton: {
+    width: '100%',
+    padding: '13px',
+    borderRadius: 14,
+    background: '#fff',
+    border: '1.5px solid #dadce0',
+    color: '#3c4043',
+    textTransform: 'none',
+    marginBottom: '14px',
+    fontWeight: 600,
+    fontSize: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px',
+    boxShadow: '0 1px 2px rgba(60,64,67,.08)',
+    transition: 'background 0.2s, border 0.2s, box-shadow 0.2s',
+    '&:hover': {
+      background: '#f7f8fa',
+      border: '1.5px solid #4285F4',
+      color: '#1a73e8',
+      boxShadow: '0 2px 4px rgba(60,64,67,.13)',
+    },
+    '&:active': {
+      background: '#ececec',
+    },
+    '&:focus': {
+      outline: '2px solid #4285F4',
+      outlineOffset: '2px',
+    },
   },
-  '&:disabled': {
-    background: 'rgba(255, 255, 255, 0.1)',
-    color: 'rgba(255, 255, 255, 0.5)',
+  divider: {
+    display: 'flex',
+    alignItems: 'center',
+    margin: '28px 0',
+    '&::before, &::after': {
+      content: '""',
+      flex: 1,
+      height: 1,
+      background: 'linear-gradient(90deg, #222 0%, #444 100%)',
+    },
   },
-}));
-
-const SocialButton = styled(Button)(({ theme }) => ({
-  width: '100%',
-  padding: theme.spacing(1.5),
-  borderRadius: 12,
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  color: '#ffffff',
-  textTransform: 'none',
-  marginBottom: theme.spacing(1.5),
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    transform: 'translateY(-1px)',
+  dividerText: {
+    padding: '0 18px',
+    color: '#888',
+    fontSize: '0.92rem',
+    fontWeight: 500,
+    letterSpacing: '0.03em',
   },
-}));
-
-const Divider = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  margin: theme.spacing(3, 0),
-  '&::before, &::after': {
-    content: '""',
-    flex: 1,
-    height: 1,
-    background: 'rgba(255, 255, 255, 0.1)',
-  },
-}));
-
-const DividerText = styled(Typography)(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  color: 'rgba(255, 255, 255, 0.5)',
-  fontSize: '0.875rem',
-}));
-
-const StyledLink = styled(Link)(({ theme }) => ({
-  color: '#667eea',
-  textDecoration: 'none',
-  fontWeight: 500,
-  transition: 'color 0.3s ease',
-  '&:hover': {
-    color: '#5a67d8',
+  styledLink: {
+    color: '#fff',
+    textDecoration: 'underline',
+    fontWeight: 600,
+    transition: 'color 0.3s',
+    '&:hover': {
+      color: '#bbb',
+    },
   },
 }));
 
 const Login = () => {
+  const classes = useStyles();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -214,27 +230,28 @@ const Login = () => {
         <StarField />
       </React.Suspense>
       
-      <PageContainer maxWidth="sm">
+      <Container maxWidth="sm" className={classes.pageContainer}>
         <Fade in timeout={800}>
-          <AuthCard>
+          <Card className={classes.authCard}>
             <Zoom in timeout={1000}>
               <Box>
-                <LogoContainer>
-                  <LogoIcon>
-                    <WorkspacePremium sx={{ color: 'white', fontSize: 28 }} />
-                  </LogoIcon>
+                <Box className={classes.logoContainer}>
+                  <Box className={classes.logoIcon}>
+                    <WorkspacePremium sx={{ color: '#232526', fontSize: 30 }} />
+                  </Box>
                   <Typography 
                     variant="h5" 
                     fontWeight="bold" 
                     sx={{ 
-                      background: 'linear-gradient(135deg, #ffffff 0%, #a0aec0 100%)',
+                      background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
+                      letterSpacing: '0.02em',
                     }}
                   >
                     Bring Back Legend
                   </Typography>
-                </LogoContainer>
+                </Box>
 
                 <Typography 
                   variant="h4" 
@@ -242,9 +259,10 @@ const Login = () => {
                   align="center" 
                   gutterBottom
                   sx={{ 
-                    color: '#ffffff',
-                    fontSize: '2rem',
+                    color: '#fff',
+                    fontSize: '2.1rem',
                     mb: 1,
+                    letterSpacing: '0.01em',
                   }}
                 >
                   Welcome back
@@ -254,7 +272,7 @@ const Login = () => {
                   variant="body1" 
                   align="center" 
                   sx={{ 
-                    color: 'rgba(255, 255, 255, 0.7)',
+                    color: '#bbb',
                     mb: 4,
                   }}
                 >
@@ -262,15 +280,19 @@ const Login = () => {
                 </Typography>
 
                 {/* Social Login Buttons */}
-                <SocialButton
-                  startIcon={<Google />}
+                <Button
+                  className={classes.googleButton}
+                  startIcon={
+                    <img src={GoogleLogo} alt="Google" style={{ width: 22, height: 22, display: 'block' }} />
+                  }
                   onClick={() => console.log('Google login')}
+                  disableElevation
                 >
                   Continue with Google
-                </SocialButton>
-                <Divider>
-                  <DividerText>OR</DividerText>
-                </Divider>
+                </Button>
+                <Box className={classes.divider}>
+                  <Typography className={classes.dividerText}>OR</Typography>
+                </Box>
 
                 {error && (
                   <Fade in>
@@ -278,10 +300,11 @@ const Login = () => {
                       severity="error" 
                       sx={{ 
                         mb: 3,
-                        backgroundColor: 'rgba(244, 67, 54, 0.1)',
-                        border: '1px solid rgba(244, 67, 54, 0.3)',
-                        color: '#ffffff',
+                        backgroundColor: 'rgba(255,255,255,0.08)',
+                        border: '1.5px solid #444',
+                        color: '#fff',
                         borderRadius: 2,
+                        fontWeight: 500,
                       }}
                     >
                       {error}
@@ -291,49 +314,52 @@ const Login = () => {
 
                 <Box component="form" onSubmit={handleSubmit}>
                   <TextField
-  fullWidth
-  label="Username"
-  value={username}
-  onChange={(e) => setUsername(e.target.value)}
-  margin="normal"
-  required
-  autoFocus
-/>
+                    fullWidth
+                    label="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    margin="normal"
+                    required
+                    autoFocus
+                    className={classes.styledTextField}
+                  />
 
-<TextField
-  fullWidth
-  label="Password"
-  type="password"
-  value={password}
-  onChange={(e) => setPassword(e.target.value)}
-  margin="normal"
-  required
-/>
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    margin="normal"
+                    required
+                    className={classes.styledTextField}
+                  />
 
-                  <LoginButton
+                  <Button
                     type="submit"
                     disabled={loading}
+                    className={classes.loginButton}
                   >
                     {loading ? 'Signing in...' : 'Sign In'}
-                  </LoginButton>
+                  </Button>
 
                   <Box textAlign="center">
                     <Typography 
                       variant="body2" 
-                      sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
+                      sx={{ color: '#bbb' }}
                     >
                       Don't have an account?{' '}
-                      <StyledLink to="/register">
+                      <Link to="/register" className={classes.styledLink}>
                         Create one
-                      </StyledLink>
+                      </Link>
                     </Typography>
                   </Box>
                 </Box>
               </Box>
             </Zoom>
-          </AuthCard>
+          </Card>
         </Fade>
-      </PageContainer>
+      </Container>
     </>
   );
 };

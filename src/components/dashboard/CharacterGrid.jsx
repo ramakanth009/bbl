@@ -40,16 +40,16 @@ const CharacterBoxContainer = styled(Box)(({ theme }) => ({
   flexWrap: 'wrap',
   gap: theme.spacing(2),
   '& > *': {
-    flex: '1 1 calc(25% - 12px)',
+    flex: '1 1 calc(33.333% - 12px)', // 3 per row
     minWidth: '280px',
-    maxWidth: 'calc(25% - 12px)',
+    maxWidth: 'calc(33.333% - 12px)', // 3 per row
     [theme.breakpoints.down('xl')]: {
-      flex: '1 1 calc(33.333% - 12px)',
-      maxWidth: 'calc(33.333% - 12px)',
-    },
-    [theme.breakpoints.down('lg')]: {
       flex: '1 1 calc(50% - 8px)',
       maxWidth: 'calc(50% - 8px)',
+    },
+    [theme.breakpoints.down('lg')]: {
+      flex: '1 1 100%',
+      maxWidth: '100%',
     },
     [theme.breakpoints.down('md')]: {
       flex: '1 1 100%',
@@ -237,6 +237,12 @@ const CharacterGrid = ({ onCharacterClick, activeSection }) => {
     return descriptions[activeSection] || '';
   };
 
+  const handleStartChat = (character) => {
+    if (onCharacterClick) {
+      onCharacterClick(character);
+    }
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" py={4}>
@@ -311,8 +317,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection }) => {
         {characters.map((character) => (
           <CharacterCard 
             key={character.id} 
-            character={character} 
-            onClick={onCharacterClick} 
+            character={character}
+            onStartChat={handleStartChat}
           />
         ))}
       </CharacterBoxContainer>

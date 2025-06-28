@@ -27,6 +27,7 @@ import {
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import apiService from '../../services/api';
+import StarField from '../common/StarField';
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
@@ -132,156 +133,160 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
   };
 
   return (
-    <StyledDialog open={open} onClose={onClose} maxWidth="md">
-      <DialogTitle>
-        <Box display="flex" alignItems="center" gap={2}>
-          <History />
-          <Typography variant="h6" fontWeight="bold">
-            Chat History
-          </Typography>
-        </Box>
-        
-        {!loading && !error && (
-          <Box mt={1}>
-            <SessionStats>
-              <Chip 
-                icon={<Chat />} 
-                label={`${getTotalSessions()} conversations`} 
-                size="small" 
-                variant="outlined"
-              />
-              <Chip 
-                icon={<Person />} 
-                label={`${getCharacterCount()} characters`} 
-                size="small" 
-                variant="outlined"
-              />
-            </SessionStats>
-          </Box>
-        )}
-      </DialogTitle>
-
-      <DialogContent>
-        {loading && (
-          <Box display="flex" justifyContent="center" py={4}>
-            <CircularProgress />
-          </Box>
-        )}
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-            <Button 
-              size="small" 
-              onClick={loadSessions} 
-              sx={{ ml: 2 }}
-            >
-              Retry
-            </Button>
-          </Alert>
-        )}
-
-        {!loading && !error && Object.keys(groupedSessions).length === 0 && (
-          <Box textAlign="center" py={4}>
-            <History sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
-            <Typography variant="h6" color="text.secondary">
-              No conversations yet
-            </Typography>
-            <Typography variant="body2" color="text.disabled">
-              Start chatting with characters to see your history here
+    <>
+      {/* StarField as background */}
+      <StarField />
+      <StyledDialog open={open} onClose={onClose} maxWidth="md">
+        <DialogTitle>
+          <Box display="flex" alignItems="center" gap={2}>
+            <History />
+            <Typography variant="h6" fontWeight="bold">
+              Chat History
             </Typography>
           </Box>
-        )}
+          
+          {!loading && !error && (
+            <Box mt={1}>
+              <SessionStats>
+                <Chip 
+                  icon={<Chat />} 
+                  label={`${getTotalSessions()} conversations`} 
+                  size="small" 
+                  variant="outlined"
+                />
+                <Chip 
+                  icon={<Person />} 
+                  label={`${getCharacterCount()} characters`} 
+                  size="small" 
+                  variant="outlined"
+                />
+              </SessionStats>
+            </Box>
+          )}
+        </DialogTitle>
 
-        {!loading && !error && (
-          <Box>
-            {Object.entries(groupedSessions).map(([character, characterSessions]) => (
-              <Box key={character} mb={3}>
-                <Typography 
-                  variant="subtitle1" 
-                  fontWeight="bold" 
-                  sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}
-                >
-                  <Person fontSize="small" />
-                  {character}
-                  <Chip 
-                    label={`${characterSessions.length} session${characterSessions.length !== 1 ? 's' : ''}`}
-                    size="small"
-                    variant="outlined"
-                  />
-                </Typography>
-                
-                <List dense>
-                  {characterSessions.map((session) => (
-                    <SessionItem
-                      key={session.session_id}
-                      button
-                      onClick={() => handleSessionClick(session)}
-                    >
-                      <ListItemAvatar>
-                        <Avatar sx={{ width: 32, height: 32 }}>
-                          <Chat fontSize="small" />
-                        </Avatar>
-                      </ListItemAvatar>
-                      
-                      <ListItemText
-                        primary={
-                          <Box display="flex" alignItems="center" gap={1}>
-                            <Typography variant="body2" fontWeight="medium">
-                              {getSessionPreview(session)}
-                            </Typography>
-                            <Chip 
-                              label={formatDate(session.created_at)}
-                              size="small"
-                              variant="outlined"
-                            />
-                          </Box>
-                        }
-                        secondary={
-                          <Box display="flex" alignItems="center" gap={1} mt={0.5}>
-                            <AccessTime fontSize="small" sx={{ color: 'text.disabled' }} />
-                            <Typography variant="caption" color="text.disabled">
-                              Started {new Date(session.created_at).toLocaleString()}
-                            </Typography>
-                          </Box>
-                        }
-                      />
-                      
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Handle delete session (if you implement this endpoint)
-                          console.log('Delete session:', session.session_id);
-                        }}
-                        sx={{ opacity: 0.7 }}
+        <DialogContent>
+          {loading && (
+            <Box display="flex" justifyContent="center" py={4}>
+              <CircularProgress />
+            </Box>
+          )}
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+              <Button 
+                size="small" 
+                onClick={loadSessions} 
+                sx={{ ml: 2 }}
+              >
+                Retry
+              </Button>
+            </Alert>
+          )}
+
+          {!loading && !error && Object.keys(groupedSessions).length === 0 && (
+            <Box textAlign="center" py={4}>
+              <History sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
+              <Typography variant="h6" color="text.secondary">
+                No conversations yet
+              </Typography>
+              <Typography variant="body2" color="text.disabled">
+                Start chatting with characters to see your history here
+              </Typography>
+            </Box>
+          )}
+
+          {!loading && !error && (
+            <Box>
+              {Object.entries(groupedSessions).map(([character, characterSessions]) => (
+                <Box key={character} mb={3}>
+                  <Typography 
+                    variant="subtitle1" 
+                    fontWeight="bold" 
+                    sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}
+                  >
+                    <Person fontSize="small" />
+                    {character}
+                    <Chip 
+                      label={`${characterSessions.length} session${characterSessions.length !== 1 ? 's' : ''}`}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </Typography>
+                  
+                  <List dense>
+                    {characterSessions.map((session) => (
+                      <SessionItem
+                        key={session.session_id}
+                        button
+                        onClick={() => handleSessionClick(session)}
                       >
-                        <Delete fontSize="small" />
-                      </IconButton>
-                    </SessionItem>
-                  ))}
-                </List>
-                
-                {Object.keys(groupedSessions).length > 1 && (
-                  <Divider sx={{ mt: 2 }} />
-                )}
-              </Box>
-            ))}
-          </Box>
-        )}
-      </DialogContent>
+                        <ListItemAvatar>
+                          <Avatar sx={{ width: 32, height: 32 }}>
+                            <Chat fontSize="small" />
+                          </Avatar>
+                        </ListItemAvatar>
+                        
+                        <ListItemText
+                          primary={
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <Typography variant="body2" fontWeight="medium">
+                                {getSessionPreview(session)}
+                              </Typography>
+                              <Chip 
+                                label={formatDate(session.created_at)}
+                                size="small"
+                                variant="outlined"
+                              />
+                            </Box>
+                          }
+                          secondary={
+                            <Box display="flex" alignItems="center" gap={1} mt={0.5}>
+                              <AccessTime fontSize="small" sx={{ color: 'text.disabled' }} />
+                              <Typography variant="caption" color="text.disabled">
+                                Started {new Date(session.created_at).toLocaleString()}
+                              </Typography>
+                            </Box>
+                          }
+                        />
+                        
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Handle delete session (if you implement this endpoint)
+                            console.log('Delete session:', session.session_id);
+                          }}
+                          sx={{ opacity: 0.7 }}
+                        >
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      </SessionItem>
+                    ))}
+                  </List>
+                  
+                  {Object.keys(groupedSessions).length > 1 && (
+                    <Divider sx={{ mt: 2 }} />
+                  )}
+                </Box>
+              ))}
+            </Box>
+          )}
+        </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-        <Button 
-          onClick={loadSessions} 
-          variant="outlined"
-          disabled={loading}
-        >
-          Refresh
-        </Button>
-      </DialogActions>
-    </StyledDialog>
+        <DialogActions>
+          <Button onClick={onClose}>Close</Button>
+          <Button 
+            onClick={loadSessions} 
+            variant="outlined"
+            disabled={loading}
+          >
+            Refresh
+          </Button>
+        </DialogActions>
+      </StyledDialog>
+    </>
   );
 };
 

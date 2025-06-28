@@ -23,7 +23,7 @@ import ChatHistoryPanel from './ChatHistoryPanel';
 
 const ChatContainer = styled(Box)(({ theme, open }) => ({
   width: open ? 'calc(100vw - 280px)' : 0,
-  backgroundColor: theme.palette.background.secondary,
+  // Remove backgroundColor here!
   borderLeft: `1px solid ${theme.palette.divider}`,
   display: 'flex',
   flexDirection: 'column',
@@ -33,7 +33,7 @@ const ChatContainer = styled(Box)(({ theme, open }) => ({
   right: 0,
   top: 0,
   height: '100vh',
-  zIndex: 1000,
+  zIndex: 2, // ensure above overlay
   [theme.breakpoints.down('md')]: {
     width: open ? '100vw' : 0,
     left: 0,
@@ -220,11 +220,8 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
   };
 
   const handleBackClick = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      onClose();
-    }
+    // Always call onClose to ensure routing is updated
+    onClose();
   };
 
   const handleHistoryClose = () => {
@@ -236,110 +233,107 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
   }
 
   return (
-    <>
-      <ChatContainer open={open}>
-        <ChatHeader>
-          <ChatHeaderTop>
-            <ChatHeaderLeft>
-              <BackButton 
-                onClick={handleBackClick}
-                title="Back to Characters"
-              >
-                <ArrowBack />
-              </BackButton>
-              <Avatar
-                src={character.img}
-                alt={character.name}
-                sx={{ width: 40, height: 40, borderRadius: 1 }}
-              />
-              <CharacterInfo>
-                <Typography variant="h6" fontWeight="bold" noWrap>
-                  {character.name}
-                </Typography>
-                {sessionId && (
-                  <Chip 
-                    label={`Session ${sessionId}`} 
-                    size="small" 
-                    sx={{ fontSize: '0.7rem', height: 20 }} 
-                  />
-                )}
-              </CharacterInfo>
-            </ChatHeaderLeft>
-            
-            <ChatHeaderRight>
-              <IconButton 
-                onClick={() => setShowHistory(true)}
-                sx={{ color: 'text.secondary' }}
-                title="Chat History"
-              >
-                <HistoryIcon />
-              </IconButton>
-              
-              <IconButton 
-                onClick={startNewSession}
-                sx={{ color: 'text.secondary' }}
-                title="New Conversation"
-              >
-                <Add />
-              </IconButton>
-              
-              {/* <IconButton 
-                onClick={(e) => setSettingsAnchor(e.currentTarget)}
-                sx={{ color: 'text.secondary' }}
-                title="Creativity Settings"
-              >
-                <Tune />
-              </IconButton> */}
-              
-              <IconButton onClick={onClose} sx={{ color: 'text.secondary' }}>
-                <Close />
-              </IconButton>
-            </ChatHeaderRight>
-          </ChatHeaderTop>
+    <ChatContainer open={open}>
+      <ChatHeader>
+        <ChatHeaderTop>
+          <ChatHeaderLeft>
+            <BackButton 
+              onClick={handleBackClick}
+              title="Back to Characters"
+            >
+              <ArrowBack />
+            </BackButton>
+            <Avatar
+              src={character.img}
+              alt={character.name}
+              sx={{ width: 40, height: 40, borderRadius: 1 }}
+            />
+            <CharacterInfo>
+              <Typography variant="h6" fontWeight="bold" noWrap>
+                {character.name}
+              </Typography>
+              {sessionId && (
+                <Chip 
+                  label={`Session ${sessionId}`} 
+                  size="small" 
+                  sx={{ fontSize: '0.7rem', height: 20 }} 
+                />
+              )}
+            </CharacterInfo>
+          </ChatHeaderLeft>
           
-          {character.description && (
-            <CharacterDescription>
-              {character.description}
-            </CharacterDescription>
-          )}
-        </ChatHeader>
-
-        {error && (
-          <Box sx={{ p: 2 }}>
-            <Alert severity="error" onClose={() => setError(null)}>
-              {error}
-            </Alert>
-          </Box>
+          <ChatHeaderRight>
+            <IconButton 
+              onClick={() => setShowHistory(true)}
+              sx={{ color: 'text.secondary' }}
+              title="Chat History"
+            >
+              <HistoryIcon />
+            </IconButton>
+            
+            <IconButton 
+              onClick={startNewSession}
+              sx={{ color: 'text.secondary' }}
+              title="New Conversation"
+            >
+              <Add />
+            </IconButton>
+            
+            {/* <IconButton 
+              onClick={(e) => setSettingsAnchor(e.currentTarget)}
+              sx={{ color: 'text.secondary' }}
+              title="Creativity Settings"
+            >
+              <Tune />
+            </IconButton> */}
+            
+            <IconButton onClick={onClose} sx={{ color: 'text.secondary' }}>
+              <Close />
+            </IconButton>
+          </ChatHeaderRight>
+        </ChatHeaderTop>
+        
+        {character.description && (
+          <CharacterDescription>
+            {character.description}
+          </CharacterDescription>
         )}
+      </ChatHeader>
 
-        <MessagesWrapper>
-          <MessageList 
-            messages={messages} 
-            loading={loading} 
-            ref={messagesEndRef} 
-          />
-        </MessagesWrapper>
+      {error && (
+        <Box sx={{ p: 2 }}>
+          <Alert severity="error" onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        </Box>
+      )}
 
-        <ChatInput
-          value={inputValue}
-          onChange={setInputValue}
-          onSend={handleSend}
-          loading={loading}
+      <MessagesWrapper>
+        <MessageList 
+          messages={messages} 
+          loading={loading} 
+          ref={messagesEndRef} 
         />
+      </MessagesWrapper>
 
-        {/* <CreativitySettingsMenu
-          anchorEl={settingsAnchor}
-          open={Boolean(settingsAnchor)}
-          onClose={() => setSettingsAnchor(null)}
-          temperature={temperature}
-          setTemperature={setTemperature}
-          topP={topP}
-          setTopP={setTopP}
-          topK={topK}
-          setTopK={setTopK}
-        /> */}
-      </ChatContainer>
+      <ChatInput
+        value={inputValue}
+        onChange={setInputValue}
+        onSend={handleSend}
+        loading={loading}
+      />
 
+      {/* <CreativitySettingsMenu
+        anchorEl={settingsAnchor}
+        open={Boolean(settingsAnchor)}
+        onClose={() => setSettingsAnchor(null)}
+        temperature={temperature}
+        setTemperature={setTemperature}
+        topP={topP}
+        setTopP={setTopP}
+        topK={topK}
+        setTopK={setTopK}
+      /> */}
       <ChatHistoryPanel
         open={showHistory}
         onClose={handleHistoryClose}
@@ -349,7 +343,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
         onNewSession={startNewSession}
         characterName={character.name}
       />
-    </>
+    </ChatContainer>
   );
 };
 

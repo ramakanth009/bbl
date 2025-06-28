@@ -85,6 +85,16 @@ class ApiService {
     }
   }
 
+  // Add this method if you want to fetch a single character by ID
+  async getCharacterById(characterId) {
+    try {
+      const response = await this.client.get(`/characters/${characterId}`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error, 'Failed to load character');
+    }
+  }
+
   // Chat endpoints with enhanced error handling
   async sendMessage(characterName, userInput, newSession = false, creativitySettings = {}) {
     try {
