@@ -43,15 +43,7 @@ const CharacterBoxContainer = styled(Box)(({ theme }) => ({
     flex: '1 1 calc(33.333% - 12px)', // 3 per row
     minWidth: '280px',
     maxWidth: 'calc(33.333% - 12px)', // 3 per row
-    [theme.breakpoints.down('xl')]: {
-      flex: '1 1 calc(50% - 8px)',
-      maxWidth: 'calc(50% - 8px)',
-    },
-    [theme.breakpoints.down('lg')]: {
-      flex: '1 1 100%',
-      maxWidth: '100%',
-    },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('sm')]: {
       flex: '1 1 100%',
       maxWidth: '100%',
     },
