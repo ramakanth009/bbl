@@ -1,66 +1,127 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Link, CircularProgress, Alert, Chip } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Box, Typography, Link, CircularProgress, Alert, Chip, InputBase, Paper } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import CharacterCard from './CharacterCard';
-import ChatHistoryGrid from './ChatHistoryGrid';
-import apiService from '../../services/api';
+import ChatHistoryGrid from '../chat/history/ChatHistoryGrid';
+import apiService from '../../../services/api';
 
-const Section = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(6),
-}));
-
-const SectionHeader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: theme.spacing(2),
-}));
-
-const SectionTitle = styled(Typography)(({ theme }) => ({
-  fontSize: '1.5rem',
-  fontWeight: 600,
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-}));
-
-const ViewAllLink = styled(Link)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  textDecoration: 'none',
-  fontWeight: 500,
-  fontSize: '0.875rem',
-  cursor: 'pointer',
-  '&:hover': {
-    color: theme.palette.text.primary,
+// Styles using makeStyles (no theme.spacing)
+const useStyles = makeStyles({
+  section: {
+    marginBottom: '48px', // theme.spacing(6)
   },
-}));
-
-const CharacterBoxContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: theme.spacing(2),
-  '& > *': {
-    flex: '1 1 calc(33.333% - 12px)', // 3 per row
-    minWidth: '280px',
-    maxWidth: 'calc(33.333% - 12px)', // 3 per row
-    [theme.breakpoints.down('sm')]: {
-      flex: '1 1 100%',
-      maxWidth: '100%',
+  sectionHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '16px', // theme.spacing(2)
+  },
+  sectionTitle: {
+    fontSize: '1.5rem',
+    fontWeight: 600,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px', // theme.spacing(1)
+  },
+  viewAllLink: {
+    color: '#888',
+    textDecoration: 'none',
+    fontWeight: 500,
+    fontSize: '0.875rem',
+    cursor: 'pointer',
+    '&:hover': {
+      color: '#222',
     },
   },
-}));
+  characterBoxContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '16px', // theme.spacing(2)
+    '& > *': {
+      flex: '1 1 calc(33.333% - 12px)',
+      minWidth: '280px',
+      maxWidth: 'calc(33.333% - 12px)',
+    },
+    '@media (max-width: 600px)': {
+      '& > *': {
+        flex: '1 1 100%',
+        maxWidth: '100%',
+      },
+    },
+  },
+  emptyState: {
+    textAlign: 'center',
+    padding: '48px', // theme.spacing(6)
+    color: '#888',
+  },
+  searchPaper: {
+    padding: '2px 8px',
+    display: 'flex',
+    alignItems: 'center',
+    width: 220,
+    boxShadow: 'none',
+    backgroundColor: 'rgba(30,30,30,0.96)', // dark background
+    border: '1.5px solid #333',             // darker border
+    borderRadius: 16,
+    transition: 'background 0.2s, border 0.2s',
+    '&:hover': {
+      backgroundColor: 'rgba(40,40,40,1)',
+      border: '1.5px solid #555',
+    },
+  },
+  searchInput: {
+    marginLeft: 8,
+    flex: 1,
+    color: '#fff', // white text
+    fontSize: '0.98rem',
+    '&::placeholder': {
+      color: '#bbb',
+      opacity: 1,
+    },
+  },
+});
 
-const EmptyState = styled(Box)(({ theme }) => ({
-  textAlign: 'center',
-  padding: theme.spacing(6),
-  color: theme.palette.text.secondary,
-}));
+const Section = ({ children, className }) => {
+  const classes = useStyles();
+  return <Box className={`${classes.section} ${className}`}>{children}</Box>;
+};
+
+const SectionHeader = ({ children }) => {
+  const classes = useStyles();
+  return <Box className={classes.sectionHeader}>{children}</Box>;
+};
+
+const SectionTitle = ({ children }) => {
+  const classes = useStyles();
+  return <Typography className={classes.sectionTitle}>{children}</Typography>;
+};
+
+const ViewAllLink = ({ children, ...props }) => {
+  const classes = useStyles();
+  return (
+    <Link className={classes.viewAllLink} {...props}>
+      {children}
+    </Link>
+  );
+};
+
+const CharacterBoxContainer = ({ children }) => {
+  const classes = useStyles();
+  return <Box className={classes.characterBoxContainer}>{children}</Box>;
+};
+
+const EmptyState = ({ children }) => {
+  const classes = useStyles();
+  return <Box className={classes.emptyState}>{children}</Box>;
+};
 
 const CharacterGrid = ({ onCharacterClick, activeSection }) => {
+  const classes = useStyles();
   const [characters, setCharacters] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     loadData();
@@ -256,21 +317,21 @@ const CharacterGrid = ({ onCharacterClick, activeSection }) => {
   // Special handling for History section
   if (activeSection === 'History') {
     return (
-      <Section>
-        <SectionHeader>
-          <SectionTitle>
+      <Box className={classes.section}>
+        <Box className={classes.sectionHeader}>
+          <Typography className={classes.sectionTitle}>
             Chat History
             <Chip label={`${sessions.length} conversations`} size="small" />
-          </SectionTitle>
-        </SectionHeader>
+          </Typography>
+        </Box>
         <ChatHistoryGrid sessions={sessions} />
-      </Section>
+      </Box>
     );
   }
 
   if (characters.length === 0) {
     return (
-      <EmptyState>
+      <Box className={classes.emptyState}>
         <Typography variant="h6" gutterBottom>
           No characters found
         </Typography>
@@ -280,41 +341,54 @@ const CharacterGrid = ({ onCharacterClick, activeSection }) => {
             : 'Please check back later or try a different section.'
           }
         </Typography>
-      </EmptyState>
+      </Box>
     );
   }
 
+  // Filtered characters based on search
+  const displayedCharacters = characters.filter(char =>
+    char.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <Section>
-      <SectionHeader>
+    <Box className={classes.section}>
+      <Box className={classes.sectionHeader}>
         <Box>
-          <SectionTitle>
+          <Typography className={classes.sectionTitle}>
             {activeSection}
             <Chip label={`${characters.length} characters`} size="small" />
-          </SectionTitle>
+          </Typography>
           {getSectionDescription() && (
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {getSectionDescription()}
             </Typography>
           )}
         </Box>
-        {characters.length > 8 && (
-          <ViewAllLink onClick={() => console.log(`View all ${activeSection}`)}>
-            View all
-          </ViewAllLink>
-        )}
-      </SectionHeader>
+        <Paper
+          component="form"
+          className={classes.searchPaper}
+          onSubmit={e => e.preventDefault()}
+        >
+          <InputBase
+            className={classes.searchInput}
+            placeholder="Search characters"
+            inputProps={{ 'aria-label': 'search characters' }}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </Paper>
+      </Box>
       
-      <CharacterBoxContainer>
-        {characters.map((character) => (
+      <Box className={classes.characterBoxContainer}>
+        {displayedCharacters.map((character) => (
           <CharacterCard 
             key={character.id} 
             character={character}
             onStartChat={handleStartChat}
           />
         ))}
-      </CharacterBoxContainer>
-    </Section>
+      </Box>
+    </Box>
   );
 };
 

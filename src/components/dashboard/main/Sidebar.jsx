@@ -24,8 +24,8 @@ import {
   Logout,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
-import { useAuth } from "../../context/AuthContext";
-import ComingSoonModal from "./temp/ComingSoonModal";
+import { useAuth } from "../../../context/AuthContext";
+import ComingSoonModal from "../temp/ComingSoonModal";
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   "& .MuiDrawer-paper": {

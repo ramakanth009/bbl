@@ -26,7 +26,8 @@ const Message = ({ message }) => {
   return (
     <MessageWrapper isUser={isUser}>
       <MessageContent isUser={isUser}>
-        {typeof message.content === 'string' ? message.content : message.content}
+        {/* Render content as React node (already parsed by MessageList) */}
+        {message.content}
       </MessageContent>
     </MessageWrapper>
   );

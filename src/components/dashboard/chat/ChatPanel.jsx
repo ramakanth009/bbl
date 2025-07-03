@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Dialog,
   Box,
   Typography,
   IconButton,
@@ -10,42 +9,68 @@ import {
 } from '@mui/material';
 import { 
   Close, 
-  Refresh, 
+  Add,
   Tune,
-  History as HistoryIcon 
+  History as HistoryIcon,
+  ArrowBack,
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import apiService from '../../services/api';
-import MessageList from './MessageList';
+import apiService from '../../../services/api';
+import MessageList from '../message/MessageList';
 import ChatInput from './ChatInput';
-import CreativitySettingsMenu from './CreativitySettingsMenu';
-import SessionHistory from './SessionHistory';
-import StarField from '../common/StarField';
+// import CreativitySettingsMenu from './CreativitySettingsMenu';
+import ChatHistoryPanel from './history/ChatHistoryPanel';
 
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialog-paper': {
-    backgroundColor: theme.palette.background.secondary,
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: 12,
-    width: '100%',
-    maxWidth: 900,
-    height: '80vh',
-    margin: theme.spacing(3),
+const ChatContainer = styled(Box)(({ theme, open }) => ({
+  width: open ? 'calc(100vw - 280px)' : 0,
+  // Remove backgroundColor here!
+  borderLeft: `1px solid ${theme.palette.divider}`,
+  display: 'flex',
+  flexDirection: 'column',
+  transition: 'all 0.3s ease',
+  overflow: 'hidden',
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  height: '100vh',
+  zIndex: 2, // ensure above overlay
+  [theme.breakpoints.down('md')]: {
+    width: open ? '100vw' : 0,
+    left: 0,
   },
 }));
 
 const ChatHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
+  flexDirection: 'column',
+  padding: theme.spacing(2.5),
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  gap: theme.spacing(1.5),
+}));
+
+const ChatHeaderTop = styled(Box)(({ theme }) => ({
+  display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: theme.spacing(2, 2.5),
-  borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
 const ChatHeaderLeft = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1.5),
+  flex: 1,
+  minWidth: 0,
+}));
+
+const CharacterInfo = styled(Box)({
+  flex: 1,
+  minWidth: 0,
+});
+
+const CharacterDescription = styled(Typography)(({ theme }) => ({
+  fontSize: '0.875rem',
+  color: theme.palette.text.secondary,
+  lineHeight: 1.4,
 }));
 
 const ChatHeaderRight = styled(Box)(({ theme }) => ({
@@ -54,20 +79,31 @@ const ChatHeaderRight = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-const ChatModal = ({ open, character, onClose }) => {
+const BackButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+}));
+
+const MessagesWrapper = styled(Box)({
+  flex: 1,
+  overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const ChatPanel = ({ open, character, onClose, onBack }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sessionId, setSessionId] = useState(null);
   const [sessions, setSessions] = useState([]);
-  const [showSessions, setShowSessions] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   
   // Creativity settings
-  const [settingsAnchor, setSettingsAnchor] = useState(null);
-  const [temperature, setTemperature] = useState(0.7);
-  const [topP, setTopP] = useState(0.95);
-  const [topK, setTopK] = useState(40);
+  // const [settingsAnchor, setSettingsAnchor] = useState(null);
+  // const [temperature, setTemperature] = useState(0.7);
+  // const [topP, setTopP] = useState(0.95);
+  // const [topK, setTopK] = useState(40);
   
   const messagesEndRef = useRef(null);
 
@@ -77,6 +113,14 @@ const ChatModal = ({ open, character, onClose }) => {
       loadUserSessions();
     }
   }, [open, character]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const initializeChat = () => {
     setMessages([
@@ -112,7 +156,7 @@ const ChatModal = ({ open, character, onClose }) => {
       
       setMessages(formattedMessages);
       setSessionId(sessionIdToLoad);
-      setShowSessions(false);
+      setShowHistory(false);
       setError(null);
     } catch (error) {
       console.error('Failed to load session:', error);
@@ -124,7 +168,7 @@ const ChatModal = ({ open, character, onClose }) => {
 
   const startNewSession = () => {
     initializeChat();
-    setShowSessions(false);
+    setShowHistory(false);
   };
 
   const handleSend = async () => {
@@ -139,12 +183,12 @@ const ChatModal = ({ open, character, onClose }) => {
     setMessages(prev => [...prev, newUserMessage]);
 
     try {
-      const creativitySettings = { temperature, top_p: topP, top_k: topK };
+      // const creativitySettings = { temperature, top_p: topP, top_k: topK };
       const response = await apiService.sendMessage(
         character.name, 
         userMessage, 
-        !sessionId,
-        creativitySettings
+        !sessionId
+        // ,creativitySettings
       );
       
       if (response.chat_history) {
@@ -175,28 +219,37 @@ const ChatModal = ({ open, character, onClose }) => {
     }
   };
 
-  const handleClose = () => {
-    setMessages([]);
-    setSessionId(null);
-    setError(null);
+  const handleBackClick = () => {
+    // Always call onClose to ensure routing is updated
     onClose();
   };
 
-  if (!character) return null;
+  const handleHistoryClose = () => {
+    setShowHistory(false);
+  };
+
+  if (!open || !character) {
+    return <ChatContainer open={false} />;
+  }
 
   return (
-    <>
-      <StarField />
-      <StyledDialog open={open} onClose={handleClose} maxWidth={false}>
-        <ChatHeader>
+    <ChatContainer open={open}>
+      <ChatHeader>
+        <ChatHeaderTop>
           <ChatHeaderLeft>
+            <BackButton 
+              onClick={handleBackClick}
+              title="Back to Characters"
+            >
+              <ArrowBack />
+            </BackButton>
             <Avatar
               src={character.img}
               alt={character.name}
               sx={{ width: 40, height: 40, borderRadius: 1 }}
             />
-            <Box>
-              <Typography variant="h6" fontWeight="bold">
+            <CharacterInfo>
+              <Typography variant="h6" fontWeight="bold" noWrap>
                 {character.name}
               </Typography>
               {sessionId && (
@@ -206,14 +259,14 @@ const ChatModal = ({ open, character, onClose }) => {
                   sx={{ fontSize: '0.7rem', height: 20 }} 
                 />
               )}
-            </Box>
+            </CharacterInfo>
           </ChatHeaderLeft>
           
           <ChatHeaderRight>
             <IconButton 
-              onClick={() => setShowSessions(!showSessions)}
+              onClick={() => setShowHistory(true)}
               sx={{ color: 'text.secondary' }}
-              title="Session History"
+              title="Chat History"
             >
               <HistoryIcon />
             </IconButton>
@@ -223,66 +276,75 @@ const ChatModal = ({ open, character, onClose }) => {
               sx={{ color: 'text.secondary' }}
               title="New Conversation"
             >
-              <Refresh />
+              <Add />
             </IconButton>
             
-            <IconButton 
+            {/* <IconButton 
               onClick={(e) => setSettingsAnchor(e.currentTarget)}
               sx={{ color: 'text.secondary' }}
               title="Creativity Settings"
             >
               <Tune />
-            </IconButton>
+            </IconButton> */}
             
-            <IconButton onClick={handleClose} sx={{ color: 'text.secondary' }}>
+            <IconButton onClick={onClose} sx={{ color: 'text.secondary' }}>
               <Close />
             </IconButton>
           </ChatHeaderRight>
-        </ChatHeader>
-
-        <SessionHistory
-          showSessions={showSessions}
-          sessions={sessions}
-          sessionId={sessionId}
-          onNewSession={startNewSession}
-          onLoadSession={loadSession}
-        />
-
-        {error && (
-          <Box sx={{ p: 2 }}>
-            <Alert severity="error" onClose={() => setError(null)}>
-              {error}
-            </Alert>
-          </Box>
+        </ChatHeaderTop>
+        
+        {character.description && (
+          <CharacterDescription>
+            {character.description}
+          </CharacterDescription>
         )}
+      </ChatHeader>
 
+      {error && (
+        <Box sx={{ p: 2 }}>
+          <Alert severity="error" onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        </Box>
+      )}
+
+      <MessagesWrapper>
         <MessageList 
           messages={messages} 
           loading={loading} 
           ref={messagesEndRef} 
         />
+      </MessagesWrapper>
 
-        <ChatInput
-          value={inputValue}
-          onChange={setInputValue}
-          onSend={handleSend}
-          loading={loading}
-        />
+      <ChatInput
+        value={inputValue}
+        onChange={setInputValue}
+        onSend={handleSend}
+        loading={loading}
+      />
 
-        <CreativitySettingsMenu
-          anchorEl={settingsAnchor}
-          open={Boolean(settingsAnchor)}
-          onClose={() => setSettingsAnchor(null)}
-          temperature={temperature}
-          setTemperature={setTemperature}
-          topP={topP}
-          setTopP={setTopP}
-          topK={topK}
-          setTopK={setTopK}
-        />
-      </StyledDialog>
-    </>
+      {/* <CreativitySettingsMenu
+        anchorEl={settingsAnchor}
+        open={Boolean(settingsAnchor)}
+        onClose={() => setSettingsAnchor(null)}
+        temperature={temperature}
+        setTemperature={setTemperature}
+        topP={topP}
+        setTopP={setTopP}
+        topK={topK}
+        setTopK={setTopK}
+      /> */}
+      <ChatHistoryPanel
+        open={showHistory}
+        onClose={handleHistoryClose}
+        sessions={sessions}
+        currentSessionId={sessionId}
+        onSessionSelect={loadSession}
+        onNewSession={startNewSession}
+        characterName={character.name}
+      />
+    </ChatContainer>
   );
 };
 
-export default ChatModal;
+export default ChatPanel;

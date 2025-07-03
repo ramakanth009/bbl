@@ -26,8 +26,8 @@ import {
   AccessTime,
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import apiService from '../../services/api';
-import StarField from '../common/StarField';
+import apiService from '../../../services/api';
+import StarField from '../../common/StarField';
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {

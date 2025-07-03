@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { theme } from './styles/theme';
@@ -8,12 +8,6 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-
-function DashboardWithChatParam() {
-  // This wrapper allows Dashboard to access route params
-  const { characterId } = useParams();
-  return <Dashboard chatCharacterId={characterId} />;
-}
 
 function App() {
   return (
@@ -25,20 +19,12 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route 
-              path="/dashboard" 
+              path="/dashboard/*"
               element={
                 <ProtectedRoute>
                   <Dashboard />
                 </ProtectedRoute>
               } 
-            />
-            <Route 
-              path="/dashboard/chat/:characterId"
-              element={
-                <ProtectedRoute>
-                  <DashboardWithChatParam />
-                </ProtectedRoute>
-              }
             />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>

@@ -18,76 +18,77 @@ import {
   Refresh,
   AccessTime,
 } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-const HistoryContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: theme.spacing(2),
-  '& > *': {
-    flex: '1 1 calc(33.333% - 12px)',
-    minWidth: '300px',
-    maxWidth: 'calc(33.333% - 12px)',
-    [theme.breakpoints.down('lg')]: {
-      flex: '1 1 calc(50% - 8px)',
-      maxWidth: 'calc(50% - 8px)',
+const useStyles = makeStyles({
+  historyContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '16px',
+    '& > *': {
+      flex: '1 1 calc(33.333% - 12px)',
+      minWidth: '300px',
+      maxWidth: 'calc(33.333% - 12px)',
     },
-    [theme.breakpoints.down('md')]: {
-      flex: '1 1 100%',
-      maxWidth: '100%',
+    '@media (max-width: 1200px)': {
+      '& > *': {
+        flex: '1 1 calc(50% - 8px)',
+        maxWidth: 'calc(50% - 8px)',
+      },
+    },
+    '@media (max-width: 900px)': {
+      '& > *': {
+        flex: '1 1 100%',
+        maxWidth: '100%',
+      },
     },
   },
-}));
-
-const SessionCard = styled(Card)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: 12,
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  '&:hover': {
-    borderColor: theme.palette.primary.main,
-    transform: 'translateY(-2px)',
+  sessionCard: {
+    backgroundColor: '#232526',
+    border: '1px solid #333',
+    borderRadius: 12,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      borderColor: '#fff',
+      transform: 'translateY(-2px)',
+    },
   },
-}));
-
-const SessionHeader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  marginBottom: theme.spacing(1.5),
-}));
-
-const SessionInfo = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1.5),
-  flex: 1,
-  minWidth: 0,
-}));
-
-const SessionMeta = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(0.5),
-  marginTop: theme.spacing(1),
-}));
-
-const MetaRow = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-  fontSize: '0.75rem',
-  color: theme.palette.text.disabled,
-}));
-
-const EmptyState = styled(Box)(({ theme }) => ({
-  textAlign: 'center',
-  padding: theme.spacing(6),
-  color: theme.palette.text.secondary,
-}));
+  sessionHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '12px',
+  },
+  sessionInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    flex: 1,
+    minWidth: 0,
+  },
+  sessionMeta: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    marginTop: '8px',
+  },
+  metaRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '0.75rem',
+    color: '#666',
+  },
+  emptyState: {
+    textAlign: 'center',
+    padding: '48px',
+    color: '#888',
+  },
+});
 
 const ChatHistoryGrid = ({ sessions }) => {
+  const classes = useStyles();
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [selectedSession, setSelectedSession] = useState(null);
 
@@ -151,7 +152,7 @@ const ChatHistoryGrid = ({ sessions }) => {
 
   if (sessions.length === 0) {
     return (
-      <EmptyState>
+      <Box className={classes.emptyState}>
         <Chat sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
         <Typography variant="h6" gutterBottom>
           No conversation history
@@ -159,7 +160,7 @@ const ChatHistoryGrid = ({ sessions }) => {
         <Typography variant="body2">
           Start chatting with characters to see your conversations here
         </Typography>
-      </EmptyState>
+      </Box>
     );
   }
 
@@ -180,15 +181,16 @@ const ChatHistoryGrid = ({ sessions }) => {
             />
           </Typography>
           
-          <HistoryContainer>
+          <Box className={classes.historyContainer}>
             {characterSessions.map((session) => (
-              <SessionCard 
+              <Card 
                 key={session.session_id}
+                className={classes.sessionCard}
                 onClick={() => handleSessionClick(session)}
               >
                 <CardContent>
-                  <SessionHeader>
-                    <SessionInfo>
+                  <Box className={classes.sessionHeader}>
+                    <Box className={classes.sessionInfo}>
                       <Avatar sx={{ width: 32, height: 32 }}>
                         <Chat fontSize="small" />
                       </Avatar>
@@ -200,7 +202,7 @@ const ChatHistoryGrid = ({ sessions }) => {
                           {formatDate(session.created_at)}
                         </Typography>
                       </Box>
-                    </SessionInfo>
+                    </Box>
                     
                     <IconButton
                       size="small"
@@ -209,24 +211,24 @@ const ChatHistoryGrid = ({ sessions }) => {
                     >
                       <MoreVert fontSize="small" />
                     </IconButton>
-                  </SessionHeader>
+                  </Box>
 
-                  <SessionMeta>
-                    <MetaRow>
+                  <Box className={classes.sessionMeta}>
+                    <Box className={classes.metaRow}>
                       <AccessTime fontSize="inherit" />
                       <span>{getSessionDuration(session)}</span>
                       <span>•</span>
                       <span>{getMessageCount(session)} messages</span>
-                    </MetaRow>
+                    </Box>
                     
-                    <MetaRow>
+                    <Box className={classes.metaRow}>
                       <span>Started: {new Date(session.created_at).toLocaleString()}</span>
-                    </MetaRow>
-                  </SessionMeta>
+                    </Box>
+                  </Box>
                 </CardContent>
-              </SessionCard>
+              </Card>
             ))}
-          </HistoryContainer>
+          </Box>
           
           {Object.keys(groupedSessions).length > 1 && (
             <Divider sx={{ mt: 3 }} />

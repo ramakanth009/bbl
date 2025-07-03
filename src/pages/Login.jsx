@@ -23,6 +23,7 @@ import {
 import { makeStyles } from '@mui/styles';
 import { useAuth } from '../context/AuthContext';
 import GoogleLogo from '../assets/google-logo.svg'; // Import the actual Google logo SVG
+import CardStarPattern from '../components/common/CardStarPattern';
 
 // Import the StarField component
 const StarField = React.lazy(() => import('../components/common/StarField'));
@@ -232,12 +233,14 @@ const Login = () => {
       
       <Container maxWidth="sm" className={classes.pageContainer}>
         <Fade in timeout={800}>
-          <Card className={classes.authCard}>
+          <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
+            {/* Add CardStarPattern as a background layer */}
+            <CardStarPattern />
             <Zoom in timeout={1000}>
               <Box>
                 <Box className={classes.logoContainer}>
                   <Box className={classes.logoIcon}>
-                    <WorkspacePremium sx={{ color: '#232526', fontSize: 30 }} />
+                    <WorkspacePremium sx={{ color: '#232526', fontSize: 40, filter: 'drop-shadow(0 1px 4px #bbb)' }} />
                   </Box>
                   <Typography 
                     variant="h5" 

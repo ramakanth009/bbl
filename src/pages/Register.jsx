@@ -14,6 +14,7 @@ import {
 import { WorkspacePremium } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useAuth } from '../context/AuthContext';
+import CardStarPattern from '../components/common/CardStarPattern';
 const StarField = React.lazy(() => import('../components/common/StarField'));
 
 const useStyles = makeStyles(() => ({
@@ -36,6 +37,8 @@ const useStyles = makeStyles(() => ({
     borderRadius: 28,
     boxShadow: '0 32px 64px rgba(0,0,0,0.7), 0 0 0 1px #222',
     transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
+    position: 'relative',
+    overflow: 'hidden',
   },
   logoContainer: {
     display: 'flex',
@@ -176,7 +179,9 @@ const Register = () => {
       </React.Suspense>
       <Container maxWidth="sm" className={classes.pageContainer}>
         <Fade in timeout={800}>
-          <Card className={classes.authCard}>
+          <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
+            {/* Add CardStarPattern as a background layer */}
+            <CardStarPattern />
             <Zoom in timeout={1000}>
               <Box>
                 <Box className={classes.logoContainer}>
