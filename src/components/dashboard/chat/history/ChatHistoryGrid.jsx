@@ -10,6 +10,7 @@ import {
   Menu,
   MenuItem,
   Divider,
+  CircularProgress,
 } from '@mui/material';
 import {
   Chat,
@@ -17,8 +18,10 @@ import {
   Delete,
   Refresh,
   AccessTime,
+  Launch,
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
+import apiService from '../../../../services/api';
 
 const useStyles = makeStyles({
   historyContainer: {
@@ -85,12 +88,18 @@ const useStyles = makeStyles({
     padding: '48px',
     color: '#888',
   },
+  loadingContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginBottom: '16px',
+  },
 });
 
-const ChatHistoryGrid = ({ sessions }) => {
+const ChatHistoryGrid = ({ sessions, onSessionOpen }) => {
   const classes = useStyles();
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [selectedSession, setSelectedSession] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleMenuOpen = (event, session) => {
     event.stopPropagation();
@@ -103,14 +112,52 @@ const ChatHistoryGrid = ({ sessions }) => {
     setSelectedSession(null);
   };
 
-  const handleSessionClick = (session) => {
-    // TODO: Implement session opening logic
-    console.log('Open session:', session);
+  const handleSessionClick = async (session) => {
+    if (loading) return;
+    
+    try {
+      setLoading(true);
+      
+      // Load session messages using the API service
+      const sessionData = await apiService.getSessionMessages(session.session_id);
+      
+      // Create session object with messages
+      const sessionWithMessages = {
+        ...session,
+        messages: sessionData.chat_history
+      };
+      
+      // Call the onSessionOpen callback if provided
+      if (onSessionOpen) {
+        onSessionOpen(sessionWithMessages);
+      } else {
+        // Fallback: Log for debugging
+        console.log('Opening session:', sessionWithMessages);
+        
+        // Example: If you have navigation, you could navigate like this:
+        // window.location.href = `/chat/${session.character}?session=${session.session_id}`;
+      }
+      
+    } catch (error) {
+      console.error('Failed to load session:', error);
+      // You might want to show an error message to the user
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteSession = () => {
-    // TODO: Implement session deletion
-    console.log('Delete session:', selectedSession);
+  const handleDeleteSession = async () => {
+    try {
+      // TODO: Implement session deletion API call when available
+      // await apiService.deleteSession(selectedSession.session_id);
+      console.log('Delete session:', selectedSession);
+      
+      // You would typically refresh the sessions list after deletion
+      // or remove the session from the local state
+      
+    } catch (error) {
+      console.error('Failed to delete session:', error);
+    }
     handleMenuClose();
   };
 
@@ -166,6 +213,12 @@ const ChatHistoryGrid = ({ sessions }) => {
 
   return (
     <Box>
+      {loading && (
+        <Box className={classes.loadingContainer}>
+          <CircularProgress size={24} />
+        </Box>
+      )}
+      
       {Object.entries(groupedSessions).map(([character, characterSessions]) => (
         <Box key={character} sx={{ mb: 4 }}>
           <Typography 
@@ -241,6 +294,10 @@ const ChatHistoryGrid = ({ sessions }) => {
         open={Boolean(menuAnchor)}
         onClose={handleMenuClose}
       >
+        <MenuItem onClick={() => handleSessionClick(selectedSession)}>
+          <Launch sx={{ mr: 1 }} fontSize="small" />
+          Open Session
+        </MenuItem>
         <MenuItem onClick={() => handleSessionClick(selectedSession)}>
           <Refresh sx={{ mr: 1 }} fontSize="small" />
           Resume Chat

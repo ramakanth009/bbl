@@ -115,7 +115,7 @@ const EmptyState = ({ children }) => {
   return <Box className={classes.emptyState}>{children}</Box>;
 };
 
-const CharacterGrid = ({ onCharacterClick, activeSection }) => {
+const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const classes = useStyles();
   const [characters, setCharacters] = useState([]);
   const [sessions, setSessions] = useState([]);
@@ -296,6 +296,34 @@ const CharacterGrid = ({ onCharacterClick, activeSection }) => {
     }
   };
 
+  const handleSessionOpen = (sessionWithMessages) => {
+    // Handle opening a session from the history
+    if (onSessionOpen) {
+      onSessionOpen(sessionWithMessages);
+    } else {
+      // Default behavior: open character chat with the session
+      if (onCharacterClick) {
+        // Find the character for this session
+        const character = characters.find(c => c.name === sessionWithMessages.character);
+        if (character) {
+          onCharacterClick(character, sessionWithMessages);
+        } else {
+          // If character not found in current list, create a temporary character object
+          const tempCharacter = {
+            name: sessionWithMessages.character,
+            id: `temp_${sessionWithMessages.character}`,
+            creator: 'LegendsAI',
+            type: 'Historical Figure',
+            category: 'general',
+            messages: '0k',
+            likes: '0k',
+          };
+          onCharacterClick(tempCharacter, sessionWithMessages);
+        }
+      }
+    }
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" py={4}>
@@ -324,7 +352,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection }) => {
             <Chip label={`${sessions.length} conversations`} size="small" />
           </Typography>
         </Box>
-        <ChatHistoryGrid sessions={sessions} />
+        <ChatHistoryGrid sessions={sessions} onSessionOpen={handleSessionOpen} />
       </Box>
     );
   }
