@@ -1,7 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Box, Typography, CircularProgress, Fade } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ReactMarkdown from 'react-markdown';
 import Message from './Message';
 
 const MessagesContainer = styled(Box)(({ theme }) => ({
@@ -13,18 +12,64 @@ const MessagesContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
-// Helper to auto-link URLs in text (handles http(s) and bare domains)
-function linkify(text) {
+// Step 1: Process asterisk formatting (*text* becomes italic/bold)
+function processAsteriskFormatting(text) {
   if (typeof text !== 'string') return text;
+  
+  // Split by asterisks, but keep the asterisks in the result for processing
+  const parts = text.split(/(\*[^*]+\*)/g);
+  
+  return parts.map((part, index) => {
+    // If the part is wrapped in asterisks (*text*), make it italic
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+      const innerText = part.slice(1, -1); // Remove the asterisks
+      return <em key={index} style={{ fontStyle: 'italic' }}>{innerText}</em>;
+    }
+    // Otherwise, return the plain text part
+    return part;
+  });
+}
+
+// Step 2: Auto-link URLs in text (handles http(s) and bare domains)
+function linkifyText(textOrElements) {
+  // If it's already an array of elements (from asterisk processing), 
+  // we need to process each text element individually
+  if (Array.isArray(textOrElements)) {
+    return textOrElements.map((element, index) => {
+      // If it's a string, apply URL linking
+      if (typeof element === 'string') {
+        return linkifyString(element, `linkify-${index}`);
+      }
+      // If it's already a React element (like <em>), leave it unchanged
+      return element;
+    });
+  }
+  
+  // If it's just a string, process it directly
+  if (typeof textOrElements === 'string') {
+    return linkifyString(textOrElements);
+  }
+  
+  return textOrElements;
+}
+
+// Helper function to convert URLs in a string to clickable links
+function linkifyString(text, keyPrefix = '') {
+  if (typeof text !== 'string') return text;
+  
   // Match http(s) links and bare domains (e.g., meeseva.telangana.gov.in)
   const urlRegex = /((https?:\/\/[^\s]+)|((?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?))/g;
+  
   return text.split(urlRegex).map((part, i) => {
     if (!part) return null;
+    
+    const uniqueKey = keyPrefix ? `${keyPrefix}-${i}` : i;
+    
     // If already a full URL, use as is
     if (/^https?:\/\//.test(part)) {
       return (
         <a
-          key={i}
+          key={uniqueKey}
           href={part}
           target="_blank"
           rel="noopener noreferrer"
@@ -34,11 +79,12 @@ function linkify(text) {
         </a>
       );
     }
+    
     // If matches a bare domain, prepend https://
     if (/^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?$/.test(part)) {
       return (
         <a
-          key={i}
+          key={uniqueKey}
           href={`https://${part}`}
           target="_blank"
           rel="noopener noreferrer"
@@ -48,8 +94,56 @@ function linkify(text) {
         </a>
       );
     }
+    
     return part;
   });
+}
+
+// Step 3: Convert newlines to <br> elements
+function processNewlines(contentArray) {
+  if (!Array.isArray(contentArray)) {
+    contentArray = [contentArray];
+  }
+  
+  const result = [];
+  
+  contentArray.forEach((element, elemIndex) => {
+    if (typeof element === 'string') {
+      // Split by newlines and add <br> elements
+      const lines = element.split('\n');
+      lines.forEach((line, lineIndex) => {
+        if (lineIndex > 0) {
+          result.push(<br key={`br-${elemIndex}-${lineIndex}`} />);
+        }
+        if (line) { // Only add non-empty lines
+          result.push(line);
+        }
+      });
+    } else {
+      // If it's already a React element, add it as-is
+      result.push(element);
+    }
+  });
+  
+  return result;
+}
+
+// Main processing function - this is our "assembly line"
+function processMessageContent(content) {
+  if (typeof content !== 'string') {
+    return content; // If it's not a string, return as-is
+  }
+  
+  // Step 1: Process asterisk formatting first
+  let processed = processAsteriskFormatting(content);
+  
+  // Step 2: Apply URL linking
+  processed = linkifyText(processed);
+  
+  // Step 3: Handle newlines last
+  processed = processNewlines(processed);
+  
+  return processed;
 }
 
 const MessageList = forwardRef(({ messages, loading }, ref) => {
@@ -61,20 +155,12 @@ const MessageList = forwardRef(({ messages, loading }, ref) => {
             <Message
               message={{
                 ...message,
-                // Render markdown for string content
-                content:
-                  typeof message.content === 'string'
-                    ? <ReactMarkdown
-                        components={{
-                          a: props => (
-                            <a {...props} target="_blank" rel="noopener noreferrer" style={{ color: '#818cf8', wordBreak: 'break-all' }} />
-                          ),
-                          p: props => <span {...props} />, // Prevent extra <p> tags
-                        }}
-                      >
-                        {message.content}
-                      </ReactMarkdown>
-                    : message.content,
+                // Apply our complete processing pipeline
+                content: typeof message.content === 'string'
+                  ? <span style={{ whiteSpace: 'pre-wrap' }}>
+                      {processMessageContent(message.content)}
+                    </span>
+                  : message.content,
               }}
             />
           </div>

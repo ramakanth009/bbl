@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Link, CircularProgress, Alert, Chip, InputBase, Paper } from '@mui/material';
+import { 
+  Box, 
+  Typography, 
+  Link, 
+  CircularProgress, 
+  Alert, 
+  Chip, 
+  InputBase, 
+  Paper,
+  Pagination,
+  Stack,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel
+} from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import CharacterCard from './CharacterCard';
 import ChatHistoryGrid from '../chat/history/ChatHistoryGrid';
@@ -79,6 +94,39 @@ const useStyles = makeStyles({
       opacity: 1,
     },
   },
+  paginationContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: '24px',
+    padding: '16px',
+    backgroundColor: 'rgba(0,0,0,0.03)',
+    borderRadius: '8px',
+    '@media (max-width: 600px)': {
+      flexDirection: 'column',
+      gap: '16px',
+    },
+  },
+  paginationInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    '@media (max-width: 600px)': {
+      flexDirection: 'column',
+      gap: '8px',
+      textAlign: 'center',
+    },
+  },
+  pageSizeSelect: {
+    minWidth: 120,
+  },
+  loadingOverlay: {
+    position: 'relative',
+    minHeight: '400px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 const Section = ({ children, className }) => {
@@ -120,12 +168,26 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const [characters, setCharacters] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [paginationLoading, setPaginationLoading] = useState(false);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [allCharacters, setAllCharacters] = useState([]); // Store all characters for filtering
 
   useEffect(() => {
     loadData();
   }, [activeSection]);
+
+  useEffect(() => {
+    if (activeSection !== 'History') {
+      loadCharactersPage(1, pageSize);
+    }
+  }, [pageSize, activeSection]);
 
   const loadData = async () => {
     try {
@@ -135,7 +197,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       if (activeSection === 'History') {
         await loadChatHistory();
       } else {
-        await loadCharacters();
+        await loadCharactersPage(1, pageSize);
       }
     } catch (error) {
       console.error('Failed to load data:', error);
@@ -145,26 +207,60 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     }
   };
 
-  const loadCharacters = async () => {
-    const apiCharacters = await apiService.getCharacters();
-    const transformedCharacters = apiCharacters.map((char) => ({
-      ...char,
-      creator: extractCreator(char.name) || 'LegendsAI',
-      type: extractType(char.name) || 'Historical Figure',
-      messages: generateStats().messages,
-      likes: generateStats().likes,
-      category: extractCategory(char.name),
-      isIndian: isIndianCharacter(char.name),
-      popularity: Math.floor(Math.random() * 1000) + 100, // Simulated popularity score
-    }));
+  const loadCharactersPage = async (page = 1, limit = pageSize) => {
+    try {
+      if (page !== 1) {
+        setPaginationLoading(true);
+      }
+      
+      const response = await apiService.getCharactersPaginated(page, limit);
+      
+      // Transform characters with additional metadata
+      const transformedCharacters = response.characters.map((char) => ({
+        ...char,
+        creator: extractCreator(char.name) || 'LegendsAI',
+        type: extractType(char.name) || 'Historical Figure',
+        messages: generateStats().messages,
+        likes: generateStats().likes,
+        category: extractCategory(char.name),
+        isIndian: isIndianCharacter(char.name),
+        popularity: Math.floor(Math.random() * 1000) + 100,
+      }));
 
-    const filteredCharacters = filterCharactersBySection(transformedCharacters);
-    setCharacters(filteredCharacters);
+      // Apply section-based filtering
+      const filteredCharacters = filterCharactersBySection(transformedCharacters);
+      
+      setCharacters(filteredCharacters);
+      setAllCharacters(transformedCharacters); // Store unfiltered for search
+      setCurrentPage(response.page);
+      setTotalPages(response.total_pages);
+      setTotalCount(response.total_count);
+      
+    } catch (error) {
+      console.error('Failed to load characters:', error);
+      throw error;
+    } finally {
+      setPaginationLoading(false);
+    }
   };
 
   const loadChatHistory = async () => {
     const userSessions = await apiService.getSessions();
     setSessions(userSessions);
+  };
+
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage);
+    loadCharactersPage(newPage, pageSize);
+    // Scroll to top of character grid
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePageSizeChange = (event) => {
+    const newPageSize = event.target.value;
+    setPageSize(newPageSize);
+    setCurrentPage(1);
+    // loadCharactersPage will be called by useEffect
   };
 
   const filterCharactersBySection = (characters) => {
@@ -178,17 +274,15 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       case 'Trending':
         return characters
           .sort((a, b) => b.popularity - a.popularity)
-          .slice(0, 8);
+          .slice(0, Math.min(8, characters.length));
       
       case 'For You':
-        // TODO: Implement recommendation based on user's chat history
         return characters
           .filter(char => ['science', 'technology', 'leadership'].includes(char.category))
-          .slice(0, 6);
+          .slice(0, Math.min(6, characters.length));
       
       case 'Recent':
-        // TODO: Implement based on actual user interaction data
-        return characters.slice(0, 4);
+        return characters.slice(0, Math.min(4, characters.length));
       
       case 'Art & Culture':
         return characters.filter(char => 
@@ -297,18 +391,14 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   };
 
   const handleSessionOpen = (sessionWithMessages) => {
-    // Handle opening a session from the history
     if (onSessionOpen) {
       onSessionOpen(sessionWithMessages);
     } else {
-      // Default behavior: open character chat with the session
       if (onCharacterClick) {
-        // Find the character for this session
         const character = characters.find(c => c.name === sessionWithMessages.character);
         if (character) {
           onCharacterClick(character, sessionWithMessages);
         } else {
-          // If character not found in current list, create a temporary character object
           const tempCharacter = {
             name: sessionWithMessages.character,
             id: `temp_${sessionWithMessages.character}`,
@@ -357,7 +447,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     );
   }
 
-  if (characters.length === 0) {
+  if (characters.length === 0 && !paginationLoading) {
     return (
       <Box className={classes.emptyState}>
         <Typography variant="h6" gutterBottom>
@@ -384,7 +474,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
         <Box>
           <Typography className={classes.sectionTitle}>
             {activeSection}
-            <Chip label={`${characters.length} characters`} size="small" />
+            <Chip label={`${totalCount} total characters`} size="small" />
           </Typography>
           {getSectionDescription() && (
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -407,15 +497,60 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
         </Paper>
       </Box>
       
-      <Box className={classes.characterBoxContainer}>
-        {displayedCharacters.map((character) => (
-          <CharacterCard 
-            key={character.id} 
-            character={character}
-            onStartChat={handleStartChat}
-          />
-        ))}
-      </Box>
+      {paginationLoading ? (
+        <Box className={classes.loadingOverlay}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <>
+          <Box className={classes.characterBoxContainer}>
+            {displayedCharacters.map((character) => (
+              <CharacterCard 
+                key={character.id} 
+                character={character}
+                onStartChat={handleStartChat}
+              />
+            ))}
+          </Box>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <Box className={classes.paginationContainer}>
+              <Box className={classes.paginationInfo}>
+                <Typography variant="body2" color="text.secondary">
+                  Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, totalCount)} of {totalCount} characters
+                </Typography>
+                
+                <FormControl size="small" className={classes.pageSizeSelect}>
+                  <InputLabel>Per page</InputLabel>
+                  <Select
+                    value={pageSize}
+                    onChange={handlePageSizeChange}
+                    label="Per page"
+                  >
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                    <MenuItem value={50}>50</MenuItem>
+                    <MenuItem value={100}>100</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+
+              <Stack spacing={2}>
+                <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  color="primary"
+                  showFirstButton
+                  showLastButton
+                  size="large"
+                />
+              </Stack>
+            </Box>
+          )}
+        </>
+      )}
     </Box>
   );
 };
