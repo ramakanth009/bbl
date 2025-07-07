@@ -10,7 +10,6 @@ import {
 import { 
   Close, 
   Add,
-  Tune,
   History as HistoryIcon,
   ArrowBack,
 } from '@mui/icons-material';
