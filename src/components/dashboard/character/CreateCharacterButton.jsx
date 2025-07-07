@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Box, Typography, Button } from '@mui/material';
+import { Card, Typography, Button } from '@mui/material';
 import { Add, Person } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import CharacterCreationForm from './creation/CharacterCreationForm';
