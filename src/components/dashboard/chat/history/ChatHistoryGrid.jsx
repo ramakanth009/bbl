@@ -11,6 +11,8 @@ import {
   MenuItem,
   Divider,
   CircularProgress,
+  Alert,
+  Snackbar,
 } from '@mui/material';
 import {
   Chat,
@@ -52,9 +54,14 @@ const useStyles = makeStyles({
     borderRadius: 12,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
+    position: 'relative',
     '&:hover': {
       borderColor: '#fff',
       transform: 'translateY(-2px)',
+    },
+    '&.loading': {
+      cursor: 'not-allowed',
+      opacity: 0.7,
     },
   },
   sessionHeader: {
@@ -88,18 +95,26 @@ const useStyles = makeStyles({
     padding: '48px',
     color: '#888',
   },
-  loadingContainer: {
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     display: 'flex',
+    alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: '16px',
+    backgroundColor: 'rgba(35, 37, 38, 0.8)',
+    borderRadius: 12,
   },
 });
 
-const ChatHistoryGrid = ({ sessions, onSessionOpen }) => {
+const ChatHistoryGrid = ({ sessions, onSessionOpen, onRefreshSessions }) => {
   const classes = useStyles();
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [selectedSession, setSelectedSession] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingSessionId, setLoadingSessionId] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleMenuOpen = (event, session) => {
     event.stopPropagation();
@@ -113,36 +128,45 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen }) => {
   };
 
   const handleSessionClick = async (session) => {
-    if (loading) return;
+    if (loadingSessionId === session.session_id) return;
     
     try {
-      setLoading(true);
+      setLoadingSessionId(session.session_id);
+      setError(null);
+      
+      console.log('Loading session:', session.session_id);
       
       // Load session messages using the API service
       const sessionData = await apiService.getSessionMessages(session.session_id);
       
-      // Create session object with messages
+      console.log('Session data received:', sessionData);
+      
+      // Create session object with messages in the expected format
       const sessionWithMessages = {
-        ...session,
-        messages: sessionData.chat_history
+        sessionId: session.session_id,
+        character: session.character,
+        messages: sessionData.chat_history || [],
+        createdAt: session.created_at,
+        // Add any other session metadata
+        ...session
       };
+      
+      console.log('Calling onSessionOpen with:', sessionWithMessages);
       
       // Call the onSessionOpen callback if provided
       if (onSessionOpen) {
-        onSessionOpen(sessionWithMessages);
+        await onSessionOpen(sessionWithMessages);
       } else {
-        // Fallback: Log for debugging
-        console.log('Opening session:', sessionWithMessages);
-        
-        // Example: If you have navigation, you could navigate like this:
-        // window.location.href = `/chat/${session.character}?session=${session.session_id}`;
+        console.warn('onSessionOpen callback not provided');
+        // Fallback: You might want to navigate or handle this differently
+        // Example: window.location.href = `/chat/${session.character}?session=${session.session_id}`;
       }
       
     } catch (error) {
       console.error('Failed to load session:', error);
-      // You might want to show an error message to the user
+      setError(`Failed to load session: ${error.message}`);
     } finally {
-      setLoading(false);
+      setLoadingSessionId(null);
     }
   };
 
@@ -152,11 +176,14 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen }) => {
       // await apiService.deleteSession(selectedSession.session_id);
       console.log('Delete session:', selectedSession);
       
-      // You would typically refresh the sessions list after deletion
-      // or remove the session from the local state
+      // Refresh sessions list after deletion
+      if (onRefreshSessions) {
+        await onRefreshSessions();
+      }
       
     } catch (error) {
       console.error('Failed to delete session:', error);
+      setError(`Failed to delete session: ${error.message}`);
     }
     handleMenuClose();
   };
@@ -213,12 +240,6 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen }) => {
 
   return (
     <Box>
-      {loading && (
-        <Box className={classes.loadingContainer}>
-          <CircularProgress size={24} />
-        </Box>
-      )}
-      
       {Object.entries(groupedSessions).map(([character, characterSessions]) => (
         <Box key={character} sx={{ mb: 4 }}>
           <Typography 
@@ -235,52 +256,63 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen }) => {
           </Typography>
           
           <Box className={classes.historyContainer}>
-            {characterSessions.map((session) => (
-              <Card 
-                key={session.session_id}
-                className={classes.sessionCard}
-                onClick={() => handleSessionClick(session)}
-              >
-                <CardContent>
-                  <Box className={classes.sessionHeader}>
-                    <Box className={classes.sessionInfo}>
-                      <Avatar sx={{ width: 32, height: 32 }}>
-                        <Chat fontSize="small" />
-                      </Avatar>
-                      <Box>
-                        <Typography variant="subtitle2" fontWeight="bold">
-                          Session {session.session_id}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {formatDate(session.created_at)}
-                        </Typography>
+            {characterSessions.map((session) => {
+              const isLoading = loadingSessionId === session.session_id;
+              
+              return (
+                <Card 
+                  key={session.session_id}
+                  className={`${classes.sessionCard} ${isLoading ? 'loading' : ''}`}
+                  onClick={() => !isLoading && handleSessionClick(session)}
+                >
+                  <CardContent>
+                    <Box className={classes.sessionHeader}>
+                      <Box className={classes.sessionInfo}>
+                        <Avatar sx={{ width: 32, height: 32 }}>
+                          <Chat fontSize="small" />
+                        </Avatar>
+                        <Box>
+                          <Typography variant="subtitle2" fontWeight="bold">
+                            Session {session.session_id}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {formatDate(session.created_at)}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleMenuOpen(e, session)}
+                        sx={{ opacity: 0.7 }}
+                        disabled={isLoading}
+                      >
+                        <MoreVert fontSize="small" />
+                      </IconButton>
+                    </Box>
+
+                    <Box className={classes.sessionMeta}>
+                      <Box className={classes.metaRow}>
+                        <AccessTime fontSize="inherit" />
+                        <span>{getSessionDuration(session)}</span>
+                        <span>•</span>
+                        <span>{getMessageCount(session)} messages</span>
+                      </Box>
+                      
+                      <Box className={classes.metaRow}>
+                        <span>Started: {new Date(session.created_at).toLocaleString()}</span>
                       </Box>
                     </Box>
-                    
-                    <IconButton
-                      size="small"
-                      onClick={(e) => handleMenuOpen(e, session)}
-                      sx={{ opacity: 0.7 }}
-                    >
-                      <MoreVert fontSize="small" />
-                    </IconButton>
-                  </Box>
-
-                  <Box className={classes.sessionMeta}>
-                    <Box className={classes.metaRow}>
-                      <AccessTime fontSize="inherit" />
-                      <span>{getSessionDuration(session)}</span>
-                      <span>•</span>
-                      <span>{getMessageCount(session)} messages</span>
+                  </CardContent>
+                  
+                  {isLoading && (
+                    <Box className={classes.loadingOverlay}>
+                      <CircularProgress size={24} color="primary" />
                     </Box>
-                    
-                    <Box className={classes.metaRow}>
-                      <span>Started: {new Date(session.created_at).toLocaleString()}</span>
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
+                  )}
+                </Card>
+              );
+            })}
           </Box>
           
           {Object.keys(groupedSessions).length > 1 && (
@@ -308,6 +340,17 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen }) => {
           Delete Session
         </MenuItem>
       </Menu>
+
+      <Snackbar 
+        open={!!error} 
+        autoHideDuration={6000} 
+        onClose={() => setError(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setError(null)} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

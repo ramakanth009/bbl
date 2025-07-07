@@ -166,6 +166,31 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
     }
   };
 
+  // Handler for ChatHistoryGrid onSessionOpen callback
+  const handleSessionOpen = (sessionWithMessages) => {
+    console.log('Loading session from history grid:', sessionWithMessages);
+    
+    try {
+      // Format the messages for the chat interface
+      const formattedMessages = sessionWithMessages.messages.map(msg => ({
+        role: msg.role,
+        content: msg.content,
+        timestamp: msg.timestamp
+      }));
+      
+      // Update chat state with loaded messages
+      setMessages(formattedMessages);
+      setSessionId(sessionWithMessages.session_id || sessionWithMessages.sessionId);
+      setShowHistory(false);
+      setError(null);
+      
+      console.log('Session loaded successfully, messages:', formattedMessages);
+    } catch (error) {
+      console.error('Failed to load session from history:', error);
+      setError('Failed to load conversation history');
+    }
+  };
+
   const startNewSession = () => {
     initializeChat();
     setShowHistory(false);
@@ -340,6 +365,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
         sessions={sessions}
         currentSessionId={sessionId}
         onSessionSelect={loadSession}
+        onSessionOpen={handleSessionOpen}  // Add this new prop
         onNewSession={startNewSession}
         characterName={character.name}
       />
