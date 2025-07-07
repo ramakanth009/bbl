@@ -212,17 +212,19 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen, onRefreshSessions }) => {
     return Math.floor(Math.random() * 20) + 5;
   };
 
-  const groupSessionsByCharacter = (sessions) => {
+  // Group sessions by date (Today, Yesterday, X days ago, or date string)
+  const groupSessionsByDate = (sessions) => {
     return sessions.reduce((acc, session) => {
-      if (!acc[session.character]) {
-        acc[session.character] = [];
+      const label = formatDate(session.created_at);
+      if (!acc[label]) {
+        acc[label] = [];
       }
-      acc[session.character].push(session);
+      acc[label].push(session);
       return acc;
     }, {});
   };
 
-  const groupedSessions = groupSessionsByCharacter(sessions);
+  const groupedSessions = groupSessionsByDate(sessions);
 
   if (sessions.length === 0) {
     return (
@@ -240,25 +242,25 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen, onRefreshSessions }) => {
 
   return (
     <Box>
-      {Object.entries(groupedSessions).map(([character, characterSessions]) => (
-        <Box key={character} sx={{ mb: 4 }}>
+      {Object.entries(groupedSessions).map(([dateLabel, dateSessions], idx, arr) => (
+        <Box key={dateLabel} sx={{ mb: 4 }}>
           <Typography 
             variant="h6" 
             fontWeight="bold" 
             sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
           >
-            {character}
+            {dateLabel}
             <Chip 
-              label={`${characterSessions.length} conversation${characterSessions.length !== 1 ? 's' : ''}`}
+              label={`${dateSessions.length} conversation${dateSessions.length !== 1 ? 's' : ''}`}
               size="small"
               variant="outlined"
             />
           </Typography>
-          
+
           <Box className={classes.historyContainer}>
-            {characterSessions.map((session) => {
+            {dateSessions.map((session) => {
               const isLoading = loadingSessionId === session.session_id;
-              
+
               return (
                 <Card 
                   key={session.session_id}
@@ -276,11 +278,11 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen, onRefreshSessions }) => {
                             Session {session.session_id}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            {formatDate(session.created_at)}
+                            {session.character}
                           </Typography>
                         </Box>
                       </Box>
-                      
+
                       <IconButton
                         size="small"
                         onClick={(e) => handleMenuOpen(e, session)}
@@ -298,13 +300,13 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen, onRefreshSessions }) => {
                         <span>•</span>
                         <span>{getMessageCount(session)} messages</span>
                       </Box>
-                      
+
                       <Box className={classes.metaRow}>
                         <span>Started: {new Date(session.created_at).toLocaleString()}</span>
                       </Box>
                     </Box>
                   </CardContent>
-                  
+
                   {isLoading && (
                     <Box className={classes.loadingOverlay}>
                       <CircularProgress size={24} color="primary" />
@@ -314,8 +316,8 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen, onRefreshSessions }) => {
               );
             })}
           </Box>
-          
-          {Object.keys(groupedSessions).length > 1 && (
+
+          {arr.length > 1 && idx < arr.length - 1 && (
             <Divider sx={{ mt: 3 }} />
           )}
         </Box>
