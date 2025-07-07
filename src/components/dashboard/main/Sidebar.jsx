@@ -30,9 +30,13 @@
 // const StyledDrawer = styled(Drawer)(({ theme }) => ({
 //   "& .MuiDrawer-paper": {
 //     width: 280,
+//     height: '100vh',
 //     backgroundColor: theme.palette.background.secondary,
 //     borderRight: `1px solid ${theme.palette.divider}`,
-//     padding: theme.spacing(3, 2),
+//     padding: theme.spacing(2, 2),
+//     display: 'flex',
+//     flexDirection: 'column',
+//     overflow: 'hidden',
 //   },
 // }));
 
@@ -40,7 +44,7 @@
 //   display: "flex",
 //   alignItems: "center",
 //   gap: theme.spacing(1.5),
-//   marginBottom: theme.spacing(4),
+//   marginBottom: theme.spacing(2),
 //   padding: theme.spacing(0, 1),
 // }));
 
@@ -65,7 +69,10 @@
 // }));
 
 // const NavSection = styled(Box)(({ theme }) => ({
-//   marginBottom: theme.spacing(3),
+//   marginBottom: theme.spacing(1.5),
+//   '& .MuiList-root': {
+//     padding: 0,
+//   },
 // }));
 
 // const SectionTitle = styled(Typography)(({ theme }) => ({
@@ -80,7 +87,8 @@
 
 // const StyledListItem = styled(ListItem)(({ theme }) => ({
 //   borderRadius: theme.spacing(1),
-//   marginBottom: theme.spacing(0.5),
+//   marginBottom: theme.spacing(0.25),
+//   padding: theme.spacing(0.5, 2),
 //   "&:hover": {
 //     backgroundColor: theme.palette.action.hover,
 //   },
@@ -225,9 +233,13 @@ import CharacterCreationForm from "../character/creation/CharacterCreationForm";
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   "& .MuiDrawer-paper": {
     width: 280,
+    height: '100vh',
     backgroundColor: theme.palette.background.secondary,
     borderRight: `1px solid ${theme.palette.divider}`,
-    padding: theme.spacing(3, 2),
+    padding: theme.spacing(2, 2),
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
   },
 }));
 
@@ -235,7 +247,7 @@ const Logo = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1.5),
-  marginBottom: theme.spacing(4),
+  marginBottom: theme.spacing(2),
   padding: theme.spacing(0, 1),
 }));
 
@@ -260,7 +272,10 @@ const CreateButton = styled(Button)(({ theme }) => ({
 }));
 
 const NavSection = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
+  marginBottom: theme.spacing(1.5),
+  '& .MuiList-root': {
+    padding: 0,
+  },
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
@@ -275,7 +290,8 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   borderRadius: theme.spacing(1),
-  marginBottom: theme.spacing(0.5),
+  marginBottom: theme.spacing(0.25),
+  padding: theme.spacing(0.5, 2),
   "&:hover": {
     backgroundColor: theme.palette.action.hover,
   },
@@ -361,37 +377,53 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
   return (
     <>
       <StyledDrawer variant="permanent">
-        <Logo>
-          <LogoIcon>
-            <WorkspacePremium fontSize="small" />
-          </LogoIcon>
-          <Typography variant="h6" fontWeight="bold">
-            Bring Back Legend
-          </Typography>
-        </Logo>
+        <Box sx={{ 
+          height: '100%', 
+          display: 'flex', 
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }}>
+          <Logo>
+            <LogoIcon>
+              <WorkspacePremium fontSize="small" />
+            </LogoIcon>
+            <Typography variant="h6" fontWeight="bold">
+              Bring Back Legend
+            </Typography>
+          </Logo>
 
-        <CreateButton 
-          variant="contained" 
-          startIcon={<Add />}
-          onClick={handleCreateClick}
-        >
-          Create
-        </CreateButton>
+          <CreateButton 
+            variant="contained" 
+            startIcon={<Add />}
+            onClick={handleCreateClick}
+            sx={{ mb: 1.5 }}
+          >
+            Create
+          </CreateButton>
 
-        {renderNavSection(mainNavItems, "Explore")}
-        {renderNavSection(historyItems, "Activity")}
-        {renderNavSection(categoryItems, "Categories")}
+          <Box sx={{ 
+            flex: 1, 
+            overflow: 'hidden',
+            '&:hover': { 
+              overflowY: 'auto' 
+            }
+          }}>
+            {renderNavSection(mainNavItems, "Explore")}
+            {renderNavSection(historyItems, "Activity")}
+            {renderNavSection(categoryItems, "Categories")}
+          </Box>
 
-        <Box sx={{ mt: "auto" }}>
-          <StyledListItem button onClick={logout}>
-            <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
-              <Logout />
-            </ListItemIcon>
-            <ListItemText
-              primary="Logout"
-              primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 500 }}
-            />
-          </StyledListItem>
+          <Box sx={{ pt: 1.5 }}>
+            <StyledListItem button onClick={logout}>
+              <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
+                <Logout />
+              </ListItemIcon>
+              <ListItemText
+                primary="Logout"
+                primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 500 }}
+              />
+            </StyledListItem>
+          </Box>
         </Box>
       </StyledDrawer>
 
