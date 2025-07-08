@@ -119,13 +119,20 @@ const SearchComponent = ({
             onSearchResults({
               characters: response.characters || [],
               query: searchValue,
-              totalCount: response.total_count || 0
+              totalCount: response.total_count || response.characters?.length || 0
             });
           }
         })
         .catch(error => {
           console.error('Search failed:', error);
           setSuggestions([]);
+          if (onSearchResults) {
+            onSearchResults({
+              characters: [],
+              query: searchValue,
+              totalCount: 0
+            });
+          }
         })
         .finally(() => {
           setLoading(false);
@@ -174,7 +181,7 @@ const SearchComponent = ({
     setRecentSearches(newRecent);
     localStorage.setItem('recentSearches', JSON.stringify(newRecent));
     
-    // Trigger search for this character
+    // Trigger search for this character with correct count
     if (onSearchResults) {
       onSearchResults({
         characters: [character],
