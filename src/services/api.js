@@ -186,36 +186,24 @@ class ApiService {
   }
 
   // Search characters with pagination
-  async searchCharacters(query, page = 1, perPage = 20) {
+  async searchCharacters(query) {
     try {
-      const response = await this.client.get('/characters/search', {
+      const response = await this.client.get('/search', {
         params: {
           q: query,
-          page,
-          per_page: perPage,
         },
       });
-      
-      // Handle both response formats
-      let characters, pagination;
-      
-      if (response.data.pagination) {
-        characters = response.data.characters || [];
-        pagination = response.data.pagination;
-      } else {
-        characters = response.data.characters || [];
-        pagination = {
-          page: response.data.page || 1,
-          total_count: response.data.total_count || 0,
-          total_pages: response.data.total_pages || 1,
-        };
+
+      // Support both 'results' and 'characters' keys
+      let characters = [];
+      if (Array.isArray(response.data.characters)) {
+        characters = response.data.characters;
+      } else if (Array.isArray(response.data.results)) {
+        characters = response.data.results;
       }
-      
+
       return {
         characters,
-        page: pagination.page || 1,
-        total_pages: pagination.total_pages || 1,
-        total_count: pagination.total_count || 0,
         query: query,
       };
     } catch (error) {

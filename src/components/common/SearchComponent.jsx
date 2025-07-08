@@ -86,48 +86,18 @@ const SearchComponent = ({
       }
     }
   }, []);
-
-  // Debounced search function
-  const debouncedSearch = useCallback(
-    debounce(async (query) => {
-      if (!query.trim()) {
-        setSuggestions([]);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        const response = await apiService.searchCharacters(query, 1, 8);
-        setSuggestions(response.characters || []);
-        
-        // Notify parent component of search results
-        if (onSearchResults) {
-          onSearchResults({
-            characters: response.characters || [],
-            query,
-            totalCount: response.total_count || 0
-          });
-        }
-      } catch (error) {
-        console.error('Search failed:', error);
-        setSuggestions([]);
-      } finally {
-        setLoading(false);
-      }
-    }, 300),
-    [onSearchResults]
-  );
-
+  
+  // Only clear suggestions and notify parent when input is cleared
   useEffect(() => {
-    if (searchValue) {
-      debouncedSearch(searchValue);
-    } else {
+    if (!searchValue) {
       setSuggestions([]);
       if (onSearchResults) {
         onSearchResults({ characters: [], query: '', totalCount: 0 });
       }
     }
-  }, [searchValue, debouncedSearch, onSearchResults]);
+    // Do not auto-search on input change
+    // eslint-disable-next-line
+  }, [searchValue]);
 
   useEffect(() => {
     if (onSearchStateChange) {
@@ -141,7 +111,6 @@ const SearchComponent = ({
 
   const handleSearch = () => {
     if (searchValue.trim()) {
-      debouncedSearch.cancel(); // Cancel any pending debounced search
       setLoading(true);
       apiService.searchCharacters(searchValue.trim(), 1, 8)
         .then(response => {
@@ -171,12 +140,10 @@ const SearchComponent = ({
     }
   };
 
-  // Update handleInputChange to use debounce only for suggestions
+  // Only update input value, do not trigger search
   const handleInputChange = (event) => {
     setSearchValue(event.target.value);
-    if (showSuggestions) {
-      debouncedSearch(event.target.value);
-    }
+    // No search triggered here
   };
 
   const handleFocus = () => {
