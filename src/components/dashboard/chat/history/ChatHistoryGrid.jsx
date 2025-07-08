@@ -133,6 +133,26 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
     );
   }
 
+  // Filter out invalid sessions
+  const validSessions = sessions.filter(session => 
+    session.character && session.session_id && session.created_at
+  );
+
+  // Show empty state if no valid sessions exist
+  if (validSessions.length === 0) {
+    return (
+      <Box className={classes.emptyState}>
+        <Chat sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          No conversation history
+        </Typography>
+        <Typography variant="body2">
+          Start chatting with characters to see your conversations here
+        </Typography>
+      </Box>
+    );
+  }
+
   const handleMenuOpen = (event, session) => {
     event.stopPropagation();
     setSelectedSession(session);
@@ -229,14 +249,7 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
     return Math.floor(Math.random() * 20) + 5;
   };
 
-  // Group sessions by date - now safe because we've validated sessions is an array
   const groupSessionsByDate = (sessions) => {
-    // Additional safety check (though redundant after our guard clause above)
-    if (!Array.isArray(sessions)) {
-      console.warn('groupSessionsByDate received non-array:', sessions);
-      return {};
-    }
-    
     return sessions.reduce((acc, session) => {
       const label = formatDate(session.created_at);
       if (!acc[label]) {
@@ -247,22 +260,77 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
     }, {});
   };
 
-  const groupedSessions = groupSessionsByDate(sessions);
+  const groupedSessions = groupSessionsByDate(validSessions);
 
-  // Show empty state if no sessions exist
-  if (sessions.length === 0) {
+  // Modify the session card content to show language
+  const renderSessionCard = (session) => {
+    const isLoading = loadingSessionId === session.session_id;
+    
     return (
-      <Box className={classes.emptyState}>
-        <Chat sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
-        <Typography variant="h6" gutterBottom>
-          No conversation history
-        </Typography>
-        <Typography variant="body2">
-          Start chatting with characters to see your conversations here
-        </Typography>
-      </Box>
+      <Card 
+        key={session.session_id}
+        className={`${classes.sessionCard} ${isLoading ? 'loading' : ''}`}
+        onClick={() => !isLoading && handleSessionClick(session)}
+      >
+        <CardContent>
+          <Box className={classes.sessionHeader}>
+            <Box className={classes.sessionInfo}>
+              <Avatar sx={{ width: 32, height: 32 }}>
+                <Chat fontSize="small" />
+              </Avatar>
+              <Box>
+                <Typography variant="subtitle2" fontWeight="bold">
+                  Session {session.session_id}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {session.character}
+                </Typography>
+              </Box>
+            </Box>
+
+            <IconButton
+              size="small"
+              onClick={(e) => handleMenuOpen(e, session)}
+              sx={{ opacity: 0.7 }}
+              disabled={isLoading}
+            >
+              <MoreVert fontSize="small" />
+            </IconButton>
+          </Box>
+
+          <Box className={classes.sessionMeta}>
+            <Box className={classes.metaRow}>
+              <AccessTime fontSize="inherit" />
+              <span>{getSessionDuration(session)}</span>
+              <span>•</span>
+              <span>{getMessageCount(session)} messages</span>
+              {session.primary_language && (
+                <>
+                  <span>•</span>
+                  <Chip 
+                    label={session.primary_language.toUpperCase()}
+                    size="small"
+                    variant="outlined"
+                    sx={{ height: 20, fontSize: '0.7rem' }}
+                  />
+                </>
+              )}
+            </Box>
+
+            <Box className={classes.metaRow}>
+              <span>Started: {new Date(session.created_at).toLocaleString()}</span>
+            </Box>
+          </Box>
+        </CardContent>
+
+        {isLoading && (
+          <Box className={classes.loadingOverlay}>
+            <CircularProgress size={24} color="primary" />
+          </Box>
+        )}
+      </Card>
     );
-  }
+  };
 
   return (
     <Box>
@@ -282,63 +350,7 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
           </Typography>
 
           <Box className={classes.historyContainer}>
-            {dateSessions.map((session) => {
-              const isLoading = loadingSessionId === session.session_id;
-
-              return (
-                <Card 
-                  key={session.session_id}
-                  className={`${classes.sessionCard} ${isLoading ? 'loading' : ''}`}
-                  onClick={() => !isLoading && handleSessionClick(session)}
-                >
-                  <CardContent>
-                    <Box className={classes.sessionHeader}>
-                      <Box className={classes.sessionInfo}>
-                        <Avatar sx={{ width: 32, height: 32 }}>
-                          <Chat fontSize="small" />
-                        </Avatar>
-                        <Box>
-                          <Typography variant="subtitle2" fontWeight="bold">
-                            Session {session.session_id}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {session.character}
-                          </Typography>
-                        </Box>
-                      </Box>
-
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleMenuOpen(e, session)}
-                        sx={{ opacity: 0.7 }}
-                        disabled={isLoading}
-                      >
-                        <MoreVert fontSize="small" />
-                      </IconButton>
-                    </Box>
-
-                    <Box className={classes.sessionMeta}>
-                      <Box className={classes.metaRow}>
-                        <AccessTime fontSize="inherit" />
-                        <span>{getSessionDuration(session)}</span>
-                        <span>•</span>
-                        <span>{getMessageCount(session)} messages</span>
-                      </Box>
-
-                      <Box className={classes.metaRow}>
-                        <span>Started: {new Date(session.created_at).toLocaleString()}</span>
-                      </Box>
-                    </Box>
-                  </CardContent>
-
-                  {isLoading && (
-                    <Box className={classes.loadingOverlay}>
-                      <CircularProgress size={24} color="primary" />
-                    </Box>
-                  )}
-                </Card>
-              );
-            })}
+            {dateSessions.map((session) => renderSessionCard(session))}
           </Box>
 
           {arr.length > 1 && idx < arr.length - 1 && (

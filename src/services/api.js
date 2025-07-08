@@ -176,8 +176,13 @@ class ApiService {
   async getSessions() {
     try {
       const response = await this.client.get('/get_sessions');
-      return response.data;
+      // Filter and clean the sessions data
+      const sessions = response.data.sessions || response.data || [];
+      return sessions
+        .filter(session => session && session.character && session.session_id)
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     } catch (error) {
+      console.error('Failed to load sessions:', error);
       throw this.handleError(error, 'Failed to load sessions');
     }
   }
@@ -191,11 +196,16 @@ class ApiService {
         },
       });
       
+      const sessions = response.data.sessions || response.data || [];
+      const validSessions = sessions
+        .filter(session => session && session.character && session.session_id)
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      
       return {
-        sessions: response.data.sessions || response.data || [],
+        sessions: validSessions,
         page: response.data.page || 1,
-        total_pages: response.data.total_pages || 1,
-        total_count: response.data.total_count || (response.data.sessions || response.data || []).length,
+        total_pages: response.data.total_pages || Math.ceil(validSessions.length / perPage),
+        total_count: validSessions.length,
       };
     } catch (error) {
       throw this.handleError(error, 'Failed to load sessions');
