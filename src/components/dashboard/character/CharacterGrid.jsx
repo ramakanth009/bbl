@@ -234,11 +234,10 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       setIsSearching(true);
       setSearchQuery(results.query);
     } else if (results.query === '') {
-      // Reset to original characters when search is cleared
-      setCharacters(originalCharacters);
-      setTotalCount(originalCharacters.length);
+      // When search is cleared, reset everything and reload data
       setIsSearching(false);
       setSearchQuery('');
+      loadCharactersPage(1, pageSize); // This will set the correct totalCount from API
     }
   };
 
@@ -246,7 +245,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     if (!searchState.isSearching && searchState.query === '') {
       setIsSearching(false);
       setSearchQuery('');
-      setCharacters(originalCharacters);
+      loadCharactersPage(1, pageSize); // This will set the correct totalCount from API
     }
   };
 
