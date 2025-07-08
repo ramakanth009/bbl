@@ -191,7 +191,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       
       const response = await apiService.getCharactersPaginated(page, limit);
       
-      // Use characters directly from the backend without transformation
+      // Store the total API count separately from filtered count
+      const apiTotalCount = response.total_count;
       const filteredCharacters = filterCharactersBySection(response.characters);
       
       setCharacters(filteredCharacters);
@@ -199,8 +200,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       setAllCharacters(response.characters);
       setCurrentPage(response.page || 1);
       setTotalPages(response.total_pages || 1);
-      // Update totalCount with the total count from API, not just current page count
-      setTotalCount(response.total_count || 0);
+      setTotalCount(apiTotalCount); // Always use API total count
       
     } catch (error) {
       console.error('Failed to load characters:', error);
@@ -228,24 +228,27 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   };
 
   const handleSearchResults = (results) => {
-    if (results.characters.length > 0) {
-      setCharacters(results.characters);
-      setTotalCount(results.totalCount);
-      setIsSearching(true);
-      setSearchQuery(results.query);
-    } else if (results.query === '') {
-      // When search is cleared, reset everything and reload data
+    if (results.query === '') {
+      // When clearing search, restore original state
       setIsSearching(false);
       setSearchQuery('');
-      loadCharactersPage(1, pageSize); // This will set the correct totalCount from API
+      setCharacters(originalCharacters);
+      loadCharactersPage(1, pageSize); // Reload to get correct total count
+    } else if (results.characters?.length >= 0) {
+      // For search results, use the count from the search response
+      setCharacters(results.characters);
+      setTotalCount(results.totalCount || results.characters.length);
+      setIsSearching(true);
+      setSearchQuery(results.query);
     }
   };
 
   const handleSearchStateChange = (searchState) => {
+    // Only reset when explicitly clearing search
     if (!searchState.isSearching && searchState.query === '') {
       setIsSearching(false);
       setSearchQuery('');
-      loadCharactersPage(1, pageSize); // This will set the correct totalCount from API
+      loadCharactersPage(1, pageSize); // Reload to get correct total count
     }
   };
 

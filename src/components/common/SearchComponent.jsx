@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import { Search as SearchIcon, Clear, TrendingUp } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import { debounce } from 'lodash';
 import apiService from '../../services/api';
 
 const SearchPaper = styled(Paper)(({ theme, focused }) => ({
@@ -74,6 +73,7 @@ const SearchComponent = ({
   const [suggestions, setSuggestions] = useState([]);
   const [recentSearches, setRecentSearches] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [isExecutingSearch, setIsExecutingSearch] = useState(false);
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -109,48 +109,55 @@ const SearchComponent = ({
     }
   }, [searchValue, focused, onSearchStateChange]);
 
-  const handleSearch = () => {
-    if (searchValue.trim()) {
+  // Modify the search handler
+  const handleSearch = async () => {
+    if (!searchValue.trim() || isExecutingSearch) return;
+
+    try {
+      setIsExecutingSearch(true);
       setLoading(true);
-      apiService.searchCharacters(searchValue.trim(), 1, 8)
-        .then(response => {
-          setSuggestions(response.characters || []);
-          if (onSearchResults) {
-            onSearchResults({
-              characters: response.characters || [],
-              query: searchValue,
-              totalCount: response.total_count || response.characters?.length || 0
-            });
-          }
-        })
-        .catch(error => {
-          console.error('Search failed:', error);
-          setSuggestions([]);
-          if (onSearchResults) {
-            onSearchResults({
-              characters: [],
-              query: searchValue,
-              totalCount: 0
-            });
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-          setShowResults(false);
+      
+      const response = await apiService.searchCharacters(searchValue.trim());
+      
+      setSuggestions(response.characters || []);
+      if (onSearchResults) {
+        onSearchResults({
+          characters: response.characters || [],
+          query: searchValue,
+          totalCount: response.total_count || response.characters?.length || 0
         });
+      }
+    } catch (error) {
+      console.error('Search failed:', error);
+      setSuggestions([]);
+    } finally {
+      setLoading(false);
+      setIsExecutingSearch(false);
+      setShowResults(false);
     }
   };
 
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  // Only update input value, do not trigger search
   const handleInputChange = (event) => {
-    setSearchValue(event.target.value);
-    // No search triggered here
+    const newValue = event.target.value;
+    setSearchValue(newValue);
+    
+    // Only notify of search state change for empty value
+    if (!newValue) {
+      if (onSearchStateChange) {
+        onSearchStateChange({
+          isSearching: false,
+          query: '',
+          focused
+        });
+      }
+      if (onSearchResults) {
+        onSearchResults({
+          characters: [],
+          query: '',
+          totalCount: 0
+        });
+      }
+    }
   };
 
   const handleFocus = () => {
@@ -194,6 +201,13 @@ const SearchComponent = ({
   const handleRecentSearchClick = (searchTerm) => {
     setSearchValue(searchTerm);
     setShowResults(false);
+  };
+
+  // Add handleKeyPress event handler
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
   };
 
   const displaySuggestions = showSuggestions && showResults && (suggestions.length > 0 || recentSearches.length > 0);

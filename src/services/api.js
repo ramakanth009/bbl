@@ -93,41 +93,38 @@ class ApiService {
         per_page: perPage,
       };
 
-      // Add section-specific parameters if needed
       if (section) {
         params.section = section;
       }
 
       const response = await this.client.get('/characters', { params });
       
-      // Handle both old and new response formats
       let characters, pagination;
       
       if (response.data.pagination) {
-        // New format with nested pagination object
         characters = response.data.characters || [];
         pagination = response.data.pagination;
       } else {
-        // Old format with pagination at root level
         characters = response.data.characters || response.data || [];
         pagination = {
           page: response.data.page || 1,
           per_page: perPage,
-          total_count: response.data.total_count || characters.length,
-          total_pages: response.data.total_pages || Math.ceil((response.data.total_count || characters.length) / perPage),
+          total_count: response.data.total_count || 0, // Use 0 as fallback instead of characters.length
+          total_pages: response.data.total_pages || 1,
           has_next: response.data.next_url !== null,
           has_prev: response.data.prev_url !== null,
-          next_url: response.data.next_url,
-          prev_url: response.data.prev_url,
         };
       }
+      
+      // Ensure we always have a total count, even if it's not provided
+      const total_count = pagination.total_count || response.data.total_count || 0;
       
       return {
         characters,
         page: pagination.page || 1,
         per_page: pagination.per_page || perPage,
         total_pages: pagination.total_pages || 1,
-        total_count: pagination.total_count || 0,
+        total_count: total_count,
         has_next: pagination.has_next || false,
         has_prev: pagination.has_prev || false,
         next_url: pagination.next_url || null,
@@ -188,26 +185,40 @@ class ApiService {
   // Search characters with pagination
   async searchCharacters(query) {
     try {
+      const normalizedQuery = query.trim();
+      
+      if (!normalizedQuery) {
+        return {
+          characters: [],
+          query: '',
+          total_count: 0
+        };
+      }
+
       const response = await this.client.get('/search', {
         params: {
-          q: query,
+          q: normalizedQuery,
         },
       });
 
-      // Support both 'results' and 'characters' keys
-      let characters = [];
-      if (Array.isArray(response.data.characters)) {
-        characters = response.data.characters;
-      } else if (Array.isArray(response.data.results)) {
-        characters = response.data.results;
-      }
+      const characters = Array.isArray(response.data.characters) 
+        ? response.data.characters 
+        : Array.isArray(response.data.results)
+          ? response.data.results 
+          : [];
 
       return {
         characters,
-        query: query,
+        query: normalizedQuery,
+        total_count: characters.length // Always use actual length of results
       };
     } catch (error) {
-      throw this.handleError(error, 'Failed to search characters');
+      console.error('Search error:', error);
+      return {
+        characters: [],
+        query: query.trim(),
+        total_count: 0
+      };
     }
   }
 
