@@ -4,6 +4,7 @@ import {
   Button,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Typography,
@@ -91,7 +92,7 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   paddingLeft: theme.spacing(2),
 }));
 
-const StyledListItem = styled(ListItem)(({ theme }) => ({
+const StyledListItem = styled(ListItemButton)(({ theme }) => ({
   borderRadius: theme.spacing(1),
   marginBottom: theme.spacing(0.25),
   padding: theme.spacing(0.5, 2),
@@ -185,7 +186,6 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
         {items.map((item) => (
           <StyledListItem
             key={item.text}
-            button
             className={activeSection === item.text ? "active" : ""}
             onClick={() => handleNavClick(item.text, item.comingSoon)}
           >
@@ -237,7 +237,7 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
           </ScrollableContent>
 
           <FooterWrapper>
-            <StyledListItem button onClick={logout}>
+            <StyledListItem onClick={logout}>
               <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
                 <Logout />
               </ListItemIcon>

@@ -387,7 +387,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     <Box className={classes.section}>
       <Box className={classes.sectionHeader}>
         <Box>
-          <Typography className={classes.sectionTitle}>
+          <Typography component="div" className={classes.sectionTitle}>
             {isSearching ? `Search Results for "${searchQuery}"` : activeSection}
             <Chip label={`${totalCount} ${isSearching ? 'results' : 'total characters'}`} size="small" />
           </Typography>
