@@ -19,12 +19,10 @@ import apiService from '../../../services/api';
 import MessageList from '../message/MessageList';
 import ChatInput from './ChatInput';
 import LanguageSelector from '../../common/LanguageSelector';
-// import CreativitySettingsMenu from './CreativitySettingsMenu';
 import ChatHistoryPanel from './history/ChatHistoryPanel';
 
 const ChatContainer = styled(Box)(({ theme, open }) => ({
   width: open ? 'calc(100vw - 280px)' : 0,
-  // Remove backgroundColor here!
   borderLeft: `1px solid ${theme.palette.divider}`,
   display: 'flex',
   flexDirection: 'column',
@@ -34,7 +32,7 @@ const ChatContainer = styled(Box)(({ theme, open }) => ({
   right: 0,
   top: 0,
   height: '100vh',
-  zIndex: 2, // ensure above overlay
+  zIndex: 2,
   [theme.breakpoints.down('md')]: {
     width: open ? '100vw' : 0,
     left: 0,
@@ -100,15 +98,8 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
   const [sessions, setSessions] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   
-  // Language state management
-  const [inputLanguage, setInputLanguage] = useState('english');
-  const [outputLanguage, setOutputLanguage] = useState('english');
-  
-  // Creativity settings
-  // const [settingsAnchor, setSettingsAnchor] = useState(null);
-  // const [temperature, setTemperature] = useState(0.7);
-  // const [topP, setTopP] = useState(0.95);
-  // const [topK, setTopK] = useState(40);
+  // Simplified language state
+  const [language, setLanguage] = useState('english');
   
   const messagesEndRef = useRef(null);
 
@@ -116,9 +107,12 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
     if (open && character) {
       initializeChat();
       loadUserSessions();
+      loadLanguagePreferences();
+      
       // Set default language based on character's native language
       if (character.native_language) {
-        setOutputLanguage(character.native_language);
+        console.log('🔧 Setting language to character native:', character.native_language);
+        setLanguage(character.native_language);
       }
     }
   }, [open, character]);
@@ -126,6 +120,32 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Simplified language preferences loading
+  const loadLanguagePreferences = async () => {
+    try {
+      const preferences = await apiService.getUserLanguagePreferences();
+      if (preferences.language && !character.native_language) {
+        setLanguage(preferences.language);
+      }
+      console.log('📋 Loaded language preferences:', preferences);
+    } catch (error) {
+      console.warn('⚠️ Could not load language preferences:', error.message);
+    }
+  };
+
+  // Simplified language preferences saving
+  const saveLanguagePreferences = async (newLanguage) => {
+    try {
+      await apiService.setUserLanguagePreferences({
+        language: newLanguage,
+        autoDetect: false
+      });
+      console.log('💾 Language preferences saved');
+    } catch (error) {
+      console.warn('⚠️ Could not save language preferences:', error.message);
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -136,6 +156,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
       {
         role: character.name,
         content: `Hello! I'm ${character.name}. What would you like to talk about?`,
+        language: character.native_language || 'english'
       },
     ]);
     setError(null);
@@ -181,18 +202,15 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
     setShowHistory(false);
   };
 
-  const handleLanguageChange = (languageCode, type) => {
-    if (type === 'input') {
-      setInputLanguage(languageCode);
-    } else if (type === 'output') {
-      setOutputLanguage(languageCode);
-    } else {
-      // 'both' - set both languages
-      setInputLanguage(languageCode);
-      setOutputLanguage(languageCode);
-    }
+  // Simplified language change handler
+  const handleLanguageChange = async (languageCode) => {
+    console.log('🔄 Language change requested:', languageCode);
+    setLanguage(languageCode);
+    await saveLanguagePreferences(languageCode);
+    console.log('✅ Language updated:', languageCode);
   };
 
+  // Update message sending to use single language
   const handleSend = async () => {
     if (!inputValue.trim() || loading || !character) return;
 
@@ -204,35 +222,35 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
     const newUserMessage = { 
       role: 'user', 
       content: userMessage,
-      language: inputLanguage 
+      language: language 
     };
     setMessages(prev => [...prev, newUserMessage]);
 
     try {
-      // Include language settings in the message
-      const messageData = {
-        character_name: character.name,
-        user_input: userMessage,
-        new_session: !sessionId,
-        input_language: inputLanguage,
-        output_language: outputLanguage,
-      };
+      console.log('💬 Sending message with settings:', {
+        character: character.name,
+        language,
+        sessionExists: !!sessionId
+      });
 
       const response = await apiService.sendMessage(
         character.name, 
         userMessage, 
         !sessionId,
-        { 
-          input_language: inputLanguage,
-          output_language: outputLanguage 
-        }
+        { language }
       );
+      
+      console.log('📨 Message sent successfully:', {
+        sessionId: response.session_id,
+        responseLanguage: response.response_language,
+        inputLanguage: response.input_language
+      });
       
       if (response.chat_history) {
         const formattedMessages = response.chat_history.map(msg => ({
           role: msg.role,
           content: msg.content,
-          language: msg.language || (msg.role === 'user' ? inputLanguage : outputLanguage),
+          language: msg.language || (msg.role === 'user' ? language : language),
           timestamp: msg.timestamp
         }));
         setMessages(formattedMessages);
@@ -240,7 +258,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
         setMessages(prev => [...prev, { 
           role: character.name, 
           content: response.reply,
-          language: outputLanguage
+          language: response.response_language || language
         }]);
       }
       
@@ -251,8 +269,19 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
       await loadUserSessions();
       
     } catch (error) {
-      console.error('Chat error:', error);
-      setError(error.response?.data?.error || 'Failed to send message. Please try again.');
+      console.error('💥 Chat error:', error);
+      
+      // Enhanced error handling for language issues
+      let errorMessage = 'Failed to send message. Please try again.';
+      if (error.message.includes('language')) {
+        errorMessage = `Language error: ${error.message}. Try changing the language settings.`;
+      } else if (error.message.includes('Character not found')) {
+        errorMessage = 'Character not found. Please select a different character.';
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      }
+      
+      setError(errorMessage);
       setMessages(prev => prev.slice(0, -1));
     } finally {
       setLoading(false);
@@ -260,7 +289,6 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
   };
 
   const handleBackClick = () => {
-    // Always call onClose to ensure routing is updated
     onClose();
   };
 
@@ -325,11 +353,10 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
               <HistoryIcon />
             </IconButton>
             
+            {/* Update language selector to use single language */}
             <LanguageSelector
-              currentLanguage={outputLanguage}
-              inputLanguage={inputLanguage} 
-              outputLanguage={outputLanguage}
-              mode="both"
+              currentLanguage={language}
+              mode="single"
               compact={true}
               onLanguageChange={handleLanguageChange}
               title="Language Settings"
@@ -343,14 +370,6 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
               <Add />
             </IconButton>
             
-            {/* <IconButton 
-              onClick={(e) => setSettingsAnchor(e.currentTarget)}
-              sx={{ color: 'text.secondary' }}
-              title="Creativity Settings"
-            >
-              <Tune />
-            </IconButton> */}
-            
             <IconButton onClick={onClose} sx={{ color: 'text.secondary' }}>
               <Close />
             </IconButton>
@@ -363,32 +382,45 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
           </CharacterDescription>
         )}
         
-        {(inputLanguage !== 'english' || outputLanguage !== 'english') && (
+        {/* Enhanced language status display */}
+        {language !== 'english' && (
           <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
             <Chip 
-              label={`Input: ${inputLanguage}`}
-              size="small"
-              sx={{ 
-                backgroundColor: 'rgba(25,118,210,0.15)',
-                fontSize: '0.75rem'
-              }}
-            />
-            <Chip 
-              label={`Output: ${outputLanguage}`}
+              label={`Language: ${language}`}
               size="small"
               sx={{ 
                 backgroundColor: 'rgba(76,175,80,0.15)',
                 fontSize: '0.75rem'
               }}
             />
+            {character.native_language && language === character.native_language && (
+              <Chip 
+                label="Native Mode"
+                size="small"
+                sx={{ 
+                  backgroundColor: 'rgba(255,193,7,0.15)',
+                  fontSize: '0.75rem',
+                  color: 'warning.main'
+                }}
+              />
+            )}
           </Box>
         )}
       </ChatHeader>
 
+      {/* Enhanced error display with language-specific messages */}
       {error && (
         <Box sx={{ p: 2 }}>
-          <Alert severity="error" onClose={() => setError(null)}>
+          <Alert 
+            severity={error.includes('Language') ? 'warning' : 'error'} 
+            onClose={() => setError(null)}
+          >
             {error}
+            {error.includes('Language') && (
+              <Box sx={{ mt: 1, fontSize: '0.875rem' }}>
+                Current setting: Language={language}
+              </Box>
+            )}
           </Alert>
         </Box>
       )}
@@ -398,7 +430,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
           messages={messages} 
           loading={loading} 
           ref={messagesEndRef}
-          showLanguageLabels={inputLanguage !== outputLanguage || outputLanguage !== 'english'}
+          showLanguageLabels={language !== 'english'}
         />
       </MessagesWrapper>
 
@@ -407,20 +439,9 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
         onChange={setInputValue}
         onSend={handleSend}
         loading={loading}
-        placeholder={`Type in ${inputLanguage}...`}
+        placeholder={`Type in ${language}...`}
       />
 
-      {/* <CreativitySettingsMenu
-        anchorEl={settingsAnchor}
-        open={Boolean(settingsAnchor)}
-        onClose={() => setSettingsAnchor(null)}
-        temperature={temperature}
-        setTemperature={setTemperature}
-        topP={topP}
-        setTopP={setTopP}
-        topK={topK}
-        setTopK={setTopK}
-      /> */}
       <ChatHistoryPanel
         open={showHistory}
         onClose={handleHistoryClose}

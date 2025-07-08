@@ -44,10 +44,17 @@ const LanguageMenuItem = styled(MenuItem)(({ theme, selected }) => ({
   padding: theme.spacing(1.5),
   borderRadius: 8,
   margin: theme.spacing(0.5),
-  backgroundColor: selected ? 'rgba(25,118,210,0.15)' : 'transparent',
-  border: selected ? '1px solid rgba(25,118,210,0.3)' : '1px solid transparent',
+  backgroundColor: selected ? 'rgba(99,102,241,0.15)' : 'transparent',
+  border: selected ? '1px solid rgba(99,102,241,0.3)' : '1px solid transparent',
   '&:hover': {
-    backgroundColor: selected ? 'rgba(25,118,210,0.25)' : 'rgba(255,255,255,0.1)',
+    backgroundColor: selected ? 'rgba(99,102,241,0.25)' : 'rgba(255,255,255,0.1)',
+  },
+  '& .MuiListItemText-primary': {
+    color: selected ? '#6366f1' : '#fff',
+    fontWeight: selected ? 600 : 400,
+  },
+  '& .MuiListItemText-secondary': {
+    color: selected ? 'rgba(99,102,241,0.7)' : '#bbb',
   },
 }));
 

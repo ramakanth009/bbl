@@ -211,24 +211,152 @@ class ApiService {
     }
   }
 
-  // Chat endpoints with enhanced error handling
-  async sendMessage(characterName, userInput, newSession = false, creativitySettings = {}) {
+  // ===============================
+  // CORRECTED CHAT ENDPOINTS
+  // ===============================
+  
+  // FIXED: Chat endpoint with correct API specification
+  async sendMessage(characterName, userInput, newSession = false, languageSettings = {}) {
     try {
+      console.log('🚀 Sending message with language settings:', {
+        characterName,
+        userInput,
+        newSession,
+        languageSettings
+      });
+
+      // Extract the target response language from settings
+      const targetLanguage = languageSettings.output_language || 
+                           languageSettings.language || 
+                           languageSettings.response_language || 
+                           'english';
+
       const requestData = {
         character_name: characterName,
-        user_input: userInput, 
+        user_input: userInput,
         new_session: newSession,
-        ...creativitySettings,
+        language: targetLanguage, // API expects single 'language' parameter
       };
 
-      const response = await this.client.post('/chat', requestData);
+      console.log('📤 Request payload:', requestData);
+
+      // Add language headers for better API communication
+      const config = {
+        headers: {
+          'Accept-Language': targetLanguage,
+          'Content-Language': languageSettings.input_language || 'english',
+        }
+      };
+
+      const response = await this.client.post('/chat', requestData, config);
+      
+      console.log('📥 Chat response received:', {
+        reply: response.data.reply?.substring(0, 100) + '...',
+        input_language: response.data.input_language,
+        response_language: response.data.response_language,
+        session_id: response.data.session_id
+      });
+
       // Ensure chat_history is always an array and sorted
       if (response.data.chat_history && Array.isArray(response.data.chat_history)) {
         response.data.chat_history = this.sortMessagesByTimestamp(response.data.chat_history);
       }
+      
       return response.data;
     } catch (error) {
+      console.error('❌ Chat error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
       throw this.handleError(error, 'Failed to send message');
+    }
+  }
+
+  // ===============================
+  // LANGUAGE ENDPOINTS - FIXED
+  // ===============================
+  
+  // FIXED: Get supported languages with proper authentication
+  async getSupportedLanguages() {
+    try {
+      console.log('🔄 Loading supported languages...');
+      
+      const response = await this.client.get('/languages', {
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      
+      console.log('✅ Languages loaded:', {
+        count: response.data.languages?.length || 0,
+        status: response.data.status
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('❌ Failed to load languages:', {
+        status: error.response?.status,
+        message: error.response?.data?.error || error.message
+      });
+      throw this.handleError(error, 'Failed to load supported languages');
+    }
+  }
+
+  // NEW: Set user language preferences (if backend supports it)
+  async setUserLanguagePreferences(preferences) {
+    try {
+      console.log('🔧 Setting user language preferences:', preferences);
+      
+      const response = await this.client.post('/user/language-preferences', {
+        input_language: preferences.inputLanguage || 'english',
+        output_language: preferences.outputLanguage || 'english',
+        auto_detect: preferences.autoDetect || false,
+      });
+      
+      console.log('✅ Language preferences updated');
+      return response.data;
+    } catch (error) {
+      console.warn('⚠️ Language preferences endpoint not available, storing locally');
+      // Fallback: store preferences locally
+      localStorage.setItem('language_preferences', JSON.stringify(preferences));
+      return { status: 'stored_locally', preferences };
+    }
+  }
+
+  // NEW: Get user language preferences
+  async getUserLanguagePreferences() {
+    try {
+      const response = await this.client.get('/user/language-preferences');
+      return response.data;
+    } catch (error) {
+      console.warn('⚠️ Language preferences endpoint not available, using local storage');
+      // Fallback: get from local storage
+      const stored = localStorage.getItem('language_preferences');
+      return stored ? JSON.parse(stored) : {
+        inputLanguage: 'english',
+        outputLanguage: 'english',
+        autoDetect: false
+      };
+    }
+  }
+
+  // NEW: Translate text (if backend supports it)
+  async translateText(text, fromLanguage, toLanguage) {
+    try {
+      console.log('🔄 Translating text:', { fromLanguage, toLanguage, textLength: text.length });
+      
+      const response = await this.client.post('/translate', {
+        text,
+        from_language: fromLanguage,
+        to_language: toLanguage,
+      });
+      
+      console.log('✅ Translation completed');
+      return response.data;
+    } catch (error) {
+      console.error('❌ Translation failed:', error.response?.data || error.message);
+      throw this.handleError(error, 'Failed to translate text');
     }
   }
 
@@ -323,16 +451,6 @@ class ApiService {
     }
   }
 
-  // Get supported languages
-  async getSupportedLanguages() {
-    try {
-      const response = await this.client.get('/languages');
-      return response.data;
-    } catch (error) {
-      throw this.handleError(error, 'Failed to load supported languages');
-    }
-  }
-
   // Utility method to sort messages by timestamp
   sortMessagesByTimestamp(messages) {
     return messages.sort((a, b) => {
@@ -376,6 +494,7 @@ class ApiService {
   // Utility methods
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('language_preferences');
     window.location.href = '/login';
   }
 
