@@ -85,28 +85,83 @@ class ApiService {
     }
   }
 
-  // New paginated characters method
-  async getCharactersPaginated(page = 1, perPage = 20) {
+  // Updated paginated characters method with proper response parsing
+  async getCharactersPaginated(page = 1, perPage = 20, section = null) {
     try {
-      const response = await this.client.get('/characters', {
-        params: {
-          page,
-          per_page: perPage,
-        },
-      });
+      const params = {
+        page,
+        per_page: perPage,
+      };
+
+      // Add section-specific parameters if needed
+      if (section) {
+        params.section = section;
+      }
+
+      const response = await this.client.get('/characters', { params });
       
-      const total = response.data.total_count || response.data.characters?.length || 0;
+      // Handle both old and new response formats
+      let characters, pagination;
+      
+      if (response.data.pagination) {
+        // New format with nested pagination object
+        characters = response.data.characters || [];
+        pagination = response.data.pagination;
+      } else {
+        // Old format with pagination at root level
+        characters = response.data.characters || response.data || [];
+        pagination = {
+          page: response.data.page || 1,
+          per_page: perPage,
+          total_count: response.data.total_count || characters.length,
+          total_pages: response.data.total_pages || Math.ceil((response.data.total_count || characters.length) / perPage),
+          has_next: response.data.next_url !== null,
+          has_prev: response.data.prev_url !== null,
+          next_url: response.data.next_url,
+          prev_url: response.data.prev_url,
+        };
+      }
       
       return {
-        characters: response.data.characters || response.data || [],
-        page: response.data.page || 1,
-        total_pages: response.data.total_pages || Math.ceil(total / perPage) || 1,
-        total_count: total,
-        next_url: response.data.next_url,
-        prev_url: response.data.prev_url,
+        characters,
+        page: pagination.page || 1,
+        per_page: pagination.per_page || perPage,
+        total_pages: pagination.total_pages || 1,
+        total_count: pagination.total_count || 0,
+        has_next: pagination.has_next || false,
+        has_prev: pagination.has_prev || false,
+        next_url: pagination.next_url || null,
+        prev_url: pagination.prev_url || null,
       };
     } catch (error) {
       throw this.handleError(error, 'Failed to load characters');
+    }
+  }
+
+  // Get all characters for client-side filtering (for sections)
+  async getAllCharacters() {
+    try {
+      const allCharacters = [];
+      let page = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        const response = await this.getCharactersPaginated(page, 100); // Use larger page size for efficiency
+        allCharacters.push(...response.characters);
+        
+        hasMore = response.has_next && response.characters.length > 0;
+        page++;
+        
+        // Safety check to prevent infinite loops
+        if (page > 20) {
+          console.warn('Reached maximum page limit when fetching all characters');
+          break;
+        }
+      }
+
+      return allCharacters;
+    } catch (error) {
+      throw this.handleError(error, 'Failed to load all characters');
     }
   }
 
@@ -141,11 +196,26 @@ class ApiService {
         },
       });
       
+      // Handle both response formats
+      let characters, pagination;
+      
+      if (response.data.pagination) {
+        characters = response.data.characters || [];
+        pagination = response.data.pagination;
+      } else {
+        characters = response.data.characters || [];
+        pagination = {
+          page: response.data.page || 1,
+          total_count: response.data.total_count || 0,
+          total_pages: response.data.total_pages || 1,
+        };
+      }
+      
       return {
-        characters: response.data.characters || [],
-        page: response.data.page || 1,
-        total_pages: response.data.total_pages || 1,
-        total_count: response.data.total_count || 0,
+        characters,
+        page: pagination.page || 1,
+        total_pages: pagination.total_pages || 1,
+        total_count: pagination.total_count || 0,
         query: query,
       };
     } catch (error) {
@@ -207,7 +277,7 @@ class ApiService {
         sessions: validSessions,
         page: response.data.page || 1,
         total_pages: response.data.total_pages || Math.ceil(validSessions.length / perPage),
-        total_count: response.data.total_count || validSessions.length,  // Use API's total_count if available
+        total_count: response.data.total_count || validSessions.length,
       };
     } catch (error) {
       throw this.handleError(error, 'Failed to load sessions');
