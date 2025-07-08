@@ -85,7 +85,7 @@ class ApiService {
     }
   }
 
-  // Updated paginated characters method with proper response parsing
+  // Updated paginated characters method - only use API total_count
   async getCharactersPaginated(page = 1, perPage = 20, section = null) {
     try {
       const params = {
@@ -109,14 +109,14 @@ class ApiService {
         pagination = {
           page: response.data.page || 1,
           per_page: perPage,
-          total_count: response.data.total_count || 0, // Use 0 as fallback instead of characters.length
+          total_count: response.data.total_count || 0,
           total_pages: response.data.total_pages || 1,
           has_next: response.data.next_url !== null,
           has_prev: response.data.prev_url !== null,
         };
       }
       
-      // Ensure we always have a total count, even if it's not provided
+      // Only use total_count from API response
       const total_count = pagination.total_count || response.data.total_count || 0;
       
       return {
@@ -135,32 +135,60 @@ class ApiService {
     }
   }
 
-  // Get all characters for client-side filtering (for sections)
-  async getAllCharacters() {
-    try {
-      const allCharacters = [];
-      let page = 1;
-      let hasMore = true;
+// Fixed getAllCharacters method to prevent infinite loops
+async getAllCharacters() {
+  try {
+    const allCharacters = [];
+    let page = 1;
+    let hasMore = true;
+    const maxPages = 50; // Increased safety limit
 
-      while (hasMore) {
-        const response = await this.getCharactersPaginated(page, 100); // Use larger page size for efficiency
-        allCharacters.push(...response.characters);
-        
-        hasMore = response.has_next && response.characters.length > 0;
-        page++;
-        
-        // Safety check to prevent infinite loops
-        if (page > 20) {
-          console.warn('Reached maximum page limit when fetching all characters');
-          break;
-        }
+    while (hasMore && page <= maxPages) {
+      console.log(`Fetching page ${page}...`);
+      
+      const response = await this.getCharactersPaginated(page, 100);
+      
+      // Log the response for debugging
+      console.log(`Page ${page} response:`, {
+        charactersCount: response.characters.length,
+        hasNext: response.has_next,
+        totalPages: response.total_pages,
+        currentPage: response.page
+      });
+      
+      // If no characters returned, break the loop
+      if (!response.characters || response.characters.length === 0) {
+        console.log('No more characters found, breaking loop');
+        break;
       }
-
-      return allCharacters;
-    } catch (error) {
-      throw this.handleError(error, 'Failed to load all characters');
+      
+      allCharacters.push(...response.characters);
+      
+      // Multiple conditions to stop the loop
+      hasMore = response.has_next === true && 
+                response.characters.length > 0 && 
+                page < (response.total_pages || Infinity);
+      
+      // Additional safety: if we've reached total_pages, stop
+      if (response.total_pages && page >= response.total_pages) {
+        console.log('Reached total pages, breaking loop');
+        break;
+      }
+      
+      page++;
     }
+
+    if (page > maxPages) {
+      console.warn(`Reached maximum page limit (${maxPages}), stopping fetch`);
+    }
+
+    console.log(`Total characters fetched: ${allCharacters.length}`);
+    return allCharacters;
+  } catch (error) {
+    console.error('Error in getAllCharacters:', error);
+    throw this.handleError(error, 'Failed to load all characters');
   }
+}
 
   // Add this method if you want to fetch a single character by ID
   async getCharacterById(characterId) {
