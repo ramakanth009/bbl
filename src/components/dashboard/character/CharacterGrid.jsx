@@ -191,27 +191,16 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       
       const response = await apiService.getCharactersPaginated(page, limit);
       
-      // Transform characters with additional metadata
-      const transformedCharacters = response.characters.map((char) => ({
-        ...char,
-        creator: extractCreator(char.name) || 'LegendsAI',
-        type: extractType(char.name) || 'Historical Figure',
-        messages: generateStats().messages,
-        likes: generateStats().likes,
-        category: extractCategory(char.name),
-        isIndian: isIndianCharacter(char.name),
-        popularity: Math.floor(Math.random() * 1000) + 100,
-      }));
-
-      // Apply section-based filtering
-      const filteredCharacters = filterCharactersBySection(transformedCharacters);
+      // Use characters directly from the backend without transformation
+      const filteredCharacters = filterCharactersBySection(response.characters);
       
       setCharacters(filteredCharacters);
       setOriginalCharacters(filteredCharacters);
-      setAllCharacters(transformedCharacters);
+      setAllCharacters(response.characters);
       setCurrentPage(response.page || 1);
       setTotalPages(response.total_pages || 1);
-      setTotalCount(response.total_count || transformedCharacters.length || 0);
+      // Update totalCount with the total count from API, not just current page count
+      setTotalCount(response.total_count || 0);
       
     } catch (error) {
       console.error('Failed to load characters:', error);
@@ -240,18 +229,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
 
   const handleSearchResults = (results) => {
     if (results.characters.length > 0) {
-      const transformedResults = results.characters.map((char) => ({
-        ...char,
-        creator: extractCreator(char.name) || 'LegendsAI',
-        type: extractType(char.name) || 'Historical Figure',
-        messages: generateStats().messages,
-        likes: generateStats().likes,
-        category: extractCategory(char.name),
-        isIndian: isIndianCharacter(char.name),
-        popularity: Math.floor(Math.random() * 1000) + 100,
-      }));
-      
-      setCharacters(transformedResults);
+      setCharacters(results.characters);
       setTotalCount(results.totalCount);
       setIsSearching(true);
       setSearchQuery(results.query);
@@ -281,101 +259,26 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
         return characters.filter(char => char.isIndian);
       
       case 'Trending':
-        return characters
-          .sort((a, b) => b.popularity - a.popularity)
-          .slice(0, Math.min(8, characters.length));
+        return characters.filter(char => char.isTrending);
       
       case 'For You':
-        return characters
-          .filter(char => ['science', 'technology', 'leadership'].includes(char.category))
-          .slice(0, Math.min(6, characters.length));
+        return characters.filter(char => char.isRecommended);
       
       case 'Recent':
-        return characters.slice(0, Math.min(4, characters.length));
+        return characters.filter(char => char.isRecent);
       
       case 'Art & Culture':
-        return characters.filter(char => 
-          ['art', 'culture', 'literature', 'music'].includes(char.category)
-        );
+        return characters.filter(char => char.category === 'art_culture');
       
       case 'Science':
-        return characters.filter(char => 
-          ['science', 'technology', 'medicine'].includes(char.category)
-        );
+        return characters.filter(char => char.category === 'science');
       
       case 'Entertainment':
-        return characters.filter(char => 
-          ['entertainment', 'sports', 'film'].includes(char.category)
-        );
+        return characters.filter(char => char.category === 'entertainment');
       
       default:
         return characters;
     }
-  };
-
-  const extractCreator = (name) => {
-    const creatorMap = {
-      'N.T. Rama Rao': 'TeluguLegends',
-      'APJ Abdul Kalam': 'IndianPioneers',
-      'Steve Jobs': 'TechVisionaries',
-      'Albert Einstein': 'PhysicsGenius',
-      'Marie Curie': 'ScienceGreats',
-      'Leonardo da Vinci': 'Renaissance',
-      'Mahatma Gandhi': 'IndianPioneers',
-      'Rabindranath Tagore': 'LiteraryGenius',
-      'Sachin Tendulkar': 'SportsLegends',
-      'Shah Rukh Khan': 'BollywoodStars',
-    };
-    return creatorMap[name] || 'LegendsAI';
-  };
-
-  const extractType = (name) => {
-    const typeMap = {
-      'N.T. Rama Rao': 'Actor, Politician',
-      'APJ Abdul Kalam': 'Scientist, President',
-      'Steve Jobs': 'Entrepreneur, Innovator',
-      'Albert Einstein': 'Physicist, Philosopher',
-      'Marie Curie': 'Physicist, Chemist',
-      'Leonardo da Vinci': 'Artist, Inventor',
-      'Mahatma Gandhi': 'Freedom Fighter, Philosopher',
-      'Rabindranath Tagore': 'Poet, Philosopher',
-      'Sachin Tendulkar': 'Cricket Legend',
-      'Shah Rukh Khan': 'Actor, Producer',
-    };
-    return typeMap[name] || 'Historical Figure';
-  };
-
-  const extractCategory = (name) => {
-    const categoryMap = {
-      'N.T. Rama Rao': 'entertainment',
-      'APJ Abdul Kalam': 'science',
-      'Steve Jobs': 'technology',
-      'Albert Einstein': 'science',
-      'Marie Curie': 'science',
-      'Leonardo da Vinci': 'art',
-      'Mahatma Gandhi': 'leadership',
-      'Rabindranath Tagore': 'literature',
-      'Sachin Tendulkar': 'sports',
-      'Shah Rukh Khan': 'entertainment',
-    };
-    return categoryMap[name] || 'general';
-  };
-
-  const isIndianCharacter = (name) => {
-    const indianCharacters = [
-      'N.T. Rama Rao', 'APJ Abdul Kalam', 'Mahatma Gandhi', 
-      'Rabindranath Tagore', 'Sachin Tendulkar', 'Shah Rukh Khan'
-    ];
-    return indianCharacters.includes(name);
-  };
-
-  const generateStats = () => {
-    const messages = Math.floor(Math.random() * 300) + 50;
-    const likes = Math.floor(messages * 0.15);
-    return {
-      messages: `${messages}`,
-      likes: `${likes}`
-    };
   };
 
   const getSectionDescription = () => {
