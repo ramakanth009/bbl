@@ -141,7 +141,7 @@ async getAllCharacters() {
     const allCharacters = [];
     let page = 1;
     let hasMore = true;
-    const maxPages = 50; // Increased safety limit
+    const maxPages = 5; // Increased safety limit
 
     while (hasMore && page <= maxPages) {
       console.log(`Fetching page ${page}...`);
