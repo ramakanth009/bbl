@@ -6,8 +6,6 @@ import {
   CircularProgress, 
   Alert, 
   Chip, 
-  InputBase, 
-  Paper,
   Pagination,
   Stack,
   FormControl,
@@ -18,6 +16,7 @@ import {
 import { makeStyles } from '@mui/styles';
 import CharacterCard from './CharacterCard';
 import ChatHistoryGrid from '../chat/history/ChatHistoryGrid';
+import SearchComponent from '../../common/SearchComponent';
 import apiService from '../../../services/api';
 
 // Styles using makeStyles (no theme.spacing)
@@ -68,31 +67,6 @@ const useStyles = makeStyles({
     textAlign: 'center',
     padding: '48px', // theme.spacing(6)
     color: '#888',
-  },
-  searchPaper: {
-    padding: '2px 8px',
-    display: 'flex',
-    alignItems: 'center',
-    width: 220,
-    boxShadow: 'none',
-    backgroundColor: 'rgba(30,30,30,0.96)', // dark background
-    border: '1.5px solid #333',             // darker border
-    borderRadius: 16,
-    transition: 'background 0.2s, border 0.2s',
-    '&:hover': {
-      backgroundColor: 'rgba(40,40,40,1)',
-      border: '1.5px solid #555',
-    },
-  },
-  searchInput: {
-    marginLeft: 8,
-    flex: 1,
-    color: '#fff', // white text
-    fontSize: '0.98rem',
-    '&::placeholder': {
-      color: '#bbb',
-      opacity: 1,
-    },
   },
   paginationContainer: {
     display: 'flex',
@@ -166,25 +140,27 @@ const EmptyState = ({ children }) => {
 const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const classes = useStyles();
   const [characters, setCharacters] = useState([]);
+  const [originalCharacters, setOriginalCharacters] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginationLoading, setPaginationLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [search, setSearch] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  const [allCharacters, setAllCharacters] = useState([]); // Store all characters for filtering
+  const [allCharacters, setAllCharacters] = useState([]);
 
   useEffect(() => {
     loadData();
   }, [activeSection]);
 
   useEffect(() => {
-    if (activeSection !== 'History') {
+    if (activeSection !== 'History' && !isSearching) {
       loadCharactersPage(1, pageSize);
     }
   }, [pageSize, activeSection]);
@@ -231,7 +207,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       const filteredCharacters = filterCharactersBySection(transformedCharacters);
       
       setCharacters(filteredCharacters);
-      setAllCharacters(transformedCharacters); // Store unfiltered for search
+      setOriginalCharacters(filteredCharacters);
+      setAllCharacters(transformedCharacters);
       setCurrentPage(response.page || 1);
       setTotalPages(response.total_pages || 1);
       setTotalCount(response.total_count || transformedCharacters.length || 0);
@@ -252,7 +229,6 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage);
     loadCharactersPage(newPage, pageSize);
-    // Scroll to top of character grid
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -260,13 +236,46 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     const newPageSize = event.target.value;
     setPageSize(newPageSize);
     setCurrentPage(1);
-    // loadCharactersPage will be called by useEffect
+  };
+
+  const handleSearchResults = (results) => {
+    if (results.characters.length > 0) {
+      const transformedResults = results.characters.map((char) => ({
+        ...char,
+        creator: extractCreator(char.name) || 'LegendsAI',
+        type: extractType(char.name) || 'Historical Figure',
+        messages: generateStats().messages,
+        likes: generateStats().likes,
+        category: extractCategory(char.name),
+        isIndian: isIndianCharacter(char.name),
+        popularity: Math.floor(Math.random() * 1000) + 100,
+      }));
+      
+      setCharacters(transformedResults);
+      setTotalCount(results.totalCount);
+      setIsSearching(true);
+      setSearchQuery(results.query);
+    } else if (results.query === '') {
+      // Reset to original characters when search is cleared
+      setCharacters(originalCharacters);
+      setTotalCount(originalCharacters.length);
+      setIsSearching(false);
+      setSearchQuery('');
+    }
+  };
+
+  const handleSearchStateChange = (searchState) => {
+    if (!searchState.isSearching && searchState.query === '') {
+      setIsSearching(false);
+      setSearchQuery('');
+      setCharacters(originalCharacters);
+    }
   };
 
   const filterCharactersBySection = (characters) => {
     switch (activeSection) {
       case 'Discover':
-        return characters; // Show all characters
+        return characters;
       
       case 'Featured':
         return characters.filter(char => char.isIndian);
@@ -451,50 +460,39 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     return (
       <Box className={classes.emptyState}>
         <Typography variant="h6" gutterBottom>
-          No characters found
+          {isSearching ? 'No search results found' : 'No characters found'}
         </Typography>
         <Typography variant="body2">
-          {activeSection === 'Recent' 
-            ? 'Start chatting with characters to see them here!'
-            : 'Please check back later or try a different section.'
+          {isSearching 
+            ? `No characters found for "${searchQuery}". Try a different search term.`
+            : activeSection === 'Recent' 
+              ? 'Start chatting with characters to see them here!'
+              : 'Please check back later or try a different section.'
           }
         </Typography>
       </Box>
     );
   }
 
-  // Filtered characters based on search
-  const displayedCharacters = characters.filter(char =>
-    char.name.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
     <Box className={classes.section}>
       <Box className={classes.sectionHeader}>
         <Box>
           <Typography className={classes.sectionTitle}>
-            {activeSection}
-            <Chip label={`${totalCount} total characters`} size="small" />
+            {isSearching ? `Search Results for "${searchQuery}"` : activeSection}
+            <Chip label={`${totalCount} ${isSearching ? 'results' : 'total characters'}`} size="small" />
           </Typography>
-          {getSectionDescription() && (
+          {getSectionDescription() && !isSearching && (
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {getSectionDescription()}
             </Typography>
           )}
         </Box>
-        <Paper
-          component="form"
-          className={classes.searchPaper}
-          onSubmit={e => e.preventDefault()}
-        >
-          <InputBase
-            className={classes.searchInput}
-            placeholder="Search characters"
-            inputProps={{ 'aria-label': 'search characters' }}
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </Paper>
+        <SearchComponent
+          onSearchResults={handleSearchResults}
+          onSearchStateChange={handleSearchStateChange}
+          placeholder="Search characters"
+        />
       </Box>
       
       {paginationLoading ? (
@@ -504,7 +502,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       ) : (
         <>
           <Box className={classes.characterBoxContainer}>
-            {displayedCharacters.map((character) => (
+            {characters.map((character) => (
               <CharacterCard 
                 key={character.id} 
                 character={character}
@@ -513,8 +511,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
             ))}
           </Box>
 
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
+          {/* Pagination Controls - Only show for non-search results */}
+          {!isSearching && totalPages > 1 && (
             <Box className={classes.paginationContainer}>
               <Box className={classes.paginationInfo}>
                 <Typography variant="body2" color="text.secondary">
