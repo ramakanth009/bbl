@@ -14,50 +14,114 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { Search as SearchIcon, Clear, TrendingUp } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 import apiService from '../../services/api';
 
-const SearchPaper = styled(Paper)(({ theme, focused }) => ({
-  padding: '2px 4px', // reduced padding for better icon placement
-  display: 'flex',
-  alignItems: 'center',
-  width: focused ? 300 : 220,
-  boxShadow: 'none',
-  backgroundColor: 'rgba(30,30,30,0.96)',
-  border: `1.5px solid ${focused ? '#555' : '#333'}`,
-  borderRadius: 16,
-  transition: 'all 0.2s ease',
-  position: 'relative',
-  '&:hover': {
-    backgroundColor: 'rgba(40,40,40,1)',
-    border: '1.5px solid #555',
+const useStyles = makeStyles({
+  searchPaper: {
+    padding: '2px 4px',
+    display: 'flex',
+    alignItems: 'center',
+    width: 220,
+    boxShadow: 'none',
+    backgroundColor: 'rgba(30,30,30,0.96)',
+    border: '1.5px solid #333',
+    borderRadius: 16,
+    transition: 'all 0.2s ease',
+    position: 'relative',
+    '&:hover': {
+      backgroundColor: 'rgba(40,40,40,1)',
+      border: '1.5px solid #555',
+    },
+    '&.focused': {
+      width: 300,
+      border: '1.5px solid #555',
+    },
   },
-}));
-
-const SearchInput = styled(InputBase)(({ theme }) => ({
-  marginLeft: 8,
-  flex: 1,
-  color: '#fff',
-  fontSize: '0.98rem',
-  '&::placeholder': {
+  searchInput: {
+    marginLeft: 8,
+    flex: 1,
+    color: '#fff',
+    fontSize: '0.98rem',
+    '& input': {
+      '&::placeholder': {
+        color: '#bbb',
+        opacity: 1,
+      },
+    },
+  },
+  searchResults: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    marginTop: 4,
+    maxHeight: 400,
+    overflow: 'auto',
+    zIndex: 1000,
+    backgroundColor: 'rgba(30,30,30,0.98)',
+    border: '1px solid #444',
+    borderRadius: 12,
+  },
+  searchButton: {
     color: '#bbb',
-    opacity: 1,
+    padding: 4,
+    '&:hover': {
+      color: '#fff',
+      backgroundColor: 'rgba(255,255,255,0.1)',
+    },
   },
-}));
-
-const SearchResults = styled(Paper)(({ theme }) => ({
-  position: 'absolute',
-  top: '100%',
-  left: 0,
-  right: 0,
-  marginTop: 4,
-  maxHeight: 400,
-  overflow: 'auto',
-  zIndex: 1000,
-  backgroundColor: 'rgba(30,30,30,0.98)',
-  border: '1px solid #444',
-  borderRadius: 12,
-}));
+  clearButton: {
+    color: '#bbb',
+    padding: 4,
+    marginRight: 4,
+  },
+  loadingIcon: {
+    color: '#bbb',
+    marginRight: 8,
+  },
+  listItem: {
+    paddingTop: 8,
+    paddingBottom: 8,
+    '&:hover': {
+      backgroundColor: 'rgba(255,255,255,0.1)',
+    },
+  },
+  recentItem: {
+    paddingTop: 4,
+    paddingBottom: 4,
+    '&:hover': {
+      backgroundColor: 'rgba(255,255,255,0.1)',
+    },
+  },
+  primaryText: {
+    color: '#fff',
+    fontSize: '0.9rem',
+  },
+  secondaryText: {
+    color: '#bbb',
+    fontSize: '0.8rem',
+  },
+  sectionHeader: {
+    fontWeight: 600,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+  recentChip: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    color: '#bbb',
+    fontSize: '0.75rem',
+  },
+  noResultsText: {
+    color: '#bbb',
+    fontSize: '0.9rem',
+  },
+  noResultsSubtext: {
+    color: '#888',
+    fontSize: '0.8rem',
+  },
+});
 
 const SearchComponent = ({ 
   onSearchResults, 
@@ -67,6 +131,7 @@ const SearchComponent = ({
   className,
   ...props 
 }) => {
+  const classes = useStyles();
   const [searchValue, setSearchValue] = useState('');
   const [focused, setFocused] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -86,18 +151,6 @@ const SearchComponent = ({
       }
     }
   }, []);
-  
-  // Only clear suggestions and notify parent when input is cleared
-  useEffect(() => {
-    if (!searchValue) {
-      setSuggestions([]);
-      if (onSearchResults) {
-        onSearchResults({ characters: [], query: '', totalCount: 0 });
-      }
-    }
-    // Do not auto-search on input change
-    // eslint-disable-next-line
-  }, [searchValue]);
 
   useEffect(() => {
     if (onSearchStateChange) {
@@ -109,7 +162,6 @@ const SearchComponent = ({
     }
   }, [searchValue, focused, onSearchStateChange]);
 
-  // Modify the search handler
   const handleSearch = async () => {
     if (!searchValue.trim() || isExecutingSearch) return;
 
@@ -141,8 +193,8 @@ const SearchComponent = ({
     const newValue = event.target.value;
     setSearchValue(newValue);
     
-    // Only notify of search state change for empty value
     if (!newValue) {
+      setSuggestions([]);
       if (onSearchStateChange) {
         onSearchStateChange({
           isSearching: false,
@@ -150,13 +202,7 @@ const SearchComponent = ({
           focused
         });
       }
-      if (onSearchResults) {
-        onSearchResults({
-          characters: [],
-          query: '',
-          totalCount: 0
-        });
-      }
+      // DON'T call onSearchResults here - only on explicit user actions
     }
   };
 
@@ -167,6 +213,7 @@ const SearchComponent = ({
 
   const handleClear = () => {
     setSearchValue('');
+    setSuggestions([]);
     setFocused(false);
     setShowResults(false);
     if (onSearchResults) {
@@ -183,12 +230,10 @@ const SearchComponent = ({
     setSearchValue(character.name);
     setShowResults(false);
     
-    // Save to recent searches
     const newRecent = [character.name, ...recentSearches.filter(s => s !== character.name)].slice(0, 5);
     setRecentSearches(newRecent);
     localStorage.setItem('recentSearches', JSON.stringify(newRecent));
     
-    // Trigger search for this character with correct count
     if (onSearchResults) {
       onSearchResults({
         characters: [character],
@@ -203,7 +248,6 @@ const SearchComponent = ({
     setShowResults(false);
   };
 
-  // Add handleKeyPress event handler
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       handleSearch();
@@ -215,8 +259,9 @@ const SearchComponent = ({
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <Box position="relative" className={className} {...props}>
-        <SearchPaper focused={focused}>
-          <SearchInput
+        <Paper className={`${classes.searchPaper} ${focused ? 'focused' : ''}`}>
+          <InputBase
+            className={classes.searchInput}
             placeholder={placeholder}
             value={searchValue}
             onChange={handleInputChange}
@@ -225,13 +270,13 @@ const SearchComponent = ({
             inputProps={{ 'aria-label': 'search characters' }}
           />
           {loading && (
-            <CircularProgress size={16} sx={{ color: '#bbb', mr: 1 }} />
+            <CircularProgress size={16} className={classes.loadingIcon} />
           )}
           {searchValue && !loading && (
             <IconButton 
               size="small" 
               onClick={handleClear}
-              sx={{ color: '#bbb', p: 0.5, mr: 0.5 }}
+              className={classes.clearButton}
             >
               <Clear fontSize="small" />
             </IconButton>
@@ -239,18 +284,11 @@ const SearchComponent = ({
           <IconButton
             size="small"
             onClick={handleSearch}
-            sx={{ 
-              color: '#bbb',
-              p: 0.5,
-              '&:hover': {
-                color: '#fff',
-                backgroundColor: 'rgba(255,255,255,0.1)'
-              }
-            }}
+            className={classes.searchButton}
           >
             <SearchIcon fontSize="small" />
           </IconButton>
-        </SearchPaper>
+        </Paper>
 
         {displaySuggestions && (
           <Popper
@@ -265,12 +303,12 @@ const SearchComponent = ({
               zIndex: 1000
             }}
           >
-            <SearchResults>
+            <Paper className={classes.searchResults}>
               <List dense>
                 {suggestions.length > 0 && (
                   <>
                     <ListItem>
-                      <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+                      <Typography variant="caption" color="text.secondary" className={classes.sectionHeader}>
                         Characters ({suggestions.length})
                       </Typography>
                     </ListItem>
@@ -279,19 +317,16 @@ const SearchComponent = ({
                         key={character.id}
                         button
                         onClick={() => handleSuggestionClick(character)}
-                        sx={{ 
-                          py: 1,
-                          '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
-                        }}
+                        className={classes.listItem}
                       >
                         <ListItemText
                           primary={character.name}
                           secondary={character.description?.slice(0, 60) + '...'}
                           primaryTypographyProps={{ 
-                            sx: { color: '#fff', fontSize: '0.9rem' }
+                            className: classes.primaryText
                           }}
                           secondaryTypographyProps={{ 
-                            sx: { color: '#bbb', fontSize: '0.8rem' }
+                            className: classes.secondaryText
                           }}
                         />
                       </ListItem>
@@ -302,7 +337,7 @@ const SearchComponent = ({
                 {recentSearches.length > 0 && searchValue === '' && (
                   <>
                     <ListItem>
-                      <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="caption" color="text.secondary" className={classes.sectionHeader}>
                         <TrendingUp fontSize="small" />
                         Recent Searches
                       </Typography>
@@ -312,19 +347,12 @@ const SearchComponent = ({
                         key={index}
                         button
                         onClick={() => handleRecentSearchClick(term)}
-                        sx={{ 
-                          py: 0.5,
-                          '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
-                        }}
+                        className={classes.recentItem}
                       >
                         <Chip
                           label={term}
                           size="small"
-                          sx={{
-                            backgroundColor: 'rgba(255,255,255,0.1)',
-                            color: '#bbb',
-                            fontSize: '0.75rem'
-                          }}
+                          className={classes.recentChip}
                         />
                       </ListItem>
                     ))}
@@ -337,16 +365,16 @@ const SearchComponent = ({
                       primary="No characters found"
                       secondary="Try a different search term"
                       primaryTypographyProps={{ 
-                        sx: { color: '#bbb', fontSize: '0.9rem' }
+                        className: classes.noResultsText
                       }}
                       secondaryTypographyProps={{ 
-                        sx: { color: '#888', fontSize: '0.8rem' }
+                        className: classes.noResultsSubtext
                       }}
                     />
                   </ListItem>
                 )}
               </List>
-            </SearchResults>
+            </Paper>
           </Popper>
         )}
       </Box>

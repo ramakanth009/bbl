@@ -162,7 +162,7 @@ async getAllCharacters() {
         break;
       }
       
-      allCharacters.push(...response.characters);
+      // allCharacters.push(...response.characters);
       
       // Multiple conditions to stop the loop
       hasMore = response.has_next === true && 

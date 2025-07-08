@@ -16,7 +16,7 @@ import {
 import { makeStyles } from '@mui/styles';
 import CharacterCard from './CharacterCard';
 import ChatHistoryGrid from '../chat/history/ChatHistoryGrid';
-import SearchComponent from '../../common/SearchComponent';
+// import SearchComponent from '../../common/SearchComponent';
 import apiService from '../../../services/api';
 
 // Styles using makeStyles (no theme.spacing)
@@ -153,17 +153,20 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [originalTotalCount, setOriginalTotalCount] = useState(0); // Store original API count
   const [allCharacters, setAllCharacters] = useState([]);
 
+  // FIXED: Only trigger on activeSection change
   useEffect(() => {
     loadData();
   }, [activeSection]);
 
+  // FIXED: Only trigger on pageSize change, removed activeSection dependency
   useEffect(() => {
     if (activeSection !== 'History' && !isSearching) {
       loadCharactersPage(1, pageSize);
     }
-  }, [pageSize, activeSection]);
+  }, [pageSize]);
 
   const loadData = async () => {
     try {
@@ -201,6 +204,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       setCurrentPage(response.page || 1);
       setTotalPages(response.total_pages || 1);
       setTotalCount(apiTotalCount); // Always use API total count
+      setOriginalTotalCount(apiTotalCount); // Store original API count
       
     } catch (error) {
       console.error('Failed to load characters:', error);
@@ -227,15 +231,15 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     setCurrentPage(1);
   };
 
+  // FIXED: Removed API call to prevent duplicate requests
   const handleSearchResults = (results) => {
     if (results.query === '') {
-      // When clearing search, restore original state
       setIsSearching(false);
       setSearchQuery('');
       setCharacters(originalCharacters);
-      loadCharactersPage(1, pageSize); // Reload to get correct total count
+      setTotalCount(originalTotalCount); // Restore original API total count
+      // REMOVED: loadCharactersPage(1, pageSize); - prevents duplicate API calls
     } else if (results.characters?.length >= 0) {
-      // For search results, use the count from the search response
       setCharacters(results.characters);
       setTotalCount(results.totalCount || results.characters.length);
       setIsSearching(true);
@@ -243,12 +247,12 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     }
   };
 
+  // FIXED: Removed API call to prevent duplicate requests
   const handleSearchStateChange = (searchState) => {
-    // Only reset when explicitly clearing search
     if (!searchState.isSearching && searchState.query === '') {
       setIsSearching(false);
       setSearchQuery('');
-      loadCharactersPage(1, pageSize); // Reload to get correct total count
+      // REMOVED: loadCharactersPage(1, pageSize); - prevents duplicate API calls
     }
   };
 
@@ -393,11 +397,11 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
             </Typography>
           )}
         </Box>
-        <SearchComponent
+        {/* <SearchComponent
           onSearchResults={handleSearchResults}
           onSearchStateChange={handleSearchStateChange}
           placeholder="Search characters"
-        />
+        /> */}
       </Box>
       
       {paginationLoading ? (
