@@ -216,7 +216,7 @@ class ApiService {
     try {
       const requestData = {
         character_name: characterName,
-        user_input: userInput,
+        user_input: userInput, 
         new_session: newSession,
         ...creativitySettings,
       };
@@ -320,6 +320,16 @@ class ApiService {
       return response.data;
     } catch (error) {
       throw this.handleError(error, 'Failed to delete character');
+    }
+  }
+
+  // Get supported languages
+  async getSupportedLanguages() {
+    try {
+      const response = await this.client.get('/languages');
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error, 'Failed to load supported languages');
     }
   }
 

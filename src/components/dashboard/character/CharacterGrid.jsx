@@ -373,8 +373,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     const messages = Math.floor(Math.random() * 300) + 50;
     const likes = Math.floor(messages * 0.15);
     return {
-      messages: `${messages}k`,
-      likes: `${likes}k`
+      messages: `${messages}`,
+      likes: `${likes}`
     };
   };
 
