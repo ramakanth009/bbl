@@ -109,12 +109,29 @@ const useStyles = makeStyles({
   },
 });
 
-const ChatHistoryGrid = ({ sessions, onSessionOpen, onRefreshSessions }) => {
+// Default to empty array to prevent undefined/null issues
+const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) => {
   const classes = useStyles();
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [selectedSession, setSelectedSession] = useState(null);
   const [loadingSessionId, setLoadingSessionId] = useState(null);
   const [error, setError] = useState(null);
+
+  // Guard clause: if sessions is not an array, show loading state
+  if (!Array.isArray(sessions)) {
+    console.warn('Sessions prop is not an array:', sessions);
+    return (
+      <Box className={classes.emptyState}>
+        <CircularProgress sx={{ mb: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          Loading conversations...
+        </Typography>
+        <Typography variant="body2">
+          Please wait while we fetch your chat history
+        </Typography>
+      </Box>
+    );
+  }
 
   const handleMenuOpen = (event, session) => {
     event.stopPropagation();
@@ -212,8 +229,14 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen, onRefreshSessions }) => {
     return Math.floor(Math.random() * 20) + 5;
   };
 
-  // Group sessions by date (Today, Yesterday, X days ago, or date string)
+  // Group sessions by date - now safe because we've validated sessions is an array
   const groupSessionsByDate = (sessions) => {
+    // Additional safety check (though redundant after our guard clause above)
+    if (!Array.isArray(sessions)) {
+      console.warn('groupSessionsByDate received non-array:', sessions);
+      return {};
+    }
+    
     return sessions.reduce((acc, session) => {
       const label = formatDate(session.created_at);
       if (!acc[label]) {
@@ -226,6 +249,7 @@ const ChatHistoryGrid = ({ sessions, onSessionOpen, onRefreshSessions }) => {
 
   const groupedSessions = groupSessionsByDate(sessions);
 
+  // Show empty state if no sessions exist
   if (sessions.length === 0) {
     return (
       <Box className={classes.emptyState}>
