@@ -232,9 +232,9 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       
       setCharacters(filteredCharacters);
       setAllCharacters(transformedCharacters); // Store unfiltered for search
-      setCurrentPage(response.page);
-      setTotalPages(response.total_pages);
-      setTotalCount(response.total_count);
+      setCurrentPage(response.page || 1);
+      setTotalPages(response.total_pages || 1);
+      setTotalCount(response.total_count || transformedCharacters.length || 0);
       
     } catch (error) {
       console.error('Failed to load characters:', error);
@@ -518,7 +518,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
             <Box className={classes.paginationContainer}>
               <Box className={classes.paginationInfo}>
                 <Typography variant="body2" color="text.secondary">
-                  Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, totalCount)} of {totalCount} characters
+                  Showing {Math.min(((currentPage - 1) * pageSize) + 1, totalCount)}-{Math.min(currentPage * pageSize, totalCount)} of {totalCount} characters
                 </Typography>
                 
                 <FormControl size="small" className={classes.pageSizeSelect}>
