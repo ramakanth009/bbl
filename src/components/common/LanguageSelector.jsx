@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { makeStyles } from '@mui/styles';
 import {
   IconButton,
   Menu,
@@ -19,49 +20,56 @@ import {
   Public,
   VolumeUp
 } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
 import apiService from '../../services/api';
 
-const LanguageButton = styled(IconButton)(({ theme, active }) => ({
-  color: active ? theme.palette.primary.main : theme.palette.text.secondary,
-  transition: 'all 0.2s ease',
-  '&:hover': {
-    backgroundColor: 'rgba(255,255,255,0.1)',
+const useStyles = makeStyles(() => ({
+  languageButton: {
+    color: ({ active }) => active ? '#6366f1' : '#9ca3af',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      backgroundColor: 'rgba(255,255,255,0.1)',
+    },
+  },
+  menu: {
+    '& .MuiPaper-root': {
+      backgroundColor: 'rgba(30,30,30,0.98)',
+      border: '1px solid #444',
+      borderRadius: 12,
+      minWidth: 280,
+      maxHeight: 400,
+    },
+  },
+  menuItem: {
+    padding: '12px',
+    borderRadius: 8,
+    margin: '4px',
+    backgroundColor: ({ selected }) => selected ? 'rgba(99,102,241,0.15)' : 'transparent',
+    border: ({ selected }) => selected ? '1px solid rgba(99,102,241,0.3)' : '1px solid transparent',
+    '&:hover': {
+      backgroundColor: ({ selected }) => selected ? 'rgba(99,102,241,0.25)' : 'rgba(255,255,255,0.1)',
+    },
+    '& .MuiListItemText-primary': {
+      color: ({ selected }) => selected ? '#6366f1' : '#fff',
+      fontWeight: ({ selected }) => selected ? 600 : 400,
+    },
+    '& .MuiListItemText-secondary': {
+      color: ({ selected }) => selected ? 'rgba(99,102,241,0.7)' : '#bbb',
+    },
+  },
+  flagEmoji: {
+    fontSize: '1.2rem',
+    marginRight: '8px',
   },
 }));
 
-const LanguageMenu = styled(Menu)(({ theme }) => ({
-  '& .MuiPaper-root': {
-    backgroundColor: 'rgba(30,30,30,0.98)',
-    border: '1px solid #444',
-    borderRadius: 12,
-    minWidth: 280,
-    maxHeight: 400,
-  },
-}));
-
-const LanguageMenuItem = styled(MenuItem)(({ theme, selected }) => ({
-  padding: theme.spacing(1.5),
-  borderRadius: 8,
-  margin: theme.spacing(0.5),
-  backgroundColor: selected ? 'rgba(99,102,241,0.15)' : 'transparent',
-  border: selected ? '1px solid rgba(99,102,241,0.3)' : '1px solid transparent',
-  '&:hover': {
-    backgroundColor: selected ? 'rgba(99,102,241,0.25)' : 'rgba(255,255,255,0.1)',
-  },
-  '& .MuiListItemText-primary': {
-    color: selected ? '#6366f1' : '#fff',
-    fontWeight: selected ? 600 : 400,
-  },
-  '& .MuiListItemText-secondary': {
-    color: selected ? 'rgba(99,102,241,0.7)' : '#bbb',
-  },
-}));
-
-const FlagEmoji = styled('span')({
-  fontSize: '1.2rem',
-  marginRight: 8,
-});
+const LanguageMenuItem = ({ selected, children, ...props }) => {
+  const classes = useStyles({ selected });
+  return (
+    <MenuItem className={classes.menuItem} {...props}>
+      {children}
+    </MenuItem>
+  );
+};
 
 const LanguageSelector = ({ 
   onLanguageChange, 
@@ -73,6 +81,7 @@ const LanguageSelector = ({
   disabled = false,
   ...props 
 }) => {
+  const classes = useStyles({ active: currentLanguage !== 'english' });
   const [anchorEl, setAnchorEl] = useState(null);
   const [languages, setLanguages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -156,28 +165,28 @@ const LanguageSelector = ({
       const currentLang = getCurrentLanguageInfo(currentLanguage);
       return (
         <Tooltip title={`Language: ${currentLang.name}`}>
-          <LanguageButton 
+          <IconButton 
             onClick={handleClick} 
             disabled={disabled}
-            active={currentLanguage !== 'english'}
+            className={classes.languageButton}
             size="small"
             {...props}
           >
             <span style={{ fontSize: '1rem' }}>{currentLang.flag}</span>
-          </LanguageButton>
+          </IconButton>
         </Tooltip>
       );
     }
 
     return (
-      <LanguageButton 
+      <IconButton 
         onClick={handleClick} 
         disabled={disabled}
-        active={currentLanguage !== 'english'}
+        className={classes.languageButton}
         {...props}
       >
         <Language />
-      </LanguageButton>
+      </IconButton>
     );
   };
 
@@ -212,7 +221,8 @@ const LanguageSelector = ({
     <>
       {renderLanguageButton()}
       
-      <LanguageMenu
+      <Menu
+        className={classes.menu}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -242,7 +252,7 @@ const LanguageSelector = ({
                 selected={isSelected}
               >
                 <ListItemIcon sx={{ minWidth: 'auto', mr: 1.5 }}>
-                  <FlagEmoji>{language.flag}</FlagEmoji>
+                  <span className={classes.flagEmoji}>{language.flag}</span>
                 </ListItemIcon>
                 <ListItemText
                   primary={language.name}
@@ -277,7 +287,7 @@ const LanguageSelector = ({
             {languages.length} languages supported
           </Typography>
         </Box>
-      </LanguageMenu>
+      </Menu>
     </>
   );
 };
