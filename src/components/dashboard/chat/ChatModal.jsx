@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { makeStyles } from '@mui/styles';
 import {
   Dialog,
   Box,
@@ -14,7 +15,6 @@ import {
   Tune,
   History as HistoryIcon 
 } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
 import apiService from '../../../services/api';
 import MessageList from '../MessageList';
 import ChatInput from './ChatInput';
@@ -22,39 +22,39 @@ import CreativitySettingsMenu from '../CreativitySettingsMenu';
 import SessionHistory from '../sessions/SessionHistory';
 import StarField from '../../common/StarField';
 
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialog-paper': {
-    backgroundColor: theme.palette.background.secondary,
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: 12,
-    width: '100%',
-    maxWidth: 900,
-    height: '80vh',
-    margin: theme.spacing(3),
+const useStyles = makeStyles(() => ({
+  dialog: {
+    '& .MuiDialog-paper': {
+      backgroundColor: '#1a1a1a',
+      border: '1px solid rgba(255,255,255,0.12)',
+      borderRadius: 12,
+      width: '100%',
+      maxWidth: 900,
+      height: '80vh',
+      margin: 24,
+    },
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '16px 20px',
+    borderBottom: '1px solid rgba(255,255,255,0.12)',
+  },
+  headerLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+  },
+  headerRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
   },
 }));
 
-const ChatHeader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: theme.spacing(2, 2.5),
-  borderBottom: `1px solid ${theme.palette.divider}`,
-}));
-
-const ChatHeaderLeft = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1.5),
-}));
-
-const ChatHeaderRight = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-}));
-
 const ChatModal = ({ open, character, onClose }) => {
+  const classes = useStyles();
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
@@ -187,9 +187,14 @@ const ChatModal = ({ open, character, onClose }) => {
   return (
     <>
       <StarField />
-      <StyledDialog open={open} onClose={handleClose} maxWidth={false}>
-        <ChatHeader>
-          <ChatHeaderLeft>
+      <Dialog 
+        open={open} 
+        onClose={handleClose} 
+        maxWidth={false}
+        className={classes.dialog}
+      >
+        <Box className={classes.header}>
+          <Box className={classes.headerLeft}>
             <Avatar
               src={character.img}
               alt={character.name}
@@ -207,9 +212,9 @@ const ChatModal = ({ open, character, onClose }) => {
                 />
               )}
             </Box>
-          </ChatHeaderLeft>
+          </Box>
           
-          <ChatHeaderRight>
+          <Box className={classes.headerRight}>
             <IconButton 
               onClick={() => setShowSessions(!showSessions)}
               sx={{ color: 'text.secondary' }}
@@ -237,8 +242,8 @@ const ChatModal = ({ open, character, onClose }) => {
             <IconButton onClick={handleClose} sx={{ color: 'text.secondary' }}>
               <Close />
             </IconButton>
-          </ChatHeaderRight>
-        </ChatHeader>
+          </Box>
+        </Box>
 
         <SessionHistory
           showSessions={showSessions}
@@ -280,7 +285,7 @@ const ChatModal = ({ open, character, onClose }) => {
           topK={topK}
           setTopK={setTopK}
         />
-      </StyledDialog>
+      </Dialog>
     </>
   );
 };

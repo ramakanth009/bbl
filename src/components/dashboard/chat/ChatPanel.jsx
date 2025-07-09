@@ -14,82 +14,77 @@ import {
   History as HistoryIcon,
   ArrowBack,
 } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 import apiService from '../../../services/api';
 import MessageList from '../message/MessageList';
 import ChatInput from './ChatInput';
 import LanguageSelector from '../../common/LanguageSelector';
 import ChatHistoryPanel from './history/ChatHistoryPanel';
 
-const ChatContainer = styled(Box)(({ theme, open }) => ({
-  width: open ? 'calc(100vw - 280px)' : 0,
-  borderLeft: `1px solid ${theme.palette.divider}`,
-  display: 'flex',
-  flexDirection: 'column',
-  transition: 'all 0.3s ease',
-  overflow: 'hidden',
-  position: 'absolute',
-  right: 0,
-  top: 0,
-  height: '100vh',
-  zIndex: 2,
-  [theme.breakpoints.down('md')]: {
-    width: open ? '100vw' : 0,
-    left: 0,
+const useStyles = makeStyles(() => ({
+  chatContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    transition: 'all 0.3s ease',
+    overflow: 'hidden',
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    height: '100vh',
+    zIndex: 2,
+  },
+  chatContainerOpen: {
+    width: 'calc(100vw - 280px)',
+    '@media (max-width: 960px)': {
+      width: '100vw',
+      left: 0,
+    },
+  },
+  chatContainerClosed: {
+    width: 0,
+  },
+  chatHeader: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '20px',
+    gap: '12px',
+  },
+  chatHeaderTop: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  chatHeaderLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    flex: 1,
+    minWidth: 0,
+  },
+  characterInfo: {
+    flex: 1,
+    minWidth: 0,
+  },
+  characterDescription: {
+    fontSize: '0.875rem',
+    lineHeight: 1.4,
+  },
+  chatHeaderRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  backButton: {},
+  messagesWrapper: {
+    flex: 1,
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
   },
 }));
 
-const ChatHeader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  padding: theme.spacing(2.5),
-  borderBottom: `1px solid ${theme.palette.divider}`,
-  gap: theme.spacing(1.5),
-}));
-
-const ChatHeaderTop = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-}));
-
-const ChatHeaderLeft = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1.5),
-  flex: 1,
-  minWidth: 0,
-}));
-
-const CharacterInfo = styled(Box)({
-  flex: 1,
-  minWidth: 0,
-});
-
-const CharacterDescription = styled(Typography)(({ theme }) => ({
-  fontSize: '0.875rem',
-  color: theme.palette.text.secondary,
-  lineHeight: 1.4,
-}));
-
-const ChatHeaderRight = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-}));
-
-const BackButton = styled(IconButton)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-}));
-
-const MessagesWrapper = styled(Box)({
-  flex: 1,
-  overflow: 'hidden',
-  display: 'flex',
-  flexDirection: 'column',
-});
-
 const ChatPanel = ({ open, character, onClose, onBack }) => {
+  const classes = useStyles();
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
@@ -297,26 +292,41 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
   };
 
   if (!open || !character) {
-    return <ChatContainer open={false} />;
+    return <Box className={`${classes.chatContainer} ${classes.chatContainerClosed}`} />;
   }
 
   return (
-    <ChatContainer open={open}>
-      <ChatHeader>
-        <ChatHeaderTop>
-          <ChatHeaderLeft>
-            <BackButton 
+    <Box 
+      className={`${classes.chatContainer} ${classes.chatContainerOpen}`}
+      sx={{ 
+        borderLeft: '1px solid rgba(255,255,255,0.12)',
+        '@media (max-width: 960px)': {
+          left: 0,
+        },
+      }}
+    >
+      <Box 
+        className={classes.chatHeader}
+        sx={{ 
+          borderBottom: '1px solid rgba(255,255,255,0.12)',
+        }}
+      >
+        <Box className={classes.chatHeaderTop}>
+          <Box className={classes.chatHeaderLeft}>
+            <IconButton 
+              className={classes.backButton}
               onClick={handleBackClick}
               title="Back to Characters"
+              sx={{ color: 'rgba(255,255,255,0.7)' }}
             >
               <ArrowBack />
-            </BackButton>
+            </IconButton>
             <Avatar
               src={character.img}
               alt={character.name}
               sx={{ width: 40, height: 40, borderRadius: 1 }}
             />
-            <CharacterInfo>
+            <Box className={classes.characterInfo}>
               <Typography variant="h6" fontWeight="bold" noWrap>
                 {character.name}
               </Typography>
@@ -341,10 +351,10 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
                   />
                 )}
               </Box>
-            </CharacterInfo>
-          </ChatHeaderLeft>
+            </Box>
+          </Box>
           
-          <ChatHeaderRight>
+          <Box className={classes.chatHeaderRight}>
             <IconButton 
               onClick={() => setShowHistory(true)}
               sx={{ color: 'text.secondary' }}
@@ -373,13 +383,16 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
             <IconButton onClick={onClose} sx={{ color: 'text.secondary' }}>
               <Close />
             </IconButton>
-          </ChatHeaderRight>
-        </ChatHeaderTop>
+          </Box>
+        </Box>
         
         {character.description && (
-          <CharacterDescription>
+          <Typography 
+            className={classes.characterDescription}
+            sx={{ color: 'rgba(255,255,255,0.7)' }}
+          >
             {character.description}
-          </CharacterDescription>
+          </Typography>
         )}
         
         {/* Enhanced language status display */}
@@ -406,7 +419,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
             )}
           </Box>
         )}
-      </ChatHeader>
+      </Box>
 
       {/* Enhanced error display with language-specific messages */}
       {error && (
@@ -425,14 +438,14 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
         </Box>
       )}
 
-      <MessagesWrapper>
+      <Box className={classes.messagesWrapper}>
         <MessageList 
           messages={messages} 
           loading={loading} 
           ref={messagesEndRef}
           showLanguageLabels={language !== 'english'}
         />
-      </MessagesWrapper>
+      </Box>
 
       <ChatInput
         value={inputValue}
@@ -451,7 +464,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
         onNewSession={startNewSession}
         characterName={character.name}
       />
-    </ChatContainer>
+    </Box>
   );
 };
 
