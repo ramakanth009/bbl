@@ -144,10 +144,19 @@ const useStyles = makeStyles(() => ({
   },
   messagesWrapper: {
     flex: 1,
-    overflow: 'hidden',
+    overflow: 'auto',
     display: 'flex',
     flexDirection: 'column',
     padding: '0 12px',
+  },
+  messagesContent: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  messagesEnd: {
+    height: '1px',
+    width: '100%',
   },
   enhancedChip: {
     fontSize: '0.7rem',
@@ -208,6 +217,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
   const [language, setLanguage] = useState('english');
   
   const messagesEndRef = useRef(null);
+  const messagesWrapperRef = useRef(null);
 
   useEffect(() => {
     if (open && character) {
@@ -226,6 +236,22 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Improved scroll to bottom function
+  const scrollToBottom = () => {
+    // Use requestAnimationFrame to ensure DOM has updated
+    requestAnimationFrame(() => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'end'
+        });
+      } else if (messagesWrapperRef.current) {
+        // Fallback: scroll the wrapper to bottom
+        messagesWrapperRef.current.scrollTop = messagesWrapperRef.current.scrollHeight;
+      }
+    });
+  };
 
   // Simplified language preferences loading
   const loadLanguagePreferences = async () => {
@@ -251,10 +277,6 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
     } catch (error) {
       console.warn('⚠️ Could not save language preferences:', error.message);
     }
-  };
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const initializeChat = () => {
@@ -534,13 +556,15 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
         </Box>
       )}
 
-      <Box className={classes.messagesWrapper}>
-        <MessageList 
-          messages={messages} 
-          loading={loading} 
-          ref={messagesEndRef}
-          showLanguageLabels={language !== 'english'}
-        />
+      <Box className={classes.messagesWrapper} ref={messagesWrapperRef}>
+        <Box className={classes.messagesContent}>
+          <MessageList 
+            messages={messages} 
+            loading={loading}
+            showLanguageLabels={language !== 'english'}
+          />
+          <div ref={messagesEndRef} className={classes.messagesEnd} />
+        </Box>
       </Box>
 
       <ChatInput
