@@ -112,9 +112,7 @@ const useStyles = makeStyles({
     position: 'relative',
     zIndex: 1,
     '$createCard:hover &': {
-      background: 'rgba(99, 102, 241, 0.2)',
       transform: 'scale(1.1)',
-      boxShadow: '0 0 30px rgba(99, 102, 241, 0.3)',
     },
   },
 });

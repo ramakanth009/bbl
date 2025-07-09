@@ -248,9 +248,12 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
             Create
           </CreateButton>
 
+          {/* Main and history sections (no scroll) */}
+          {renderNavSection(mainNavItems, "EXPLORE")}
+          {renderNavSection(historyItems, "ACTIVITY")}
+
+          {/* Only categories section is scrollable */}
           <ScrollableContent>
-            {renderNavSection(mainNavItems, "EXPLORE")}
-            {renderNavSection(historyItems, "ACTIVITY")}
             {renderNavSection(categoryItems, "CATEGORIES")}
           </ScrollableContent>
 

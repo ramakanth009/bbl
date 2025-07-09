@@ -45,6 +45,7 @@ const useStyles = makeStyles(() => ({
     margin: '4px',
     backgroundColor: ({ selected }) => selected ? 'rgba(99,102,241,0.15)' : 'transparent',
     border: ({ selected }) => selected ? '1px solid rgba(99,102,241,0.3)' : '1px solid transparent',
+    transition: 'all 0.2s ease',
     '&:hover': {
       backgroundColor: ({ selected }) => selected ? 'rgba(99,102,241,0.25)' : 'rgba(255,255,255,0.1)',
     },
@@ -54,6 +55,17 @@ const useStyles = makeStyles(() => ({
     },
     '& .MuiListItemText-secondary': {
       color: ({ selected }) => selected ? 'rgba(99,102,241,0.7)' : '#bbb',
+    },
+    '&.active': {
+      backgroundColor: 'rgba(99,102,241,0.15)',
+      borderColor: 'rgba(99,102,241,0.3)',
+      '& .MuiListItemText-primary': {
+        color: '#6366f1',
+        fontWeight: 600,
+      },
+      '& .MuiListItemText-secondary': {
+        color: 'rgba(99,102,241,0.7)',
+      },
     },
   },
   flagEmoji: {
@@ -89,33 +101,12 @@ const LanguageSelector = ({
 
   const open = Boolean(anchorEl);
 
-  // Default languages fallback if API fails
-  const defaultLanguages = [
-    { code: 'english', name: 'English', native_name: 'English', iso_code: 'en', flag: '🇺🇸' },
-    { code: 'hindi', name: 'Hindi', native_name: 'Hindi (Roman)', iso_code: 'hi', flag: '🇮🇳' },
-    { code: 'spanish', name: 'Spanish', native_name: 'Español', iso_code: 'es', flag: '🇪🇸' },
-    { code: 'french', name: 'French', native_name: 'Français', iso_code: 'fr', flag: '🇫🇷' },
-    { code: 'tamil', name: 'Tamil', native_name: 'Tamil (Roman)', iso_code: 'ta', flag: '🇮🇳' },
-    { code: 'telugu', name: 'Telugu', native_name: 'Telugu (Roman)', iso_code: 'te', flag: '🇮🇳' },
-    { code: 'bengali', name: 'Bengali', native_name: 'Bengali (Roman)', iso_code: 'bn', flag: '🇧🇩' },
-    { code: 'gujarati', name: 'Gujarati', native_name: 'Gujarati (Roman)', iso_code: 'gu', flag: '🇮🇳' },
-    { code: 'marathi', name: 'Marathi', native_name: 'Marathi (Roman)', iso_code: 'mr', flag: '🇮🇳' },
-    { code: 'punjabi', name: 'Punjabi', native_name: 'Punjabi (Roman)', iso_code: 'pa', flag: '🇮🇳' },
-    { code: 'kannada', name: 'Kannada', native_name: 'Kannada (Roman)', iso_code: 'kn', flag: '🇮🇳' },
-    { code: 'malayalam', name: 'Malayalam', native_name: 'Malayalam (Roman)', iso_code: 'ml', flag: '🇮🇳' },
-  ];
+  // Remove defaultLanguages, only fallback if API fails
 
-  // Add flags to languages
-  const addFlags = (langs) => {
-    const flagMap = {
-      'en': '🇺🇸', 'hi': '🇮🇳', 'es': '🇪🇸', 'fr': '🇫🇷',
-      'ta': '🇮🇳', 'te': '🇮🇳', 'bn': '🇧🇩', 'gu': '🇮🇳',
-      'mr': '🇮🇳', 'pa': '🇮🇳', 'kn': '🇮🇳', 'ml': '🇮🇳'
-    };
-    
+  // Add iso codes to languages (no flags)
+  const addIsoCodes = (langs) => {
     return langs.map(lang => ({
       ...lang,
-      flag: flagMap[lang.iso_code] || '🌐'
     }));
   };
 
@@ -127,14 +118,19 @@ const LanguageSelector = ({
     try {
       setLoading(true);
       setError(null);
-      
+
+      // Fetch languages from backend
       const response = await apiService.getSupportedLanguages();
-      const loadedLanguages = addFlags(response.languages || []);
+      // Expecting response.languages to be an array
+      const loadedLanguages = addIsoCodes(response.languages || []);
       setLanguages(loadedLanguages);
+      if (!response.languages || response.languages.length === 0) {
+        setError('No languages found from backend');
+      }
     } catch (error) {
-      console.warn('Failed to load languages from API, using defaults:', error);
-      setLanguages(defaultLanguages);
-      setError('Using default languages');
+      setLanguages([]);
+      setError('Failed to load languages from backend');
+      console.warn('Failed to load languages from API:', error);
     } finally {
       setLoading(false);
     }
@@ -172,7 +168,10 @@ const LanguageSelector = ({
             size="small"
             {...props}
           >
-            <span style={{ fontSize: '1rem' }}>{currentLang.flag}</span>
+            {/* Show ISO code instead of flag */}
+            <span style={{ fontSize: '1rem', fontWeight: 600 }}>
+              {currentLang.iso_code?.toUpperCase() || currentLang.code?.toUpperCase()}
+            </span>
           </IconButton>
         </Tooltip>
       );
@@ -239,33 +238,41 @@ const LanguageSelector = ({
           )}
           
           {!loading && languages.map((language) => {
-            const isSelected = mode === 'both' 
-              ? language.code === currentLanguage
-              : mode === 'input' 
-                ? language.code === inputLanguage
-                : language.code === outputLanguage;
+            // Always compare with currentLanguage for selection
+            const isSelected = language.code === currentLanguage;
 
             return (
               <LanguageMenuItem
                 key={language.code}
                 onClick={() => handleLanguageSelect(language.code, mode)}
                 selected={isSelected}
+                className={isSelected ? 'active' : ''}
               >
                 <ListItemIcon sx={{ minWidth: 'auto', mr: 1.5 }}>
-                  <span className={classes.flagEmoji}>{language.flag}</span>
+                  {/* Show ISO code instead of flag */}
+                  <span className={classes.flagEmoji} style={{ fontSize: '1rem', fontWeight: 400 }}>
+                    {language.iso_code?.toUpperCase() || language.code?.toUpperCase()}
+                  </span>
                 </ListItemIcon>
                 <ListItemText
                   primary={language.name}
                   secondary={language.native_name !== language.name ? language.native_name : null}
                   primaryTypographyProps={{
-                    sx: { color: '#fff', fontSize: '0.9rem' }
+                    sx: { 
+                      color: isSelected ? '#6366f1' : '#fff',
+                      fontWeight: isSelected ? 600 : 400,
+                      fontSize: '0.9rem'
+                    }
                   }}
                   secondaryTypographyProps={{
-                    sx: { color: '#bbb', fontSize: '0.8rem' }
+                    sx: { 
+                      color: isSelected ? 'rgba(99,102,241,0.7)' : '#bbb',
+                      fontSize: '0.8rem'
+                    }
                   }}
                 />
                 {isSelected && (
-                  <Check sx={{ color: 'primary.main', ml: 1 }} />
+                  <Check sx={{ color: '#6366f1', ml: 1 }} />
                 )}
               </LanguageMenuItem>
             );

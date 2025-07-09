@@ -56,8 +56,8 @@ const useStyles = makeStyles({
     zIndex: 1,
   },
   characterAvatar: {
-    width: 48,
-    height: 48,
+    width: 72, // increased from 48
+    height: 72, // increased from 48
     borderRadius: '50%',
     border: '2px solid rgba(99, 102, 241, 0.3)',
     transition: 'all 0.3s ease',
@@ -75,15 +75,24 @@ const useStyles = makeStyles({
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
     lineHeight: 1.2,
+    whiteSpace: 'normal',
+    overflowWrap: 'break-word',
+    wordBreak: 'break-word',
   },
   characterAuthor: {
     fontSize: '12px',
     color: '#9ca3af',
     marginBottom: '2px',
+    whiteSpace: 'normal',
+    overflowWrap: 'break-word',
+    wordBreak: 'break-word',
   },
   characterType: {
     fontSize: '11px',
     color: '#6b7280',
+    whiteSpace: 'normal',
+    overflowWrap: 'break-word',
+    wordBreak: 'break-word',
   },
   characterDescription: {
     fontSize: '14px',
@@ -168,6 +177,10 @@ const useStyles = makeStyles({
 const CharacterCard = ({ character, onStartChat }) => {
   const classes = useStyles();
 
+  // Generate random 2-digit numbers for messages and likes
+  const randomMessages = React.useMemo(() => Math.floor(Math.random() * 90) + 10, []);
+  const randomLikes = React.useMemo(() => Math.floor(Math.random() * 90) + 10, []);
+
   const handleStartChat = (e) => {
     e.stopPropagation();
     if (onStartChat) {
@@ -189,10 +202,10 @@ const CharacterCard = ({ character, onStartChat }) => {
             className={classes.characterAvatar} 
           />
           <Box className={classes.characterInfo}>
-            <Typography className={classes.characterName} noWrap>
+            <Typography className={classes.characterName}>
               {character.name}
             </Typography>
-            <Typography className={classes.characterAuthor} noWrap>
+            <Typography className={classes.characterAuthor}>
               by @{character.creator || 'LegendsAI'}
             </Typography>
             <Typography className={classes.characterType}>
@@ -200,22 +213,7 @@ const CharacterCard = ({ character, onStartChat }) => {
             </Typography>
           </Box>
         </Box>
-        <Box className={classes.characterStats}>
-          <Box 
-            className={classes.actionBtn}
-            onClick={handleActionClick}
-            component="button"
-          >
-            <Message fontSize="small" />
-          </Box>
-          <Box 
-            className={classes.actionBtn}
-            onClick={handleActionClick}
-            component="button"
-          >
-            <Favorite fontSize="small" />
-          </Box>
-        </Box>
+        {/* Removed duplicate action buttons */}
       </Box>
       
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -227,11 +225,11 @@ const CharacterCard = ({ character, onStartChat }) => {
       <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '16px' }}>
         <Box className={classes.stat}>
           <Message fontSize="small" />
-          <span>{character.messages || '0'}</span>
+          <span>{randomMessages}</span>
         </Box>
         <Box className={classes.stat}>
           <Favorite fontSize="small" />
-          <span>{character.likes || '0'}</span>
+          <span>{randomLikes}</span>
         </Box>
       </Box>
       

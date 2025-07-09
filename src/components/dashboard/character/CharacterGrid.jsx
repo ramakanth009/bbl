@@ -46,11 +46,11 @@ const useStyles = makeStyles({
     marginTop: '4px',
   },
   characterCount: {
-    background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-    color: '#fff !important',
+    // background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+    color: '#ffffff !important',
     fontWeight: 600,
     '& .MuiChip-label': {
-      color: 'white',
+      color: '#ffffff !important',
     },
   },
   viewAllLink: {

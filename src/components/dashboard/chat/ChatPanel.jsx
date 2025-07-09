@@ -10,7 +10,6 @@ import {
 import { 
   Close, 
   Add,
-  Tune,
   History as HistoryIcon,
   ArrowBack,
 } from '@mui/icons-material';
@@ -48,6 +47,28 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'column',
     padding: '20px',
     gap: '12px',
+    borderBottom: '1px solid rgba(99, 102, 241, 0.15)',
+    background: 'linear-gradient(to bottom, rgba(26, 26, 26, 0.7), rgba(18, 18, 18, 0.6))',
+    backdropFilter: 'blur(8px)',
+    position: 'relative',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '1px',
+      background: 'linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent)',
+    },
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '2px',
+      background: 'linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.15), transparent)',
+    },
   },
   chatHeaderTop: {
     display: 'flex',
@@ -64,22 +85,112 @@ const useStyles = makeStyles(() => ({
   characterInfo: {
     flex: 1,
     minWidth: 0,
+    '& .MuiTypography-h6': {
+      background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+      fontSize: '1.25rem',
+      marginBottom: '4px',
+    },
   },
   characterDescription: {
     fontSize: '0.875rem',
-    lineHeight: 1.4,
+    lineHeight: 1.6,
+    color: '#d1d5db',
   },
   chatHeaderRight: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
+    '& .MuiIconButton-root': {
+      width: '40px',
+      height: '40px',
+      borderRadius: '12px',
+      background: 'linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(42, 42, 42, 0.8))',
+      border: '1px solid rgba(99, 102, 241, 0.2)',
+      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+      '&:hover': {
+        background: 'linear-gradient(145deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1))',
+        borderColor: 'rgba(99, 102, 241, 0.6)',
+        transform: 'translateY(-2px)',
+        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)',
+      },
+      '& .MuiSvgIcon-root': {
+        fontSize: '20px',
+        transition: 'all 0.3s ease',
+      },
+      '&:active': {
+        transform: 'translateY(0)',
+      },
+    },
   },
-  backButton: {},
+  backButton: {
+    width: '40px !important',
+    height: '40px !important',
+    borderRadius: '12px !important',
+    background: 'linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(42, 42, 42, 0.8)) !important',
+    border: '1px solid rgba(99, 102, 241, 0.2) !important',
+    transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important',
+    '&:hover': {
+      background: 'linear-gradient(145deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1)) !important',
+      borderColor: 'rgba(99, 102, 241, 0.6)',
+      transform: 'translateY(-2px)',
+      boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)',
+    },
+    '&:active': {
+      transform: 'translateY(0)',
+    },
+  },
   messagesWrapper: {
     flex: 1,
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
+    padding: '0 12px',
+  },
+  enhancedChip: {
+    fontSize: '0.7rem',
+    height: 20,
+    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%)',
+    border: '1px solid rgba(99, 102, 241, 0.3)',
+    transition: 'all 0.3s ease',
+    '&:hover': {
+      borderColor: 'rgba(99, 102, 241, 0.6)',
+      transform: 'translateY(-1px)',
+    },
+  },
+  nativeChip: {
+    fontSize: '0.7rem',
+    height: 20,
+    backgroundColor: 'rgba(76,175,80,0.15)',
+    border: '1px solid rgba(76,175,80,0.3)',
+    '& .MuiChip-label': {
+      color: '#81c784',
+    },
+  },
+  languageStatus: {
+    display: 'flex',
+    gap: '8px',
+    marginTop: '8px',
+    '& .MuiChip-root': {
+      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+      '&:hover': {
+        transform: 'translateY(-1px)',
+      },
+    },
+  },
+  errorAlert: {
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '1px solid rgba(239, 68, 68, 0.2)',
+    borderRadius: '12px',
+    marginBottom: '16px',
+    '& .MuiAlert-message': {
+      color: '#fecaca',
+    },
+    '& .MuiAlert-icon': {
+      color: '#ef4444',
+    },
   },
 }));
 
@@ -147,13 +258,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
   };
 
   const initializeChat = () => {
-    setMessages([
-      {
-        role: character.name,
-        content: `Hello! I'm ${character.name}. What would you like to talk about?`,
-        language: character.native_language || 'english'
-      },
-    ]);
+    setMessages([]);
     setError(null);
     setSessionId(null);
   };
@@ -307,9 +412,6 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
     >
       <Box 
         className={classes.chatHeader}
-        sx={{ 
-          borderBottom: '1px solid rgba(255,255,255,0.12)',
-        }}
       >
         <Box className={classes.chatHeaderTop}>
           <Box className={classes.chatHeaderLeft}>
@@ -335,19 +437,14 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
                   <Chip 
                     label={`Session ${sessionId}`} 
                     size="small" 
-                    sx={{ fontSize: '0.7rem', height: 20 }} 
+                    className={classes.enhancedChip}
                   />
                 )}
                 {character.native_language && character.native_language !== 'english' && (
                   <Chip 
                     label={`Native: ${character.native_language}`} 
                     size="small" 
-                    sx={{ 
-                      fontSize: '0.7rem', 
-                      height: 20,
-                      backgroundColor: 'rgba(76,175,80,0.15)',
-                      color: 'text.secondary'
-                    }} 
+                    className={classes.nativeChip}
                   />
                 )}
               </Box>
@@ -389,7 +486,6 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
         {character.description && (
           <Typography 
             className={classes.characterDescription}
-            sx={{ color: 'rgba(255,255,255,0.7)' }}
           >
             {character.description}
           </Typography>
@@ -401,10 +497,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
             <Chip 
               label={`Language: ${language}`}
               size="small"
-              sx={{ 
-                backgroundColor: 'rgba(76,175,80,0.15)',
-                fontSize: '0.75rem'
-              }}
+              className={classes.enhancedChip}
             />
             {character.native_language && language === character.native_language && (
               <Chip 
@@ -412,8 +505,10 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
                 size="small"
                 sx={{ 
                   backgroundColor: 'rgba(255,193,7,0.15)',
-                  fontSize: '0.75rem',
-                  color: 'warning.main'
+                  borderColor: 'rgba(255,193,7,0.3)',
+                  '& .MuiChip-label': {
+                    color: '#ffd54f',
+                  }
                 }}
               />
             )}
@@ -427,6 +522,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
           <Alert 
             severity={error.includes('Language') ? 'warning' : 'error'} 
             onClose={() => setError(null)}
+            className={classes.errorAlert}
           >
             {error}
             {error.includes('Language') && (

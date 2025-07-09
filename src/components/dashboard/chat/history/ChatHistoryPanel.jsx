@@ -18,24 +18,28 @@ import {
   AccessTime,
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
+import { useTheme } from '@mui/material/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   panelContainer: {
     position: 'fixed',
     top: 0,
     right: 0,
     width: 400,
     height: '100vh',
-    backgroundColor: '#232526',
-    borderLeft: '1px solid #333',
+    backgroundColor: theme?.palette?.background?.paper || '#232526',
+    borderLeft: `1px solid ${theme?.palette?.divider || '#333'}`,
     zIndex: 1500,
     transition: 'right 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)',
+    boxShadow: theme?.shadows?.[8] || '0 0 20px rgba(0,0,0,0.5)',
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
     '@media (max-width: 600px)': {
       width: '100vw',
       right: 0,
+      borderRadius: 0,
     },
   },
   panelContainerClosed: {
@@ -50,14 +54,17 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '20px 24px',
-    borderBottom: '1px solid #333',
-    backgroundColor: '#232526',
+    borderBottom: `1px solid ${theme?.palette?.divider || '#333'}`,
+    backgroundColor: theme?.palette?.background?.default || '#232526',
+    borderTopLeftRadius: 16,
   },
   panelContent: {
     flex: 1,
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
+    background: theme?.palette?.background?.paper || '#232526',
+    borderBottomLeftRadius: 16,
   },
   scrollableList: {
     flex: 1,
@@ -70,11 +77,11 @@ const useStyles = makeStyles({
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     '&:hover': {
-      backgroundColor: '#292b2f',
+      backgroundColor: theme?.palette?.action?.hover || '#292b2f',
     },
     '&.selected': {
-      backgroundColor: '#222',
-      borderLeft: '3px solid #fff',
+      backgroundColor: theme?.palette?.action?.selected || '#222',
+      borderLeft: `3px solid ${theme?.palette?.primary?.main || '#fff'}`,
     },
   },
   newSessionButton: {
@@ -82,10 +89,12 @@ const useStyles = makeStyles({
     justifyContent: 'flex-start',
     textTransform: 'none',
     padding: '12px',
-    backgroundColor: '#fff',
-    color: '#232526',
+    backgroundColor: theme?.palette?.primary?.main || '#fff',
+    color: theme?.palette?.primary?.contrastText || '#232526',
+    borderRadius: 8,
+    fontWeight: 600,
     '&:hover': {
-      backgroundColor: '#bbb',
+      backgroundColor: theme?.palette?.primary?.dark || '#bbb',
     },
   },
   sessionMeta: {
@@ -94,7 +103,7 @@ const useStyles = makeStyles({
     gap: '4px',
     marginTop: '4px',
     fontSize: '0.75rem',
-    color: '#888',
+    color: theme?.palette?.text?.secondary || '#888',
   },
   backdrop: {
     position: 'fixed',
@@ -112,7 +121,7 @@ const useStyles = makeStyles({
     opacity: 0,
     visibility: 'hidden',
   },
-});
+}));
 
 const ChatHistoryPanel = ({ 
   open, 
@@ -123,7 +132,8 @@ const ChatHistoryPanel = ({
   onNewSession,
   characterName 
 }) => {
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(theme);
 
   const formatSessionDate = (dateString) => {
     const date = new Date(dateString);
@@ -163,14 +173,14 @@ const ChatHistoryPanel = ({
       >
         <Box className={classes.panelHeader}>
           <Box>
-            <Typography variant="h6" fontWeight="bold">
+            <Typography variant="h6" fontWeight="bold" color={theme.palette.primary.main}>
               Chat History
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {characterName}
             </Typography>
           </Box>
-          <IconButton onClick={onClose} size="small">
+          <IconButton onClick={onClose} size="small" sx={{ color: theme.palette.text.secondary }}>
             <Close />
           </IconButton>
         </Box>
