@@ -15,67 +15,89 @@ import {
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import CharacterCard from './CharacterCard';
+import CreateCharacterButton from './CreateCharacterButton';
 import ChatHistoryGrid from '../chat/history/ChatHistoryGrid';
-// import SearchComponent from '../../common/SearchComponent';
 import apiService from '../../../services/api';
 
-// Styles using makeStyles (no theme.spacing)
 const useStyles = makeStyles({
   section: {
-    marginBottom: '48px', // theme.spacing(6)
+    marginBottom: '48px',
   },
   sectionHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '16px', // theme.spacing(2)
+    marginBottom: '24px',
   },
   sectionTitle: {
     fontSize: '1.5rem',
-    fontWeight: 600,
+    fontWeight: 700,
     display: 'flex',
     alignItems: 'center',
-    gap: '8px', // theme.spacing(1)
+    gap: '12px',
+    background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+  },
+  sectionSubtitle: {
+    color: '#9ca3af',
+    fontSize: '0.875rem',
+    marginTop: '4px',
+  },
+  characterCount: {
+    background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+    color: '#fff !important',
+    fontWeight: 600,
+    '& .MuiChip-label': {
+      color: 'white',
+    },
   },
   viewAllLink: {
-    color: '#888',
+    color: '#9ca3af',
     textDecoration: 'none',
     fontWeight: 500,
     fontSize: '0.875rem',
     cursor: 'pointer',
+    transition: 'color 0.3s ease',
     '&:hover': {
-      color: '#222',
+      color: '#6366f1',
     },
   },
   characterBoxContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '16px', // theme.spacing(2)
-    '& > *': {
-      flex: '1 1 calc(33.333% - 12px)',
-      minWidth: '280px',
-      maxWidth: 'calc(33.333% - 12px)',
-    },
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    gap: '20px',
+    marginBottom: '40px',
     '@media (max-width: 600px)': {
-      '& > *': {
-        flex: '1 1 100%',
-        maxWidth: '100%',
-      },
+      gridTemplateColumns: '1fr',
     },
   },
   emptyState: {
     textAlign: 'center',
-    padding: '48px', // theme.spacing(6)
-    color: '#888',
+    padding: '80px 20px',
+    color: '#9ca3af',
+    background: 'rgba(26, 26, 26, 0.3)',
+    borderRadius: '16px',
+    backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(99, 102, 241, 0.1)',
+  },
+  emptyStateTitle: {
+    fontSize: '1.25rem',
+    fontWeight: 600,
+    marginBottom: '8px',
+    color: '#ffffff',
   },
   paginationContainer: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: '24px',
-    padding: '16px',
-    backgroundColor: 'rgba(0,0,0,0.03)',
-    borderRadius: '8px',
+    marginTop: '40px',
+    padding: '24px',
+    background: 'rgba(26, 26, 26, 0.8)',
+    borderRadius: '16px',
+    backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(99, 102, 241, 0.1)',
     '@media (max-width: 600px)': {
       flexDirection: 'column',
       gap: '16px',
@@ -85,6 +107,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     gap: '16px',
+    color: '#d1d5db',
     '@media (max-width: 600px)': {
       flexDirection: 'column',
       gap: '8px',
@@ -93,6 +116,24 @@ const useStyles = makeStyles({
   },
   pageSizeSelect: {
     minWidth: 120,
+    '& .MuiOutlinedInput-root': {
+      background: 'rgba(42, 42, 42, 0.8)',
+      border: '1px solid rgba(99, 102, 241, 0.2)',
+      borderRadius: '8px',
+      color: '#ffffff',
+      '&:hover': {
+        borderColor: 'rgba(99, 102, 241, 0.5)',
+      },
+      '&.Mui-focused': {
+        borderColor: '#6366f1',
+      },
+    },
+    '& .MuiInputLabel-root': {
+      color: '#9ca3af',
+    },
+    '& .MuiSelect-icon': {
+      color: '#9ca3af',
+    },
   },
   loadingOverlay: {
     position: 'relative',
@@ -100,42 +141,44 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    background: 'rgba(26, 26, 26, 0.3)',
+    borderRadius: '16px',
+    backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(99, 102, 241, 0.1)',
+  },
+  enhancedPagination: {
+    '& .MuiPagination-ul': {
+      gap: '8px',
+    },
+    '& .MuiPaginationItem-root': {
+      background: 'rgba(26, 26, 26, 0.8)',
+      border: '1px solid rgba(99, 102, 241, 0.2)',
+      color: '#9ca3af',
+      borderRadius: '12px',
+      backdropFilter: 'blur(10px)',
+      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+      minWidth: '44px',
+      height: '44px',
+      '&:hover': {
+        background: 'rgba(42, 42, 42, 0.9)',
+        borderColor: 'rgba(99, 102, 241, 0.5)',
+        color: '#ffffff',
+        transform: 'translateY(-2px)',
+        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3)',
+      },
+      '&.Mui-selected': {
+        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+        borderColor: 'rgba(99, 102, 241, 0.8)',
+        color: 'white',
+        boxShadow: '0 8px 25px rgba(99, 102, 241, 0.4), 0 0 20px rgba(99, 102, 241, 0.2)',
+        transform: 'translateY(-2px)',
+        '&:hover': {
+          background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+        },
+      },
+    },
   },
 });
-
-const Section = ({ children, className }) => {
-  const classes = useStyles();
-  return <Box className={`${classes.section} ${className}`}>{children}</Box>;
-};
-
-const SectionHeader = ({ children }) => {
-  const classes = useStyles();
-  return <Box className={classes.sectionHeader}>{children}</Box>;
-};
-
-const SectionTitle = ({ children }) => {
-  const classes = useStyles();
-  return <Typography className={classes.sectionTitle}>{children}</Typography>;
-};
-
-const ViewAllLink = ({ children, ...props }) => {
-  const classes = useStyles();
-  return (
-    <Link className={classes.viewAllLink} {...props}>
-      {children}
-    </Link>
-  );
-};
-
-const CharacterBoxContainer = ({ children }) => {
-  const classes = useStyles();
-  return <Box className={classes.characterBoxContainer}>{children}</Box>;
-};
-
-const EmptyState = ({ children }) => {
-  const classes = useStyles();
-  return <Box className={classes.emptyState}>{children}</Box>;
-};
 
 const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const classes = useStyles();
@@ -153,15 +196,13 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  const [originalTotalCount, setOriginalTotalCount] = useState(0); // Store original API count
+  const [originalTotalCount, setOriginalTotalCount] = useState(0);
   const [allCharacters, setAllCharacters] = useState([]);
 
-  // FIXED: Only trigger on activeSection change
   useEffect(() => {
     loadData();
   }, [activeSection]);
 
-  // FIXED: Only trigger on pageSize change, removed activeSection dependency
   useEffect(() => {
     if (activeSection !== 'History' && !isSearching) {
       loadCharactersPage(1, pageSize);
@@ -193,8 +234,6 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       }
       
       const response = await apiService.getCharactersPaginated(page, limit);
-      
-      // Store the total API count separately from filtered count
       const apiTotalCount = response.total_count;
       const filteredCharacters = filterCharactersBySection(response.characters);
       
@@ -203,8 +242,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       setAllCharacters(response.characters);
       setCurrentPage(response.page || 1);
       setTotalPages(response.total_pages || 1);
-      setTotalCount(apiTotalCount); // Always use API total count
-      setOriginalTotalCount(apiTotalCount); // Store original API count
+      setTotalCount(apiTotalCount);
+      setOriginalTotalCount(apiTotalCount);
       
     } catch (error) {
       console.error('Failed to load characters:', error);
@@ -231,57 +270,29 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     setCurrentPage(1);
   };
 
-  // FIXED: Removed API call to prevent duplicate requests
-  const handleSearchResults = (results) => {
-    if (results.query === '') {
-      setIsSearching(false);
-      setSearchQuery('');
-      setCharacters(originalCharacters);
-      setTotalCount(originalTotalCount); // Restore original API total count
-      // REMOVED: loadCharactersPage(1, pageSize); - prevents duplicate API calls
-    } else if (results.characters?.length >= 0) {
-      setCharacters(results.characters);
-      setTotalCount(results.totalCount || results.characters.length);
-      setIsSearching(true);
-      setSearchQuery(results.query);
-    }
-  };
-
-  // FIXED: Removed API call to prevent duplicate requests
-  const handleSearchStateChange = (searchState) => {
-    if (!searchState.isSearching && searchState.query === '') {
-      setIsSearching(false);
-      setSearchQuery('');
-      // REMOVED: loadCharactersPage(1, pageSize); - prevents duplicate API calls
-    }
+  const handleCharacterCreated = (newCharacter) => {
+    setCharacters(prev => [newCharacter, ...prev]);
+    setTotalCount(prev => prev + 1);
   };
 
   const filterCharactersBySection = (characters) => {
     switch (activeSection) {
       case 'Discover':
         return characters;
-      
       case 'Featured':
         return characters.filter(char => char.isIndian);
-      
       case 'Trending':
         return characters.filter(char => char.isTrending);
-      
       case 'For You':
         return characters.filter(char => char.isRecommended);
-      
       case 'Recent':
         return characters.filter(char => char.isRecent);
-      
       case 'Art & Culture':
         return characters.filter(char => char.category === 'art_culture');
-      
       case 'Science':
         return characters.filter(char => char.category === 'science');
-      
       case 'Entertainment':
         return characters.filter(char => char.category === 'entertainment');
-      
       default:
         return characters;
     }
@@ -334,8 +345,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" py={4}>
-        <CircularProgress />
+      <Box className={classes.loadingOverlay}>
+        <CircularProgress sx={{ color: '#6366f1' }} />
       </Box>
     );
   }
@@ -343,22 +354,35 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   if (error) {
     return (
       <Box py={4}>
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert 
+          severity="error" 
+          sx={{ 
+            mb: 2,
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            color: '#fecaca'
+          }}
+        >
           {error}
         </Alert>
       </Box>
     );
   }
 
-  // Special handling for History section
   if (activeSection === 'History') {
     return (
       <Box className={classes.section}>
         <Box className={classes.sectionHeader}>
-          <Typography className={classes.sectionTitle}>
-            Chat History
-            <Chip label={`${sessions.length} conversations`} size="small" />
-          </Typography>
+          <Box>
+            <Typography className={classes.sectionTitle}>
+              Chat History
+              <Chip 
+                label={`${sessions.length} conversations`} 
+                size="small"
+                className={classes.characterCount}
+              />
+            </Typography>
+          </Box>
         </Box>
         <ChatHistoryGrid sessions={sessions} onSessionOpen={handleSessionOpen} />
       </Box>
@@ -368,7 +392,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   if (characters.length === 0 && !paginationLoading) {
     return (
       <Box className={classes.emptyState}>
-        <Typography variant="h6" gutterBottom>
+        <Typography className={classes.emptyStateTitle}>
           {isSearching ? 'No search results found' : 'No characters found'}
         </Typography>
         <Typography variant="body2">
@@ -387,30 +411,32 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     <Box className={classes.section}>
       <Box className={classes.sectionHeader}>
         <Box>
-          <Typography component="div" className={classes.sectionTitle}>
+          <Typography className={classes.sectionTitle}>
             {isSearching ? `Search Results for "${searchQuery}"` : activeSection}
-            <Chip label={`${totalCount} ${isSearching ? 'results' : 'total characters'}`} size="small" />
+            <Chip 
+              label={`${totalCount} ${isSearching ? 'results' : 'total characters'}`} 
+              size="small"
+              className={classes.characterCount}
+            />
           </Typography>
           {getSectionDescription() && !isSearching && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography className={classes.sectionSubtitle}>
               {getSectionDescription()}
             </Typography>
           )}
         </Box>
-        {/* <SearchComponent
-          onSearchResults={handleSearchResults}
-          onSearchStateChange={handleSearchStateChange}
-          placeholder="Search characters"
-        /> */}
       </Box>
       
       {paginationLoading ? (
         <Box className={classes.loadingOverlay}>
-          <CircularProgress />
+          <CircularProgress sx={{ color: '#6366f1' }} />
         </Box>
       ) : (
         <>
           <Box className={classes.characterBoxContainer}>
+            {activeSection === 'Discover' && (
+              <CreateCharacterButton onCharacterCreated={handleCharacterCreated} />
+            )}
             {characters.map((character) => (
               <CharacterCard 
                 key={character.id} 
@@ -420,11 +446,10 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
             ))}
           </Box>
 
-          {/* Pagination Controls - Only show for non-search results */}
           {!isSearching && totalPages > 1 && (
             <Box className={classes.paginationContainer}>
               <Box className={classes.paginationInfo}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2">
                   Showing {Math.min(((currentPage - 1) * pageSize) + 1, totalCount)}-{Math.min(currentPage * pageSize, totalCount)} of {totalCount} characters
                 </Typography>
                 
@@ -452,6 +477,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
                   showFirstButton
                   showLastButton
                   size="large"
+                  className={classes.enhancedPagination}
                 />
               </Stack>
             </Box>

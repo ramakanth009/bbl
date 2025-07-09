@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -12,7 +11,7 @@ import {
   Chip,
 } from "@mui/material";
 import {
-  WorkspacePremium,
+  LocationOn,
   Add,
   Explore,
   Star,
@@ -33,12 +32,15 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
   "& .MuiDrawer-paper": {
     width: 280,
     height: '100vh',
-    backgroundColor: theme.palette.background.secondary,
-    borderRight: `1px solid ${theme.palette.divider}`,
-    padding: theme.spacing(2),
+    backgroundColor: '#1a1a1a',
+    borderRight: '1px solid #2a2a2a',
+    padding: theme.spacing(2.5),
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
+    position: 'fixed',
+    left: 0,
+    top: 0,
   },
 }));
 
@@ -53,57 +55,67 @@ const LogoWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1.5),
-  marginBottom: theme.spacing(2),
-  paddingLeft: theme.spacing(1),
-  paddingRight: theme.spacing(1),
+  marginBottom: theme.spacing(2.5),
 }));
 
 const LogoIcon = styled(Box)(({ theme }) => ({
-  width: 32,
-  height: 32,
-  backgroundColor: theme.palette.primary.main,
-  borderRadius: theme.spacing(1),
+  width: 28,
+  height: 28,
+  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+  borderRadius: 6,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   color: "white",
+  fontSize: '14px',
 }));
 
 const CreateButton = styled(Button)(({ theme }) => ({
   width: "100%",
-  backgroundColor: theme.palette.primary.main,
-  marginBottom: theme.spacing(1.5),
+  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+  color: 'white',
+  padding: '10px 16px',
+  borderRadius: 8,
+  fontSize: '14px',
+  fontWeight: 500,
+  marginBottom: theme.spacing(3.75),
+  textTransform: 'none',
+  transition: 'all 0.2s ease',
   "&:hover": {
-    backgroundColor: theme.palette.primary.dark,
+    background: 'linear-gradient(135deg, #5855eb 0%, #7c3aed 100%)',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)',
   },
 }));
 
 const NavSectionWrapper = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(1.5),
+  marginBottom: theme.spacing(3),
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
-  fontSize: '0.75rem',
+  fontSize: '11px',
   fontWeight: 600,
-  color: theme.palette.text.disabled,
+  color: '#666',
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
   marginBottom: theme.spacing(1),
-  paddingLeft: theme.spacing(2),
 }));
 
 const StyledListItem = styled(ListItemButton)(({ theme }) => ({
-  borderRadius: theme.spacing(1),
-  marginBottom: theme.spacing(0.25),
-  padding: theme.spacing(0.5, 2),
+  borderRadius: 6,
+  marginBottom: 1,
+  padding: '8px 12px',
+  color: '#ccc',
+  fontSize: '13px',
+  fontWeight: 400,
+  transition: 'all 0.2s ease',
   "&:hover": {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: '#252525',
   },
   "&.active": {
-    backgroundColor: theme.palette.action.hover,
-    color: theme.palette.text.primary,
+    backgroundColor: '#252525',
     "& .MuiListItemIcon-root": {
-      color: theme.palette.primary.main,
+      color: '#6366f1',
     },
   },
 }));
@@ -117,44 +129,47 @@ const ScrollableContent = styled(Box)({
 });
 
 const StyledChip = styled(Chip)(({ theme }) => ({
-  height: 20,
-  fontSize: '0.65rem',
-  backgroundColor: theme.palette.warning.white,
-  color: theme.palette.warning.black,
-  marginLeft: theme.spacing(1),
+  height: 16,
+  fontSize: '10px',
+  backgroundColor: '#fff3cd',
+  color: '#856404',
+  fontWeight: 500,
+  marginLeft: 'auto',
+  '& .MuiChip-label': {
+    padding: '0 6px',
+  },
 }));
 
 const FooterWrapper = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(1.5),
+  borderTop: '1px solid #333',
+  marginTop: 'auto',
 }));
 
 const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
   const { logout } = useAuth();
   const [showCharacterForm, setShowCharacterForm] = useState(false);
-  const [comingSoonOpen, setComingSoonOpen] = useState(false);
 
   const mainNavItems = [
-    { text: "Discover", icon: <Explore />, comingSoon: false },
-    { text: "Featured", icon: <Star />, comingSoon: true },
-    { text: "Trending", icon: <Whatshot />, comingSoon: true },
-    { text: "For You", icon: <Favorite />, comingSoon: true },
-    { text: "Recent", icon: <Schedule />, comingSoon: true },
+    { text: "Discover", icon: <Explore sx={{ fontSize: 16 }} />, comingSoon: false },
+    { text: "Featured", icon: <Star sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Trending", icon: <Whatshot sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "For You", icon: <Favorite sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Recent", icon: <Schedule sx={{ fontSize: 16 }} />, comingSoon: true },
   ];
 
   const historyItems = [
-    { text: "History", icon: <History />, comingSoon: false },
+    { text: "History", icon: <History sx={{ fontSize: 16 }} />, comingSoon: false },
   ];
 
   const categoryItems = [
-    { text: "Art & Culture", icon: <Palette />, comingSoon: true },
-    { text: "Science", icon: <Science />, comingSoon: true },
-    { text: "Entertainment", icon: <Movie />, comingSoon: true },
+    { text: "Art & Culture", icon: <Palette sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Science", icon: <Science sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Entertainment", icon: <Movie sx={{ fontSize: 16 }} />, comingSoon: true },
   ];
 
   const handleNavClick = (text, comingSoon) => {
-    if (comingSoon) {
-      setComingSoonOpen(true);
-    } else {
+    if (!comingSoon) {
       onSectionChange(text);
     }
   };
@@ -169,11 +184,8 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
 
   const handleCharacterCreated = (newCharacter) => {
     setShowCharacterForm(false);
-    
-    // Switch to Discover section to show the new character
     onSectionChange('Discover');
     
-    // Notify parent component if callback provided
     if (onCharacterCreated) {
       onCharacterCreated(newCharacter);
     }
@@ -182,27 +194,27 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
   const renderNavSection = (items, title) => (
     <NavSectionWrapper>
       {title && <SectionTitle>{title}</SectionTitle>}
-      <List dense>
+      <List dense disablePadding>
         {items.map((item) => (
           <StyledListItem
             key={item.text}
             className={activeSection === item.text ? "active" : ""}
             onClick={() => handleNavClick(item.text, item.comingSoon)}
           >
-            <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
+            <ListItemIcon sx={{ color: "#888", minWidth: 26, marginRight: 1.25 }}>
               {item.icon}
             </ListItemIcon>
             <ListItemText
-              primary={
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  {item.text}
-                  {item.comingSoon && (
-                    <StyledChip label="Coming Soon" size="small" />
-                  )}
-                </Box>
-              }
-              primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 500 }}
+              primary={item.text}
+              primaryTypographyProps={{ 
+                fontSize: "13px", 
+                fontWeight: 400,
+                color: 'inherit'
+              }}
             />
+            {item.comingSoon && (
+              <StyledChip label="Coming Soon" size="small" />
+            )}
           </StyledListItem>
         ))}
       </List>
@@ -215,35 +227,45 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
         <ContentWrapper>
           <LogoWrapper>
             <LogoIcon>
-              <WorkspacePremium fontSize="small" />
+              <LocationOn sx={{ fontSize: 14 }} />
             </LogoIcon>
-            <Typography variant="h6" fontWeight="bold">
+            <Typography 
+              sx={{ 
+                fontSize: '16px', 
+                fontWeight: 600, 
+                color: '#ffffff' 
+              }}
+            >
               Bring Back Legend
             </Typography>
           </LogoWrapper>
 
           <CreateButton
             variant="contained"
-            startIcon={<Add />}
+            startIcon={<Add sx={{ fontSize: 16 }} />}
             onClick={handleCreateClick}
           >
             Create
           </CreateButton>
 
           <ScrollableContent>
-            {renderNavSection(mainNavItems, "Explore")}
-            {renderNavSection(historyItems, "Activity")}
-            {renderNavSection(categoryItems, "Categories")}
+            {renderNavSection(mainNavItems, "EXPLORE")}
+            {renderNavSection(historyItems, "ACTIVITY")}
+            {renderNavSection(categoryItems, "CATEGORIES")}
           </ScrollableContent>
 
           <FooterWrapper>
             <StyledListItem onClick={logout}>
-              <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
-                <Logout />
+              <ListItemIcon sx={{ color: "#888", minWidth: 26, marginRight: 1.25 }}>
+                <Logout sx={{ fontSize: 16 }} />
               </ListItemIcon>
               <ListItemText
                 primary="Logout"
-                primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 500 }}
+                primaryTypographyProps={{ 
+                  fontSize: "13px", 
+                  fontWeight: 400,
+                  color: 'inherit'
+                }}
               />
             </StyledListItem>
           </FooterWrapper>
