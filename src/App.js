@@ -8,6 +8,11 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Discover from './pages/sections/Discover';
+import Featured from './pages/sections/Featured';
+import Recent from './pages/sections/Recent';
+import Trending from './pages/sections/Trending';
+import Foryou from './pages/sections/ForYou';
 
 function App() {
   return (
@@ -19,13 +24,22 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route 
-              path="/dashboard/*"
+              path="/dashboard"
               element={
                 <ProtectedRoute>
                   <Dashboard />
                 </ProtectedRoute>
               } 
-            />
+            >
+              {/* Nested routes for dashboard sections */}
+              <Route index element={<Navigate to="discover" replace />} />
+              <Route path="discover" element={<Discover />} />
+              <Route path="featured" element={<Featured />} />
+              <Route path="trending" element={<Trending />} />
+              <Route path="foryou" element={<Foryou />} />
+              <Route path="recent" element={<Recent />} />
+              <Route path="history" element={<Recent />} />
+            </Route>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </HashRouter>

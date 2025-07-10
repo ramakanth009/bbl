@@ -25,6 +25,7 @@ import {
   Logout,
 } from "@mui/icons-material";
 import { styled } from '@mui/material/styles';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from "../../../context/AuthContext";
 import CharacterCreationForm from "../character/creation/CharacterCreationForm";
 
@@ -146,31 +147,37 @@ const FooterWrapper = styled(Box)(({ theme }) => ({
   marginTop: 'auto',
 }));
 
-const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
+const Sidebar = ({ onCharacterCreated }) => {
   const { logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [showCharacterForm, setShowCharacterForm] = useState(false);
 
+  // Get current active section from URL
+  const currentPath = location.pathname.split('/').pop();
+  const activeSection = currentPath === 'dashboard' ? 'discover' : currentPath;
+
   const mainNavItems = [
-    { text: "Discover", icon: <Explore sx={{ fontSize: 16 }} />, comingSoon: false },
-    { text: "Featured", icon: <Star sx={{ fontSize: 16 }} />, comingSoon: true },
-    { text: "Trending", icon: <Whatshot sx={{ fontSize: 16 }} />, comingSoon: true },
-    { text: "For You", icon: <Favorite sx={{ fontSize: 16 }} />, comingSoon: true },
-    { text: "Recent", icon: <Schedule sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Discover", path: "discover", icon: <Explore sx={{ fontSize: 16 }} />, comingSoon: false },
+    { text: "Featured", path: "featured", icon: <Star sx={{ fontSize: 16 }} />, comingSoon: false },
+    { text: "Trending", path: "trending", icon: <Whatshot sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "For You", path: "foryou", icon: <Favorite sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Recent", path: "recent", icon: <Schedule sx={{ fontSize: 16 }} />, comingSoon: true },
   ];
 
   const historyItems = [
-    { text: "History", icon: <History sx={{ fontSize: 16 }} />, comingSoon: false },
+    { text: "History", path: "history", icon: <History sx={{ fontSize: 16 }} />, comingSoon: false },
   ];
 
   const categoryItems = [
-    { text: "Art & Culture", icon: <Palette sx={{ fontSize: 16 }} />, comingSoon: true },
-    { text: "Science", icon: <Science sx={{ fontSize: 16 }} />, comingSoon: true },
-    { text: "Entertainment", icon: <Movie sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Art & Culture", path: "art-culture", icon: <Palette sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Science", path: "science", icon: <Science sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Entertainment", path: "entertainment", icon: <Movie sx={{ fontSize: 16 }} />, comingSoon: true },
   ];
 
-  const handleNavClick = (text, comingSoon) => {
+  const handleNavClick = (path, comingSoon) => {
     if (!comingSoon) {
-      onSectionChange(text);
+      navigate(`/dashboard/${path}`);
     }
   };
 
@@ -184,7 +191,7 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
 
   const handleCharacterCreated = (newCharacter) => {
     setShowCharacterForm(false);
-    onSectionChange('Discover');
+    navigate('/dashboard/discover');
     
     if (onCharacterCreated) {
       onCharacterCreated(newCharacter);
@@ -198,8 +205,8 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
         {items.map((item) => (
           <StyledListItem
             key={item.text}
-            className={activeSection === item.text ? "active" : ""}
-            onClick={() => handleNavClick(item.text, item.comingSoon)}
+            className={activeSection === item.path ? "active" : ""}
+            onClick={() => handleNavClick(item.path, item.comingSoon)}
           >
             <ListItemIcon sx={{ color: "#888", minWidth: 26, marginRight: 1.25 }}>
               {item.icon}
