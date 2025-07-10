@@ -210,6 +210,63 @@ async getAllCharacters() {
     }
   }
 
+  // ===============================
+  // NEW CATEGORIES ENDPOINTS
+  // ===============================
+
+  // Get all available categories
+  async getCategories() {
+    try {
+      console.log('🔄 Loading categories...');
+      
+      const response = await this.client.get('/categories', {
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      
+      console.log('✅ Categories loaded:', {
+        count: Object.keys(response.data.categories || {}).length,
+        status: response.data.status
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('❌ Failed to load categories:', {
+        status: error.response?.status,
+        message: error.response?.data?.error || error.message
+      });
+      throw this.handleError(error, 'Failed to load categories');
+    }
+  }
+
+  // Get characters from specific category
+  async getCharactersByCategory(categoryKey) {
+    try {
+      console.log(`🔄 Loading characters for category: ${categoryKey}`);
+      
+      const response = await this.client.get(`/characters/category/${categoryKey}`, {
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      
+      console.log('✅ Category characters loaded:', {
+        category: response.data.category_name,
+        count: response.data.count,
+        charactersLength: response.data.characters?.length || 0
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Failed to load characters for category ${categoryKey}:`, {
+        status: error.response?.status,
+        message: error.response?.data?.error || error.message
+      });
+      throw this.handleError(error, `Failed to load characters for category: ${categoryKey}`);
+    }
+  }
+
   // Search characters with pagination
   async searchCharacters(query) {
     try {

@@ -1,158 +1,181 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import Sidebar from '../components/dashboard/main/Sidebar';
-import Header from '../components/dashboard/main/Header';
-import CharacterGrid from '../components/dashboard/character/CharacterGrid';
-import ChatPanel from '../components/dashboard/chat/ChatPanel';
-import StarField from '../components/common/StarField';
-import { useNavigate, useParams } from 'react-router-dom';
-import apiService from '../services/api';
-
-// Styles using makeStyles
-const useStyles = makeStyles({
-  dashboardContainer: {
-    display: 'flex',
-    minHeight: '100vh',
-    // background: '#181a1b', // optional: set your background here
-  },
-  mainContent: {
-    marginLeft: 280,
-    flex: 1,
-    display: 'flex',
-    '@media (max-width: 900px)': {
-      marginLeft: 0,
-    },
-  },
-  contentArea: {
-    flex: 1,
-    padding: '24px',
-    overflow: 'auto',
-    transition: 'all 0.3s ease',
-    display: 'block',
-    '@media (max-width: 900px)': {
-      padding: '16px',
-    },
-  },
-  contentAreaHidden: {
-    display: 'none',
-  },
-});
+import ApiService from '../services/api';
 
 const Dashboard = () => {
-  const classes = useStyles();
-  const [selectedCharacter, setSelectedCharacter] = useState(null);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('Discover');
-  const [characters, setCharacters] = useState([]);
   const navigate = useNavigate();
-  const { characterId: chatCharacterId } = useParams();
-  const refreshIntervalRef = useRef(null);
+  const location = useLocation();
+  const [activeSection, setActiveSection] = useState('Discover');
+  const [currentCategory, setCurrentCategory] = useState(null);
 
-  // Load all characters once for lookup
+  // Set active section based on current route
   useEffect(() => {
-    let isMounted = true;
+    const path = location.pathname;
+    if (path.includes('/category/')) {
+      const categoryKey = path.split('/category/')[1];
+      setCurrentCategory(categoryKey);
+      setActiveSection('Category');
+    } else if (path.includes('/history')) {
+      setActiveSection('History');
+    } else {
+      setActiveSection('Discover');
+      setCurrentCategory(null);
+    }
+  }, [location.pathname]);
 
-    const fetchCharacters = async () => {
-      try {
-        const chars = await apiService.getCharacters();
-        // Only update if data actually changed (shallow compare by JSON)
-        if (
-          isMounted &&
-          JSON.stringify(chars) !== JSON.stringify(characters)
-        ) {
-          setCharacters(chars);
-        }
-      } catch (e) {
-        // Optionally handle error
-      }
-    };
-
-    // Initial load
-    fetchCharacters();
-
-    return () => {
-      isMounted = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount
-
-  // Open chat panel if chatCharacterId is present in the route
-  useEffect(() => {
-    // Only run this effect if characters have loaded
-    if (characters.length === 0) return;
-
-    if (chatCharacterId) {
-      const found = characters.find(c => String(c.id) === String(chatCharacterId));
-      if (found) {
-        setSelectedCharacter(found);
-        setIsChatOpen(true);
-      } 
-      // else {
-      //   setSelectedCharacter(null);
-      //   setIsChatOpen(false);
-      // }
-    } 
-    // else {
-    //   setIsChatOpen(false);
-    // }
-  }, [chatCharacterId, characters]);
-
-  // When chat is started, update the route
-  const handleCharacterClick = (character) => {
-    setSelectedCharacter(character);
-    setIsChatOpen(true);
-    navigate(`/dashboard/chat/${character.id}`);
-  };
-
-  // When chat is closed, return to /dashboard
-  const handleChatClose = () => {
-    setIsChatOpen(false);
-    setTimeout(() => setSelectedCharacter(null), 300);
-    navigate('/dashboard');
-  };
-
-  const handleBackToCharacters = () => {
-    setIsChatOpen(false);
-    // Don't clear selectedCharacter immediately to allow for potential re-opening
-  };
-
-  const handleSectionChange = (section) => {
+  const handleSectionChange = (section, options = null) => {
     setActiveSection(section);
+
+    if (options?.type === 'category') {
+      setCurrentCategory(options.categoryKey);
+      navigate(`/dashboard/category/${options.categoryKey}`);
+    } else {
+      setCurrentCategory(null);
+      switch (section) {
+        case 'Discover':
+          navigate('/dashboard');
+          break;
+        case 'History':
+          navigate('/dashboard/history');
+          break;
+        default:
+          navigate('/dashboard');
+      }
+    }
+  };
+
+  const handleCharacterCreated = (newCharacter) => {
+    console.log('New character created:', newCharacter);
   };
 
   return (
-    <>
-      {/* StarField as the global background */}
-      <StarField />
-      <Box className={classes.dashboardContainer}>
-        <Sidebar 
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
-        />
-        <Box className={classes.mainContent}>
-          <Box
-            className={
-              isChatOpen
-                ? `${classes.contentArea} ${classes.contentAreaHidden}`
-                : classes.contentArea
-            }
-          >
-            <Header />
-            <CharacterGrid 
-              onCharacterClick={handleCharacterClick}
-              activeSection={activeSection}
-            />
-          </Box>
-          <ChatPanel
-            open={isChatOpen}
-            character={selectedCharacter}
-            onClose={handleChatClose}
-            onBack={handleChatClose}
-          />
-        </Box>
+    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0f0f0f' }}>
+      <Sidebar
+        activeSection={activeSection}
+        onSectionChange={handleSectionChange}
+        onCharacterCreated={handleCharacterCreated}
+      />
+      
+      <Box
+        sx={{
+          flex: 1,
+          marginLeft: '280px',
+          padding: 0,
+          overflow: 'hidden'
+        }}
+      >
+        <Routes>
+          <Route path="/" element={<DiscoverPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/category/:categoryKey" element={<CategoryPage categoryKey={currentCategory} />} />
+        </Routes>
       </Box>
-    </>
+    </Box>
+  );
+};
+
+// Placeholder DiscoverPage - replace with your actual component
+const DiscoverPage = () => (
+  <Box sx={{ padding: 3, color: 'white' }}>
+    <Typography variant="h4" gutterBottom>
+      Discover Characters
+    </Typography>
+    <Typography>
+      Your existing discover page content goes here
+    </Typography>
+  </Box>
+);
+
+// Placeholder HistoryPage - replace with your actual component  
+const HistoryPage = () => (
+  <Box sx={{ padding: 3, color: 'white' }}>
+    <Typography variant="h4" gutterBottom>
+      Chat History
+    </Typography>
+    <Typography>
+      Your existing history page content goes here
+    </Typography>
+  </Box>
+);
+
+// CategoryPage component
+const CategoryPage = ({ categoryKey }) => {
+  const [characters, setCharacters] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [categoryInfo, setCategoryInfo] = useState(null);
+
+  useEffect(() => {
+    const loadCategoryCharacters = async () => {
+      if (!categoryKey) return;
+      
+      try {
+        setLoading(true);
+        const response = await ApiService.getCharactersByCategory(categoryKey);
+        setCharacters(response.characters || []);
+        setCategoryInfo({
+          name: response.category_name,
+          count: response.count
+        });
+      } catch (error) {
+        console.error('Failed to load category characters:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCategoryCharacters();
+  }, [categoryKey]);
+
+  if (loading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh',
+          color: 'white'
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ padding: 3, color: 'white' }}>
+      <Typography variant="h4" gutterBottom>
+        {categoryInfo?.name || 'Category'}
+      </Typography>
+      <Typography variant="body1" sx={{ mb: 3 }}>
+        {categoryInfo?.count || characters.length} characters
+      </Typography>
+      
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', 
+        gap: 2 
+      }}>
+        {characters.map((character) => (
+          <Box 
+            key={character.id}
+            sx={{
+              p: 2,
+              border: '1px solid #333',
+              borderRadius: 1,
+              backgroundColor: '#1a1a1a'
+            }}
+          >
+            <Typography variant="h6">{character.name}</Typography>
+            <Typography variant="body2" sx={{ color: '#ccc' }}>
+              {character.description}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    </Box>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -9,6 +9,7 @@ import {
   Typography,
   Drawer,
   Chip,
+  CircularProgress,
 } from "@mui/material";
 import {
   LocationOn,
@@ -19,14 +20,20 @@ import {
   Favorite,
   Schedule,
   History,
+  Logout,
+  // Category icons
   Palette,
   Science,
   Movie,
-  Logout,
+  EmojiEvents,
+  Groups,
+  Psychology,
+  Category as CategoryIcon,
 } from "@mui/icons-material";
 import { styled } from '@mui/material/styles';
 import { useAuth } from "../../../context/AuthContext";
 import CharacterCreationForm from "../character/creation/CharacterCreationForm";
+import ApiService from "../../../services/api";
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   "& .MuiDrawer-paper": {
@@ -146,9 +153,19 @@ const FooterWrapper = styled(Box)(({ theme }) => ({
   marginTop: 'auto',
 }));
 
+const LoadingWrapper = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: theme.spacing(2),
+}));
+
 const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
   const { logout } = useAuth();
   const [showCharacterForm, setShowCharacterForm] = useState(false);
+  const [categories, setCategories] = useState({});
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [categoriesError, setCategoriesError] = useState(null);
 
   const mainNavItems = [
     { text: "Discover", icon: <Explore sx={{ fontSize: 16 }} />, comingSoon: false },
@@ -162,15 +179,61 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
     { text: "History", icon: <History sx={{ fontSize: 16 }} />, comingSoon: false },
   ];
 
-  const categoryItems = [
-    { text: "Art & Culture", icon: <Palette sx={{ fontSize: 16 }} />, comingSoon: true },
-    { text: "Science", icon: <Science sx={{ fontSize: 16 }} />, comingSoon: true },
-    { text: "Entertainment", icon: <Movie sx={{ fontSize: 16 }} />, comingSoon: true },
-  ];
+  // Category icon mapping
+  const getCategoryIcon = (categoryKey) => {
+    const iconMap = {
+      'entertainment_arts': <Movie sx={{ fontSize: 16 }} />,
+      'fictional_anime': <Palette sx={{ fontSize: 16 }} />,
+      'innovators_visionaries': <Science sx={{ fontSize: 16 }} />,
+      'leaders_historical': <Groups sx={{ fontSize: 16 }} />,
+      'spiritual_social': <Psychology sx={{ fontSize: 16 }} />,
+      'sports_champions': <EmojiEvents sx={{ fontSize: 16 }} />,
+    };
+    return iconMap[categoryKey] || <CategoryIcon sx={{ fontSize: 16 }} />;
+  };
 
-  const handleNavClick = (text, comingSoon) => {
+  // Load categories on component mount
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        setCategoriesError(null);
+        const response = await ApiService.getCategories();
+        if (response.status === 'success' && response.categories) {
+          setCategories(response.categories);
+        } else {
+          throw new Error('Invalid categories response');
+        }
+      } catch (error) {
+        console.error('Failed to load categories:', error);
+        setCategoriesError(error.message);
+        // Fallback to empty categories
+        setCategories({});
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  // Convert categories object to array for rendering
+  const categoryItems = Object.entries(categories).map(([key, displayName]) => ({
+    text: displayName,
+    key: key,
+    icon: getCategoryIcon(key),
+    comingSoon: false,
+  }));
+
+  const handleNavClick = (text, comingSoon, categoryKey = null) => {
     if (!comingSoon) {
-      onSectionChange(text);
+      if (categoryKey) {
+        // For category items, pass both the display name and category key
+        onSectionChange(text, { type: 'category', categoryKey });
+      } else {
+        // For regular nav items
+        onSectionChange(text);
+      }
     }
   };
 
@@ -191,15 +254,15 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
     }
   };
 
-  const renderNavSection = (items, title) => (
+  const renderNavSection = (items, title, isCategory = false) => (
     <NavSectionWrapper>
       {title && <SectionTitle>{title}</SectionTitle>}
       <List dense disablePadding>
         {items.map((item) => (
           <StyledListItem
-            key={item.text}
+            key={item.key || item.text}
             className={activeSection === item.text ? "active" : ""}
-            onClick={() => handleNavClick(item.text, item.comingSoon)}
+            onClick={() => handleNavClick(item.text, item.comingSoon, isCategory ? item.key : null)}
           >
             <ListItemIcon sx={{ color: "#888", minWidth: 26, marginRight: 1.25 }}>
               {item.icon}
@@ -220,6 +283,57 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
       </List>
     </NavSectionWrapper>
   );
+
+  const renderCategoriesSection = () => {
+    if (loadingCategories) {
+      return (
+        <NavSectionWrapper>
+          <SectionTitle>CATEGORIES</SectionTitle>
+          <LoadingWrapper>
+            <CircularProgress size={20} sx={{ color: '#666' }} />
+          </LoadingWrapper>
+        </NavSectionWrapper>
+      );
+    }
+
+    if (categoriesError) {
+      return (
+        <NavSectionWrapper>
+          <SectionTitle>CATEGORIES</SectionTitle>
+          <Typography 
+            sx={{ 
+              fontSize: '12px', 
+              color: '#999', 
+              textAlign: 'center',
+              padding: 2 
+            }}
+          >
+            Failed to load categories
+          </Typography>
+        </NavSectionWrapper>
+      );
+    }
+
+    if (categoryItems.length === 0) {
+      return (
+        <NavSectionWrapper>
+          <SectionTitle>CATEGORIES</SectionTitle>
+          <Typography 
+            sx={{ 
+              fontSize: '12px', 
+              color: '#999', 
+              textAlign: 'center',
+              padding: 2 
+            }}
+          >
+            No categories available
+          </Typography>
+        </NavSectionWrapper>
+      );
+    }
+
+    return renderNavSection(categoryItems, "CATEGORIES", true);
+  };
 
   return (
     <>
@@ -252,9 +366,9 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
           {renderNavSection(mainNavItems, "EXPLORE")}
           {renderNavSection(historyItems, "ACTIVITY")}
 
-          {/* Only categories section is scrollable */}
+          {/* Categories section is scrollable */}
           <ScrollableContent>
-            {renderNavSection(categoryItems, "CATEGORIES")}
+            {renderCategoriesSection()}
           </ScrollableContent>
 
           <FooterWrapper>
