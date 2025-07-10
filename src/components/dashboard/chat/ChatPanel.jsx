@@ -14,7 +14,6 @@ import {
   ArrowBack,
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
-import { useParams } from 'react-router-dom';
 import apiService from '../../../services/api';
 import MessageList from '../message/MessageList';
 import ChatInput from './ChatInput';
@@ -27,13 +26,18 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'column',
     transition: 'all 0.3s ease',
     overflow: 'hidden',
+    position: 'absolute',
+    right: 0,
+    top: 0,
     height: '100vh',
     zIndex: 2,
-    width: '100%', // Fill parent container
-    position: 'relative', // Allow stacking if needed
   },
   chatContainerOpen: {
-    width: '100%', // Always fill parent
+    width: 'calc(100vw - 280px)',
+    '@media (max-width: 960px)': {
+      width: '100vw',
+      left: 0,
+    },
   },
   chatContainerClosed: {
     width: 0,
@@ -221,7 +225,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ChatPanel = ({ character, onClose, onBack }) => {
+const ChatPanel = ({ open, character, onClose, onBack }) => {
   const classes = useStyles();
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -236,10 +240,9 @@ const ChatPanel = ({ character, onClose, onBack }) => {
   
   const messagesEndRef = useRef(null);
   const messagesWrapperRef = useRef(null);
-  const { category } = useParams(); // For category-based routes, if needed
 
   useEffect(() => {
-    if (character) {
+    if (open && character) {
       initializeChat();
       loadUserSessions();
       loadLanguagePreferences();
@@ -250,7 +253,7 @@ const ChatPanel = ({ character, onClose, onBack }) => {
         setLanguage(character.native_language);
       }
     }
-  }, [character]);
+  }, [open, character]);
 
   useEffect(() => {
     scrollToBottom();
@@ -437,8 +440,8 @@ const ChatPanel = ({ character, onClose, onBack }) => {
     setShowHistory(false);
   };
 
-  if (!character) {
-    return null;
+  if (!open || !character) {
+    return <Box className={`${classes.chatContainer} ${classes.chatContainerClosed}`} />;
   }
 
   return (
@@ -446,6 +449,9 @@ const ChatPanel = ({ character, onClose, onBack }) => {
       className={`${classes.chatContainer} ${classes.chatContainerOpen}`}
       sx={{ 
         borderLeft: '1px solid rgba(255,255,255,0.12)',
+        '@media (max-width: 960px)': {
+          left: 0,
+        },
       }}
     >
       <Box className={classes.chatHeader}>

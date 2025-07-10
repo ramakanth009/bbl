@@ -3,15 +3,11 @@ import { Box } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import Sidebar from '../components/dashboard/main/Sidebar';
 import Header from '../components/dashboard/main/Header';
+import CharacterGrid from '../components/dashboard/character/CharacterGrid';
 import ChatPanel from '../components/dashboard/chat/ChatPanel';
 import StarField from '../components/common/StarField';
 import { useNavigate, useParams } from 'react-router-dom';
 import apiService from '../services/api';
-import Discover from './sections/Discover';
-import Featured from './sections/Featured';
-import Trending from './sections/Trending';
-import ForYou from './sections/ForYou';
-import Recent from './sections/Recent';
 
 // Styles using makeStyles
 const useStyles = makeStyles({
@@ -143,37 +139,10 @@ const Dashboard = () => {
             }
           >
             <Header />
-            {/* Render section based on activeSection */}
-            {activeSection === 'Discover' && (
-              <Discover 
-                onCharacterClick={handleCharacterClick}
-                characters={characters}
-              />
-            )}
-            {activeSection === 'Featured' && (
-              <Featured 
-                onCharacterClick={handleCharacterClick}
-                characters={characters}
-              />
-            )}
-            {activeSection === 'Trending' && (
-              <Trending 
-                onCharacterClick={handleCharacterClick}
-                characters={characters}
-              />
-            )}
-            {activeSection === 'For You' && (
-              <ForYou 
-                onCharacterClick={handleCharacterClick}
-                characters={characters}
-              />
-            )}
-            {activeSection === 'Recent' && (
-              <Recent 
-                onCharacterClick={handleCharacterClick}
-                characters={characters}
-              />
-            )}
+            <CharacterGrid 
+              onCharacterClick={handleCharacterClick}
+              activeSection={activeSection}
+            />
           </Box>
           <ChatPanel
             open={isChatOpen}

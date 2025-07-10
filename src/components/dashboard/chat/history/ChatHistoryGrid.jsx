@@ -29,7 +29,6 @@ import {
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import apiService from '../../../../services/api';
-import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles({
   historyContainer: {
@@ -220,7 +219,6 @@ const useStyles = makeStyles({
 
 const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) => {
   const classes = useStyles();
-  const { category } = useParams(); // Get category from route if present
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [selectedSession, setSelectedSession] = useState(null);
   const [loadingSessionId, setLoadingSessionId] = useState(null);
@@ -254,13 +252,8 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
     );
   }
 
-  // Optionally filter sessions by category if session has a category property
-  const filteredSessions = category
-    ? sessions.filter(session => session.category === category)
-    : sessions;
-
   // Filter out invalid sessions
-  const validSessions = filteredSessions.filter(session => 
+  const validSessions = sessions.filter(session => 
     session.character && session.session_id && session.created_at
   );
 

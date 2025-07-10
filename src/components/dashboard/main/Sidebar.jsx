@@ -26,9 +26,7 @@ import {
 } from "@mui/icons-material";
 import { styled } from '@mui/material/styles';
 import { useAuth } from "../../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import CharacterCreationForm from "../character/creation/CharacterCreationForm";
-import CategoriesList from "./CategoriesList";
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   "& .MuiDrawer-paper": {
@@ -151,25 +149,28 @@ const FooterWrapper = styled(Box)(({ theme }) => ({
 const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
   const { logout } = useAuth();
   const [showCharacterForm, setShowCharacterForm] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(null);
-  const navigate = useNavigate();
 
   const mainNavItems = [
-    { text: "Discover", icon: <Explore sx={{ fontSize: 16 }} />, comingSoon: false, path: "/dashboard/discover" },
-    { text: "Featured", icon: <Star sx={{ fontSize: 16 }} />, comingSoon: true, path: "/dashboard/featured" },
-    { text: "Trending", icon: <Whatshot sx={{ fontSize: 16 }} />, comingSoon: true, path: "/dashboard/trending" },
-    { text: "For You", icon: <Favorite sx={{ fontSize: 16 }} />, comingSoon: true, path: "/dashboard/for-you" },
-    { text: "Recent", icon: <Schedule sx={{ fontSize: 16 }} />, comingSoon: true, path: "/dashboard/recent" },
+    { text: "Discover", icon: <Explore sx={{ fontSize: 16 }} />, comingSoon: false },
+    { text: "Featured", icon: <Star sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Trending", icon: <Whatshot sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "For You", icon: <Favorite sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Recent", icon: <Schedule sx={{ fontSize: 16 }} />, comingSoon: true },
   ];
 
   const historyItems = [
     { text: "History", icon: <History sx={{ fontSize: 16 }} />, comingSoon: false },
   ];
 
-  const handleNavClick = (text, comingSoon, path) => {
+  const categoryItems = [
+    { text: "Art & Culture", icon: <Palette sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Science", icon: <Science sx={{ fontSize: 16 }} />, comingSoon: true },
+    { text: "Entertainment", icon: <Movie sx={{ fontSize: 16 }} />, comingSoon: true },
+  ];
+
+  const handleNavClick = (text, comingSoon) => {
     if (!comingSoon) {
       onSectionChange(text);
-      if (path) navigate(path);
     }
   };
 
@@ -190,11 +191,6 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
     }
   };
 
-  const handleCategorySelect = (categoryKey) => {
-    setActiveCategory(categoryKey);
-    onSectionChange && onSectionChange(categoryKey);
-  };
-
   const renderNavSection = (items, title) => (
     <NavSectionWrapper>
       {title && <SectionTitle>{title}</SectionTitle>}
@@ -203,7 +199,7 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
           <StyledListItem
             key={item.text}
             className={activeSection === item.text ? "active" : ""}
-            onClick={() => handleNavClick(item.text, item.comingSoon, item.path)}
+            onClick={() => handleNavClick(item.text, item.comingSoon)}
           >
             <ListItemIcon sx={{ color: "#888", minWidth: 26, marginRight: 1.25 }}>
               {item.icon}
@@ -258,10 +254,7 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
 
           {/* Only categories section is scrollable */}
           <ScrollableContent>
-            <CategoriesList
-              onCategorySelect={handleCategorySelect}
-              activeCategory={activeCategory}
-            />
+            {renderNavSection(categoryItems, "CATEGORIES")}
           </ScrollableContent>
 
           <FooterWrapper>
