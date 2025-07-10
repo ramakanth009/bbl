@@ -13,6 +13,7 @@ import Featured from './pages/sections/Featured';
 import Recent from './pages/sections/Recent';
 import Trending from './pages/sections/Trending';
 import Foryou from './pages/sections/ForYou';
+import History from './pages/sections/History';
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
               <Route path="trending" element={<Trending />} />
               <Route path="foryou" element={<Foryou />} />
               <Route path="recent" element={<Recent />} />
-              <Route path="history" element={<Recent />} />
+              <Route path="history" element={<History />} />
             </Route>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>
