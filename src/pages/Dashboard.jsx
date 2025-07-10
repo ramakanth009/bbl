@@ -1,24 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { Routes, Route, useNavigate, useLocation, Navigate, useParams } from 'react-router-dom';
 import Sidebar from '../components/dashboard/main/Sidebar';
+import Header from '../components/dashboard/main/Header';
 import ChatPanel from '../components/dashboard/chat/ChatPanel';
 import StarField from '../components/common/StarField';
+import { useNavigate, useParams } from 'react-router-dom';
 import apiService from '../services/api';
-
-// Section components
 import Discover from './sections/Discover';
 import Featured from './sections/Featured';
 import Trending from './sections/Trending';
 import ForYou from './sections/ForYou';
 import Recent from './sections/Recent';
 
+// Styles using makeStyles
 const useStyles = makeStyles({
   dashboardContainer: {
     display: 'flex',
     minHeight: '100vh',
-    background: '#181a1b',
+    // background: '#181a1b', // optional: set your background here
   },
   mainContent: {
     marginLeft: 280,
@@ -50,50 +50,40 @@ const Dashboard = () => {
   const [activeSection, setActiveSection] = useState('Discover');
   const [characters, setCharacters] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation();
   const { characterId: chatCharacterId } = useParams();
   const refreshIntervalRef = useRef(null);
 
-  // Update active section based on current route
-  useEffect(() => {
-    const path = location.pathname;
-    if (path.includes('/discover')) {
-      setActiveSection('Discover');
-    } else if (path.includes('/featured')) {
-      setActiveSection('Featured');
-    } else if (path.includes('/trending')) {
-      setActiveSection('Trending');
-    } else if (path.includes('/for-you')) {
-      setActiveSection('For You');
-    } else if (path.includes('/recent')) {
-      setActiveSection('Recent');
-    }
-  }, [location.pathname]);
-
-  // Load characters data
+  // Load all characters once for lookup
   useEffect(() => {
     let isMounted = true;
 
     const fetchCharacters = async () => {
       try {
         const chars = await apiService.getCharacters();
-        if (isMounted && JSON.stringify(chars) !== JSON.stringify(characters)) {
+        // Only update if data actually changed (shallow compare by JSON)
+        if (
+          isMounted &&
+          JSON.stringify(chars) !== JSON.stringify(characters)
+        ) {
           setCharacters(chars);
         }
       } catch (e) {
-        console.error('Failed to fetch characters:', e);
+        // Optionally handle error
       }
     };
 
+    // Initial load
     fetchCharacters();
 
     return () => {
       isMounted = false;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
   // Open chat panel if chatCharacterId is present in the route
   useEffect(() => {
+    // Only run this effect if characters have loaded
     if (characters.length === 0) return;
 
     if (chatCharacterId) {
@@ -101,136 +91,96 @@ const Dashboard = () => {
       if (found) {
         setSelectedCharacter(found);
         setIsChatOpen(true);
-      }
-    } else {
-      setIsChatOpen(false);
-      setSelectedCharacter(null);
-    }
+      } 
+      // else {
+      //   setSelectedCharacter(null);
+      //   setIsChatOpen(false);
+      // }
+    } 
+    // else {
+    //   setIsChatOpen(false);
+    // }
   }, [chatCharacterId, characters]);
 
-  // Handle section change from sidebar
-  const handleSectionChange = (sectionName) => {
-    setActiveSection(sectionName);
-    
-    // Navigate to corresponding route
-    const routes = {
-      'Discover': '/dashboard/discover',
-      'Featured': '/dashboard/featured',
-      'Trending': '/dashboard/trending',
-      'For You': '/dashboard/for-you',
-      'Recent': '/dashboard/recent',
-    };
-    
-    const path = routes[sectionName];
-    if (path && location.pathname !== path) {
-      navigate(path);
-    }
-  };
-
-  // Handle character click (open chat)
+  // When chat is started, update the route
   const handleCharacterClick = (character) => {
     setSelectedCharacter(character);
     setIsChatOpen(true);
-    navigate(`/chat/${encodeURIComponent(character.name)}`);
+    navigate(`/dashboard/chat/${character.id}`);
   };
 
-  // Handle chat close
+  // When chat is closed, return to /dashboard
   const handleChatClose = () => {
     setIsChatOpen(false);
-    setSelectedCharacter(null);
-    // Navigate back to current section
-    const currentPath = location.pathname;
-    if (currentPath.startsWith('/chat/')) {
-      navigate(`/dashboard/${activeSection.toLowerCase().replace(' ', '-')}`);
-    }
+    setTimeout(() => setSelectedCharacter(null), 300);
+    navigate('/dashboard');
   };
 
-  // Handle character creation callback
-  const handleCharacterCreated = (newCharacter) => {
-    setCharacters(prev => [newCharacter, ...prev]);
-    // Stay on Discover section after character creation
-    if (activeSection !== 'Discover') {
-      handleSectionChange('Discover');
-    }
+  const handleBackToCharacters = () => {
+    setIsChatOpen(false);
+    // Don't clear selectedCharacter immediately to allow for potential re-opening
+  };
+
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
   };
 
   return (
     <>
-      <React.Suspense fallback={<div />}>
-        <StarField />
-      </React.Suspense>
-      
+      {/* StarField as the global background */}
+      <StarField />
       <Box className={classes.dashboardContainer}>
-        {/* Sidebar - Always visible */}
-        <Sidebar
+        <Sidebar 
           activeSection={activeSection}
-          onSectionChange={handleSectionChange}
-          onCharacterCreated={handleCharacterCreated}
+          onSectionChange={setActiveSection}
         />
-
-        {/* Main Content Area */}
         <Box className={classes.mainContent}>
-          <Box className={isChatOpen ? classes.contentAreaHidden : classes.contentArea}>
-            <Routes>
-              <Route
-                path="discover"
-                element={
-                  <Discover
-                    onCharacterClick={handleCharacterClick}
-                    characters={characters}
-                    onCharacterCreated={handleCharacterCreated}
-                  />
-                }
+          <Box
+            className={
+              isChatOpen
+                ? `${classes.contentArea} ${classes.contentAreaHidden}`
+                : classes.contentArea
+            }
+          >
+            <Header />
+            {/* Render section based on activeSection */}
+            {activeSection === 'Discover' && (
+              <Discover 
+                onCharacterClick={handleCharacterClick}
+                characters={characters}
               />
-              <Route
-                path="featured"
-                element={
-                  <Featured
-                    onCharacterClick={handleCharacterClick}
-                    characters={characters}
-                  />
-                }
+            )}
+            {activeSection === 'Featured' && (
+              <Featured 
+                onCharacterClick={handleCharacterClick}
+                characters={characters}
               />
-              <Route
-                path="trending"
-                element={
-                  <Trending
-                    onCharacterClick={handleCharacterClick}
-                    characters={characters}
-                  />
-                }
+            )}
+            {activeSection === 'Trending' && (
+              <Trending 
+                onCharacterClick={handleCharacterClick}
+                characters={characters}
               />
-              <Route
-                path="for-you"
-                element={
-                  <ForYou
-                    onCharacterClick={handleCharacterClick}
-                    characters={characters}
-                  />
-                }
+            )}
+            {activeSection === 'For You' && (
+              <ForYou 
+                onCharacterClick={handleCharacterClick}
+                characters={characters}
               />
-              <Route
-                path="recent"
-                element={
-                  <Recent
-                    onCharacterClick={handleCharacterClick}
-                    characters={characters}
-                  />
-                }
+            )}
+            {activeSection === 'Recent' && (
+              <Recent 
+                onCharacterClick={handleCharacterClick}
+                characters={characters}
               />
-              {/* Default redirect to discover */}
-              <Route path="" element={<Navigate to="discover" replace />} />
-              <Route path="*" element={<Navigate to="discover" replace />} />
-            </Routes>
+            )}
           </Box>
-
-          {/* Chat Panel - shown when chat is open */}
-          {isChatOpen && selectedCharacter && (
-            <ChatPanel
-              character={selectedCharacter}
-              onClose={handleChatClose}
-            />
-          )}
+          <ChatPanel
+            open={isChatOpen}
+            character={selectedCharacter}
+            onClose={handleChatClose}
+            onBack={handleChatClose}
+          />
         </Box>
       </Box>
     </>

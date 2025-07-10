@@ -19,21 +19,16 @@ import {
   Favorite,
   Schedule,
   History,
+  Palette,
+  Science,
+  Movie,
   Logout,
 } from "@mui/icons-material";
 import { styled } from '@mui/material/styles';
 import { useAuth } from "../../../context/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CharacterCreationForm from "../character/creation/CharacterCreationForm";
 import CategoriesList from "./CategoriesList";
-// Dashboard section constants
-const DASHBOARD_SECTIONS = {
-  DISCOVER: 'Discover',
-  FEATURED: 'Featured', 
-  TRENDING: 'Trending',
-  FOR_YOU: 'For You',
-  RECENT: 'Recent',
-};
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   "& .MuiDrawer-paper": {
@@ -121,7 +116,6 @@ const StyledListItem = styled(ListItemButton)(({ theme }) => ({
   },
   "&.active": {
     backgroundColor: '#252525',
-    color: '#6366f1',
     "& .MuiListItemIcon-root": {
       color: '#6366f1',
     },
@@ -159,39 +153,13 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
   const [showCharacterForm, setShowCharacterForm] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const mainNavItems = [
-    { 
-      text: DASHBOARD_SECTIONS.DISCOVER, 
-      icon: <Explore sx={{ fontSize: 16 }} />, 
-      comingSoon: false, 
-      path: "/dashboard/discover" 
-    },
-    { 
-      text: DASHBOARD_SECTIONS.FEATURED, 
-      icon: <Star sx={{ fontSize: 16 }} />, 
-      comingSoon: true, 
-      path: "/dashboard/featured" 
-    },
-    { 
-      text: DASHBOARD_SECTIONS.TRENDING, 
-      icon: <Whatshot sx={{ fontSize: 16 }} />, 
-      comingSoon: true, 
-      path: "/dashboard/trending" 
-    },
-    { 
-      text: DASHBOARD_SECTIONS.FOR_YOU, 
-      icon: <Favorite sx={{ fontSize: 16 }} />, 
-      comingSoon: true, 
-      path: "/dashboard/for-you" 
-    },
-    { 
-      text: DASHBOARD_SECTIONS.RECENT, 
-      icon: <Schedule sx={{ fontSize: 16 }} />, 
-      comingSoon: true, 
-      path: "/dashboard/recent" 
-    },
+    { text: "Discover", icon: <Explore sx={{ fontSize: 16 }} />, comingSoon: false, path: "/dashboard/discover" },
+    { text: "Featured", icon: <Star sx={{ fontSize: 16 }} />, comingSoon: true, path: "/dashboard/featured" },
+    { text: "Trending", icon: <Whatshot sx={{ fontSize: 16 }} />, comingSoon: true, path: "/dashboard/trending" },
+    { text: "For You", icon: <Favorite sx={{ fontSize: 16 }} />, comingSoon: true, path: "/dashboard/for-you" },
+    { text: "Recent", icon: <Schedule sx={{ fontSize: 16 }} />, comingSoon: true, path: "/dashboard/recent" },
   ];
 
   const historyItems = [
@@ -199,9 +167,9 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
   ];
 
   const handleNavClick = (text, comingSoon, path) => {
-    if (!comingSoon && path) {
+    if (!comingSoon) {
       onSectionChange(text);
-      navigate(path);
+      if (path) navigate(path);
     }
   };
 
@@ -215,8 +183,7 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
 
   const handleCharacterCreated = (newCharacter) => {
     setShowCharacterForm(false);
-    onSectionChange(DASHBOARD_SECTIONS.DISCOVER);
-    navigate('/dashboard/discover');
+    onSectionChange('Discover');
     
     if (onCharacterCreated) {
       onCharacterCreated(newCharacter);
@@ -238,7 +205,7 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
             className={activeSection === item.text ? "active" : ""}
             onClick={() => handleNavClick(item.text, item.comingSoon, item.path)}
           >
-            <ListItemIcon sx={{ color: "inherit", minWidth: 26, marginRight: 1.25 }}>
+            <ListItemIcon sx={{ color: "#888", minWidth: 26, marginRight: 1.25 }}>
               {item.icon}
             </ListItemIcon>
             <ListItemText
@@ -285,11 +252,11 @@ const Sidebar = ({ activeSection, onSectionChange, onCharacterCreated }) => {
             Create
           </CreateButton>
 
-          {/* Main and history sections */}
+          {/* Main and history sections (no scroll) */}
           {renderNavSection(mainNavItems, "EXPLORE")}
           {renderNavSection(historyItems, "ACTIVITY")}
 
-          {/* Categories section - scrollable */}
+          {/* Only categories section is scrollable */}
           <ScrollableContent>
             <CategoriesList
               onCategorySelect={handleCategorySelect}
