@@ -1,272 +1,159 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import React, { useState, useEffect, useRef } from 'react';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Sidebar from '../components/dashboard/main/Sidebar';
+import Header from '../components/dashboard/main/Header';
 import CharacterGrid from '../components/dashboard/character/CharacterGrid';
-import ApiService from '../services/api';
-// Import the actual CharacterCard component
-import CharacterCard from '../components/dashboard/character/CharacterCard';
+import ChatPanel from '../components/dashboard/chat/ChatPanel';
+import StarField from '../components/common/StarField';
+import { useNavigate, useParams } from 'react-router-dom';
+import apiService from '../services/api';
+
+// Styles using makeStyles
+const useStyles = makeStyles({
+  dashboardContainer: {
+    display: 'flex',
+    minHeight: '100vh',
+    // background: '#181a1b', // optional: set your background here
+  },
+  mainContent: {
+    marginLeft: 280,
+    flex: 1,
+    display: 'flex',
+    '@media (max-width: 900px)': {
+      marginLeft: 0,
+    },
+  },
+  contentArea: {
+    flex: 1,
+    padding: '24px',
+    overflow: 'auto',
+    transition: 'all 0.3s ease',
+    display: 'block',
+    '@media (max-width: 900px)': {
+      padding: '16px',
+    },
+  },
+  contentAreaHidden: {
+    display: 'none',
+  },
+});
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const classes = useStyles();
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('Discover');
-  const [currentCategory, setCurrentCategory] = useState(null);
-  const [categoryName, setCategoryName] = useState('');
-
-  // Set active section based on current route
-  useEffect(() => {
-    const path = location.pathname;
-    if (path.includes('/category/')) {
-      const categoryKey = path.split('/category/')[1];
-      setCurrentCategory(categoryKey);
-      loadCategoryName(categoryKey);
-    } else if (path.includes('/history')) {
-      setActiveSection('History');
-      setCurrentCategory(null);
-    } else {
-      setActiveSection('Discover');
-      setCurrentCategory(null);
-      setCategoryName('');
-    }
-  }, [location.pathname]);
-
-  const loadCategoryName = async (categoryKey) => {
-    try {
-      const response = await ApiService.getCategories();
-      if (response.categories && response.categories[categoryKey]) {
-        setCategoryName(response.categories[categoryKey]);
-        setActiveSection(response.categories[categoryKey]);
-      }
-    } catch (error) {
-      console.error('Failed to load category name:', error);
-      setActiveSection('Category');
-    }
-  };
-
-  const handleSectionChange = (section, options = null) => {
-    if (options?.type === 'category') {
-      setCurrentCategory(options.categoryKey);
-      navigate(`/dashboard/category/${options.categoryKey}`);
-    } else {
-      setCurrentCategory(null);
-      setCategoryName('');
-      setActiveSection(section);
-      switch (section) {
-        case 'Discover':
-          navigate('/dashboard');
-          break;
-        case 'History':
-          navigate('/dashboard/history');
-          break;
-        default:
-          navigate('/dashboard');
-      }
-    }
-  };
-
-  const handleCharacterCreated = (newCharacter) => {
-    console.log('New character created:', newCharacter);
-  };
-
-  const handleCharacterClick = (character, sessionData = null) => {
-    // Handle character click - navigate to chat or open chat modal
-    console.log('Character clicked:', character, sessionData);
-    // Implement your chat opening logic here
-  };
-
-  const handleSessionOpen = (sessionWithMessages) => {
-    // Handle session opening from history
-    console.log('Session opened:', sessionWithMessages);
-    // Implement your session opening logic here
-  };
-
-  return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0f0f0f' }}>
-      <Sidebar
-        activeSection={activeSection}
-        onSectionChange={handleSectionChange}
-        onCharacterCreated={handleCharacterCreated}
-      />
-      
-      <Box
-        sx={{
-          flex: 1,
-          marginLeft: '280px',
-          padding: 3,
-          overflow: 'auto'
-        }}
-      >
-        <Routes>
-          <Route 
-            path="/" 
-            element={
-              <CharacterGrid
-                onCharacterClick={handleCharacterClick}
-                activeSection={activeSection}
-                onSessionOpen={handleSessionOpen}
-              />
-            } 
-          />
-          <Route 
-            path="/history" 
-            element={
-              <CharacterGrid
-                onCharacterClick={handleCharacterClick}
-                activeSection="History"
-                onSessionOpen={handleSessionOpen}
-              />
-            } 
-          />
-          <Route 
-            path="/category/:categoryKey" 
-            element={
-              <CategoryPage 
-                categoryKey={currentCategory}
-                categoryName={categoryName}
-                onCharacterClick={handleCharacterClick}
-                onSessionOpen={handleSessionOpen}
-              />
-            } 
-          />
-        </Routes>
-      </Box>
-    </Box>
-  );
-};
-
-// CategoryPage component using CharacterGrid
-const CategoryPage = ({ categoryKey, categoryName, onCharacterClick, onSessionOpen }) => {
   const [characters, setCharacters] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [categoryInfo, setCategoryInfo] = useState(null);
+  const navigate = useNavigate();
+  const { characterId: chatCharacterId } = useParams();
+  const refreshIntervalRef = useRef(null);
 
+  // Load all characters once for lookup
   useEffect(() => {
-    const loadCategoryCharacters = async () => {
-      if (!categoryKey) return;
-      
+    let isMounted = true;
+
+    const fetchCharacters = async () => {
       try {
-        setLoading(true);
-        const response = await ApiService.getCharactersByCategory(categoryKey);
-        setCharacters(response.characters || []);
-        setCategoryInfo({
-          name: response.category_name,
-          count: response.count
-        });
-      } catch (error) {
-        console.error('Failed to load category characters:', error);
-      } finally {
-        setLoading(false);
+        const chars = await apiService.getCharacters();
+        // Only update if data actually changed (shallow compare by JSON)
+        if (
+          isMounted &&
+          JSON.stringify(chars) !== JSON.stringify(characters)
+        ) {
+          setCharacters(chars);
+        }
+      } catch (e) {
+        // Optionally handle error
       }
     };
 
-    loadCategoryCharacters();
-  }, [categoryKey]);
+    // Initial load
+    fetchCharacters();
 
-  if (loading) {
-    return (
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          height: '400px',
-          color: 'white'
-        }}
-      >
-        <CircularProgress sx={{ color: '#6366f1' }} />
-      </Box>
-    );
-  }
+    return () => {
+      isMounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
-  return (
-    <CategoryCharacterGrid
-      characters={characters}
-      categoryInfo={categoryInfo}
-      categoryName={categoryName}
-      onCharacterClick={onCharacterClick}
-      onSessionOpen={onSessionOpen}
-    />
-  );
-};
-
-// Custom CharacterGrid component for categories
-const CategoryCharacterGrid = ({ characters, categoryInfo, categoryName, onCharacterClick, onSessionOpen }) => {
-  const [displayCharacters, setDisplayCharacters] = useState([]);
-
+  // Open chat panel if chatCharacterId is present in the route
   useEffect(() => {
-    setDisplayCharacters(characters);
-  }, [characters]);
+    // Only run this effect if characters have loaded
+    if (characters.length === 0) return;
 
-  // Create a modified CharacterGrid that uses the category data
+    if (chatCharacterId) {
+      const found = characters.find(c => String(c.id) === String(chatCharacterId));
+      if (found) {
+        setSelectedCharacter(found);
+        setIsChatOpen(true);
+      } 
+      // else {
+      //   setSelectedCharacter(null);
+      //   setIsChatOpen(false);
+      // }
+    } 
+    // else {
+    //   setIsChatOpen(false);
+    // }
+  }, [chatCharacterId, characters]);
+
+  // When chat is started, update the route
+  const handleCharacterClick = (character) => {
+    setSelectedCharacter(character);
+    setIsChatOpen(true);
+    navigate(`/dashboard/chat/${character.id}`);
+  };
+
+  // When chat is closed, return to /dashboard
+  const handleChatClose = () => {
+    setIsChatOpen(false);
+    setTimeout(() => setSelectedCharacter(null), 300);
+    navigate('/dashboard');
+  };
+
+  const handleBackToCharacters = () => {
+    setIsChatOpen(false);
+    // Don't clear selectedCharacter immediately to allow for potential re-opening
+  };
+
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+  };
+
   return (
-    <Box>
-      {/* Category Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography 
-          variant="h4" 
-          sx={{ 
-            color: 'white', 
-            fontWeight: 700,
-            background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            mb: 1
-          }}
-        >
-          {categoryInfo?.name || categoryName || 'Category'}
-        </Typography>
-        <Typography 
-          variant="body1" 
-          sx={{ color: '#9ca3af' }}
-        >
-          {categoryInfo?.count || characters.length} legendary characters in this category
-        </Typography>
-      </Box>
-
-      {/* Character Grid */}
-      <Box sx={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-        gap: 3,
-        '@media (max-width: 600px)': {
-          gridTemplateColumns: '1fr',
-        },
-      }}>
-        {displayCharacters.map((character) => (
-          <CharacterCard 
-            key={character.id} 
-            character={character}
-            onStartChat={onCharacterClick}
+    <>
+      {/* StarField as the global background */}
+      <StarField />
+      <Box className={classes.dashboardContainer}>
+        <Sidebar 
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+        />
+        <Box className={classes.mainContent}>
+          <Box
+            className={
+              isChatOpen
+                ? `${classes.contentArea} ${classes.contentAreaHidden}`
+                : classes.contentArea
+            }
+          >
+            <Header />
+            <CharacterGrid 
+              onCharacterClick={handleCharacterClick}
+              activeSection={activeSection}
+            />
+          </Box>
+          <ChatPanel
+            open={isChatOpen}
+            character={selectedCharacter}
+            onClose={handleChatClose}
+            onBack={handleChatClose}
           />
-        ))}
-      </Box>
-
-      {displayCharacters.length === 0 && (
-        <Box 
-          sx={{
-            textAlign: 'center',
-            padding: '80px 20px',
-            color: '#9ca3af',
-            background: 'rgba(26, 26, 26, 0.3)',
-            borderRadius: '16px',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(99, 102, 241, 0.1)',
-          }}
-        >
-          <Typography variant="h6" sx={{ color: '#ffffff', mb: 1 }}>
-            No characters found
-          </Typography>
-          <Typography variant="body2">
-            This category doesn't have any characters yet.
-          </Typography>
         </Box>
-      )}
-    </Box>
+      </Box>
+    </>
   );
 };
-
-
 
 export default Dashboard;
