@@ -12,7 +12,7 @@ const useStyles = makeStyles({
     minHeight: "100vh",
   },
   mainContent: {
-    marginLeft: 300,
+    marginLeft: 260,
     padding: 20,
     flex: 1,
     display: "flex",
