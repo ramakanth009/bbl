@@ -45,12 +45,18 @@ const Discover = () => {
     const fetchCharacters = async () => {
       try {
         const chars = await apiService.getCharacters();
+        // Ensure we always set an array
+        const charArray = Array.isArray(chars)
+          ? chars
+          : Array.isArray(chars.characters)
+            ? chars.characters
+            : [];
         // Only update if data actually changed (shallow compare by JSON)
         if (
           isMounted &&
-          JSON.stringify(chars) !== JSON.stringify(characters)
+          JSON.stringify(charArray) !== JSON.stringify(characters)
         ) {
-          setCharacters(chars);
+          setCharacters(charArray);
         }
       } catch (e) {
         // Optionally handle error
@@ -76,15 +82,13 @@ const Discover = () => {
       if (found) {
         setSelectedCharacter(found);
         setIsChatOpen(true);
-      } 
-      // else {
-      //   setSelectedCharacter(null);
-      //   setIsChatOpen(false);
-      // }
-    } 
-    // else {
-    //   setIsChatOpen(false);
-    // }
+      } else {
+        setSelectedCharacter(null);
+        setIsChatOpen(false);
+      }
+    } else {
+      setIsChatOpen(false);
+    }
   }, [chatCharacterId, characters]);
 
   // When chat is started, update the route

@@ -35,6 +35,7 @@ function App() {
               {/* Nested routes for dashboard sections */}
               <Route index element={<Navigate to="discover" replace />} />
               <Route path="discover" element={<Discover />} />
+              <Route path="discover/chat/:characterId" element={<Discover />} />
               <Route path="featured" element={<Featured />} />
               <Route path="trending" element={<Trending />} />
               <Route path="foryou" element={<Foryou />} />

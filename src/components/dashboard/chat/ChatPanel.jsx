@@ -440,8 +440,21 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
     setShowHistory(false);
   };
 
-  if (!open || !character) {
+  if (!open) {
     return <Box className={`${classes.chatContainer} ${classes.chatContainerClosed}`} />;
+  }
+
+  if (open && !character) {
+    return (
+      <Box className={`${classes.chatContainer} ${classes.chatContainerOpen}`} sx={{ alignItems: 'center', justifyContent: 'center', display: 'flex' }}>
+        <Typography variant="h6" color="textSecondary">
+          No character selected. Please choose a character to start chatting.
+        </Typography>
+        <IconButton onClick={onClose} sx={{ ml: 2 }}>
+          <Close />
+        </IconButton>
+      </Box>
+    );
   }
 
   return (
