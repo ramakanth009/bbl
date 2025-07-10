@@ -9,7 +9,7 @@ class ApiService {
       headers: {
         'Content-Type': 'application/json',
       },
-      timeout: 30000, // 30 second timeout for AI responses
+      timeout: 50000, // 50 second timeout for AI responses
     });
 
     // Add auth token to requests

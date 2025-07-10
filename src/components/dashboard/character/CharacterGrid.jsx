@@ -141,7 +141,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'rgba(26, 26, 26, 0.3)',
+    // background: 'rgba(26, 26, 26, 0.3)',
     borderRadius: '16px',
     backdropFilter: 'blur(10px)',
     border: '1px solid rgba(99, 102, 241, 0.1)',

@@ -51,6 +51,8 @@ const useStyles = makeStyles(() => ({
     background: 'linear-gradient(to bottom, rgba(26, 26, 26, 0.7), rgba(18, 18, 18, 0.6))',
     backdropFilter: 'blur(8px)',
     position: 'relative',
+    minHeight: 'auto', // Allow header to grow
+    maxHeight: 'none', // Remove height restrictions
     '&::before': {
       content: '""',
       position: 'absolute',
@@ -74,6 +76,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    minHeight: '56px', // Ensure minimum height for controls
   },
   chatHeaderLeft: {
     display: 'flex',
@@ -98,11 +101,29 @@ const useStyles = makeStyles(() => ({
     fontSize: '0.875rem',
     lineHeight: 1.6,
     color: '#d1d5db',
+    whiteSpace: 'pre-wrap', // Preserve line breaks
+    wordWrap: 'break-word', // Break long words
+    overflowWrap: 'break-word', // Modern alternative
+    width: '100%',
+    maxWidth: '100%',
+    overflow: 'visible', // Ensure no hidden text
+    display: 'block', // Full block display
+    marginTop: '8px',
+    padding: '8px 0',
+    '@media (max-width: 960px)': {
+      fontSize: '0.8rem',
+      lineHeight: 1.5,
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '0.75rem',
+      lineHeight: 1.4,
+    },
   },
   chatHeaderRight: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start', // Align to top to prevent stretching
     gap: '8px',
+    flexShrink: 0, // Prevent shrinking
     '& .MuiIconButton-root': {
       width: '40px',
       height: '40px',
@@ -182,6 +203,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     gap: '8px',
     marginTop: '8px',
+    flexWrap: 'wrap', // Allow wrapping on small screens
     '& .MuiChip-root': {
       transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
       '&:hover': {
@@ -432,9 +454,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
         },
       }}
     >
-      <Box 
-        className={classes.chatHeader}
-      >
+      <Box className={classes.chatHeader}>
         <Box className={classes.chatHeaderTop}>
           <Box className={classes.chatHeaderLeft}>
             <IconButton 
@@ -505,17 +525,18 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
           </Box>
         </Box>
         
+        {/* Enhanced description display with full visibility */}
         {character.description && (
-          <Typography 
-            className={classes.characterDescription}
-          >
-            {character.description}
-          </Typography>
+          <Box sx={{ width: '100%', mt: 1 }}>
+            <Typography className={classes.characterDescription}>
+              {character.description}
+            </Typography>
+          </Box>
         )}
         
         {/* Enhanced language status display */}
         {language !== 'english' && (
-          <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+          <Box className={classes.languageStatus}>
             <Chip 
               label={`Language: ${language}`}
               size="small"
