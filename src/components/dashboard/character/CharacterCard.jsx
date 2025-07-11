@@ -227,7 +227,17 @@ const CharacterCard = ({ character, onStartChat }) => {
   // Format category for display
   const formatCategory = (category) => {
     if (!category) return null;
-    return category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    
+    const categoryMapping = {
+      "entertainment_arts": "Entertainment & Arts",
+      "fictional_anime": "Fictional & Anime", 
+      "innovators_visionaries": "Innovators & Visionaries",
+      "leaders_historical": "Leaders & Historical",
+      "spiritual_social": "Spiritual & Social",
+      "sports_champions": "Sports & Champions"
+    };
+    
+    return categoryMapping[category] || category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 
   // // Format type for display
