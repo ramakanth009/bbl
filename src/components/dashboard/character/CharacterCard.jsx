@@ -1,8 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Box, Typography, Avatar, Chip } from '@mui/material';
-import { Message, Favorite } from '@mui/icons-material';
+import { 
+  Message, 
+  Favorite,
+  Palette, 
+  Science, 
+  Movie, 
+  EmojiEvents, 
+  Psychology, 
+  Lightbulb,
+  Groups,
+  Category
+} from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
+import apiService from '../../../services/api'; // Adjust path as needed
+
+// Same icon mapping as sidebar
+const iconMap = {
+  "entertainment_arts": <Movie sx={{ fontSize: 14 }} />,
+  "fictional_anime": <Psychology sx={{ fontSize: 14 }} />,
+  "innovators_visionaries": <Lightbulb sx={{ fontSize: 14 }} />,
+  "leaders_historical": <Groups sx={{ fontSize: 14 }} />,
+  "spiritual_social": <Palette sx={{ fontSize: 14 }} />,
+  "sports_champions": <EmojiEvents sx={{ fontSize: 14 }} />,
+  "art_culture": <Palette sx={{ fontSize: 14 }} />,
+  "science": <Science sx={{ fontSize: 14 }} />,
+  "entertainment": <Movie sx={{ fontSize: 14 }} />,
+};
 
 const useStyles = makeStyles({
   styledCard: {
@@ -106,12 +131,22 @@ const useStyles = makeStyles({
     border: '1px solid rgba(99, 102, 241, 0.3)',
     color: '#c7d2fe',
     fontSize: '10px',
-    height: '20px',
-    borderRadius: '10px',
+    height: '22px',
+    borderRadius: '11px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
     '& .MuiChip-label': {
-      padding: '0 8px',
+      padding: '0 8px 0 4px',
       fontWeight: 500,
-      textTransform: 'capitalize',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '4px',
+    },
+    '& .MuiChip-icon': {
+      color: '#c7d2fe',
+      marginLeft: '4px',
+      marginRight: '0px',
     },
   },
   typeChip: {
@@ -208,10 +243,29 @@ const useStyles = makeStyles({
 
 const CharacterCard = ({ character, onStartChat }) => {
   const classes = useStyles();
+  const [categories, setCategories] = useState({});
+  const [loading, setLoading] = useState(true);
 
   // Generate random 2-digit numbers for messages and likes
   const randomMessages = React.useMemo(() => Math.floor(Math.random() * 90) + 10, []);
   const randomLikes = React.useMemo(() => Math.floor(Math.random() * 90) + 10, []);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await apiService.getCategories();
+        if (data.categories) {
+          setCategories(data.categories);
+        }
+      } catch (err) {
+        console.error('Failed to load categories:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   const handleStartChat = (e) => {
     e.stopPropagation();
@@ -224,27 +278,17 @@ const CharacterCard = ({ character, onStartChat }) => {
     e.stopPropagation();
   };
 
-  // Format category for display
-  const formatCategory = (category) => {
-    if (!category) return null;
+  // Get category display name and icon from API data
+  const getCategoryInfo = (categoryKey) => {
+    if (!categoryKey || loading) return null;
     
-    const categoryMapping = {
-      "entertainment_arts": "Entertainment & Arts",
-      "fictional_anime": "Fictional & Anime", 
-      "innovators_visionaries": "Innovators & Visionaries",
-      "leaders_historical": "Leaders & Historical",
-      "spiritual_social": "Spiritual & Social",
-      "sports_champions": "Sports & Champions"
-    };
+    const displayName = categories[categoryKey] || categoryKey;
+    const icon = iconMap[categoryKey] || <Category sx={{ fontSize: 14 }} />;
     
-    return categoryMapping[category] || category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return { displayName, icon };
   };
 
-  // // Format type for display
-  // const formatType = (type) => {
-  //   if (!type) return 'Historical Figure';
-  //   return type;
-  // };
+  const categoryInfo = getCategoryInfo(character.category);
 
   return (
     <Card className={classes.styledCard} elevation={0}>
@@ -263,20 +307,23 @@ const CharacterCard = ({ character, onStartChat }) => {
               by @{character.creator || 'LegendsAI'}
             </Typography>
             
-            {/* Category and Type Chips */}
+            {/* Category Chip with Icon */}
             <Box className={classes.categoryContainer}>
-              {character.category && (
+              {categoryInfo && !loading && (
                 <Chip 
-                  label={formatCategory(character.category)}
+                  icon={categoryInfo.icon}
+                  label={categoryInfo.displayName}
                   size="small"
                   className={classes.categoryChip}
                 />
               )}
-              {/* <Chip 
-                label={formatType(character.type)}
-                size="small"
-                className={classes.typeChip}
-              /> */}
+              {loading && character.category && (
+                <Chip 
+                  label="Loading..."
+                  size="small"
+                  className={classes.categoryChip}
+                />
+              )}
             </Box>
           </Box>
         </Box>
