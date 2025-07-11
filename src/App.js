@@ -14,6 +14,7 @@ import Recent from './pages/sections/Recent';
 import Trending from './pages/sections/Trending';
 import Foryou from './pages/sections/ForYou';
 import History from './pages/sections/History';
+import SessionChat from './pages/sections/SessionChat'; // New component
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
               <Route path="foryou" element={<Foryou />} />
               <Route path="recent" element={<Recent />} />
               <Route path="history" element={<History />} />
+              <Route path="history/session/:sessionId" element={<SessionChat />} />
             </Route>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>

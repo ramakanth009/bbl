@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -217,8 +218,9 @@ const useStyles = makeStyles({
   },
 });
 
-const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) => {
+const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [selectedSession, setSelectedSession] = useState(null);
   const [loadingSessionId, setLoadingSessionId] = useState(null);
@@ -286,6 +288,7 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
     setSelectedSession(null);
   };
 
+  // Updated to navigate to session route instead of using callback
   const handleSessionClick = async (session) => {
     if (loadingSessionId === session.session_id) return;
     
@@ -293,30 +296,13 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
       setLoadingSessionId(session.session_id);
       setError(null);
       
-      console.log('Loading session:', session.session_id);
+      console.log('Navigating to session:', session.session_id);
       
-      const sessionData = await apiService.getSessionMessages(session.session_id);
-      
-      console.log('Session data received:', sessionData);
-      
-      const sessionWithMessages = {
-        sessionId: session.session_id,
-        character: session.character,
-        messages: sessionData.chat_history || [],
-        createdAt: session.created_at,
-        ...session
-      };
-      
-      console.log('Calling onSessionOpen with:', sessionWithMessages);
-      
-      if (onSessionOpen) {
-        await onSessionOpen(sessionWithMessages);
-      } else {
-        console.warn('onSessionOpen callback not provided');
-      }
+      // Navigate to session route
+      navigate(`/dashboard/history/session/${session.session_id}`);
       
     } catch (error) {
-      console.error('Failed to load session:', error);
+      console.error('Failed to navigate to session:', error);
       setError(`Failed to load session: ${error.message}`);
     } finally {
       setLoadingSessionId(null);
@@ -327,6 +313,9 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
     try {
       console.log('Delete session:', selectedSession);
       
+      // Add actual delete API call here
+      // await apiService.deleteSession(selectedSession.session_id);
+      
       if (onRefreshSessions) {
         await onRefreshSessions();
       }
@@ -334,6 +323,21 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
     } catch (error) {
       console.error('Failed to delete session:', error);
       setError(`Failed to delete session: ${error.message}`);
+    }
+    handleMenuClose();
+  };
+
+  const handleMenuItemClick = (action, session) => {
+    switch (action) {
+      case 'open':
+      case 'resume':
+        handleSessionClick(session);
+        break;
+      case 'delete':
+        handleDeleteSession();
+        break;
+      default:
+        break;
     }
     handleMenuClose();
   };
@@ -403,7 +407,7 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
                 </Box>
               </Box>
 
-              {/* <IconButton
+              <IconButton
                 size="small"
                 onClick={(e) => handleMenuOpen(e, session)}
                 sx={{ 
@@ -418,7 +422,7 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
                 disabled={isLoading}
               >
                 <MoreVert fontSize="small" />
-              </IconButton> */}
+              </IconButton>
             </Box>
 
             <Box className={classes.sessionMeta}>
@@ -496,16 +500,16 @@ const ChatHistoryGrid = ({ sessions = [], onSessionOpen, onRefreshSessions }) =>
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={() => handleSessionClick(selectedSession)} className={classes.menuItem}>
+        <MenuItem onClick={() => handleMenuItemClick('open', selectedSession)} className={classes.menuItem}>
           <Launch sx={{ mr: 1, fontSize: 18 }} />
           Open Session
         </MenuItem>
-        <MenuItem onClick={() => handleSessionClick(selectedSession)} className={classes.menuItem}>
+        <MenuItem onClick={() => handleMenuItemClick('resume', selectedSession)} className={classes.menuItem}>
           <Refresh sx={{ mr: 1, fontSize: 18 }} />
           Resume Chat
         </MenuItem>
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
-        <MenuItem onClick={handleDeleteSession} className={`${classes.menuItem} delete`}>
+        <MenuItem onClick={() => handleMenuItemClick('delete', selectedSession)} className={`${classes.menuItem} delete`}>
           <Delete sx={{ mr: 1, fontSize: 18 }} />
           Delete Session
         </MenuItem>
