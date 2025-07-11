@@ -19,15 +19,13 @@ import {
   Favorite,
   Schedule,
   History,
-  Palette,
-  Science,
-  Movie,
   Logout,
 } from "@mui/icons-material";
 import { styled } from '@mui/material/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from "../../../context/AuthContext";
 import CharacterCreationForm from "../character/creation/CharacterCreationForm";
+import CategoriesList from './CategoriesList';
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   "& .MuiDrawer-paper": {
@@ -154,8 +152,10 @@ const Sidebar = ({ onCharacterCreated }) => {
   const [showCharacterForm, setShowCharacterForm] = useState(false);
 
   // Get current active section from URL
-  const currentPath = location.pathname.split('/').pop();
-  const activeSection = currentPath === 'dashboard' ? 'discover' : currentPath;
+  const currentPath = location.pathname;
+  const isCategory = currentPath.startsWith('/dashboard/categories/');
+  const activeCategory = isCategory ? currentPath.split('/').pop() : null;
+  const activeSection = currentPath.split('/').pop();
 
   const mainNavItems = [
     { text: "Discover", path: "discover", icon: <Explore sx={{ fontSize: 16 }} />, comingSoon: false },
@@ -167,12 +167,6 @@ const Sidebar = ({ onCharacterCreated }) => {
 
   const historyItems = [
     { text: "History", path: "history", icon: <History sx={{ fontSize: 16 }} />, comingSoon: false },
-  ];
-
-  const categoryItems = [
-    { text: "Art & Culture", path: "art-culture", icon: <Palette sx={{ fontSize: 16 }} />, comingSoon: true },
-    { text: "Science", path: "science", icon: <Science sx={{ fontSize: 16 }} />, comingSoon: true },
-    { text: "Entertainment", path: "entertainment", icon: <Movie sx={{ fontSize: 16 }} />, comingSoon: true },
   ];
 
   const handleNavClick = (path, comingSoon) => {
@@ -196,6 +190,10 @@ const Sidebar = ({ onCharacterCreated }) => {
     if (onCharacterCreated) {
       onCharacterCreated(newCharacter);
     }
+  };
+
+  const handleCategorySelect = (categoryKey) => {
+    navigate(`/dashboard/categories/${categoryKey}`);
   };
 
   const renderNavSection = (items, title) => (
@@ -259,9 +257,12 @@ const Sidebar = ({ onCharacterCreated }) => {
           {renderNavSection(mainNavItems, "EXPLORE")}
           {renderNavSection(historyItems, "ACTIVITY")}
 
-          {/* Only categories section is scrollable */}
+          {/* Dynamic categories section - scrollable */}
           <ScrollableContent>
-            {renderNavSection(categoryItems, "CATEGORIES")}
+            <CategoriesList 
+              onCategorySelect={handleCategorySelect}
+              activeCategory={activeCategory}
+            />
           </ScrollableContent>
 
           <FooterWrapper>
