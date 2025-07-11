@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, Box, Typography, Avatar } from '@mui/material';
+import { Card, CardContent, Box, Typography, Avatar, Chip } from '@mui/material';
 import { Message, Favorite } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
@@ -56,8 +56,8 @@ const useStyles = makeStyles({
     zIndex: 1,
   },
   characterAvatar: {
-    width: 72, // increased from 48
-    height: 72, // increased from 48
+    width: 72,
+    height: 72,
     borderRadius: '50%',
     border: '2px solid rgba(99, 102, 241, 0.3)',
     transition: 'all 0.3s ease',
@@ -93,6 +93,38 @@ const useStyles = makeStyles({
     whiteSpace: 'normal',
     overflowWrap: 'break-word',
     wordBreak: 'break-word',
+  },
+  categoryContainer: {
+    display: 'flex',
+    gap: '8px',
+    alignItems: 'center',
+    marginBottom: '12px',
+    flexWrap: 'wrap',
+  },
+  categoryChip: {
+    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
+    border: '1px solid rgba(99, 102, 241, 0.3)',
+    color: '#c7d2fe',
+    fontSize: '10px',
+    height: '20px',
+    borderRadius: '10px',
+    '& .MuiChip-label': {
+      padding: '0 8px',
+      fontWeight: 500,
+      textTransform: 'capitalize',
+    },
+  },
+  typeChip: {
+    background: 'rgba(75, 85, 99, 0.3)',
+    border: '1px solid rgba(75, 85, 99, 0.4)',
+    color: '#9ca3af',
+    fontSize: '10px',
+    height: '20px',
+    borderRadius: '10px',
+    '& .MuiChip-label': {
+      padding: '0 8px',
+      fontWeight: 500,
+    },
   },
   characterDescription: {
     fontSize: '14px',
@@ -192,6 +224,18 @@ const CharacterCard = ({ character, onStartChat }) => {
     e.stopPropagation();
   };
 
+  // Format category for display
+  const formatCategory = (category) => {
+    if (!category) return null;
+    return category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  // // Format type for display
+  // const formatType = (type) => {
+  //   if (!type) return 'Historical Figure';
+  //   return type;
+  // };
+
   return (
     <Card className={classes.styledCard} elevation={0}>
       <Box className={classes.characterHeader}>
@@ -208,12 +252,24 @@ const CharacterCard = ({ character, onStartChat }) => {
             <Typography className={classes.characterAuthor}>
               by @{character.creator || 'LegendsAI'}
             </Typography>
-            <Typography className={classes.characterType}>
-              {character.type || 'Historical Figure'}
-            </Typography>
+            
+            {/* Category and Type Chips */}
+            <Box className={classes.categoryContainer}>
+              {character.category && (
+                <Chip 
+                  label={formatCategory(character.category)}
+                  size="small"
+                  className={classes.categoryChip}
+                />
+              )}
+              {/* <Chip 
+                label={formatType(character.type)}
+                size="small"
+                className={classes.typeChip}
+              /> */}
+            </Box>
           </Box>
         </Box>
-        {/* Removed duplicate action buttons */}
       </Box>
       
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
