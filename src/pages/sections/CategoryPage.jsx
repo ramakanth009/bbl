@@ -93,7 +93,7 @@ const useStyles = makeStyles({
 
 const CategoryPage = () => {
   const classes = useStyles();
-  const { categoryKey } = useParams();
+  const { categoryKey, characterId } = useParams();
   const navigate = useNavigate();
   const [characters, setCharacters] = useState([]);
   const [categoryName, setCategoryName] = useState('');
@@ -101,10 +101,22 @@ const CategoryPage = () => {
   const [error, setError] = useState(null);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [existingSession, setExistingSession] = useState(null);
 
   useEffect(() => {
     loadCategoryCharacters();
   }, [categoryKey]);
+
+  // Handle URL-based chat opening
+  useEffect(() => {
+    if (characterId && characters.length > 0 && !isChatOpen) {
+      const character = characters.find(c => c.id === characterId || c.id === parseInt(characterId));
+      if (character) {
+        setSelectedCharacter(character);
+        setIsChatOpen(true);
+      }
+    }
+  }, [characterId, characters, isChatOpen]);
 
   const loadCategoryCharacters = async () => {
     try {
@@ -122,15 +134,36 @@ const CategoryPage = () => {
     }
   };
 
-  const handleStartChat = (character) => {
-    setSelectedCharacter(character);
-    setIsChatOpen(true);
-    navigate(`/dashboard/categories/${categoryKey}/chat/${character.id}`);
+  const handleStartChat = async (character, session = null) => {
+    console.log('🚀 Starting chat with character:', character.name);
+    
+    try {
+      setSelectedCharacter(character);
+      setExistingSession(session);
+      setIsChatOpen(true);
+      
+      // Update URL to reflect chat state
+      navigate(`/dashboard/categories/${categoryKey}/chat/${character.id}`);
+      
+      // If there's an existing session, load it
+      if (session && session.session_id) {
+        console.log('📝 Loading existing session:', session.session_id);
+        // The ChatPanel will handle loading the session
+      } else {
+        console.log('✨ Starting new conversation with', character.name);
+      }
+      
+    } catch (error) {
+      console.error('Failed to start chat:', error);
+      setError('Failed to start chat. Please try again.');
+    }
   };
 
   const handleChatClose = () => {
+    console.log('❌ Closing chat panel');
     setIsChatOpen(false);
     setSelectedCharacter(null);
+    setExistingSession(null);
     navigate(`/dashboard/categories/${categoryKey}`);
   };
 
@@ -214,8 +247,12 @@ const CategoryPage = () => {
 
       {isChatOpen && selectedCharacter && (
         <ChatPanel
+          open={isChatOpen}
           character={selectedCharacter}
           onClose={handleChatClose}
+          existingSession={existingSession}
+          // Add any additional props that ChatPanel might need
+          autoStart={true}
         />
       )}
     </Box>
