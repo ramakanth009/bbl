@@ -225,7 +225,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ChatPanel = ({ open, character, onClose, onBack }) => {
+const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, initialSessionId = null }) => {
   const classes = useStyles();
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -243,7 +243,15 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
 
   useEffect(() => {
     if (open && character) {
-      initializeChat();
+      // If initialMessages and initialSessionId are provided, use them
+      if (initialMessages && initialSessionId) {
+        setMessages(initialMessages);
+        setSessionId(initialSessionId);
+        setError(null);
+        setShowHistory(false);
+      } else {
+        initializeChat();
+      }
       loadUserSessions();
       loadLanguagePreferences();
       
@@ -253,7 +261,7 @@ const ChatPanel = ({ open, character, onClose, onBack }) => {
         setLanguage(character.native_language);
       }
     }
-  }, [open, character]);
+  }, [open, character, initialMessages, initialSessionId]);
 
   useEffect(() => {
     scrollToBottom();
