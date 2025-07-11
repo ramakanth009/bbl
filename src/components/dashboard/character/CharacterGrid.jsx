@@ -331,8 +331,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
           const tempCharacter = {
             name: sessionWithMessages.character,
             id: `temp_${sessionWithMessages.character}`,
-            creator: 'LegendsAI',
-            type: 'Historical Figure',
+            creator: 'Gigaversity',
+            // type: 'Historical Figure',
             category: 'general',
             messages: '0k',
             likes: '0k',
