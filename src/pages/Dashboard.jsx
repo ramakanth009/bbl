@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
   mainContent: {
     marginLeft: 260,
-    padding: 20,
+    padding: '20px !important',
     flex: 1,
     display: "flex",
     "@media (max-width: 900px)": {
