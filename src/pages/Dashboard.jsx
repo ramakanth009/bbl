@@ -10,6 +10,7 @@ const useStyles = makeStyles({
   dashboardContainer: {
     display: "flex",
     minHeight: "100vh",
+    padding:"20px"
   },
   mainContent: {
     marginLeft: 260,

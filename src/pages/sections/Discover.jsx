@@ -16,7 +16,7 @@ const useStyles = makeStyles({
   },
   contentArea: {
     flex: 1,
-    padding: '24px',
+    padding: '14px',
     overflow: 'auto',
     transition: 'all 0.3s ease',
     display: 'block',
