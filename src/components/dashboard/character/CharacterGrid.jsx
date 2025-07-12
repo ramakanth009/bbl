@@ -17,8 +17,8 @@ import { makeStyles } from '@mui/styles';
 import CharacterCard from './CharacterCard';
 import CreateCharacterButton from './CreateCharacterButton';
 import ChatHistoryGrid from '../chat/history/ChatHistoryGrid';
+import SearchComponent from '../../common/SearchComponent';  // Added import
 import apiService from '../../../services/api';
-
 const useStyles = makeStyles({
   section: {
     marginBottom: '48px',
@@ -63,6 +63,11 @@ const useStyles = makeStyles({
     '&:hover': {
       color: '#6366f1',
     },
+  },
+  searchContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   characterBoxContainer: {
     display: 'grid',
@@ -275,6 +280,37 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     setTotalCount(prev => prev + 1);
   };
 
+  // Search handlers
+  const handleSearchResults = (searchResults) => {
+    const { characters: searchCharacters, query, totalCount: searchTotal } = searchResults;
+    
+    if (query && searchCharacters.length >= 0) {
+      // User performed a search
+      setCharacters(searchCharacters);
+      setTotalCount(searchTotal);
+      setIsSearching(true);
+      setSearchQuery(query);
+    } else if (!query) {
+      // User cleared search - restore original characters
+      setCharacters(originalCharacters);
+      setTotalCount(originalTotalCount);
+      setIsSearching(false);
+      setSearchQuery('');
+    }
+  };
+
+  const handleSearchStateChange = (searchState) => {
+    const { isSearching: searching, query } = searchState;
+    
+    // If user clears search completely, restore original state
+    if (!searching && !query) {
+      setCharacters(originalCharacters);
+      setTotalCount(originalTotalCount);
+      setIsSearching(false);
+      setSearchQuery('');
+    }
+  };
+
   const filterCharactersBySection = (characters) => {
     switch (activeSection) {
       case 'Discover':
@@ -391,18 +427,48 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
 
   if (characters.length === 0 && !paginationLoading) {
     return (
-      <Box className={classes.emptyState}>
-        <Typography className={classes.emptyStateTitle}>
-          {isSearching ? 'No search results found' : 'No characters found'}
-        </Typography>
-        <Typography variant="body2">
-          {isSearching 
-            ? `No characters found for "${searchQuery}". Try a different search term.`
-            : activeSection === 'Recent' 
-              ? 'Start chatting with characters to see them here!'
-              : 'Please check back later or try a different section.'
-          }
-        </Typography>
+      <Box className={classes.section}>
+        <Box className={classes.sectionHeader}>
+          <Box>
+            <Typography className={classes.sectionTitle}>
+              {isSearching ? `Search Results for "${searchQuery}"` : activeSection}
+              <Chip 
+                label={`${totalCount} ${isSearching ? 'results' : 'total characters'}`} 
+                size="small"
+                className={classes.characterCount}
+              />
+            </Typography>
+            {getSectionDescription() && !isSearching && (
+              <Typography className={classes.sectionSubtitle}>
+                {getSectionDescription()}
+              </Typography>
+            )}
+          </Box>
+          
+          {/* Search component positioned opposite to heading */}
+          <Box className={classes.searchContainer}>
+            <SearchComponent
+              onSearchResults={handleSearchResults}
+              onSearchStateChange={handleSearchStateChange}
+              placeholder="Search characters..."
+              showSuggestions={true}
+            />
+          </Box>
+        </Box>
+        
+        <Box className={classes.emptyState}>
+          <Typography className={classes.emptyStateTitle}>
+            {isSearching ? 'No search results found' : 'No characters found'}
+          </Typography>
+          <Typography variant="body2">
+            {isSearching 
+              ? `No characters found for "${searchQuery}". Try a different search term.`
+              : activeSection === 'Recent' 
+                ? 'Start chatting with characters to see them here!'
+                : 'Please check back later or try a different section.'
+            }
+          </Typography>
+        </Box>
       </Box>
     );
   }
@@ -425,6 +491,16 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
             </Typography>
           )}
         </Box>
+        
+        {/* Search component positioned opposite to heading */}
+        <Box className={classes.searchContainer}>
+          <SearchComponent
+            onSearchResults={handleSearchResults}
+            onSearchStateChange={handleSearchStateChange}
+            placeholder="Search characters..."
+            showSuggestions={true}
+          />
+        </Box>
       </Box>
       
       {paginationLoading ? (
@@ -434,7 +510,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       ) : (
         <>
           <Box className={classes.characterBoxContainer}>
-            {activeSection === 'Discover' && (
+            {activeSection === 'Discover' && !isSearching && (
               <CreateCharacterButton onCharacterCreated={handleCharacterCreated} />
             )}
             {characters.map((character) => (
