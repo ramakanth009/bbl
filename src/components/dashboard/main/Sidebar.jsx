@@ -21,131 +21,124 @@ import {
   History,
   Logout,
 } from "@mui/icons-material";
-import { styled } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from "../../../context/AuthContext";
 import CharacterCreationForm from "../character/creation/CharacterCreationForm";
 import CategoriesList from './CategoriesList';
 
-const StyledDrawer = styled(Drawer)(({ theme }) => ({
-  "& .MuiDrawer-paper": {
-    width: 280,
-    height: '100vh',
-    backgroundColor: '#1a1a1a',
-    borderRight: '1px solid #2a2a2a',
-    padding: theme.spacing(2.5),
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden',
-    position: 'fixed',
-    left: 0,
-    top: 0,
-  },
-}));
-
-const ContentWrapper = styled(Box)({
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  overflow: 'hidden'
-});
-
-const LogoWrapper = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: theme.spacing(1.5),
-  marginBottom: theme.spacing(2.5),
-}));
-
-const LogoIcon = styled(Box)(({ theme }) => ({
-  width: 28,
-  height: 28,
-  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-  borderRadius: 6,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "white",
-  fontSize: '14px',
-}));
-
-const CreateButton = styled(Button)(({ theme }) => ({
-  width: "100%",
-  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-  color: 'white',
-  padding: '10px 16px',
-  borderRadius: 8,
-  fontSize: '14px',
-  fontWeight: 500,
-  marginBottom: theme.spacing(3.75),
-  textTransform: 'none',
-  transition: 'all 0.2s ease',
-  "&:hover": {
-    background: 'linear-gradient(135deg, #5855eb 0%, #7c3aed 100%)',
-    transform: 'translateY(-1px)',
-    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)',
-  },
-}));
-
-const NavSectionWrapper = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
-}));
-
-const SectionTitle = styled(Typography)(({ theme }) => ({
-  fontSize: '11px',
-  fontWeight: 600,
-  color: '#666',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-  marginBottom: theme.spacing(1),
-}));
-
-const StyledListItem = styled(ListItemButton)(({ theme }) => ({
-  borderRadius: 6,
-  marginBottom: 1,
-  padding: '8px 12px',
-  color: '#ccc',
-  fontSize: '13px',
-  fontWeight: 400,
-  transition: 'all 0.2s ease',
-  "&:hover": {
-    backgroundColor: '#252525',
-  },
-  "&.active": {
-    backgroundColor: '#252525',
-    "& .MuiListItemIcon-root": {
-      color: '#6366f1',
+const useStyles = makeStyles(() => ({
+  drawer: {
+    '& .MuiDrawer-paper': {
+      width: 280,
+      height: '100vh',
+      backgroundColor: 'rgba(26, 26, 26, 0.7)',
+      borderRight: '1px solid rgba(42, 42, 42, 0.5)',
+      padding: '20px',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+      position: 'fixed',
+      left: 0,
+      top: 0,
     },
   },
-}));
-
-const ScrollableContent = styled(Box)({
-  flex: 1,
-  overflow: 'hidden',
-  '&:hover': {
-    overflowY: 'auto'
-  }
-});
-
-const StyledChip = styled(Chip)(({ theme }) => ({
-  height: 16,
-  fontSize: '10px',
-  backgroundColor: '#fff3cd',
-  color: '#856404',
-  fontWeight: 500,
-  marginLeft: 'auto',
-  '& .MuiChip-label': {
-    padding: '0 6px',
+  contentWrapper: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden'
   },
-}));
-
-const FooterWrapper = styled(Box)(({ theme }) => ({
-  paddingTop: theme.spacing(1.5),
-  borderTop: '1px solid #333',
-  marginTop: 'auto',
+  logoWrapper: {
+    display: "flex",
+    alignItems: "center",
+    gap: '12px',
+    marginBottom: '20px',
+  },
+  logoIcon: {
+    width: 28,
+    height: 28,
+    background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+    borderRadius: 6,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "white",
+    fontSize: '14px',
+  },
+  createButton: {
+    width: "100%",
+    background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+    color: 'white',
+    padding: '10px 16px',
+    borderRadius: 8,
+    fontSize: '14px',
+    fontWeight: 500,
+    marginBottom: '30px',
+    textTransform: 'none',
+    transition: 'all 0.2s ease',
+    "&:hover": {
+      background: 'linear-gradient(135deg, #5855eb 0%, #7c3aed 100%)',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)',
+    },
+  },
+  navSectionWrapper: {
+    marginBottom: '24px',
+  },
+  sectionTitle: {
+    fontSize: '11px',
+    fontWeight: 600,
+    color: '#666',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    marginBottom: '8px',
+  },
+  listItem: {
+    borderRadius: 6,
+    marginBottom: 1,
+    padding: '8px 12px',
+    color: '#ccc',
+    fontSize: '13px',
+    fontWeight: 400,
+    transition: 'all 0.2s ease',
+    "&:hover": {
+      backgroundColor: '#252525',
+    },
+    "&.active": {
+      backgroundColor: '#252525',
+      "& .MuiListItemIcon-root": {
+        color: '#6366f1',
+      },
+    },
+  },
+  scrollableContent: {
+    flex: 1,
+    overflow: 'hidden',
+    '&:hover': {
+      overflowY: 'auto'
+    }
+  },
+  chip: {
+    height: 16,
+    fontSize: '10px',
+    backgroundColor: '#fff3cd',
+    color: '#856404',
+    fontWeight: 500,
+    marginLeft: 'auto',
+    '& .MuiChip-label': {
+      padding: '0 6px',
+    },
+  },
+  footerWrapper: {
+    paddingTop: '12px',
+    borderTop: '1px solid #333',
+    marginTop: 'auto',
+  },
 }));
 
 const Sidebar = ({ onCharacterCreated }) => {
+  const classes = useStyles();
   const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -197,13 +190,13 @@ const Sidebar = ({ onCharacterCreated }) => {
   };
 
   const renderNavSection = (items, title) => (
-    <NavSectionWrapper>
-      {title && <SectionTitle>{title}</SectionTitle>}
+    <Box className={classes.navSectionWrapper}>
+      {title && <Typography className={classes.sectionTitle}>{title}</Typography>}
       <List dense disablePadding>
         {items.map((item) => (
-          <StyledListItem
+          <ListItemButton
             key={item.text}
-            className={activeSection === item.path ? "active" : ""}
+            className={`${classes.listItem} ${activeSection === item.path ? "active" : ""}`}
             onClick={() => handleNavClick(item.path, item.comingSoon)}
           >
             <ListItemIcon sx={{ color: "#888", minWidth: 26, marginRight: 1.25 }}>
@@ -218,22 +211,22 @@ const Sidebar = ({ onCharacterCreated }) => {
               }}
             />
             {item.comingSoon && (
-              <StyledChip label="Coming Soon" size="small" />
+              <Chip label="Coming Soon" size="small" className={classes.chip} />
             )}
-          </StyledListItem>
+          </ListItemButton>
         ))}
       </List>
-    </NavSectionWrapper>
+    </Box>
   );
 
   return (
     <>
-      <StyledDrawer variant="permanent">
-        <ContentWrapper>
-          <LogoWrapper>
-            <LogoIcon>
+      <Drawer variant="permanent" className={classes.drawer}>
+        <Box className={classes.contentWrapper}>
+          <Box className={classes.logoWrapper}>
+            <Box className={classes.logoIcon}>
               <LocationOn sx={{ fontSize: 14 }} />
-            </LogoIcon>
+            </Box>
             <Typography 
               sx={{ 
                 fontSize: '16px', 
@@ -243,30 +236,31 @@ const Sidebar = ({ onCharacterCreated }) => {
             >
               Bring Back Legend
             </Typography>
-          </LogoWrapper>
+          </Box>
 
-          <CreateButton
+          <Button
             variant="contained"
             startIcon={<Add sx={{ fontSize: 16 }} />}
             onClick={handleCreateClick}
+            className={classes.createButton}
           >
             Create
-          </CreateButton>
+          </Button>
 
           {/* Main and history sections (no scroll) */}
           {renderNavSection(mainNavItems, "EXPLORE")}
           {renderNavSection(historyItems, "ACTIVITY")}
 
           {/* Dynamic categories section - scrollable */}
-          <ScrollableContent>
+          <Box className={classes.scrollableContent}>
             <CategoriesList 
               onCategorySelect={handleCategorySelect}
               activeCategory={activeCategory}
             />
-          </ScrollableContent>
+          </Box>
 
-          <FooterWrapper>
-            <StyledListItem onClick={logout}>
+          <Box className={classes.footerWrapper}>
+            <ListItemButton onClick={logout} className={classes.listItem}>
               <ListItemIcon sx={{ color: "#888", minWidth: 26, marginRight: 1.25 }}>
                 <Logout sx={{ fontSize: 16 }} />
               </ListItemIcon>
@@ -278,10 +272,10 @@ const Sidebar = ({ onCharacterCreated }) => {
                   color: 'inherit'
                 }}
               />
-            </StyledListItem>
-          </FooterWrapper>
-        </ContentWrapper>
-      </StyledDrawer>
+            </ListItemButton>
+          </Box>
+        </Box>
+      </Drawer>
 
       <CharacterCreationForm
         open={showCharacterForm}
