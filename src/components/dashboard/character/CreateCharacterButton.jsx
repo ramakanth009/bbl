@@ -6,7 +6,8 @@ import CharacterCreationForm from './creation/CharacterCreationForm';
 
 const useStyles = makeStyles({
   createCard: {
-    background: 'linear-gradient(145deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.8) 100%)',
+    // background: 'linear-gradient(145deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.8) 100%)',
+    background: 'transparent !important',
     border: '2px dashed rgba(99, 102, 241, 0.3)',
     borderRadius: '16px',
     padding: '32px 24px',
@@ -20,7 +21,7 @@ const useStyles = makeStyles({
     textAlign: 'center',
     position: 'relative',
     overflow: 'hidden',
-    backdropFilter: 'blur(10px)',
+    // backdropFilter: 'blur(10px)',
     '&::before': {
       content: '""',
       position: 'absolute',

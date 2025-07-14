@@ -391,7 +391,8 @@ const iconMap = {
 
 const useStyles = makeStyles({
   styledCard: {
-    background: 'linear-gradient(145deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.8) 100%)',
+    // background: 'linear-gradient(145deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.8) 100%)',
+    background: 'transparent !important',
     border: '1px solid rgba(99, 102, 241, 0.2)',
     borderRadius: '16px',
     padding: '24px',
@@ -403,7 +404,7 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     position: 'relative',
     overflow: 'hidden',
-    backdropFilter: 'blur(10px)',
+    // backdropFilter: 'blur(10px)',
     '&::before': {
       content: '""',
       position: 'absolute',
