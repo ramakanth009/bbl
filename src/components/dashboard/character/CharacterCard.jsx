@@ -454,7 +454,7 @@ const useStyles = makeStyles({
   },
   characterName: {
     fontSize: '18px',
-    fontWeight: 700,
+    fontWeight: "bold",
     marginBottom: '4px',
     background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
     WebkitBackgroundClip: 'text',
@@ -467,7 +467,7 @@ const useStyles = makeStyles({
   },
   characterAuthor: {
     fontSize: '12px',
-    color: '#9ca3af',
+    color: '#ffffff',
     marginBottom: '2px',
     whiteSpace: 'normal',
     overflowWrap: 'break-word',
@@ -475,7 +475,7 @@ const useStyles = makeStyles({
   },
   characterType: {
     fontSize: '11px',
-    color: '#6b7280',
+    color: '#ffffff',
     whiteSpace: 'normal',
     overflowWrap: 'break-word',
     wordBreak: 'break-word',
@@ -490,7 +490,7 @@ const useStyles = makeStyles({
   categoryChip: {
     background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
     border: '1px solid rgba(99, 102, 241, 0.3)',
-    color: '#c7d2fe',
+    color: '#ffffff',
     fontSize: '10px',
     height: '22px',
     borderRadius: '11px',
@@ -505,7 +505,7 @@ const useStyles = makeStyles({
       gap: '4px',
     },
     '& .MuiChip-icon': {
-      color: '#c7d2fe',
+      color: '#ffffff',
       marginLeft: '4px',
       marginRight: '0px',
     },
@@ -524,7 +524,8 @@ const useStyles = makeStyles({
   },
   characterDescription: {
     fontSize: '14px',
-    color: '#d1d5db',
+    color: '#ffffff',
+    fontWeight: "400 !important",
     lineHeight: 1.6,
     marginBottom: '20px',
     height: '72px',
@@ -546,7 +547,7 @@ const useStyles = makeStyles({
     height: '32px',
     border: 'none',
     background: 'rgba(255, 255, 255, 0.05)',
-    color: '#9ca3af',
+    color: '#ffffff',
     cursor: 'pointer',
     borderRadius: '8px',
     display: 'flex',
@@ -564,7 +565,7 @@ const useStyles = makeStyles({
     width: '100%',
     background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
     border: 'none',
-    color: 'white',
+    color: '#ffffff !important',
     padding: '14px',
     borderRadius: '12px',
     fontSize: '14px',
@@ -598,7 +599,7 @@ const useStyles = makeStyles({
     alignItems: 'center',
     gap: '4px',
     fontSize: '12px',
-    color: '#9ca3af',
+    color: '#ffffff',
   },
 });
 

@@ -74,7 +74,7 @@ const useStyles = makeStyles(() => ({
     marginBottom: '22px',
     '& .MuiOutlinedInput-root': {
       backgroundColor: 'transparent !important',
-      border: '1.5px solid #333',
+      border: '1.5px solid #fff',
       borderRadius: 14,
       transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
       '& fieldset': {
@@ -82,7 +82,7 @@ const useStyles = makeStyles(() => ({
       },
       '&:hover': {
         backgroundColor: 'transparent',
-        border: '1.5px solid #555',
+        border: '1.5px solid #fff',
       },
       '&.Mui-focused': {
         backgroundColor: 'transparent',
@@ -160,16 +160,22 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     margin: '28px 0',
-    '&::before, &::after': {
+    '&::before': {
       content: '""',
       flex: 1,
       height: 1,
-      background: 'linear-gradient(90deg, #222 0%, #444 100%)',
+      background: 'linear-gradient(90deg, #222 0%, #fff 100%)',
+    },
+    '&::after': {
+      content: '""',
+      flex: 1,
+      height: 1,
+      background: 'linear-gradient(90deg, #fff 0%, #444 100%)',
     },
   },
   dividerText: {
     padding: '0 18px',
-    color: '#888',
+    color: '#fff',
     fontSize: '0.92rem',
     fontWeight: 500,
     letterSpacing: '0.03em',
@@ -177,10 +183,10 @@ const useStyles = makeStyles(() => ({
   styledLink: {
     color: '#fff',
     textDecoration: 'underline',
-    fontWeight: 600,
+    fontWeight: "bold",
     transition: 'color 0.3s',
     '&:hover': {
-      color: '#bbb',
+      color: '#eee',
     },
   },
 }));
@@ -242,7 +248,8 @@ const Login = () => {
                     variant="h5" 
                     fontWeight="bold" 
                     sx={{ 
-                      background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
+                      // background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
+                      background: '#fff',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       letterSpacing: '0.02em',
@@ -271,7 +278,7 @@ const Login = () => {
                   variant="body1" 
                   align="center" 
                   sx={{ 
-                    color: '#bbb',
+                    color: '#fff',
                     mb: 4,
                   }}
                 >
@@ -345,7 +352,7 @@ const Login = () => {
                   <Box textAlign="center">
                     <Typography 
                       variant="body2" 
-                      sx={{ color: '#bbb' }}
+                      sx={{ color: '#fff' }}
                     >
                       Don't have an account?{' '}
                       <Link to="/register" className={classes.styledLink}>

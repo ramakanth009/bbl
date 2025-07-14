@@ -53,7 +53,7 @@ const useStyles = makeStyles({
   },
   createIcon: {
     fontSize: '64px',
-    color: '#9ca3af',
+    color: '#ffffff',
     marginBottom: '16px',
     transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
     position: 'relative',
@@ -72,7 +72,7 @@ const useStyles = makeStyles({
   },
   createDescription: {
     fontSize: '14px',
-    color: '#9ca3af',
+    color: '#ffffff',
     marginBottom: '20px',
     lineHeight: 1.5,
     maxWidth: '250px',
@@ -82,7 +82,7 @@ const useStyles = makeStyles({
   startButton: {
     background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%)',
     border: '1px solid rgba(99, 102, 241, 0.3)',
-    color: '#e2e8f0',
+    color: '#ffffff',
     padding: '10px 20px',
     borderRadius: '8px',
     fontSize: '12px',

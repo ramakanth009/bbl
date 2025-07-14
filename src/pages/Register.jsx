@@ -51,7 +51,8 @@ const useStyles = makeStyles(() => ({
   logoIcon: {
     width: 52,
     height: 52,
-    background: 'linear-gradient(135deg, #fff 0%, #bbb 100%)',
+    // background: 'linear-gradient(135deg, #fff 0%, #bbb 100%)',
+    backgroundColor:"#fff !important",
     borderRadius: 14,
     display: 'flex',
     alignItems: 'center',
@@ -62,7 +63,7 @@ const useStyles = makeStyles(() => ({
     marginBottom: '22px',
     '& .MuiOutlinedInput-root': {
       backgroundColor: 'transparent !important',
-      border: '1.5px solid #333',
+      border: '1.5px solid #fff',
       borderRadius: 14,
       transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
       '& fieldset': {
@@ -70,7 +71,7 @@ const useStyles = makeStyles(() => ({
       },
       '&:hover': {
         backgroundColor: 'transparent',
-        border: '1.5px solid #555',
+        border: '1.5px solid #fff',
       },
       '&.Mui-focused': {
         backgroundColor: 'transparent',
@@ -79,14 +80,14 @@ const useStyles = makeStyles(() => ({
       },
     },
     '& .MuiInputLabel-root': {
-      color: '#bbb',
+      color: '#fff',
       '&.Mui-focused': {
         color: '#fff',
       },
     },
     '& .MuiInputBase-input': {
       color: '#fff',
-      padding: '13px',
+      // padding: '13px',
       fontWeight: 500,
       letterSpacing: '0.02em',
     },
@@ -95,7 +96,8 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     padding: '13px',
     borderRadius: 14,
-    background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
+    // background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
+    backgroundColor:"#fff !important",
     color: '#111 !important',
     fontSize: '1.08rem',
     fontWeight: 700,
@@ -168,7 +170,7 @@ const useStyles = makeStyles(() => ({
     fontWeight: 600,
     transition: 'color 0.3s',
     '&:hover': {
-      color: '#bbb',
+      color: '#fff',
     },
   },
 }));
@@ -350,7 +352,7 @@ const Register = () => {
                   </Button>
 
                   <Box textAlign="center">
-                    <Typography variant="body2" sx={{ color: '#bbb' }}>
+                    <Typography variant="body2" sx={{ color: '#fff' }}>
                       Already have an account?{' '}
                       <Link to="/login" className={classes.styledLink}>
                         Sign in
