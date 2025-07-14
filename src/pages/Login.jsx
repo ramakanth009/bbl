@@ -23,7 +23,6 @@ import {
 import { makeStyles } from '@mui/styles';
 import { useAuth } from '../context/AuthContext';
 import GoogleLogo from '../assets/google-logo.svg'; // Import the actual Google logo SVG
-import CardStarPattern from '../components/common/CardStarPattern';
 
 // Import the StarField component
 const StarField = React.lazy(() => import('../components/common/StarField'));
@@ -43,11 +42,11 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     maxWidth: 440,
     padding: '36px 36px 32px 36px',
-    background: 'linear-gradient(135deg, #181818 0%, #232526 100%)', // black/grey gradient
-    backdropFilter: 'blur(24px)',
-    border: '1.5px solid #333',
+    background: 'none !important',
+    backgroundColor: 'transparent !important',
+    border: 'none !important',
     borderRadius: 28,
-    boxShadow: '0 32px 64px rgba(0,0,0,0.7), 0 0 0 1px #222',
+    boxShadow: 'none !important',
     transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
     '&:hover': {
       // transform: 'translateY(-1px) scale(1.01)',
@@ -74,7 +73,7 @@ const useStyles = makeStyles(() => ({
   styledTextField: {
     marginBottom: '22px',
     '& .MuiOutlinedInput-root': {
-      backgroundColor: 'rgba(255,255,255,0.03)',
+      backgroundColor: 'transparent !important',
       border: '1.5px solid #333',
       borderRadius: 14,
       transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
@@ -82,11 +81,11 @@ const useStyles = makeStyles(() => ({
         border: 'none',
       },
       '&:hover': {
-        backgroundColor: 'rgba(255,255,255,0.06)',
+        backgroundColor: 'transparent',
         border: '1.5px solid #555',
       },
       '&.Mui-focused': {
-        backgroundColor: 'rgba(255,255,255,0.08)',
+        backgroundColor: 'transparent',
         border: '1.5px solid #fff',
         boxShadow: '0 0 0 4px rgba(255,255,255,0.08)',
       },
@@ -99,7 +98,6 @@ const useStyles = makeStyles(() => ({
     },
     '& .MuiInputBase-input': {
       color: '#fff',
-      padding: '13px',
       fontWeight: 500,
       letterSpacing: '0.02em',
     },
@@ -109,7 +107,7 @@ const useStyles = makeStyles(() => ({
     padding: '13px',
     borderRadius: 14,
     background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
-    color: '#111',
+    color: '#111 !important',
     fontSize: '1.08rem',
     fontWeight: 700,
     textTransform: 'none',
@@ -118,23 +116,22 @@ const useStyles = makeStyles(() => ({
     boxShadow: '0 8px 32px rgba(255,255,255,0.10)',
     transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
     '&:hover': {
-      background: 'linear-gradient(90deg, #eee 0%, #888 100%)',
+      // background: 'linear-gradient(90deg, #eee 0%, #888 100%)',
       color: '#000',
       transform: 'translateY(-2px) scale(1.01)',
       boxShadow: '0 12px 40px rgba(255,255,255,0.13)',
     },
     '&:disabled': {
-      background: 'rgba(255,255,255,0.08)',
-      color: '#888',
+      background: 'transparent !important',
+      color: '#fff !important',
     },
   },
   googleButton: {
     width: '100%',
-    padding: '13px',
+    padding: '13px !important',
     borderRadius: 14,
-    background: '#fff',
-    border: '1.5px solid #dadce0',
-    color: '#3c4043',
+    border: '0.2px solid #dadce0 !important',
+    color: '#ffffff !important',
     textTransform: 'none',
     marginBottom: '14px',
     fontWeight: 600,
@@ -146,8 +143,8 @@ const useStyles = makeStyles(() => ({
     boxShadow: '0 1px 2px rgba(60,64,67,.08)',
     transition: 'background 0.2s, border 0.2s, box-shadow 0.2s',
     '&:hover': {
-      background: '#f7f8fa',
-      border: '1.5px solid #4285F4',
+      // background: '#f7f8fa',
+      // border: '1.5px solid #4285F4',
       color: '#1a73e8',
       boxShadow: '0 2px 4px rgba(60,64,67,.13)',
     },
@@ -234,8 +231,7 @@ const Login = () => {
       <Container maxWidth="sm" className={classes.pageContainer}>
         <Fade in timeout={800}>
           <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
-            {/* Add CardStarPattern as a background layer */}
-            <CardStarPattern />
+            {/* Removed CardStarPattern */}
             <Zoom in timeout={1000}>
               <Box>
                 <Box className={classes.logoContainer}>
@@ -303,7 +299,7 @@ const Login = () => {
                       severity="error" 
                       sx={{ 
                         mb: 3,
-                        backgroundColor: 'rgba(255,255,255,0.08)',
+                        backgroundColor: 'transparent',
                         border: '1.5px solid #444',
                         color: '#fff',
                         borderRadius: 2,
