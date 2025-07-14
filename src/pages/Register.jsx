@@ -14,7 +14,8 @@ import {
 import { WorkspacePremium } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useAuth } from '../context/AuthContext';
-import CardStarPattern from '../components/common/CardStarPattern';
+import GoogleLogo from '../assets/google-logo.svg'; // Import the actual Google logo SVG
+
 const StarField = React.lazy(() => import('../components/common/StarField'));
 
 const useStyles = makeStyles(() => ({
@@ -31,11 +32,11 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     maxWidth: 440,
     padding: '36px 36px 32px 36px',
-    background: 'linear-gradient(135deg, #181818 0%, #232526 100%)',
-    backdropFilter: 'blur(24px)',
-    border: '1.5px solid #333',
+    background: 'none !important',
+    backgroundColor: 'transparent !important',
+    border: 'none !important',
     borderRadius: 28,
-    boxShadow: '0 32px 64px rgba(0,0,0,0.7), 0 0 0 1px #222',
+    boxShadow: 'none !important',
     transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
     position: 'relative',
     overflow: 'hidden',
@@ -60,7 +61,7 @@ const useStyles = makeStyles(() => ({
   styledTextField: {
     marginBottom: '22px',
     '& .MuiOutlinedInput-root': {
-      backgroundColor: 'rgba(255,255,255,0.03)',
+      backgroundColor: 'transparent !important',
       border: '1.5px solid #333',
       borderRadius: 14,
       transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
@@ -68,11 +69,11 @@ const useStyles = makeStyles(() => ({
         border: 'none',
       },
       '&:hover': {
-        backgroundColor: 'rgba(255,255,255,0.06)',
+        backgroundColor: 'transparent',
         border: '1.5px solid #555',
       },
       '&.Mui-focused': {
-        backgroundColor: 'rgba(255,255,255,0.08)',
+        backgroundColor: 'transparent',
         border: '1.5px solid #fff',
         boxShadow: '0 0 0 4px rgba(255,255,255,0.08)',
       },
@@ -95,7 +96,7 @@ const useStyles = makeStyles(() => ({
     padding: '13px',
     borderRadius: 14,
     background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
-    color: '#111',
+    color: '#111 !important',
     fontSize: '1.08rem',
     fontWeight: 700,
     textTransform: 'none',
@@ -104,15 +105,62 @@ const useStyles = makeStyles(() => ({
     boxShadow: '0 8px 32px rgba(255,255,255,0.10)',
     transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
     '&:hover': {
-      background: 'linear-gradient(90deg, #eee 0%, #888 100%)',
       color: '#000',
       transform: 'translateY(-2px) scale(1.01)',
       boxShadow: '0 12px 40px rgba(255,255,255,0.13)',
     },
     '&:disabled': {
-      background: 'rgba(255,255,255,0.08)',
-      color: '#888',
+      background: 'transparent !important',
+      color: '#fff !important',
     },
+  },
+  googleButton: {
+    width: '100%',
+    padding: '13px !important',
+    borderRadius: 14,
+    border: '0.2px solid #dadce0 !important',
+    color: '#ffffff !important',
+    textTransform: 'none',
+    marginBottom: '14px',
+    fontWeight: 600,
+    fontSize: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px',
+    boxShadow: '0 1px 2px rgba(60,64,67,.08)',
+    transition: 'background 0.2s, border 0.2s, box-shadow 0.2s',
+    backgroundColor: 'transparent',
+    '&:hover': {
+      backgroundColor: 'rgba(255,255,255,0.05)',
+      color: '#1a73e8',
+      boxShadow: '0 2px 4px rgba(60,64,67,.13)',
+    },
+    '&:active': {
+      background: '#ececec',
+    },
+    '&:focus': {
+      outline: '2px solid #4285F4',
+      outlineOffset: '2px',
+    },
+  },
+  divider: {
+    display: 'flex',
+    alignItems: 'center',
+    margin: '28px 0',
+    '&::before, &::after': {
+      content: '""',
+      flex: 1,
+      height: 1,
+      background: 'linear-gradient(90deg, #222 0%, #444 100%)',
+    },
+  },
+  dividerText: {
+    padding: '0 18px',
+    color: '#888',
+    fontSize: '0.92rem',
+    fontWeight: 500,
+    letterSpacing: '0.03em',
   },
   styledLink: {
     color: '#fff',
@@ -180,13 +228,11 @@ const Register = () => {
       <Container maxWidth="sm" className={classes.pageContainer}>
         <Fade in timeout={800}>
           <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
-            {/* Add CardStarPattern as a background layer */}
-            <CardStarPattern />
             <Zoom in timeout={1000}>
               <Box>
                 <Box className={classes.logoContainer}>
                   <Box className={classes.logoIcon}>
-                    <WorkspacePremium sx={{ color: '#232526', fontSize: 30 }} />
+                    <WorkspacePremium sx={{ color: '#232526', fontSize: 40, filter: 'drop-shadow(0 1px 4px #bbb)' }} />
                   </Box>
                   <Typography
                     variant="h5"
@@ -228,13 +274,28 @@ const Register = () => {
                   Join the legendary conversations
                 </Typography>
 
+                {/* Social Login Buttons */}
+                <Button
+                  className={classes.googleButton}
+                  startIcon={
+                    <img src={GoogleLogo} alt="Google" style={{ width: 22, height: 22, display: 'block' }} />
+                  }
+                  onClick={() => console.log('Google register')}
+                  disableElevation
+                >
+                  Continue with Google
+                </Button>
+                <Box className={classes.divider}>
+                  <Typography className={classes.dividerText}>OR</Typography>
+                </Box>
+
                 {error && (
                   <Fade in>
                     <Alert
                       severity="error"
                       sx={{
                         mb: 3,
-                        backgroundColor: 'rgba(255,255,255,0.08)',
+                        backgroundColor: 'transparent',
                         border: '1.5px solid #444',
                         color: '#fff',
                         borderRadius: 2,
