@@ -12,7 +12,6 @@ const useStyles = makeStyles({
   discoverContainer: {
     display: 'flex',
     flex: 1,
-    minHeight: '100vh',
   },
   contentArea: {
     flex: 1,
