@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_URL || 'https://characters-2-0.onrender.com';
+// const BASE_URL = process.env.REACT_APP_API_URL || 'https://characters-2-0.onrender.com';
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://fastapi-characters.onrender.com';
 
 class ApiService {
   constructor() {
@@ -9,7 +10,7 @@ class ApiService {
       headers: {
         'Content-Type': 'application/json',
       },
-      timeout: 50000, // 50 second timeout for AI responses
+      // timeout: 50000, // 50 second timeout for AI responses
     });
 
     // Add auth token to requests
