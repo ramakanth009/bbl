@@ -430,6 +430,43 @@ const useStyles = makeStyles({
         boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)',
       },
     },
+    '@media (max-width: 1200px)': {
+      padding: '20px',
+      minHeight: 260,
+      borderRadius: '14px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '18px',
+      minHeight: 240,
+      borderRadius: '12px',
+      '&:hover': {
+        transform: 'translateY(-6px) scale(1.015)',
+      },
+    },
+    '@media (max-width: 600px)': {
+      padding: '16px',
+      minHeight: 220,
+      borderRadius: '10px',
+      '&:hover': {
+        transform: 'translateY(-4px) scale(1.01)',
+      },
+    },
+    '@media (max-width: 480px)': {
+      padding: '14px',
+      minHeight: 200,
+      borderRadius: '8px',
+      '&:hover': {
+        transform: 'translateY(-3px) scale(1.005)',
+      },
+    },
+    '@media (max-width: 375px)': {
+      padding: '12px',
+      minHeight: 180,
+      borderRadius: '6px',
+      '&:hover': {
+        transform: 'translateY(-2px) scale(1.002)',
+      },
+    },
   },
   characterHeader: {
     display: 'flex',
@@ -440,6 +477,31 @@ const useStyles = makeStyles({
     minHeight: 80,
     position: 'relative',
     zIndex: 1,
+    '@media (max-width: 1200px)': {
+      gap: '14px',
+      marginBottom: '14px',
+      minHeight: 75,
+    },
+    '@media (max-width: 960px)': {
+      gap: '12px',
+      marginBottom: '12px',
+      minHeight: 70,
+    },
+    '@media (max-width: 600px)': {
+      gap: '10px',
+      marginBottom: '10px',
+      minHeight: 65,
+    },
+    '@media (max-width: 480px)': {
+      gap: '8px',
+      marginBottom: '8px',
+      minHeight: 60,
+    },
+    '@media (max-width: 375px)': {
+      gap: '6px',
+      marginBottom: '6px',
+      minHeight: 55,
+    },
   },
   characterAvatar: {
     width: 72,
@@ -447,6 +509,26 @@ const useStyles = makeStyles({
     borderRadius: '50%',
     border: '2px solid rgba(99, 102, 241, 0.3)',
     transition: 'all 0.3s ease',
+    '@media (max-width: 1200px)': {
+      width: 66,
+      height: 66,
+    },
+    '@media (max-width: 960px)': {
+      width: 60,
+      height: 60,
+    },
+    '@media (max-width: 600px)': {
+      width: 54,
+      height: 54,
+    },
+    '@media (max-width: 480px)': {
+      width: 48,
+      height: 48,
+    },
+    '@media (max-width: 375px)': {
+      width: 42,
+      height: 42,
+    },
   },
   characterInfo: {
     flex: 1,
@@ -464,6 +546,23 @@ const useStyles = makeStyles({
     whiteSpace: 'normal',
     overflowWrap: 'break-word',
     wordBreak: 'break-word',
+    '@media (max-width: 1200px)': {
+      fontSize: '17px',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '16px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '15px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '14px',
+      marginBottom: '3px',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '13px',
+      marginBottom: '2px',
+    },
   },
   characterAuthor: {
     fontSize: '12px',
@@ -472,6 +571,23 @@ const useStyles = makeStyles({
     whiteSpace: 'normal',
     overflowWrap: 'break-word',
     wordBreak: 'break-word',
+    '@media (max-width: 1200px)': {
+      fontSize: '11px',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '10px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '9px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '8px',
+      marginBottom: '1px',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '7px',
+      marginBottom: '1px',
+    },
   },
   characterType: {
     fontSize: '11px',
@@ -479,6 +595,21 @@ const useStyles = makeStyles({
     whiteSpace: 'normal',
     overflowWrap: 'break-word',
     wordBreak: 'break-word',
+    '@media (max-width: 1200px)': {
+      fontSize: '10px',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '9px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '8px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '7px',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '6px',
+    },
   },
   categoryContainer: {
     display: 'flex',
@@ -486,6 +617,26 @@ const useStyles = makeStyles({
     alignItems: 'center',
     marginBottom: '12px',
     flexWrap: 'wrap',
+    '@media (max-width: 1200px)': {
+      gap: '7px',
+      marginBottom: '11px',
+    },
+    '@media (max-width: 960px)': {
+      gap: '6px',
+      marginBottom: '10px',
+    },
+    '@media (max-width: 600px)': {
+      gap: '5px',
+      marginBottom: '9px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '4px',
+      marginBottom: '8px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '3px',
+      marginBottom: '7px',
+    },
   },
   categoryChip: {
     background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
@@ -509,6 +660,54 @@ const useStyles = makeStyles({
       marginLeft: '4px',
       marginRight: '0px',
     },
+    '@media (max-width: 1200px)': {
+      fontSize: '9px',
+      height: '20px',
+      borderRadius: '10px',
+      '& .MuiChip-label': {
+        padding: '0 7px 0 3px',
+        gap: '3px',
+      },
+      '& .MuiChip-icon': {
+        marginLeft: '3px',
+      },
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '8px',
+      height: '18px',
+      borderRadius: '9px',
+      '& .MuiChip-label': {
+        padding: '0 6px 0 3px',
+        gap: '2px',
+      },
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '7px',
+      height: '16px',
+      borderRadius: '8px',
+      '& .MuiChip-label': {
+        padding: '0 5px 0 2px',
+        gap: '2px',
+      },
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '6px',
+      height: '14px',
+      borderRadius: '7px',
+      '& .MuiChip-label': {
+        padding: '0 4px 0 2px',
+        gap: '1px',
+      },
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '5px',
+      height: '12px',
+      borderRadius: '6px',
+      '& .MuiChip-label': {
+        padding: '0 3px 0 1px',
+        gap: '1px',
+      },
+    },
   },
   typeChip: {
     background: 'rgba(75, 85, 99, 0.3)',
@@ -520,6 +719,46 @@ const useStyles = makeStyles({
     '& .MuiChip-label': {
       padding: '0 8px',
       fontWeight: 500,
+    },
+    '@media (max-width: 1200px)': {
+      fontSize: '9px',
+      height: '18px',
+      borderRadius: '9px',
+      '& .MuiChip-label': {
+        padding: '0 7px',
+      },
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '8px',
+      height: '16px',
+      borderRadius: '8px',
+      '& .MuiChip-label': {
+        padding: '0 6px',
+      },
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '7px',
+      height: '14px',
+      borderRadius: '7px',
+      '& .MuiChip-label': {
+        padding: '0 5px',
+      },
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '6px',
+      height: '12px',
+      borderRadius: '6px',
+      '& .MuiChip-label': {
+        padding: '0 4px',
+      },
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '5px',
+      height: '10px',
+      borderRadius: '5px',
+      '& .MuiChip-label': {
+        padding: '0 3px',
+      },
     },
   },
   characterDescription: {
@@ -536,11 +775,55 @@ const useStyles = makeStyles({
     flexGrow: 1,
     position: 'relative',
     zIndex: 1,
+    '@media (max-width: 1200px)': {
+      fontSize: '13px',
+      marginBottom: '18px',
+      height: '66px',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '12px',
+      marginBottom: '16px',
+      height: '60px',
+      lineHeight: 1.5,
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '11px',
+      marginBottom: '14px',
+      height: '54px',
+      lineHeight: 1.4,
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '10px',
+      marginBottom: '12px',
+      height: '48px',
+      lineHeight: 1.3,
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '9px',
+      marginBottom: '10px',
+      height: '42px',
+      lineHeight: 1.2,
+    },
   },
   characterStats: {
     display: 'flex',
     gap: '8px',
     alignItems: 'center',
+    '@media (max-width: 1200px)': {
+      gap: '7px',
+    },
+    '@media (max-width: 960px)': {
+      gap: '6px',
+    },
+    '@media (max-width: 600px)': {
+      gap: '5px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '4px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '3px',
+    },
   },
   actionBtn: {
     width: '32px',
@@ -559,6 +842,31 @@ const useStyles = makeStyles({
       background: 'rgba(99, 102, 241, 0.2)',
       color: '#6366f1',
       transform: 'scale(1.1)',
+    },
+    '@media (max-width: 1200px)': {
+      width: '30px',
+      height: '30px',
+      borderRadius: '7px',
+    },
+    '@media (max-width: 960px)': {
+      width: '28px',
+      height: '28px',
+      borderRadius: '6px',
+    },
+    '@media (max-width: 600px)': {
+      width: '26px',
+      height: '26px',
+      borderRadius: '5px',
+    },
+    '@media (max-width: 480px)': {
+      width: '24px',
+      height: '24px',
+      borderRadius: '4px',
+    },
+    '@media (max-width: 375px)': {
+      width: '22px',
+      height: '22px',
+      borderRadius: '3px',
     },
   },
   startChatBtn: {
@@ -593,6 +901,43 @@ const useStyles = makeStyles({
         left: '100%',
       },
     },
+    '@media (max-width: 1200px)': {
+      padding: '13px',
+      borderRadius: '11px',
+      fontSize: '13px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '12px',
+      borderRadius: '10px',
+      fontSize: '12px',
+      '&:hover': {
+        transform: 'translateY(-1.5px)',
+      },
+    },
+    '@media (max-width: 600px)': {
+      padding: '11px',
+      borderRadius: '9px',
+      fontSize: '11px',
+      '&:hover': {
+        transform: 'translateY(-1px)',
+      },
+    },
+    '@media (max-width: 480px)': {
+      padding: '10px',
+      borderRadius: '8px',
+      fontSize: '10px',
+      '&:hover': {
+        transform: 'translateY(-0.5px)',
+      },
+    },
+    '@media (max-width: 375px)': {
+      padding: '9px',
+      borderRadius: '7px',
+      fontSize: '9px',
+      '&:hover': {
+        transform: 'translateY(-0.25px)',
+      },
+    },
   },
   stat: {
     display: 'flex',
@@ -600,6 +945,26 @@ const useStyles = makeStyles({
     gap: '4px',
     fontSize: '12px',
     color: '#ffffff',
+    '@media (max-width: 1200px)': {
+      fontSize: '11px',
+      gap: '3px',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '10px',
+      gap: '3px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '9px',
+      gap: '2px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '8px',
+      gap: '2px',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '7px',
+      gap: '1px',
+    },
   },
 });
 

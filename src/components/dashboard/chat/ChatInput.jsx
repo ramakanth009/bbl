@@ -9,6 +9,21 @@ const useStyles = makeStyles(() => ({
     borderTop: '1px solid rgba(99, 102, 241, 0.2)',
     background: 'linear-gradient(145deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.8) 100%)',
     backdropFilter: 'blur(10px)',
+    '@media (max-width: 1200px)': {
+      padding: '14px 18px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '12px 16px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '10px 14px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '8px 12px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '6px 10px',
+    },
   },
   wrapper: {
     position: 'relative',
@@ -21,7 +36,7 @@ const useStyles = makeStyles(() => ({
       backgroundColor: 'rgba(26, 26, 26, 0.95)',
       minHeight: 48,
       maxHeight: 120,
-      paddingRight: '48px', // Make room for the send button
+      paddingRight: '48px',
       transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
       border: '1px solid rgba(99, 102, 241, 0.2)',
       '& fieldset': {
@@ -40,6 +55,50 @@ const useStyles = makeStyles(() => ({
         '&::placeholder': {
           color: '#9ca3af',
           opacity: 0.8,
+        },
+      },
+    },
+    '@media (max-width: 1200px)': {
+      '& .MuiOutlinedInput-root': {
+        borderRadius: 10,
+        minHeight: 44,
+        paddingRight: '44px',
+      },
+    },
+    '@media (max-width: 960px)': {
+      '& .MuiOutlinedInput-root': {
+        borderRadius: 8,
+        minHeight: 40,
+        paddingRight: '40px',
+      },
+    },
+    '@media (max-width: 600px)': {
+      '& .MuiOutlinedInput-root': {
+        borderRadius: 6,
+        minHeight: 36,
+        paddingRight: '36px',
+        '& textarea': {
+          fontSize: '0.9rem',
+        },
+      },
+    },
+    '@media (max-width: 480px)': {
+      '& .MuiOutlinedInput-root': {
+        borderRadius: 4,
+        minHeight: 32,
+        paddingRight: '32px',
+        '& textarea': {
+          fontSize: '0.85rem',
+        },
+      },
+    },
+    '@media (max-width: 375px)': {
+      '& .MuiOutlinedInput-root': {
+        borderRadius: 2,
+        minHeight: 28,
+        paddingRight: '28px',
+        '& textarea': {
+          fontSize: '0.8rem',
         },
       },
     },
@@ -69,6 +128,51 @@ const useStyles = makeStyles(() => ({
     },
     '& .MuiSvgIcon-root': {
       fontSize: '18px',
+    },
+    '@media (max-width: 1200px)': {
+      right: '7px',
+      width: '30px',
+      height: '30px',
+      minWidth: '30px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '17px',
+      },
+    },
+    '@media (max-width: 960px)': {
+      right: '6px',
+      width: '28px',
+      height: '28px',
+      minWidth: '28px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '16px',
+      },
+    },
+    '@media (max-width: 600px)': {
+      right: '5px',
+      width: '26px',
+      height: '26px',
+      minWidth: '26px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '15px',
+      },
+    },
+    '@media (max-width: 480px)': {
+      right: '4px',
+      width: '24px',
+      height: '24px',
+      minWidth: '24px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '14px',
+      },
+    },
+    '@media (max-width: 375px)': {
+      right: '3px',
+      width: '22px',
+      height: '22px',
+      minWidth: '22px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '13px',
+      },
     },
   },
 }));

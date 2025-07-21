@@ -38,6 +38,37 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     minWidth: 600,
     maxHeight: '80vh',
     boxShadow: theme.shadows[8],
+    '@media (max-width: 1200px)': {
+      minWidth: 500,
+      maxHeight: '75vh',
+      borderRadius: 14,
+    },
+    '@media (max-width: 960px)': {
+      minWidth: 450,
+      maxHeight: '70vh',
+      borderRadius: 12,
+    },
+    '@media (max-width: 600px)': {
+      minWidth: '90vw',
+      maxWidth: '90vw',
+      maxHeight: '85vh',
+      borderRadius: 10,
+      margin: 8,
+    },
+    '@media (max-width: 480px)': {
+      minWidth: '95vw',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      borderRadius: 8,
+      margin: 4,
+    },
+    '@media (max-width: 375px)': {
+      minWidth: '98vw',
+      maxWidth: '98vw',
+      maxHeight: '95vh',
+      borderRadius: 6,
+      margin: 2,
+    },
   },
 }));
 
@@ -52,12 +83,49 @@ const SessionItem = styled(ListItem)(({ theme }) => ({
     backgroundColor: theme.palette.action.hover,
     boxShadow: theme.shadows[2],
   },
+  '@media (max-width: 1200px)': {
+    borderRadius: 8,
+    marginBottom: theme.spacing(1.2),
+  },
+  '@media (max-width: 960px)': {
+    borderRadius: 6,
+    marginBottom: theme.spacing(1),
+  },
+  '@media (max-width: 600px)': {
+    borderRadius: 4,
+    marginBottom: theme.spacing(0.8),
+    padding: '8px 12px',
+  },
+  '@media (max-width: 480px)': {
+    padding: '6px 10px',
+    marginBottom: theme.spacing(0.6),
+  },
+  '@media (max-width: 375px)': {
+    padding: '4px 8px',
+    marginBottom: theme.spacing(0.4),
+  },
 }));
 
 const SessionStats = styled(Box)(({ theme }) => ({
   display: 'flex',
   gap: theme.spacing(1.5),
   marginTop: theme.spacing(0.5),
+  '@media (max-width: 1200px)': {
+    gap: theme.spacing(1.2),
+  },
+  '@media (max-width: 960px)': {
+    gap: theme.spacing(1),
+  },
+  '@media (max-width: 600px)': {
+    gap: theme.spacing(0.8),
+    flexWrap: 'wrap',
+  },
+  '@media (max-width: 480px)': {
+    gap: theme.spacing(0.6),
+  },
+  '@media (max-width: 375px)': {
+    gap: theme.spacing(0.4),
+  },
 }));
 
 const sectionSubtitle = 'Your complete conversation history with all characters';
@@ -68,6 +136,14 @@ const dividerSx = {
   background: 'linear-gradient(90deg, transparent, #6366f1 40%, transparent 60%)',
   height: 2,
   border: 0,
+  '@media (max-width: 960px)': {
+    mt: 1.5,
+    mb: 1.5,
+  },
+  '@media (max-width: 600px)': {
+    mt: 1,
+    mb: 1,
+  },
 };
 
 const SessionsManager = ({ open, onClose, onSessionSelect }) => {
@@ -160,10 +236,48 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
             borderTopLeftRadius: 16,
             borderTopRightRadius: 16,
             pb: 2,
+            '@media (max-width: 1200px)': {
+              pb: 1.8,
+              borderTopLeftRadius: 14,
+              borderTopRightRadius: 14,
+            },
+            '@media (max-width: 960px)': {
+              pb: 1.6,
+              borderTopLeftRadius: 12,
+              borderTopRightRadius: 12,
+            },
+            '@media (max-width: 600px)': {
+              pb: 1.4,
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+              px: 2,
+            },
+            '@media (max-width: 480px)': {
+              pb: 1.2,
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
+              px: 1.5,
+            },
+            '@media (max-width: 375px)': {
+              pb: 1,
+              borderTopLeftRadius: 6,
+              borderTopRightRadius: 6,
+              px: 1,
+            },
           }}
         >
           <Box display="flex" alignItems="center" gap={2}>
-            <History />
+            <History sx={{
+              '@media (max-width: 600px)': {
+                fontSize: '1.2rem',
+              },
+              '@media (max-width: 480px)': {
+                fontSize: '1.1rem',
+              },
+              '@media (max-width: 375px)': {
+                fontSize: '1rem',
+              },
+            }} />
             <Typography variant="h6" fontWeight="bold" sx={{
               background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
               WebkitBackgroundClip: 'text',
@@ -174,6 +288,26 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
+              '@media (max-width: 1200px)': {
+                fontSize: '1.4rem',
+                gap: '10px',
+              },
+              '@media (max-width: 960px)': {
+                fontSize: '1.3rem',
+                gap: '8px',
+              },
+              '@media (max-width: 600px)': {
+                fontSize: '1.2rem',
+                gap: '6px',
+              },
+              '@media (max-width: 480px)': {
+                fontSize: '1.1rem',
+                gap: '4px',
+              },
+              '@media (max-width: 375px)': {
+                fontSize: '1rem',
+                gap: '2px',
+              },
             }}>
               Chat History
             </Typography>
@@ -183,6 +317,29 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
             fontSize: '0.875rem',
             mt: 1,
             ml: 5,
+            '@media (max-width: 1200px)': {
+              fontSize: '0.85rem',
+              ml: 4.5,
+            },
+            '@media (max-width: 960px)': {
+              fontSize: '0.825rem',
+              ml: 4,
+            },
+            '@media (max-width: 600px)': {
+              fontSize: '0.8rem',
+              ml: 3.5,
+              mt: 0.8,
+            },
+            '@media (max-width: 480px)': {
+              fontSize: '0.775rem',
+              ml: 3,
+              mt: 0.6,
+            },
+            '@media (max-width: 375px)': {
+              fontSize: '0.75rem',
+              ml: 2.5,
+              mt: 0.4,
+            },
           }}>
             {sectionSubtitle}
           </Typography>
@@ -190,7 +347,14 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
             <Box mt={1}>
               <SessionStats>
                 <Chip 
-                  icon={<Chat />} 
+                  icon={<Chat sx={{
+                    '@media (max-width: 600px)': {
+                      fontSize: '0.9rem',
+                    },
+                    '@media (max-width: 480px)': {
+                      fontSize: '0.8rem',
+                    },
+                  }} />} 
                   label={`${getTotalSessions()} conversations`} 
                   size="small" 
                   variant="outlined"
@@ -198,11 +362,29 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
                     color: '#fff',
                     fontWeight: 600,
                     background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                    '& .MuiChip-label': { color: '#fff' },
+                    '& .MuiChip-label': { 
+                      color: '#fff',
+                      '@media (max-width: 600px)': {
+                        fontSize: '0.75rem',
+                      },
+                      '@media (max-width: 480px)': {
+                        fontSize: '0.7rem',
+                      },
+                      '@media (max-width: 375px)': {
+                        fontSize: '0.65rem',
+                      },
+                    },
                   }}
                 />
                 <Chip 
-                  icon={<Person />} 
+                  icon={<Person sx={{
+                    '@media (max-width: 600px)': {
+                      fontSize: '0.9rem',
+                    },
+                    '@media (max-width: 480px)': {
+                      fontSize: '0.8rem',
+                    },
+                  }} />} 
                   label={`${getCharacterCount()} characters`} 
                   size="small" 
                   variant="outlined"
@@ -210,7 +392,18 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
                     color: '#fff',
                     fontWeight: 600,
                     background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                    '& .MuiChip-label': { color: '#fff' },
+                    '& .MuiChip-label': { 
+                      color: '#fff',
+                      '@media (max-width: 600px)': {
+                        fontSize: '0.75rem',
+                      },
+                      '@media (max-width: 480px)': {
+                        fontSize: '0.7rem',
+                      },
+                      '@media (max-width: 375px)': {
+                        fontSize: '0.65rem',
+                      },
+                    },
                   }}
                 />
               </SessionStats>
@@ -225,21 +418,85 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
             py: 2,
             borderBottomLeftRadius: 16,
             borderBottomRightRadius: 16,
+            '@media (max-width: 1200px)': {
+              px: 2.5,
+              py: 1.8,
+              borderBottomLeftRadius: 14,
+              borderBottomRightRadius: 14,
+            },
+            '@media (max-width: 960px)': {
+              px: 2,
+              py: 1.6,
+              borderBottomLeftRadius: 12,
+              borderBottomRightRadius: 12,
+            },
+            '@media (max-width: 600px)': {
+              px: 1.5,
+              py: 1.4,
+              borderBottomLeftRadius: 10,
+              borderBottomRightRadius: 10,
+            },
+            '@media (max-width: 480px)': {
+              px: 1.2,
+              py: 1.2,
+              borderBottomLeftRadius: 8,
+              borderBottomRightRadius: 8,
+            },
+            '@media (max-width: 375px)': {
+              px: 1,
+              py: 1,
+              borderBottomLeftRadius: 6,
+              borderBottomRightRadius: 6,
+            },
           }}
         >
           {loading && (
-            <Box display="flex" justifyContent="center" py={4}>
+            <Box display="flex" justifyContent="center" py={4} sx={{
+              '@media (max-width: 600px)': {
+                py: 3,
+              },
+              '@media (max-width: 480px)': {
+                py: 2.5,
+              },
+              '@media (max-width: 375px)': {
+                py: 2,
+              },
+            }}>
               <CircularProgress sx={{ color: '#6366f1' }} />
             </Box>
           )}
 
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ 
+              mb: 2,
+              '@media (max-width: 600px)': {
+                mb: 1.5,
+                fontSize: '0.875rem',
+              },
+              '@media (max-width: 480px)': {
+                mb: 1.2,
+                fontSize: '0.825rem',
+              },
+              '@media (max-width: 375px)': {
+                mb: 1,
+                fontSize: '0.8rem',
+              },
+            }}>
               {error}
               <Button 
                 size="small" 
                 onClick={loadSessions} 
-                sx={{ ml: 2 }}
+                sx={{ 
+                  ml: 2,
+                  '@media (max-width: 600px)': {
+                    ml: 1.5,
+                    fontSize: '0.8rem',
+                  },
+                  '@media (max-width: 480px)': {
+                    ml: 1,
+                    fontSize: '0.75rem',
+                  },
+                }}
               >
                 Retry
               </Button>
@@ -247,12 +504,58 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
           )}
 
           {!loading && !error && Object.keys(groupedSessions).length === 0 && (
-            <Box textAlign="center" py={4}>
-              <History sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
-              <Typography variant="h6" color="text.secondary">
+            <Box textAlign="center" py={4} sx={{
+              '@media (max-width: 600px)': {
+                py: 3,
+              },
+              '@media (max-width: 480px)': {
+                py: 2.5,
+              },
+              '@media (max-width: 375px)': {
+                py: 2,
+              },
+            }}>
+              <History sx={{ 
+                fontSize: 48, 
+                color: 'text.disabled', 
+                mb: 2,
+                '@media (max-width: 600px)': {
+                  fontSize: 40,
+                  mb: 1.5,
+                },
+                '@media (max-width: 480px)': {
+                  fontSize: 36,
+                  mb: 1.2,
+                },
+                '@media (max-width: 375px)': {
+                  fontSize: 32,
+                  mb: 1,
+                },
+              }} />
+              <Typography variant="h6" color="text.secondary" sx={{
+                '@media (max-width: 600px)': {
+                  fontSize: '1.1rem',
+                },
+                '@media (max-width: 480px)': {
+                  fontSize: '1rem',
+                },
+                '@media (max-width: 375px)': {
+                  fontSize: '0.9rem',
+                },
+              }}>
                 No conversations yet
               </Typography>
-              <Typography variant="body2" color="text.disabled">
+              <Typography variant="body2" color="text.disabled" sx={{
+                '@media (max-width: 600px)': {
+                  fontSize: '0.85rem',
+                },
+                '@media (max-width: 480px)': {
+                  fontSize: '0.8rem',
+                },
+                '@media (max-width: 375px)': {
+                  fontSize: '0.75rem',
+                },
+              }}>
                 Start chatting with characters to see your history here
               </Typography>
             </Box>
@@ -261,7 +564,17 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
           {!loading && !error && (
             <Box>
               {Object.entries(groupedSessions).map(([character, characterSessions], idx, arr) => (
-                <Box key={character} mb={3}>
+                <Box key={character} mb={3} sx={{
+                  '@media (max-width: 600px)': {
+                    mb: 2.5,
+                  },
+                  '@media (max-width: 480px)': {
+                    mb: 2,
+                  },
+                  '@media (max-width: 375px)': {
+                    mb: 1.5,
+                  },
+                }}>
                   <Typography 
                     variant="subtitle1" 
                     fontWeight="bold" 
@@ -271,9 +584,42 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
                       alignItems: 'center', 
                       gap: 1,
                       color: theme.palette.primary.main,
+                      '@media (max-width: 1200px)': {
+                        fontSize: '1rem',
+                        mb: 0.9,
+                      },
+                      '@media (max-width: 960px)': {
+                        fontSize: '0.95rem',
+                        mb: 0.8,
+                      },
+                      '@media (max-width: 600px)': {
+                        fontSize: '0.9rem',
+                        mb: 0.7,
+                        gap: 0.8,
+                      },
+                      '@media (max-width: 480px)': {
+                        fontSize: '0.85rem',
+                        mb: 0.6,
+                        gap: 0.6,
+                      },
+                      '@media (max-width: 375px)': {
+                        fontSize: '0.8rem',
+                        mb: 0.5,
+                        gap: 0.4,
+                      },
                     }}
                   >
-                    <Person fontSize="small" />
+                    <Person fontSize="small" sx={{
+                      '@media (max-width: 600px)': {
+                        fontSize: '1rem',
+                      },
+                      '@media (max-width: 480px)': {
+                        fontSize: '0.9rem',
+                      },
+                      '@media (max-width: 375px)': {
+                        fontSize: '0.8rem',
+                      },
+                    }} />
                     {character}
                     <Chip 
                       label={`${characterSessions.length} session${characterSessions.length !== 1 ? 's' : ''}`}
@@ -288,6 +634,18 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
                         height: 20,
                         background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%)',
                         border: '1px solid rgba(99, 102, 241, 0.3)',
+                        '@media (max-width: 600px)': {
+                          fontSize: '0.65rem',
+                          height: 18,
+                        },
+                        '@media (max-width: 480px)': {
+                          fontSize: '0.6rem',
+                          height: 16,
+                        },
+                        '@media (max-width: 375px)': {
+                          fontSize: '0.55rem',
+                          height: 14,
+                        },
                       }}
                     />
                   </Typography>
@@ -304,15 +662,57 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
                         }}
                       >
                         <ListItemAvatar>
-                          <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.primary.light }}>
-                            <Chat fontSize="small" />
+                          <Avatar sx={{ 
+                            width: 32, 
+                            height: 32, 
+                            bgcolor: theme.palette.primary.light,
+                            '@media (max-width: 600px)': {
+                              width: 28,
+                              height: 28,
+                            },
+                            '@media (max-width: 480px)': {
+                              width: 24,
+                              height: 24,
+                            },
+                            '@media (max-width: 375px)': {
+                              width: 20,
+                              height: 20,
+                            },
+                          }}>
+                            <Chat fontSize="small" sx={{
+                              '@media (max-width: 600px)': {
+                                fontSize: '0.9rem',
+                              },
+                              '@media (max-width: 480px)': {
+                                fontSize: '0.8rem',
+                              },
+                              '@media (max-width: 375px)': {
+                                fontSize: '0.7rem',
+                              },
+                            }} />
                           </Avatar>
                         </ListItemAvatar>
                         
                         <ListItemText
                           primary={
-                            <Box display="flex" alignItems="center" gap={1}>
-                              <Typography variant="body2" fontWeight="medium">
+                            <Box display="flex" alignItems="center" gap={1} sx={{
+                              '@media (max-width: 600px)': {
+                                flexDirection: 'column',
+                                alignItems: 'flex-start',
+                                gap: 0.5,
+                              },
+                            }}>
+                              <Typography variant="body2" fontWeight="medium" sx={{
+                                '@media (max-width: 600px)': {
+                                  fontSize: '0.85rem',
+                                },
+                                '@media (max-width: 480px)': {
+                                  fontSize: '0.8rem',
+                                },
+                                '@media (max-width: 375px)': {
+                                  fontSize: '0.75rem',
+                                },
+                              }}>
                                 {getSessionPreview(session)}
                               </Typography>
                               <Chip 
@@ -325,14 +725,47 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
                                   background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%)',
                                   border: '1px solid rgba(99, 102, 241, 0.3)',
                                   color: '#fff',
+                                  '@media (max-width: 600px)': {
+                                    fontSize: '0.65rem',
+                                    height: 18,
+                                  },
+                                  '@media (max-width: 480px)': {
+                                    fontSize: '0.6rem',
+                                    height: 16,
+                                  },
+                                  '@media (max-width: 375px)': {
+                                    fontSize: '0.55rem',
+                                    height: 14,
+                                  },
                                 }}
                               />
                             </Box>
                           }
                           secondary={
                             <Box display="flex" alignItems="center" gap={1} mt={0.5}>
-                              <AccessTime fontSize="small" sx={{ color: 'text.disabled' }} />
-                              <Typography variant="caption" color="text.disabled">
+                              <AccessTime fontSize="small" sx={{ 
+                                color: 'text.disabled',
+                                '@media (max-width: 600px)': {
+                                  fontSize: '0.9rem',
+                                },
+                                '@media (max-width: 480px)': {
+                                  fontSize: '0.8rem',
+                                },
+                                '@media (max-width: 375px)': {
+                                  fontSize: '0.7rem',
+                                },
+                              }} />
+                              <Typography variant="caption" color="text.disabled" sx={{
+                                '@media (max-width: 600px)': {
+                                  fontSize: '0.7rem',
+                                },
+                                '@media (max-width: 480px)': {
+                                  fontSize: '0.65rem',
+                                },
+                                '@media (max-width: 375px)': {
+                                  fontSize: '0.6rem',
+                                },
+                              }}>
                                 Started {new Date(session.created_at).toLocaleString()}
                               </Typography>
                             </Box>
@@ -346,9 +779,28 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
                             // Handle delete session (if you implement this endpoint)
                             console.log('Delete session:', session.session_id);
                           }}
-                          sx={{ opacity: 0.7, color: theme.palette.error.main }}
+                          sx={{ 
+                            opacity: 0.7, 
+                            color: theme.palette.error.main,
+                            '@media (max-width: 600px)': {
+                              padding: '4px',
+                            },
+                            '@media (max-width: 480px)': {
+                              padding: '2px',
+                            },
+                          }}
                         >
-                          <Delete fontSize="small" />
+                          <Delete fontSize="small" sx={{
+                            '@media (max-width: 600px)': {
+                              fontSize: '0.9rem',
+                            },
+                            '@media (max-width: 480px)': {
+                              fontSize: '0.8rem',
+                            },
+                            '@media (max-width: 375px)': {
+                              fontSize: '0.7rem',
+                            },
+                          }} />
                         </IconButton>
                       </SessionItem>
                     ))}
@@ -369,13 +821,59 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
             borderBottomLeftRadius: 16,
             borderBottomRightRadius: 16,
             p: 2,
+            '@media (max-width: 1200px)': {
+              borderBottomLeftRadius: 14,
+              borderBottomRightRadius: 14,
+              p: 1.8,
+            },
+            '@media (max-width: 960px)': {
+              borderBottomLeftRadius: 12,
+              borderBottomRightRadius: 12,
+              p: 1.6,
+            },
+            '@media (max-width: 600px)': {
+              borderBottomLeftRadius: 10,
+              borderBottomRightRadius: 10,
+              p: 1.4,
+            },
+            '@media (max-width: 480px)': {
+              borderBottomLeftRadius: 8,
+              borderBottomRightRadius: 8,
+              p: 1.2,
+            },
+            '@media (max-width: 375px)': {
+              borderBottomLeftRadius: 6,
+              borderBottomRightRadius: 6,
+              p: 1,
+            },
           }}
         >
-          <Button onClick={onClose}>Close</Button>
+          <Button onClick={onClose} sx={{
+            '@media (max-width: 600px)': {
+              fontSize: '0.85rem',
+            },
+            '@media (max-width: 480px)': {
+              fontSize: '0.8rem',
+            },
+            '@media (max-width: 375px)': {
+              fontSize: '0.75rem',
+            },
+          }}>Close</Button>
           <Button 
             onClick={loadSessions} 
             variant="outlined"
             disabled={loading}
+            sx={{
+              '@media (max-width: 600px)': {
+                fontSize: '0.85rem',
+              },
+              '@media (max-width: 480px)': {
+                fontSize: '0.8rem',
+              },
+              '@media (max-width: 375px)': {
+                fontSize: '0.75rem',
+              },
+            }}
           >
             Refresh
           </Button>

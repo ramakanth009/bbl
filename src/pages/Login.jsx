@@ -37,6 +37,23 @@ const useStyles = makeStyles(() => ({
     position: 'relative',
     zIndex: 1,
     padding: '24px',
+    '@media (max-width: 1200px)': {
+      justifyContent: 'center',
+      padding: '20px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '16px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '12px',
+      minHeight: '100vh',
+    },
+    '@media (max-width: 480px)': {
+      padding: '8px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '4px',
+    },
   },
   authCard: {
     width: '100%',
@@ -52,6 +69,28 @@ const useStyles = makeStyles(() => ({
       // transform: 'translateY(-1px) scale(1.01)',
       // boxShadow: '0 48px 96px rgba(0,0,0,0.85), 0 0 0 1.5px #444',
     },
+    '@media (max-width: 1200px)': {
+      maxWidth: 400,
+      padding: '32px 32px 28px 32px',
+    },
+    '@media (max-width: 960px)': {
+      maxWidth: 380,
+      padding: '28px 28px 24px 28px',
+      borderRadius: 24,
+    },
+    '@media (max-width: 600px)': {
+      maxWidth: '100%',
+      padding: '24px 24px 20px 24px',
+      borderRadius: 20,
+    },
+    '@media (max-width: 480px)': {
+      padding: '20px 20px 16px 20px',
+      borderRadius: 16,
+    },
+    '@media (max-width: 375px)': {
+      padding: '16px 16px 12px 16px',
+      borderRadius: 12,
+    },
   },
   logoContainer: {
     display: 'flex',
@@ -59,6 +98,23 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center',
     gap: '18px',
     marginBottom: '36px',
+    '@media (max-width: 960px)': {
+      gap: '16px',
+      marginBottom: '32px',
+    },
+    '@media (max-width: 600px)': {
+      gap: '14px',
+      marginBottom: '28px',
+      flexDirection: 'column',
+    },
+    '@media (max-width: 480px)': {
+      gap: '12px',
+      marginBottom: '24px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '10px',
+      marginBottom: '20px',
+    },
   },
   logoIcon: {
     width: 52,
@@ -69,6 +125,25 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     justifyContent: 'center',
     boxShadow: '0 8px 32px rgba(255,255,255,0.10)',
+    '@media (max-width: 960px)': {
+      width: 48,
+      height: 48,
+      borderRadius: 12,
+    },
+    '@media (max-width: 600px)': {
+      width: 44,
+      height: 44,
+      borderRadius: 10,
+    },
+    '@media (max-width: 480px)': {
+      width: 40,
+      height: 40,
+      borderRadius: 8,
+    },
+    '@media (max-width: 375px)': {
+      width: 36,
+      height: 36,
+    },
   },
   styledTextField: {
     marginBottom: '22px',
@@ -101,6 +176,27 @@ const useStyles = makeStyles(() => ({
       fontWeight: 500,
       letterSpacing: '0.02em',
     },
+    '@media (max-width: 960px)': {
+      marginBottom: '20px',
+      '& .MuiOutlinedInput-root': {
+        borderRadius: 12,
+      },
+    },
+    '@media (max-width: 600px)': {
+      marginBottom: '18px',
+      '& .MuiOutlinedInput-root': {
+        borderRadius: 10,
+      },
+    },
+    '@media (max-width: 480px)': {
+      marginBottom: '16px',
+      '& .MuiOutlinedInput-root': {
+        borderRadius: 8,
+      },
+    },
+    '@media (max-width: 375px)': {
+      marginBottom: '14px',
+    },
   },
   loginButton: {
     width: '100%',
@@ -124,6 +220,33 @@ const useStyles = makeStyles(() => ({
     '&:disabled': {
       background: 'transparent !important',
       color: '#fff !important',
+    },
+    '@media (max-width: 960px)': {
+      padding: '12px',
+      fontSize: '1.04rem',
+      borderRadius: 12,
+      marginBottom: '24px !important',
+      marginTop: '24px !important',
+    },
+    '@media (max-width: 600px)': {
+      padding: '11px',
+      fontSize: '1rem',
+      borderRadius: 10,
+      marginBottom: '22px !important',
+      marginTop: '22px !important',
+    },
+    '@media (max-width: 480px)': {
+      padding: '10px',
+      fontSize: '0.96rem',
+      borderRadius: 8,
+      marginBottom: '20px !important',
+      marginTop: '20px !important',
+    },
+    '@media (max-width: 375px)': {
+      padding: '9px',
+      fontSize: '0.92rem',
+      marginBottom: '18px !important',
+      marginTop: '18px !important',
     },
   },
   googleButton: {
@@ -155,6 +278,29 @@ const useStyles = makeStyles(() => ({
       outline: '2px solid #4285F4',
       outlineOffset: '2px',
     },
+    '@media (max-width: 960px)': {
+      padding: '12px !important',
+      fontSize: '0.96rem',
+      borderRadius: 12,
+      gap: '10px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '11px !important',
+      fontSize: '0.92rem',
+      borderRadius: 10,
+      gap: '8px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '10px !important',
+      fontSize: '0.88rem',
+      borderRadius: 8,
+      gap: '6px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '9px !important',
+      fontSize: '0.84rem',
+      gap: '4px',
+    },
   },
   divider: {
     display: 'flex',
@@ -172,6 +318,18 @@ const useStyles = makeStyles(() => ({
       height: 1,
       background: 'linear-gradient(90deg, #fff 0%, #444 100%)',
     },
+    '@media (max-width: 960px)': {
+      margin: '24px 0',
+    },
+    '@media (max-width: 600px)': {
+      margin: '20px 0',
+    },
+    '@media (max-width: 480px)': {
+      margin: '18px 0',
+    },
+    '@media (max-width: 375px)': {
+      margin: '16px 0',
+    },
   },
   dividerText: {
     padding: '0 18px',
@@ -179,6 +337,22 @@ const useStyles = makeStyles(() => ({
     fontSize: '0.92rem',
     fontWeight: 500,
     letterSpacing: '0.03em',
+    '@media (max-width: 960px)': {
+      padding: '0 16px',
+      fontSize: '0.9rem',
+    },
+    '@media (max-width: 600px)': {
+      padding: '0 14px',
+      fontSize: '0.88rem',
+    },
+    '@media (max-width: 480px)': {
+      padding: '0 12px',
+      fontSize: '0.86rem',
+    },
+    '@media (max-width: 375px)': {
+      padding: '0 10px',
+      fontSize: '0.84rem',
+    },
   },
   styledLink: {
     color: '#fff',
@@ -187,6 +361,49 @@ const useStyles = makeStyles(() => ({
     transition: 'color 0.3s',
     '&:hover': {
       color: '#eee',
+    },
+  },
+  titleText: {
+    '@media (max-width: 960px)': {
+      fontSize: '1.9rem !important',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.7rem !important',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '1.5rem !important',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '1.3rem !important',
+    },
+  },
+  logoText: {
+    '@media (max-width: 960px)': {
+      fontSize: '1.3rem !important',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.2rem !important',
+      textAlign: 'center',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '1.1rem !important',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '1rem !important',
+    },
+  },
+  logoIconResponsive: {
+    '@media (max-width: 960px)': {
+      fontSize: '36px !important',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '32px !important',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '28px !important',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '24px !important',
     },
   },
 }));
@@ -242,11 +459,12 @@ const Login = () => {
               <Box>
                 <Box className={classes.logoContainer}>
                   <Box className={classes.logoIcon}>
-                    <WorkspacePremium sx={{ color: '#232526', fontSize: 40, filter: 'drop-shadow(0 1px 4px #bbb)' }} />
+                    <WorkspacePremium sx={{ color: '#232526', fontSize: 40, filter: 'drop-shadow(0 1px 4px #bbb)' }} className={classes.logoIconResponsive} />
                   </Box>
                   <Typography 
                     variant="h5" 
-                    fontWeight="bold" 
+                    fontWeight="bold"
+                    className={classes.logoText}
                     sx={{ 
                       // background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
                       background: '#fff',
@@ -264,6 +482,7 @@ const Login = () => {
                   fontWeight="bold" 
                   align="center" 
                   gutterBottom
+                  className={classes.titleText}
                   sx={{ 
                     color: '#fff',
                     fontSize: '2.1rem',

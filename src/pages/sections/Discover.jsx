@@ -19,8 +19,23 @@ const useStyles = makeStyles({
     overflow: 'auto',
     transition: 'all 0.3s ease',
     display: 'block',
+    '@media (max-width: 1200px)': {
+      padding: '12px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '10px',
+    },
     '@media (max-width: 900px)': {
       padding: '16px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '8px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '6px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '4px',
     },
   },
   contentAreaHidden: {

@@ -10,6 +10,26 @@ const MessagesContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(2),
+  '@media (max-width: 1200px)': {
+    padding: theme.spacing(2.2),
+    gap: theme.spacing(1.8),
+  },
+  '@media (max-width: 960px)': {
+    padding: theme.spacing(2),
+    gap: theme.spacing(1.6),
+  },
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(1.8),
+    gap: theme.spacing(1.4),
+  },
+  '@media (max-width: 480px)': {
+    padding: theme.spacing(1.5),
+    gap: theme.spacing(1.2),
+  },
+  '@media (max-width: 375px)': {
+    padding: theme.spacing(1.2),
+    gap: theme.spacing(1),
+  },
 }));
 
 // Step 1: Process asterisk formatting (*text* becomes italic/bold)
@@ -171,9 +191,45 @@ const MessageList = forwardRef(({ messages, loading }, ref) => {
         <Message message={{
           role: 'assistant',
           content: (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CircularProgress size={16} />
-              <Typography variant="body2">Thinking...</Typography>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 1,
+              '@media (max-width: 600px)': {
+                gap: 0.8,
+              },
+              '@media (max-width: 480px)': {
+                gap: 0.6,
+              },
+              '@media (max-width: 375px)': {
+                gap: 0.4,
+              },
+            }}>
+              <CircularProgress size={16} sx={{
+                '@media (max-width: 600px)': {
+                  width: 14,
+                  height: 14,
+                },
+                '@media (max-width: 480px)': {
+                  width: 12,
+                  height: 12,
+                },
+                '@media (max-width: 375px)': {
+                  width: 10,
+                  height: 10,
+                },
+              }} />
+              <Typography variant="body2" sx={{
+                '@media (max-width: 600px)': {
+                  fontSize: '0.8rem',
+                },
+                '@media (max-width: 480px)': {
+                  fontSize: '0.75rem',
+                },
+                '@media (max-width: 375px)': {
+                  fontSize: '0.7rem',
+                },
+              }}>Thinking...</Typography>
             </Box>
           )
         }} />

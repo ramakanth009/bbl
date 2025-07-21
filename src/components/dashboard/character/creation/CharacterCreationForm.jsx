@@ -67,6 +67,33 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
       pointerEvents: 'none',
       borderRadius: 16,
     },
+    '@media (max-width: 1200px)': {
+      maxWidth: '800px',
+      margin: theme.spacing(2),
+    },
+    '@media (max-width: 960px)': {
+      maxWidth: '700px',
+      margin: theme.spacing(1.5),
+      borderRadius: 12,
+    },
+    '@media (max-width: 600px)': {
+      maxWidth: '95vw',
+      margin: theme.spacing(1),
+      borderRadius: 8,
+      maxHeight: '95vh',
+    },
+    '@media (max-width: 480px)': {
+      maxWidth: '98vw',
+      margin: theme.spacing(0.5),
+      borderRadius: 6,
+    },
+    '@media (max-width: 375px)': {
+      maxWidth: '100vw',
+      margin: 0,
+      borderRadius: 0,
+      height: '100vh',
+      maxHeight: '100vh',
+    },
   },
 }));
 
@@ -75,9 +102,41 @@ const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   borderBottom: '1px solid #2a2a2e',
   position: 'relative',
   zIndex: 2,
+  padding: theme.spacing(3),
   '& .MuiTypography-root': {
     fontWeight: 600,
     color: '#ffffff',
+    fontSize: '1.5rem',
+  },
+  '@media (max-width: 1200px)': {
+    padding: theme.spacing(2.5),
+    '& .MuiTypography-root': {
+      fontSize: '1.4rem',
+    },
+  },
+  '@media (max-width: 960px)': {
+    padding: theme.spacing(2),
+    '& .MuiTypography-root': {
+      fontSize: '1.3rem',
+    },
+  },
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(1.5),
+    '& .MuiTypography-root': {
+      fontSize: '1.2rem',
+    },
+  },
+  '@media (max-width: 480px)': {
+    padding: theme.spacing(1.2),
+    '& .MuiTypography-root': {
+      fontSize: '1.1rem',
+    },
+  },
+  '@media (max-width: 375px)': {
+    padding: theme.spacing(1),
+    '& .MuiTypography-root': {
+      fontSize: '1rem',
+    },
   },
 }));
 
@@ -86,6 +145,21 @@ const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
   zIndex: 2,
   backgroundColor: 'transparent',
   padding: theme.spacing(3),
+  '@media (max-width: 1200px)': {
+    padding: theme.spacing(2.5),
+  },
+  '@media (max-width: 960px)': {
+    padding: theme.spacing(2),
+  },
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(1.5),
+  },
+  '@media (max-width: 480px)': {
+    padding: theme.spacing(1.2),
+  },
+  '@media (max-width: 375px)': {
+    padding: theme.spacing(1),
+  },
 }));
 
 const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
@@ -94,6 +168,23 @@ const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   padding: theme.spacing(2, 3),
   position: 'relative',
   zIndex: 2,
+  '@media (max-width: 1200px)': {
+    padding: theme.spacing(2, 2.5),
+  },
+  '@media (max-width: 960px)': {
+    padding: theme.spacing(1.5, 2),
+  },
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(1.2, 1.5),
+    flexDirection: 'column',
+    gap: theme.spacing(1),
+  },
+  '@media (max-width: 480px)': {
+    padding: theme.spacing(1, 1.2),
+  },
+  '@media (max-width: 375px)': {
+    padding: theme.spacing(0.8, 1),
+  },
 }));
 
 const StyledStepper = styled(Stepper)(({ theme }) => ({
@@ -102,6 +193,7 @@ const StyledStepper = styled(Stepper)(({ theme }) => ({
   '& .MuiStepLabel-label': {
     color: '#a0a0a0',
     fontWeight: 500,
+    fontSize: '0.95rem',
     '&.Mui-active': {
       color: '#6366f1',
       fontWeight: 600,
@@ -115,6 +207,7 @@ const StyledStepper = styled(Stepper)(({ theme }) => ({
     color: '#0c0c0c',
     border: '2px solid #2a2a2e',
     borderRadius: '50%',
+    fontSize: '1.5rem',
     '&.Mui-active': {
       color: '#6366f1',
       borderColor: '#6366f1',
@@ -124,11 +217,74 @@ const StyledStepper = styled(Stepper)(({ theme }) => ({
       borderColor: '#6366f1',
     },
   },
+  '@media (max-width: 1200px)': {
+    padding: theme.spacing(1.5, 0, 2.5, 0),
+    '& .MuiStepLabel-label': {
+      fontSize: '0.9rem',
+    },
+    '& .MuiStepIcon-root': {
+      fontSize: '1.4rem',
+    },
+  },
+  '@media (max-width: 960px)': {
+    padding: theme.spacing(1.2, 0, 2, 0),
+    '& .MuiStepLabel-label': {
+      fontSize: '0.85rem',
+    },
+    '& .MuiStepIcon-root': {
+      fontSize: '1.3rem',
+    },
+  },
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(1, 0, 1.5, 0),
+    '& .MuiStepLabel-label': {
+      fontSize: '0.8rem',
+    },
+    '& .MuiStepIcon-root': {
+      fontSize: '1.2rem',
+    },
+  },
+  '@media (max-width: 480px)': {
+    '& .MuiStepLabel-label': {
+      fontSize: '0.75rem',
+    },
+    '& .MuiStepIcon-root': {
+      fontSize: '1.1rem',
+    },
+  },
+  '@media (max-width: 375px)': {
+    '& .MuiStepLabel-label': {
+      fontSize: '0.7rem',
+    },
+    '& .MuiStepIcon-root': {
+      fontSize: '1rem',
+    },
+  },
 }));
 
 const StepContent = styled(Box)(({ theme }) => ({
   minHeight: '400px',
   padding: theme.spacing(2, 0),
+  '@media (max-width: 1200px)': {
+    minHeight: '380px',
+    padding: theme.spacing(1.8, 0),
+  },
+  '@media (max-width: 960px)': {
+    minHeight: '350px',
+    padding: theme.spacing(1.5, 0),
+  },
+  '@media (max-width: 600px)': {
+    minHeight: '300px',
+    padding: theme.spacing(1.2, 0),
+  },
+  '@media (max-width: 480px)': {
+    minHeight: '250px',
+    padding: theme.spacing(1, 0),
+  },
+  '@media (max-width: 375px)': {
+    minHeight: '200px',
+    padding: theme.spacing(0.8, 0),
+  },
 }));
 
 const FormSection = styled(Box)(({ theme }) => ({
@@ -154,6 +310,12 @@ const FormSection = styled(Box)(({ theme }) => ({
         },
       },
     },
+    '& .MuiInputLabel-root': {
+      fontSize: '1rem',
+    },
+    '& .MuiOutlinedInput-input': {
+      fontSize: '0.95rem',
+    },
   },
   '& .MuiFormControl-root': {
     '& .MuiOutlinedInput-root': {
@@ -177,6 +339,61 @@ const FormSection = styled(Box)(({ theme }) => ({
       },
     },
   },
+  '@media (max-width: 1200px)': {
+    marginBottom: theme.spacing(2.5),
+    '& .MuiTextField-root': {
+      '& .MuiInputLabel-root': {
+        fontSize: '0.95rem',
+      },
+      '& .MuiOutlinedInput-input': {
+        fontSize: '0.9rem',
+      },
+    },
+  },
+  '@media (max-width: 960px)': {
+    marginBottom: theme.spacing(2.2),
+    '& .MuiTextField-root': {
+      '& .MuiInputLabel-root': {
+        fontSize: '0.9rem',
+      },
+      '& .MuiOutlinedInput-input': {
+        fontSize: '0.85rem',
+      },
+    },
+  },
+  '@media (max-width: 600px)': {
+    marginBottom: theme.spacing(2),
+    '& .MuiTextField-root': {
+      '& .MuiInputLabel-root': {
+        fontSize: '0.85rem',
+      },
+      '& .MuiOutlinedInput-input': {
+        fontSize: '0.8rem',
+      },
+    },
+  },
+  '@media (max-width: 480px)': {
+    marginBottom: theme.spacing(1.8),
+    '& .MuiTextField-root': {
+      '& .MuiInputLabel-root': {
+        fontSize: '0.8rem',
+      },
+      '& .MuiOutlinedInput-input': {
+        fontSize: '0.75rem',
+      },
+    },
+  },
+  '@media (max-width: 375px)': {
+    marginBottom: theme.spacing(1.5),
+    '& .MuiTextField-root': {
+      '& .MuiInputLabel-root': {
+        fontSize: '0.75rem',
+      },
+      '& .MuiOutlinedInput-input': {
+        fontSize: '0.7rem',
+      },
+    },
+  },
 }));
 
 const SectionHeader = styled(Box)(({ theme }) => ({
@@ -195,6 +412,61 @@ const SectionHeader = styled(Box)(({ theme }) => ({
   '& .MuiTypography-root': {
     fontWeight: 600,
     color: '#ffffff',
+    fontSize: '1.2rem',
+  },
+  '@media (max-width: 1200px)': {
+    marginBottom: theme.spacing(2.5),
+    padding: theme.spacing(1.8),
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.4rem',
+    },
+    '& .MuiTypography-root': {
+      fontSize: '1.15rem',
+    },
+  },
+  '@media (max-width: 960px)': {
+    marginBottom: theme.spacing(2.2),
+    padding: theme.spacing(1.5),
+    borderRadius: 10,
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.3rem',
+    },
+    '& .MuiTypography-root': {
+      fontSize: '1.1rem',
+    },
+  },
+  '@media (max-width: 600px)': {
+    marginBottom: theme.spacing(2),
+    padding: theme.spacing(1.2),
+    borderRadius: 8,
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.2rem',
+    },
+    '& .MuiTypography-root': {
+      fontSize: '1rem',
+    },
+  },
+  '@media (max-width: 480px)': {
+    marginBottom: theme.spacing(1.8),
+    padding: theme.spacing(1),
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.1rem',
+    },
+    '& .MuiTypography-root': {
+      fontSize: '0.95rem',
+    },
+  },
+  '@media (max-width: 375px)': {
+    marginBottom: theme.spacing(1.5),
+    padding: theme.spacing(0.8),
+    borderRadius: 6,
+    '& .MuiSvgIcon-root': {
+      fontSize: '1rem',
+      marginRight: theme.spacing(0.5),
+    },
+    '& .MuiTypography-root': {
+      fontSize: '0.9rem',
+    },
   },
 }));
 
@@ -208,6 +480,7 @@ const ChipContainer = styled(Box)(({ theme }) => ({
     borderColor: '#2a2a2e',
     color: '#ffffff',
     transition: 'all 0.2s ease',
+    fontSize: '0.85rem',
     '&:hover': {
       backgroundColor: '#28282c',
       borderColor: '#6366f1',
@@ -228,6 +501,39 @@ const ChipContainer = styled(Box)(({ theme }) => ({
       color: '#64b5f6',
     },
   },
+  '@media (max-width: 1200px)': {
+    gap: theme.spacing(0.8),
+    '& .MuiChip-root': {
+      fontSize: '0.8rem',
+    },
+  },
+  '@media (max-width: 960px)': {
+    gap: theme.spacing(0.7),
+    '& .MuiChip-root': {
+      fontSize: '0.75rem',
+    },
+  },
+  '@media (max-width: 600px)': {
+    gap: theme.spacing(0.6),
+    '& .MuiChip-root': {
+      fontSize: '0.7rem',
+      height: '28px',
+    },
+  },
+  '@media (max-width: 480px)': {
+    gap: theme.spacing(0.5),
+    '& .MuiChip-root': {
+      fontSize: '0.65rem',
+      height: '26px',
+    },
+  },
+  '@media (max-width: 375px)': {
+    gap: theme.spacing(0.4),
+    '& .MuiChip-root': {
+      fontSize: '0.6rem',
+      height: '24px',
+    },
+  },
 }));
 
 const TraitCard = styled(Card)(({ theme }) => ({
@@ -238,6 +544,15 @@ const TraitCard = styled(Card)(({ theme }) => ({
   '&:hover': {
     borderColor: '#6366f1',
     backgroundColor: 'rgba(99, 102, 241, 0.08)',
+  },
+  '@media (max-width: 960px)': {
+    borderRadius: 10,
+  },
+  '@media (max-width: 600px)': {
+    borderRadius: 8,
+  },
+  '@media (max-width: 375px)': {
+    borderRadius: 6,
   },
 }));
 
@@ -253,6 +568,7 @@ const SwitchRow = styled(Box)(({ theme }) => ({
   '& .MuiTypography-root': {
     fontWeight: 500,
     color: '#ffffff',
+    fontSize: '0.95rem',
   },
   '& .MuiSwitch-root': {
     '& .MuiSwitch-switchBase.Mui-checked': {
@@ -261,6 +577,45 @@ const SwitchRow = styled(Box)(({ theme }) => ({
         backgroundColor: '#6366f1',
         opacity: 0.5,
       },
+    },
+  },
+  '@media (max-width: 1200px)': {
+    padding: theme.spacing(1.3, 0),
+    '& .MuiTypography-root': {
+      fontSize: '0.9rem',
+    },
+  },
+  '@media (max-width: 960px)': {
+    padding: theme.spacing(1.2, 0),
+    '& .MuiTypography-root': {
+      fontSize: '0.85rem',
+    },
+  },
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(1, 0),
+    '& .MuiTypography-root': {
+      fontSize: '0.8rem',
+    },
+    '& .MuiSwitch-root': {
+      transform: 'scale(0.9)',
+    },
+  },
+  '@media (max-width: 480px)': {
+    padding: theme.spacing(0.8, 0),
+    '& .MuiTypography-root': {
+      fontSize: '0.75rem',
+    },
+    '& .MuiSwitch-root': {
+      transform: 'scale(0.85)',
+    },
+  },
+  '@media (max-width: 375px)': {
+    padding: theme.spacing(0.6, 0),
+    '& .MuiTypography-root': {
+      fontSize: '0.7rem',
+    },
+    '& .MuiSwitch-root': {
+      transform: 'scale(0.8)',
     },
   },
 }));
@@ -273,10 +628,37 @@ const AddButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
   fontWeight: 500,
   transition: 'all 0.2s ease',
+  minWidth: '80px',
+  fontSize: '0.85rem',
   '&:hover': {
     borderColor: '#6366f1',
     backgroundColor: 'rgba(99, 102, 241, 0.08)',
     color: '#6366f1',
+  },
+  '@media (max-width: 1200px)': {
+    minWidth: '75px',
+    fontSize: '0.8rem',
+  },
+  '@media (max-width: 960px)': {
+    minWidth: '70px',
+    fontSize: '0.75rem',
+    borderRadius: 6,
+  },
+  '@media (max-width: 600px)': {
+    minWidth: '65px',
+    fontSize: '0.7rem',
+    padding: theme.spacing(0.5, 1),
+  },
+  '@media (max-width: 480px)': {
+    minWidth: '60px',
+    fontSize: '0.65rem',
+    padding: theme.spacing(0.4, 0.8),
+  },
+  '@media (max-width: 375px)': {
+    minWidth: '55px',
+    fontSize: '0.6rem',
+    padding: theme.spacing(0.3, 0.6),
+    borderRadius: 4,
   },
 }));
 
@@ -288,6 +670,8 @@ const ActionButton = styled(Button)(({ theme }) => ({
   transition: 'all 0.2s ease',
   position: 'relative',
   overflow: 'hidden',
+  fontSize: '0.9rem',
+  minWidth: '120px',
   '&.MuiButton-contained': {
     background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
     boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
@@ -312,6 +696,36 @@ const ActionButton = styled(Button)(({ theme }) => ({
       color: '#6366f1',
     },
   },
+  '@media (max-width: 1200px)': {
+    padding: theme.spacing(1.3, 2.5),
+    fontSize: '0.85rem',
+    minWidth: '110px',
+  },
+  '@media (max-width: 960px)': {
+    padding: theme.spacing(1.2, 2.2),
+    fontSize: '0.8rem',
+    minWidth: '100px',
+    borderRadius: 8,
+  },
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(1, 2),
+    fontSize: '0.75rem',
+    minWidth: '90px',
+    width: '100%',
+    margin: theme.spacing(0.5, 0),
+  },
+  '@media (max-width: 480px)': {
+    padding: theme.spacing(0.8, 1.5),
+    fontSize: '0.7rem',
+    minWidth: '80px',
+    borderRadius: 6,
+  },
+  '@media (max-width: 375px)': {
+    padding: theme.spacing(0.6, 1.2),
+    fontSize: '0.65rem',
+    minWidth: '70px',
+    borderRadius: 4,
+  },
 }));
 
 const LoadingOverlay = styled(Box)(({ theme }) => ({
@@ -322,6 +736,64 @@ const LoadingOverlay = styled(Box)(({ theme }) => ({
   backgroundColor: 'rgba(31, 31, 35, 0.9)',
   borderRadius: 12,
   backdropFilter: 'blur(10px)',
+  '@media (max-width: 960px)': {
+    padding: theme.spacing(3),
+    borderRadius: 10,
+  },
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(2.5),
+    borderRadius: 8,
+  },
+  '@media (max-width: 375px)': {
+    padding: theme.spacing(2),
+    borderRadius: 6,
+  },
+}));
+
+// Grid system for responsive layouts
+const ResponsiveGrid = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gap: theme.spacing(2),
+  gridTemplateColumns: 'repeat(3, 1fr)',
+  '@media (max-width: 1200px)': {
+    gap: theme.spacing(1.8),
+  },
+  '@media (max-width: 960px)': {
+    gap: theme.spacing(1.5),
+    gridTemplateColumns: 'repeat(2, 1fr)',
+  },
+  '@media (max-width: 600px)': {
+    gap: theme.spacing(1.2),
+    gridTemplateColumns: '1fr',
+  },
+  '@media (max-width: 480px)': {
+    gap: theme.spacing(1),
+  },
+  '@media (max-width: 375px)': {
+    gap: theme.spacing(0.8),
+  },
+}));
+
+const ResponsiveGrid2Col = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gap: theme.spacing(2),
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  '@media (max-width: 1200px)': {
+    gap: theme.spacing(1.8),
+  },
+  '@media (max-width: 960px)': {
+    gap: theme.spacing(1.5),
+  },
+  '@media (max-width: 600px)': {
+    gap: theme.spacing(1.2),
+    gridTemplateColumns: '1fr',
+  },
+  '@media (max-width: 480px)': {
+    gap: theme.spacing(1),
+  },
+  '@media (max-width: 375px)': {
+    gap: theme.spacing(0.8),
+  },
 }));
 
 // Main Component
@@ -536,7 +1008,7 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
         </FormSection>
 
         <FormSection>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+          <ResponsiveGrid2Col>
             <FormControl fullWidth margin="normal" variant="outlined">
               <InputLabel>Age Range</InputLabel>
               <Select
@@ -562,9 +1034,9 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
                 ))}
               </Select>
             </FormControl>
-          </Box>
+          </ResponsiveGrid2Col>
 
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+          <ResponsiveGrid2Col>
             <TextField
               fullWidth
               label="Profession"
@@ -582,14 +1054,14 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
               margin="normal"
               variant="outlined"
             />
-          </Box>
+          </ResponsiveGrid2Col>
         </FormSection>
 
         <FormSection>
           <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
             Known For
           </Typography>
-          <Box display="flex" gap={1}>
+          <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
             <TextField
               fullWidth
               size="small"
@@ -637,7 +1109,7 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
         </SectionHeader>
 
         <FormSection>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' }, gap: 2 }}>
+          <ResponsiveGrid>
             <FormControl fullWidth margin="normal" variant="outlined">
               <InputLabel>Speaking Style</InputLabel>
               <Select
@@ -682,7 +1154,7 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
                 ))}
               </Select>
             </FormControl>
-          </Box>
+          </ResponsiveGrid>
         </FormSection>
 
         <FormSection>
@@ -724,7 +1196,7 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
         </FormSection>
 
         <FormSection>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+          <ResponsiveGrid2Col>
             <Box>
               <Autocomplete
                 multiple
@@ -772,7 +1244,7 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
                 )}
               />
             </Box>
-          </Box>
+          </ResponsiveGrid2Col>
         </FormSection>
       </Box>
     </Fade>
@@ -787,7 +1259,7 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
         </SectionHeader>
 
         <FormSection>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' }, gap: 2 }}>
+          <ResponsiveGrid>
             <TextField
               fullWidth
               label="Unique Trait"
@@ -827,16 +1299,16 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
                 ))}
               </Select>
             </FormControl>
-          </Box>
+          </ResponsiveGrid>
         </FormSection>
 
         <FormSection>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 3 }}>
+          <ResponsiveGrid2Col sx={{ gap: 3 }}>
             <Box>
               <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
                 Strengths
               </Typography>
-              <Box display="flex" gap={1}>
+              <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
                 <TextField
                   fullWidth
                   size="small"
@@ -877,7 +1349,7 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
               <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
                 Weaknesses
               </Typography>
-              <Box display="flex" gap={1}>
+              <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
                 <TextField
                   fullWidth
                   size="small"
@@ -913,14 +1385,14 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
                 ))}
               </ChipContainer>
             </Box>
-          </Box>
+          </ResponsiveGrid2Col>
         </FormSection>
 
         <FormSection>
           <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
             Knowledge Base
           </Typography>
-          <Box display="flex" gap={1}>
+          <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
             <TextField
               fullWidth
               size="small"
@@ -1020,7 +1492,12 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
       </StyledDialogContent>
 
       <StyledDialogActions>
-        <Box display="flex" justifyContent="space-between" width="100%">
+        <Box display="flex" justifyContent="space-between" width="100%" sx={{
+          '@media (max-width: 600px)': {
+            flexDirection: 'column-reverse',
+            alignItems: 'stretch',
+          }
+        }}>
           <ActionButton
             variant="outlined"
             onClick={handleBack}
@@ -1030,7 +1507,11 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
             Back
           </ActionButton>
           
-          <Box>
+          <Box sx={{
+            '@media (max-width: 600px)': {
+              width: '100%',
+            }
+          }}>
             {activeStep < steps.length - 1 ? (
               <ActionButton
                 variant="contained"

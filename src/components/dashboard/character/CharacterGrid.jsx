@@ -17,17 +17,55 @@ import { makeStyles } from '@mui/styles';
 import CharacterCard from './CharacterCard';
 import CreateCharacterButton from './CreateCharacterButton';
 import ChatHistoryGrid from '../chat/history/ChatHistoryGrid';
-import SearchComponent from '../../common/SearchComponent';  // Added import
+import SearchComponent from '../search/SearchComponent';  // Added import
 import apiService from '../../../services/api';
+
 const useStyles = makeStyles({
   section: {
     marginBottom: '48px',
+    '@media (max-width: 1200px)': {
+      marginBottom: '40px',
+    },
+    '@media (max-width: 960px)': {
+      marginBottom: '32px',
+    },
+    '@media (max-width: 600px)': {
+      marginBottom: '24px',
+    },
+    '@media (max-width: 480px)': {
+      marginBottom: '20px',
+    },
+    '@media (max-width: 375px)': {
+      marginBottom: '16px',
+    },
   },
   sectionHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '24px',
+    '@media (max-width: 1200px)': {
+      marginBottom: '20px',
+    },
+    '@media (max-width: 960px)': {
+      marginBottom: '18px',
+      alignItems: 'flex-start',
+      gap: '16px',
+    },
+    '@media (max-width: 600px)': {
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      marginBottom: '16px',
+      gap: '12px',
+    },
+    '@media (max-width: 480px)': {
+      marginBottom: '14px',
+      gap: '10px',
+    },
+    '@media (max-width: 375px)': {
+      marginBottom: '12px',
+      gap: '8px',
+    },
   },
   sectionTitle: {
     fontSize: '1.5rem',
@@ -39,11 +77,50 @@ const useStyles = makeStyles({
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
+    '@media (max-width: 1200px)': {
+      fontSize: '1.4rem',
+      gap: '10px',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '1.3rem',
+      gap: '8px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.25rem',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      gap: '6px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '1.2rem',
+      gap: '5px',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '1.1rem',
+      gap: '4px',
+    },
   },
   sectionSubtitle: {
     color: '#9ca3af',
     fontSize: '0.875rem',
     marginTop: '4px',
+    '@media (max-width: 1200px)': {
+      fontSize: '0.85rem',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '0.8rem',
+      marginTop: '3px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '0.75rem',
+      marginTop: '2px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.7rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.65rem',
+    },
   },
   characterCount: {
     // background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
@@ -51,6 +128,21 @@ const useStyles = makeStyles({
     fontWeight: 600,
     '& .MuiChip-label': {
       color: '#ffffff !important',
+    },
+    '@media (max-width: 1200px)': {
+      fontSize: '0.75rem',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '0.7rem',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '0.65rem',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.6rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.55rem',
     },
   },
   viewAllLink: {
@@ -63,19 +155,75 @@ const useStyles = makeStyles({
     '&:hover': {
       color: '#6366f1',
     },
+    '@media (max-width: 1200px)': {
+      fontSize: '0.85rem',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '0.8rem',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '0.75rem',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.7rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.65rem',
+    },
   },
   searchContainer: {
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
+    '@media (max-width: 1200px)': {
+      minWidth: '280px',
+    },
+    '@media (max-width: 960px)': {
+      minWidth: '250px',
+    },
+    '@media (max-width: 600px)': {
+      justifyContent: 'flex-start',
+      width: '100%',
+      minWidth: 'unset',
+    },
+    '@media (max-width: 480px)': {
+      '& > *': {
+        width: '100%',
+      },
+    },
+    '@media (max-width: 375px)': {
+      '& > *': {
+        fontSize: '0.8rem',
+      },
+    },
   },
   characterBoxContainer: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
     gap: '20px',
     marginBottom: '40px',
+    '@media (max-width: 1200px)': {
+      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+      gap: '18px',
+      marginBottom: '36px',
+    },
+    '@media (max-width: 960px)': {
+      gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+      gap: '16px',
+      marginBottom: '32px',
+    },
     '@media (max-width: 600px)': {
       gridTemplateColumns: '1fr',
+      gap: '14px',
+      marginBottom: '28px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '12px',
+      marginBottom: '24px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '10px',
+      marginBottom: '20px',
     },
   },
   emptyState: {
@@ -86,12 +234,52 @@ const useStyles = makeStyles({
     borderRadius: '16px',
     backdropFilter: 'blur(10px)',
     border: '1px solid rgba(99, 102, 241, 0.1)',
+    '@media (max-width: 1200px)': {
+      padding: '70px 18px',
+      borderRadius: '14px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '60px 16px',
+      borderRadius: '12px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '50px 14px',
+      borderRadius: '10px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '40px 12px',
+      borderRadius: '8px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '30px 10px',
+      borderRadius: '6px',
+    },
   },
   emptyStateTitle: {
     fontSize: '1.25rem',
     fontWeight: 600,
     marginBottom: '8px',
     color: '#ffffff',
+    '@media (max-width: 1200px)': {
+      fontSize: '1.2rem',
+      marginBottom: '7px',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '1.15rem',
+      marginBottom: '6px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.1rem',
+      marginBottom: '5px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '1.05rem',
+      marginBottom: '4px',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '1rem',
+      marginBottom: '3px',
+    },
   },
   paginationContainer: {
     display: 'flex',
@@ -103,9 +291,34 @@ const useStyles = makeStyles({
     borderRadius: '16px',
     backdropFilter: 'blur(10px)',
     border: '1px solid rgba(99, 102, 241, 0.1)',
+    '@media (max-width: 1200px)': {
+      marginTop: '36px',
+      padding: '22px',
+      borderRadius: '14px',
+    },
+    '@media (max-width: 960px)': {
+      marginTop: '32px',
+      padding: '20px',
+      borderRadius: '12px',
+    },
     '@media (max-width: 600px)': {
       flexDirection: 'column',
       gap: '16px',
+      marginTop: '28px',
+      padding: '18px',
+      borderRadius: '10px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '14px',
+      marginTop: '24px',
+      padding: '16px',
+      borderRadius: '8px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '12px',
+      marginTop: '20px',
+      padding: '14px',
+      borderRadius: '6px',
     },
   },
   paginationInfo: {
@@ -113,10 +326,24 @@ const useStyles = makeStyles({
     alignItems: 'center',
     gap: '16px',
     color: '#d1d5db',
+    '@media (max-width: 1200px)': {
+      gap: '14px',
+    },
+    '@media (max-width: 960px)': {
+      gap: '12px',
+    },
     '@media (max-width: 600px)': {
       flexDirection: 'column',
       gap: '8px',
       textAlign: 'center',
+    },
+    '@media (max-width: 480px)': {
+      gap: '6px',
+      fontSize: '0.85rem',
+    },
+    '@media (max-width: 375px)': {
+      gap: '4px',
+      fontSize: '0.8rem',
     },
   },
   pageSizeSelect: {
@@ -139,6 +366,33 @@ const useStyles = makeStyles({
     '& .MuiSelect-icon': {
       color: '#9ca3af',
     },
+    '@media (max-width: 1200px)': {
+      minWidth: 110,
+    },
+    '@media (max-width: 960px)': {
+      minWidth: 100,
+    },
+    '@media (max-width: 600px)': {
+      minWidth: 90,
+    },
+    '@media (max-width: 480px)': {
+      minWidth: 80,
+      '& .MuiOutlinedInput-root': {
+        fontSize: '0.85rem',
+      },
+      '& .MuiInputLabel-root': {
+        fontSize: '0.85rem',
+      },
+    },
+    '@media (max-width: 375px)': {
+      minWidth: 70,
+      '& .MuiOutlinedInput-root': {
+        fontSize: '0.8rem',
+      },
+      '& .MuiInputLabel-root': {
+        fontSize: '0.8rem',
+      },
+    },
   },
   loadingOverlay: {
     position: 'relative',
@@ -150,6 +404,26 @@ const useStyles = makeStyles({
     borderRadius: '16px',
     backdropFilter: 'blur(10px)',
     border: '1px solid rgba(99, 102, 241, 0.1)',
+    '@media (max-width: 1200px)': {
+      minHeight: '360px',
+      borderRadius: '14px',
+    },
+    '@media (max-width: 960px)': {
+      minHeight: '320px',
+      borderRadius: '12px',
+    },
+    '@media (max-width: 600px)': {
+      minHeight: '280px',
+      borderRadius: '10px',
+    },
+    '@media (max-width: 480px)': {
+      minHeight: '240px',
+      borderRadius: '8px',
+    },
+    '@media (max-width: 375px)': {
+      minHeight: '200px',
+      borderRadius: '6px',
+    },
   },
   enhancedPagination: {
     '& .MuiPagination-ul': {
@@ -180,6 +454,59 @@ const useStyles = makeStyles({
         '&:hover': {
           background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
         },
+      },
+    },
+    '@media (max-width: 1200px)': {
+      '& .MuiPagination-ul': {
+        gap: '6px',
+      },
+      '& .MuiPaginationItem-root': {
+        minWidth: '40px',
+        height: '40px',
+        borderRadius: '10px',
+      },
+    },
+    '@media (max-width: 960px)': {
+      '& .MuiPagination-ul': {
+        gap: '4px',
+      },
+      '& .MuiPaginationItem-root': {
+        minWidth: '36px',
+        height: '36px',
+        borderRadius: '8px',
+        fontSize: '0.85rem',
+      },
+    },
+    '@media (max-width: 600px)': {
+      '& .MuiPaginationItem-root': {
+        minWidth: '32px',
+        height: '32px',
+        borderRadius: '6px',
+        fontSize: '0.8rem',
+      },
+    },
+    '@media (max-width: 480px)': {
+      '& .MuiPagination-ul': {
+        gap: '2px',
+      },
+      '& .MuiPaginationItem-root': {
+        minWidth: '28px',
+        height: '28px',
+        borderRadius: '4px',
+        fontSize: '0.75rem',
+        '&:hover': {
+          transform: 'translateY(-1px)',
+        },
+        '&.Mui-selected': {
+          transform: 'translateY(-1px)',
+        },
+      },
+    },
+    '@media (max-width: 375px)': {
+      '& .MuiPaginationItem-root': {
+        minWidth: '24px',
+        height: '24px',
+        fontSize: '0.7rem',
       },
     },
   },

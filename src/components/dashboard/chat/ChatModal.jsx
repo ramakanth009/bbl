@@ -32,6 +32,36 @@ const useStyles = makeStyles(() => ({
       maxWidth: 900,
       height: '80vh',
       margin: 24,
+      '@media (max-width: 1200px)': {
+        maxWidth: 800,
+        height: '75vh',
+        margin: 20,
+        borderRadius: 10,
+      },
+      '@media (max-width: 960px)': {
+        maxWidth: 700,
+        height: '70vh',
+        margin: 16,
+        borderRadius: 8,
+      },
+      '@media (max-width: 600px)': {
+        maxWidth: '95vw',
+        height: '85vh',
+        margin: 8,
+        borderRadius: 6,
+      },
+      '@media (max-width: 480px)': {
+        maxWidth: '98vw',
+        height: '90vh',
+        margin: 4,
+        borderRadius: 4,
+      },
+      '@media (max-width: 375px)': {
+        maxWidth: '100vw',
+        height: '95vh',
+        margin: 2,
+        borderRadius: 2,
+      },
     },
   },
   header: {
@@ -40,16 +70,183 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'space-between',
     padding: '16px 20px',
     borderBottom: '1px solid rgba(255,255,255,0.12)',
+    '@media (max-width: 1200px)': {
+      padding: '14px 18px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '12px 16px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '10px 14px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '8px 12px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '6px 10px',
+    },
   },
   headerLeft: {
     display: 'flex',
     alignItems: 'center',
     gap: 12,
+    '@media (max-width: 1200px)': {
+      gap: 10,
+    },
+    '@media (max-width: 960px)': {
+      gap: 8,
+    },
+    '@media (max-width: 600px)': {
+      gap: 6,
+    },
+    '@media (max-width: 480px)': {
+      gap: 4,
+    },
+    '@media (max-width: 375px)': {
+      gap: 2,
+    },
   },
   headerRight: {
     display: 'flex',
     alignItems: 'center',
     gap: 8,
+    '@media (max-width: 1200px)': {
+      gap: 7,
+    },
+    '@media (max-width: 960px)': {
+      gap: 6,
+    },
+    '@media (max-width: 600px)': {
+      gap: 5,
+    },
+    '@media (max-width: 480px)': {
+      gap: 4,
+    },
+    '@media (max-width: 375px)': {
+      gap: 3,
+    },
+  },
+  avatarSize: {
+    width: 40,
+    height: 40,
+    borderRadius: 1,
+    '@media (max-width: 1200px)': {
+      width: 38,
+      height: 38,
+    },
+    '@media (max-width: 960px)': {
+      width: 36,
+      height: 36,
+    },
+    '@media (max-width: 600px)': {
+      width: 34,
+      height: 34,
+    },
+    '@media (max-width: 480px)': {
+      width: 32,
+      height: 32,
+    },
+    '@media (max-width: 375px)': {
+      width: 30,
+      height: 30,
+    },
+  },
+  characterName: {
+    '@media (max-width: 1200px)': {
+      fontSize: '1.2rem',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '1.1rem',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1rem',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.9rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.8rem',
+    },
+  },
+  sessionChip: {
+    fontSize: '0.7rem',
+    height: 20,
+    '@media (max-width: 1200px)': {
+      fontSize: '0.65rem',
+      height: 18,
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '0.6rem',
+      height: 16,
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '0.55rem',
+      height: 14,
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.5rem',
+      height: 12,
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.45rem',
+      height: 10,
+    },
+  },
+  iconButton: {
+    color: 'text.secondary',
+    '@media (max-width: 600px)': {
+      padding: '6px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '1.2rem',
+      },
+    },
+    '@media (max-width: 480px)': {
+      padding: '4px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '1.1rem',
+      },
+    },
+    '@media (max-width: 375px)': {
+      padding: '2px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '1rem',
+      },
+    },
+  },
+  errorAlert: {
+    '@media (max-width: 600px)': {
+      '& .MuiAlert-message': {
+        fontSize: '0.875rem',
+      },
+    },
+    '@media (max-width: 480px)': {
+      '& .MuiAlert-message': {
+        fontSize: '0.825rem',
+      },
+    },
+    '@media (max-width: 375px)': {
+      '& .MuiAlert-message': {
+        fontSize: '0.8rem',
+      },
+    },
+  },
+  alertContainer: {
+    padding: '16px',
+    '@media (max-width: 1200px)': {
+      padding: '14px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '12px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '10px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '8px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '6px',
+    },
   },
 }));
 
@@ -198,17 +395,17 @@ const ChatModal = ({ open, character, onClose }) => {
             <Avatar
               src={character.img}
               alt={character.name}
-              sx={{ width: 40, height: 40, borderRadius: 1 }}
+              className={classes.avatarSize}
             />
             <Box>
-              <Typography variant="h6" fontWeight="bold">
+              <Typography variant="h6" fontWeight="bold" className={classes.characterName}>
                 {character.name}
               </Typography>
               {sessionId && (
                 <Chip 
                   label={`Session ${sessionId}`} 
                   size="small" 
-                  sx={{ fontSize: '0.7rem', height: 20 }} 
+                  className={classes.sessionChip}
                 />
               )}
             </Box>
@@ -217,7 +414,7 @@ const ChatModal = ({ open, character, onClose }) => {
           <Box className={classes.headerRight}>
             <IconButton 
               onClick={() => setShowSessions(!showSessions)}
-              sx={{ color: 'text.secondary' }}
+              className={classes.iconButton}
               title="Session History"
             >
               <HistoryIcon />
@@ -225,7 +422,7 @@ const ChatModal = ({ open, character, onClose }) => {
             
             <IconButton 
               onClick={startNewSession}
-              sx={{ color: 'text.secondary' }}
+              className={classes.iconButton}
               title="New Conversation"
             >
               <Refresh />
@@ -233,13 +430,13 @@ const ChatModal = ({ open, character, onClose }) => {
             
             <IconButton 
               onClick={(e) => setSettingsAnchor(e.currentTarget)}
-              sx={{ color: 'text.secondary' }}
+              className={classes.iconButton}
               title="Creativity Settings"
             >
               <Tune />
             </IconButton>
             
-            <IconButton onClick={handleClose} sx={{ color: 'text.secondary' }}>
+            <IconButton onClick={handleClose} className={classes.iconButton}>
               <Close />
             </IconButton>
           </Box>
@@ -254,8 +451,8 @@ const ChatModal = ({ open, character, onClose }) => {
         />
 
         {error && (
-          <Box sx={{ p: 2 }}>
-            <Alert severity="error" onClose={() => setError(null)}>
+          <Box className={classes.alertContainer}>
+            <Alert severity="error" onClose={() => setError(null)} className={classes.errorAlert}>
               {error}
             </Alert>
           </Box>

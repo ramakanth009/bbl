@@ -34,7 +34,13 @@ const useStyles = makeStyles(() => ({
   },
   chatContainerOpen: {
     width: 'calc(100vw - 280px)',
+    '@media (max-width: 1200px)': {
+      width: 'calc(100vw - 260px)',
+    },
     '@media (max-width: 960px)': {
+      width: 'calc(100vw - 240px)',
+    },
+    '@media (max-width: 900px)': {
       width: '100vw',
       left: 0,
     },
@@ -51,8 +57,8 @@ const useStyles = makeStyles(() => ({
     background: 'linear-gradient(to bottom, rgba(26, 26, 26, 0.7), rgba(18, 18, 18, 0.6))',
     backdropFilter: 'blur(8px)',
     position: 'relative',
-    minHeight: 'auto', // Allow header to grow
-    maxHeight: 'none', // Remove height restrictions
+    minHeight: 'auto',
+    maxHeight: 'none',
     '&::before': {
       content: '""',
       position: 'absolute',
@@ -71,12 +77,47 @@ const useStyles = makeStyles(() => ({
       height: '2px',
       background: 'linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.15), transparent)',
     },
+    '@media (max-width: 1200px)': {
+      padding: '18px',
+      gap: '10px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '16px',
+      gap: '8px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '14px',
+      gap: '6px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '12px',
+      gap: '4px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '10px',
+      gap: '2px',
+    },
   },
   chatHeaderTop: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: '56px', // Ensure minimum height for controls
+    minHeight: '56px',
+    '@media (max-width: 1200px)': {
+      minHeight: '52px',
+    },
+    '@media (max-width: 960px)': {
+      minHeight: '48px',
+    },
+    '@media (max-width: 600px)': {
+      minHeight: '44px',
+    },
+    '@media (max-width: 480px)': {
+      minHeight: '40px',
+    },
+    '@media (max-width: 375px)': {
+      minHeight: '36px',
+    },
   },
   chatHeaderLeft: {
     display: 'flex',
@@ -84,6 +125,21 @@ const useStyles = makeStyles(() => ({
     gap: '12px',
     flex: 1,
     minWidth: 0,
+    '@media (max-width: 1200px)': {
+      gap: '10px',
+    },
+    '@media (max-width: 960px)': {
+      gap: '8px',
+    },
+    '@media (max-width: 600px)': {
+      gap: '6px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '4px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '2px',
+    },
   },
   characterInfo: {
     flex: 1,
@@ -95,35 +151,71 @@ const useStyles = makeStyles(() => ({
       backgroundClip: 'text',
       fontSize: '1.25rem',
       marginBottom: '4px',
+      '@media (max-width: 1200px)': {
+        fontSize: '1.2rem',
+      },
+      '@media (max-width: 960px)': {
+        fontSize: '1.15rem',
+      },
+      '@media (max-width: 600px)': {
+        fontSize: '1.1rem',
+      },
+      '@media (max-width: 480px)': {
+        fontSize: '1.05rem',
+      },
+      '@media (max-width: 375px)': {
+        fontSize: '1rem',
+      },
     },
   },
   characterDescription: {
     fontSize: '0.875rem',
     lineHeight: 1.6,
     color: '#d1d5db',
-    whiteSpace: 'pre-wrap', // Preserve line breaks
-    wordWrap: 'break-word', // Break long words
-    overflowWrap: 'break-word', // Modern alternative
+    whiteSpace: 'pre-wrap',
+    wordWrap: 'break-word',
+    overflowWrap: 'break-word',
     width: '100%',
     maxWidth: '100%',
-    overflow: 'visible', // Ensure no hidden text
-    display: 'block', // Full block display
+    overflow: 'visible',
+    display: 'block',
     marginTop: '8px',
     padding: '8px 0',
+    '@media (max-width: 1200px)': {
+      fontSize: '0.85rem',
+      marginTop: '7px',
+      padding: '7px 0',
+    },
     '@media (max-width: 960px)': {
       fontSize: '0.8rem',
       lineHeight: 1.5,
+      marginTop: '6px',
+      padding: '6px 0',
     },
     '@media (max-width: 600px)': {
       fontSize: '0.75rem',
       lineHeight: 1.4,
+      marginTop: '5px',
+      padding: '5px 0',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.7rem',
+      lineHeight: 1.3,
+      marginTop: '4px',
+      padding: '4px 0',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.65rem',
+      lineHeight: 1.2,
+      marginTop: '3px',
+      padding: '3px 0',
     },
   },
   chatHeaderRight: {
     display: 'flex',
-    alignItems: 'flex-start', // Align to top to prevent stretching
+    alignItems: 'flex-start',
     gap: '8px',
-    flexShrink: 0, // Prevent shrinking
+    flexShrink: 0,
     '& .MuiIconButton-root': {
       width: '40px',
       height: '40px',
@@ -145,6 +237,61 @@ const useStyles = makeStyles(() => ({
         transform: 'translateY(0)',
       },
     },
+    '@media (max-width: 1200px)': {
+      gap: '7px',
+      '& .MuiIconButton-root': {
+        width: '38px',
+        height: '38px',
+        borderRadius: '10px',
+        '& .MuiSvgIcon-root': {
+          fontSize: '19px',
+        },
+      },
+    },
+    '@media (max-width: 960px)': {
+      gap: '6px',
+      '& .MuiIconButton-root': {
+        width: '36px',
+        height: '36px',
+        borderRadius: '8px',
+        '& .MuiSvgIcon-root': {
+          fontSize: '18px',
+        },
+      },
+    },
+    '@media (max-width: 600px)': {
+      gap: '5px',
+      '& .MuiIconButton-root': {
+        width: '34px',
+        height: '34px',
+        borderRadius: '6px',
+        '& .MuiSvgIcon-root': {
+          fontSize: '17px',
+        },
+      },
+    },
+    '@media (max-width: 480px)': {
+      gap: '4px',
+      '& .MuiIconButton-root': {
+        width: '32px',
+        height: '32px',
+        borderRadius: '4px',
+        '& .MuiSvgIcon-root': {
+          fontSize: '16px',
+        },
+      },
+    },
+    '@media (max-width: 375px)': {
+      gap: '3px',
+      '& .MuiIconButton-root': {
+        width: '30px',
+        height: '30px',
+        borderRadius: '2px',
+        '& .MuiSvgIcon-root': {
+          fontSize: '15px',
+        },
+      },
+    },
   },
   backButton: {
     width: '40px !important',
@@ -162,6 +309,31 @@ const useStyles = makeStyles(() => ({
     '&:active': {
       transform: 'translateY(0)',
     },
+    '@media (max-width: 1200px)': {
+      width: '38px !important',
+      height: '38px !important',
+      borderRadius: '10px !important',
+    },
+    '@media (max-width: 960px)': {
+      width: '36px !important',
+      height: '36px !important',
+      borderRadius: '8px !important',
+    },
+    '@media (max-width: 600px)': {
+      width: '34px !important',
+      height: '34px !important',
+      borderRadius: '6px !important',
+    },
+    '@media (max-width: 480px)': {
+      width: '32px !important',
+      height: '32px !important',
+      borderRadius: '4px !important',
+    },
+    '@media (max-width: 375px)': {
+      width: '30px !important',
+      height: '30px !important',
+      borderRadius: '2px !important',
+    },
   },
   messagesWrapper: {
     flex: 1,
@@ -169,6 +341,21 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'column',
     padding: '0 12px',
+    '@media (max-width: 1200px)': {
+      padding: '0 10px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '0 8px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '0 6px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '0 4px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '0 2px',
+    },
   },
   messagesContent: {
     flex: 1,
@@ -189,6 +376,26 @@ const useStyles = makeStyles(() => ({
       borderColor: 'rgba(99, 102, 241, 0.6)',
       transform: 'translateY(-1px)',
     },
+    '@media (max-width: 1200px)': {
+      fontSize: '0.65rem',
+      height: 18,
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '0.6rem',
+      height: 16,
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '0.55rem',
+      height: 14,
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.5rem',
+      height: 12,
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.45rem',
+      height: 10,
+    },
   },
   nativeChip: {
     fontSize: '0.7rem',
@@ -198,17 +405,57 @@ const useStyles = makeStyles(() => ({
     '& .MuiChip-label': {
       color: '#81c784',
     },
+    '@media (max-width: 1200px)': {
+      fontSize: '0.65rem',
+      height: 18,
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '0.6rem',
+      height: 16,
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '0.55rem',
+      height: 14,
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.5rem',
+      height: 12,
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.45rem',
+      height: 10,
+    },
   },
   languageStatus: {
     display: 'flex',
     gap: '8px',
     marginTop: '8px',
-    flexWrap: 'wrap', // Allow wrapping on small screens
+    flexWrap: 'wrap',
     '& .MuiChip-root': {
       transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
       '&:hover': {
         transform: 'translateY(-1px)',
       },
+    },
+    '@media (max-width: 1200px)': {
+      gap: '7px',
+      marginTop: '7px',
+    },
+    '@media (max-width: 960px)': {
+      gap: '6px',
+      marginTop: '6px',
+    },
+    '@media (max-width: 600px)': {
+      gap: '5px',
+      marginTop: '5px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '4px',
+      marginTop: '4px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '3px',
+      marginTop: '3px',
     },
   },
   errorAlert: {
@@ -221,6 +468,60 @@ const useStyles = makeStyles(() => ({
     },
     '& .MuiAlert-icon': {
       color: '#ef4444',
+    },
+    '@media (max-width: 1200px)': {
+      borderRadius: '10px',
+      marginBottom: '14px',
+    },
+    '@media (max-width: 960px)': {
+      borderRadius: '8px',
+      marginBottom: '12px',
+    },
+    '@media (max-width: 600px)': {
+      borderRadius: '6px',
+      marginBottom: '10px',
+      '& .MuiAlert-message': {
+        fontSize: '0.875rem',
+      },
+    },
+    '@media (max-width: 480px)': {
+      borderRadius: '4px',
+      marginBottom: '8px',
+      '& .MuiAlert-message': {
+        fontSize: '0.825rem',
+      },
+    },
+    '@media (max-width: 375px)': {
+      borderRadius: '2px',
+      marginBottom: '6px',
+      '& .MuiAlert-message': {
+        fontSize: '0.8rem',
+      },
+    },
+  },
+  avatarSize: {
+    width: 40,
+    height: 40,
+    borderRadius: 1,
+    '@media (max-width: 1200px)': {
+      width: 38,
+      height: 38,
+    },
+    '@media (max-width: 960px)': {
+      width: 36,
+      height: 36,
+    },
+    '@media (max-width: 600px)': {
+      width: 34,
+      height: 34,
+    },
+    '@media (max-width: 480px)': {
+      width: 32,
+      height: 32,
+    },
+    '@media (max-width: 375px)': {
+      width: 30,
+      height: 30,
     },
   },
 }));
@@ -235,7 +536,6 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
   const [sessions, setSessions] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   
-  // Simplified language state
   const [language, setLanguage] = useState('english');
   
   const messagesEndRef = useRef(null);
@@ -243,7 +543,6 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
 
   useEffect(() => {
     if (open && character) {
-      // If initialMessages and initialSessionId are provided, use them
       if (initialMessages && initialSessionId) {
         setMessages(initialMessages);
         setSessionId(initialSessionId);
@@ -255,7 +554,6 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
       loadUserSessions();
       loadLanguagePreferences();
       
-      // Set default language based on character's native language
       if (character.native_language) {
         console.log('🔧 Setting language to character native:', character.native_language);
         setLanguage(character.native_language);
@@ -267,9 +565,7 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
     scrollToBottom();
   }, [messages]);
 
-  // Improved scroll to bottom function
   const scrollToBottom = () => {
-    // Use requestAnimationFrame to ensure DOM has updated
     requestAnimationFrame(() => {
       if (messagesEndRef.current) {
         messagesEndRef.current.scrollIntoView({ 
@@ -277,13 +573,11 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
           block: 'end'
         });
       } else if (messagesWrapperRef.current) {
-        // Fallback: scroll the wrapper to bottom
         messagesWrapperRef.current.scrollTop = messagesWrapperRef.current.scrollHeight;
       }
     });
   };
 
-  // Simplified language preferences loading
   const loadLanguagePreferences = async () => {
     try {
       const preferences = await apiService.getUserLanguagePreferences();
@@ -296,7 +590,6 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
     }
   };
 
-  // Simplified language preferences saving
   const saveLanguagePreferences = async (newLanguage) => {
     try {
       await apiService.setUserLanguagePreferences({
@@ -354,7 +647,6 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
     setShowHistory(false);
   };
 
-  // Simplified language change handler
   const handleLanguageChange = async (languageCode) => {
     console.log('🔄 Language change requested:', languageCode);
     setLanguage(languageCode);
@@ -362,7 +654,6 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
     console.log('✅ Language updated:', languageCode);
   };
 
-  // Update message sending to use single language
   const handleSend = async () => {
     if (!inputValue.trim() || loading || !character) return;
 
@@ -423,7 +714,6 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
     } catch (error) {
       console.error('💥 Chat error:', error);
       
-      // Enhanced error handling for language issues
       let errorMessage = 'Failed to send message. Please try again.';
       if (error.message.includes('language')) {
         errorMessage = `Language error: ${error.message}. Try changing the language settings.`;
@@ -489,7 +779,7 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
             <Avatar
               src={character.img}
               alt={character.name}
-              sx={{ width: 40, height: 40, borderRadius: 1 }}
+              className={classes.avatarSize}
             />
             <Box className={classes.characterInfo}>
               <Typography variant="h6" fontWeight="bold" noWrap>
@@ -523,7 +813,6 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
               <HistoryIcon />
             </IconButton>
             
-            {/* Update language selector to use single language */}
             <LanguageSelector
               currentLanguage={language}
               mode="single"
@@ -546,7 +835,6 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
           </Box>
         </Box>
         
-        {/* Enhanced description display with full visibility */}
         {character.description && (
           <Box sx={{ width: '100%', mt: 1 }}>
             <Typography className={classes.characterDescription}>
@@ -555,7 +843,6 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
           </Box>
         )}
         
-        {/* Enhanced language status display */}
         {language !== 'english' && (
           <Box className={classes.languageStatus}>
             <Chip 
@@ -580,7 +867,6 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
         )}
       </Box>
 
-      {/* Enhanced error display with language-specific messages */}
       {error && (
         <Box sx={{ p: 2 }}>
           <Alert 

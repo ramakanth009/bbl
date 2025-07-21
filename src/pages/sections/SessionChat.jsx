@@ -13,10 +13,48 @@ const useStyles = makeStyles({
     minHeight: '60vh',
     flexDirection: 'column',
     gap: '16px',
+    '@media (max-width: 1200px)': {
+      gap: '14px',
+      minHeight: '55vh',
+    },
+    '@media (max-width: 960px)': {
+      gap: '12px',
+      minHeight: '50vh',
+    },
+    '@media (max-width: 600px)': {
+      gap: '10px',
+      minHeight: '45vh',
+      padding: '0 16px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '8px',
+      minHeight: '40vh',
+      padding: '0 12px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '6px',
+      minHeight: '35vh',
+      padding: '0 8px',
+    },
   },
   errorContainer: {
     padding: '40px 20px',
     textAlign: 'center',
+    '@media (max-width: 1200px)': {
+      padding: '36px 18px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '32px 16px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '28px 14px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '24px 12px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '20px 8px',
+    },
   },
   errorAlert: {
     background: 'rgba(239, 68, 68, 0.1)',
@@ -27,6 +65,48 @@ const useStyles = makeStyles({
     },
     '& .MuiAlert-icon': {
       color: '#ef4444',
+    },
+    '@media (max-width: 960px)': {
+      borderRadius: '10px',
+    },
+    '@media (max-width: 600px)': {
+      borderRadius: '8px',
+      '& .MuiAlert-message': {
+        fontSize: '0.875rem',
+      },
+    },
+    '@media (max-width: 480px)': {
+      borderRadius: '6px',
+      '& .MuiAlert-message': {
+        fontSize: '0.825rem',
+      },
+    },
+    '@media (max-width: 375px)': {
+      '& .MuiAlert-message': {
+        fontSize: '0.8rem',
+      },
+    },
+  },
+  backText: {
+    '@media (max-width: 600px)': {
+      fontSize: '0.875rem',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.825rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.8rem',
+    },
+  },
+  loadingText: {
+    '@media (max-width: 600px)': {
+      fontSize: '0.875rem',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.825rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.8rem',
     },
   },
 });
@@ -113,7 +193,7 @@ const SessionChat = () => {
     return (
       <Box className={classes.loadingContainer}>
         <CircularProgress sx={{ color: '#6366f1' }} size={40} />
-        <Typography variant="body2" sx={{ color: '#9ca3af' }}>
+        <Typography variant="body2" sx={{ color: '#9ca3af' }} className={classes.loadingText}>
           Loading session...
         </Typography>
       </Box>
@@ -132,6 +212,7 @@ const SessionChat = () => {
         </Alert>
         <Typography 
           variant="body2" 
+          className={classes.backText}
           sx={{ 
             color: '#9ca3af', 
             cursor: 'pointer',
@@ -157,6 +238,7 @@ const SessionChat = () => {
         </Alert>
         <Typography 
           variant="body2" 
+          className={classes.backText}
           sx={{ 
             color: '#9ca3af', 
             cursor: 'pointer',

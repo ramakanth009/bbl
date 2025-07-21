@@ -20,8 +20,23 @@ const useStyles = makeStyles({
     overflow: 'auto',
     transition: 'all 0.3s ease',
     display: 'block',
+    '@media (max-width: 1200px)': {
+      padding: '20px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '18px',
+    },
     '@media (max-width: 900px)': {
       padding: '16px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '12px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '8px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '6px',
     },
   },
   contentAreaHidden: {
@@ -29,12 +44,47 @@ const useStyles = makeStyles({
   },
   section: {
     marginBottom: '48px',
+    '@media (max-width: 1200px)': {
+      marginBottom: '40px',
+    },
+    '@media (max-width: 960px)': {
+      marginBottom: '36px',
+    },
+    '@media (max-width: 600px)': {
+      marginBottom: '32px',
+    },
+    '@media (max-width: 480px)': {
+      marginBottom: '28px',
+    },
+    '@media (max-width: 375px)': {
+      marginBottom: '24px',
+    },
   },
   sectionHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '24px',
+    '@media (max-width: 1200px)': {
+      marginBottom: '20px',
+    },
+    '@media (max-width: 960px)': {
+      marginBottom: '18px',
+    },
+    '@media (max-width: 600px)': {
+      marginBottom: '16px',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      gap: '12px',
+    },
+    '@media (max-width: 480px)': {
+      marginBottom: '14px',
+      gap: '10px',
+    },
+    '@media (max-width: 375px)': {
+      marginBottom: '12px',
+      gap: '8px',
+    },
   },
   sectionTitle: {
     fontSize: '1.5rem',
@@ -46,11 +96,43 @@ const useStyles = makeStyles({
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
+    '@media (max-width: 1200px)': {
+      fontSize: '1.4rem',
+      gap: '10px',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '1.3rem',
+      gap: '8px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.2rem',
+      gap: '6px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '1.1rem',
+      gap: '4px',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '1rem',
+    },
   },
   sectionSubtitle: {
     color: '#9ca3af',
     fontSize: '0.875rem',
     marginTop: '4px',
+    '@media (max-width: 960px)': {
+      fontSize: '0.825rem',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '0.8rem',
+      marginTop: '2px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.775rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.75rem',
+    },
   },
   characterCount: {
     color: '#ffffff !important',
@@ -58,14 +140,44 @@ const useStyles = makeStyles({
     '& .MuiChip-label': {
       color: '#ffffff !important',
     },
+    '@media (max-width: 600px)': {
+      '& .MuiChip-label': {
+        fontSize: '0.75rem',
+      },
+    },
+    '@media (max-width: 480px)': {
+      '& .MuiChip-label': {
+        fontSize: '0.7rem',
+      },
+    },
   },
   characterBoxContainer: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
     gap: '20px',
     marginBottom: '40px',
+    '@media (max-width: 1200px)': {
+      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+      gap: '18px',
+      marginBottom: '36px',
+    },
+    '@media (max-width: 960px)': {
+      gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+      gap: '16px',
+      marginBottom: '32px',
+    },
     '@media (max-width: 600px)': {
       gridTemplateColumns: '1fr',
+      gap: '14px',
+      marginBottom: '28px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '12px',
+      marginBottom: '24px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '10px',
+      marginBottom: '20px',
     },
   },
   emptyState: {
@@ -76,18 +188,66 @@ const useStyles = makeStyles({
     borderRadius: '16px',
     backdropFilter: 'blur(10px)',
     border: '1px solid rgba(99, 102, 241, 0.1)',
+    '@media (max-width: 1200px)': {
+      padding: '70px 18px',
+      borderRadius: '14px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '60px 16px',
+      borderRadius: '12px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '50px 14px',
+      borderRadius: '10px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '40px 12px',
+      borderRadius: '8px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '30px 10px',
+    },
   },
   emptyStateTitle: {
     fontSize: '1.25rem',
     fontWeight: 600,
     marginBottom: '8px',
     color: '#ffffff',
+    '@media (max-width: 960px)': {
+      fontSize: '1.15rem',
+      marginBottom: '6px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.1rem',
+      marginBottom: '4px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '1.05rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '1rem',
+    },
   },
   loadingContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     padding: '80px 20px',
+    '@media (max-width: 1200px)': {
+      padding: '70px 18px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '60px 16px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '50px 14px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '40px 12px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '30px 10px',
+    },
   },
 });
 

@@ -6,7 +6,6 @@ import CharacterCreationForm from './creation/CharacterCreationForm';
 
 const useStyles = makeStyles({
   createCard: {
-    // background: 'linear-gradient(145deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.8) 100%)',
     background: 'transparent !important',
     border: '2px dashed rgba(99, 102, 241, 0.3)',
     borderRadius: '16px',
@@ -21,7 +20,6 @@ const useStyles = makeStyles({
     textAlign: 'center',
     position: 'relative',
     overflow: 'hidden',
-    // backdropFilter: 'blur(10px)',
     '&::before': {
       content: '""',
       position: 'absolute',
@@ -50,6 +48,46 @@ const useStyles = makeStyles({
         backgroundClip: 'text',
       },
     },
+    '@media (max-width: 1200px)': {
+      padding: '28px 20px',
+      minHeight: 260,
+      borderRadius: '14px',
+      '&::before': {
+        borderRadius: '14px',
+      },
+    },
+    '@media (max-width: 960px)': {
+      padding: '24px 16px',
+      minHeight: 240,
+      borderRadius: '12px',
+      '&::before': {
+        borderRadius: '12px',
+      },
+    },
+    '@media (max-width: 600px)': {
+      padding: '20px 12px',
+      minHeight: 220,
+      borderRadius: '10px',
+      '&::before': {
+        borderRadius: '10px',
+      },
+    },
+    '@media (max-width: 480px)': {
+      padding: '16px 8px',
+      minHeight: 200,
+      borderRadius: '8px',
+      '&::before': {
+        borderRadius: '8px',
+      },
+    },
+    '@media (max-width: 375px)': {
+      padding: '12px 4px',
+      minHeight: 180,
+      borderRadius: '6px',
+      '&::before': {
+        borderRadius: '6px',
+      },
+    },
   },
   createIcon: {
     fontSize: '64px',
@@ -58,6 +96,26 @@ const useStyles = makeStyles({
     transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
     position: 'relative',
     zIndex: 1,
+    '@media (max-width: 1200px)': {
+      fontSize: '60px',
+      marginBottom: '14px',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '56px',
+      marginBottom: '12px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '52px',
+      marginBottom: '10px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '48px',
+      marginBottom: '8px',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '44px',
+      marginBottom: '6px',
+    },
   },
   createTitle: {
     fontSize: '20px',
@@ -69,6 +127,26 @@ const useStyles = makeStyles({
     backgroundClip: 'text',
     position: 'relative',
     zIndex: 1,
+    '@media (max-width: 1200px)': {
+      fontSize: '18px',
+      marginBottom: '7px',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '16px',
+      marginBottom: '6px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '14px',
+      marginBottom: '5px',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '12px',
+      marginBottom: '4px',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '10px',
+      marginBottom: '3px',
+    },
   },
   createDescription: {
     fontSize: '14px',
@@ -78,6 +156,34 @@ const useStyles = makeStyles({
     maxWidth: '250px',
     position: 'relative',
     zIndex: 1,
+    '@media (max-width: 1200px)': {
+      fontSize: '13px',
+      marginBottom: '18px',
+      maxWidth: '230px',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '12px',
+      marginBottom: '16px',
+      maxWidth: '210px',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '11px',
+      marginBottom: '14px',
+      maxWidth: '190px',
+      lineHeight: 1.4,
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '10px',
+      marginBottom: '12px',
+      maxWidth: '170px',
+      lineHeight: 1.3,
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '9px',
+      marginBottom: '10px',
+      maxWidth: '150px',
+      lineHeight: 1.2,
+    },
   },
   startButton: {
     background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%)',
@@ -99,12 +205,36 @@ const useStyles = makeStyles({
       transform: 'translateY(-2px)',
       boxShadow: '0 8px 20px rgba(99, 102, 241, 0.2)',
     },
+    '@media (max-width: 1200px)': {
+      padding: '9px 18px',
+      fontSize: '11px',
+      borderRadius: '7px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '8px 16px',
+      fontSize: '10px',
+      borderRadius: '6px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '7px 14px',
+      fontSize: '9px',
+      borderRadius: '5px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '6px 12px',
+      fontSize: '8px',
+      borderRadius: '4px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '5px 10px',
+      fontSize: '7px',
+      borderRadius: '3px',
+    },
   },
   iconWrapper: {
     width: '80px',
     height: '80px',
     borderRadius: '50%',
-    // background: 'rgba(99, 102, 241, 0.1)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -114,6 +244,42 @@ const useStyles = makeStyles({
     zIndex: 1,
     '$createCard:hover &': {
       transform: 'scale(1.1)',
+    },
+    '@media (max-width: 1200px)': {
+      width: '75px',
+      height: '75px',
+      marginBottom: '18px',
+    },
+    '@media (max-width: 960px)': {
+      width: '70px',
+      height: '70px',
+      marginBottom: '16px',
+    },
+    '@media (max-width: 600px)': {
+      width: '65px',
+      height: '65px',
+      marginBottom: '14px',
+    },
+    '@media (max-width: 480px)': {
+      width: '60px',
+      height: '60px',
+      marginBottom: '12px',
+    },
+    '@media (max-width: 375px)': {
+      width: '55px',
+      height: '55px',
+      marginBottom: '10px',
+    },
+  },
+  buttonIcon: {
+    '@media (max-width: 600px)': {
+      fontSize: '1rem',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.9rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.8rem',
     },
   },
 });
@@ -151,7 +317,7 @@ const CreateCharacterButton = ({ onCharacterCreated }) => {
         </Typography>
         <Button
           className={classes.startButton}
-          startIcon={<Person />}
+          startIcon={<Person className={classes.buttonIcon} />}
           size="small"
           disableRipple
         >
