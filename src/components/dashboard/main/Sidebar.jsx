@@ -350,7 +350,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   footerWrapper: {
-    paddingTop: '12px !important',
+    paddingTop: '5px !important',
     borderTop: '1px solid #333 !important',
     marginTop: 'auto !important',
     '@media (max-width: 1200px)': {
@@ -644,6 +644,11 @@ const Sidebar = ({ onCharacterCreated }) => {
           {renderNavSection(mainNavItems, "EXPLORE")}
           {renderNavSection(historyItems, "ACTIVITY")}
 
+          {/* Categories heading - fixed */}
+          <Typography className={classes.sectionTitle}>
+            CATEGORIES
+          </Typography>
+          
           {/* Dynamic categories section - scrollable */}
           <Box className={classes.scrollableContent}>
             <CategoriesList 

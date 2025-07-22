@@ -15,40 +15,6 @@ import { useCategories } from "../../../context/CategoriesContext";
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles(() => ({
-  sectionTitle: {
-    fontSize: '11px',
-    fontWeight: 600,
-    color: '#666',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-    marginBottom: '8px',
-    paddingLeft: '16px',
-    '@media (max-width: 1200px)': {
-      fontSize: '10px',
-      marginBottom: '7px',
-      paddingLeft: '14px',
-    },
-    '@media (max-width: 960px)': {
-      fontSize: '9px',
-      marginBottom: '6px',
-      paddingLeft: '12px',
-    },
-    '@media (max-width: 600px)': {
-      fontSize: '8px',
-      marginBottom: '5px',
-      paddingLeft: '10px',
-    },
-    '@media (max-width: 480px)': {
-      fontSize: '7px',
-      marginBottom: '4px',
-      paddingLeft: '8px',
-    },
-    '@media (max-width: 375px)': {
-      fontSize: '6px',
-      marginBottom: '3px',
-      paddingLeft: '6px',
-    },
-  },
   statusText: {
     fontSize: '13px',
     paddingLeft: '16px',
@@ -201,9 +167,6 @@ const iconMap = {
   "leaders_historical": <Groups />,
   "spiritual_social": <Palette />,
   "sports_champions": <EmojiEvents />,
-  "art_culture": <Palette />,
-  "science": <Science />,
-  "entertainment": <Movie />,
 };
 
 const CategoriesList = ({ onCategorySelect, activeCategory }) => {
@@ -218,52 +181,35 @@ const CategoriesList = ({ onCategorySelect, activeCategory }) => {
     navigate(`/dashboard/categories/${categoryKey}`);
   };
 
-  if (loading) {
-    return (
-      <Box>
-        <Typography className={classes.sectionTitle}>
-          CATEGORIES
-        </Typography>
+  // Render content based on state
+  const renderContent = () => {
+    if (loading) {
+      return (
         <Typography variant="body2" color="text.secondary" className={classes.statusText}>
           Loading categories...
         </Typography>
-      </Box>
-    );
-  }
+      );
+    }
 
-  if (error) {
-    return (
-      <Box>
-        <Typography className={classes.sectionTitle}>
-          CATEGORIES
-        </Typography>
+    if (error) {
+      return (
         <Typography variant="body2" color="error" className={classes.statusText}>
           {error}
         </Typography>
-      </Box>
-    );
-  }
+      );
+    }
 
-  const categoriesArray = Object.entries(categories);
+    const categoriesArray = Object.entries(categories);
 
-  if (categoriesArray.length === 0) {
-    return (
-      <Box>
-        <Typography className={classes.sectionTitle}>
-          CATEGORIES
-        </Typography>
+    if (categoriesArray.length === 0) {
+      return (
         <Typography variant="body2" color="text.secondary" className={classes.statusText}>
           No categories available
         </Typography>
-      </Box>
-    );
-  }
+      );
+    }
 
-  return (
-    <Box>
-      <Typography className={classes.sectionTitle}>
-        CATEGORIES
-      </Typography>
+    return (
       <List dense disablePadding>
         {categoriesArray.map(([key, value]) => (
           <ListItemButton
@@ -287,8 +233,10 @@ const CategoriesList = ({ onCategorySelect, activeCategory }) => {
           </ListItemButton>
         ))}
       </List>
-    </Box>
-  );
+    );
+  };
+
+  return renderContent();
 };
 
 export default CategoriesList;
