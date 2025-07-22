@@ -17,496 +17,512 @@ import { makeStyles } from '@mui/styles';
 import CharacterCard from './CharacterCard';
 import CreateCharacterButton from './CreateCharacterButton';
 import ChatHistoryGrid from '../chat/history/ChatHistoryGrid';
-import SearchComponent from '../search/SearchComponent';  // Added import
+import SearchComponent from '../search/SearchComponent';
 import apiService from '../../../services/api';
 
 const useStyles = makeStyles({
   section: {
-    marginBottom: '48px',
+    marginBottom: '48px !important',
     '@media (max-width: 1200px)': {
-      marginBottom: '40px',
+      marginBottom: '40px !important',
     },
     '@media (max-width: 960px)': {
-      marginBottom: '32px',
+      marginBottom: '32px !important',
     },
     '@media (max-width: 600px)': {
-      marginBottom: '24px',
+      marginBottom: '24px !important',
     },
     '@media (max-width: 480px)': {
-      marginBottom: '20px',
+      marginBottom: '20px !important',
     },
     '@media (max-width: 375px)': {
-      marginBottom: '16px',
+      marginBottom: '16px !important',
     },
   },
   sectionHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '24px',
+    display: 'flex !important',
+    justifyContent: 'space-between !important',
+    alignItems: 'center !important',
+    marginBottom: '24px !important',
     '@media (max-width: 1200px)': {
-      marginBottom: '20px',
+      marginBottom: '20px !important',
     },
     '@media (max-width: 960px)': {
-      marginBottom: '18px',
-      alignItems: 'flex-start',
-      gap: '16px',
+      marginBottom: '18px !important',
+      alignItems: 'flex-start !important',
+      gap: '16px !important',
     },
     '@media (max-width: 600px)': {
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      marginBottom: '16px',
-      gap: '12px',
+      flexDirection: 'column !important',
+      alignItems: 'flex-start !important',
+      marginBottom: '16px !important',
+      gap: '12px !important',
     },
     '@media (max-width: 480px)': {
-      marginBottom: '14px',
-      gap: '10px',
+      marginBottom: '14px !important',
+      gap: '10px !important',
     },
     '@media (max-width: 375px)': {
-      marginBottom: '12px',
-      gap: '8px',
+      marginBottom: '12px !important',
+      gap: '8px !important',
     },
   },
   sectionTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 700,
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
+    fontSize: '1.5rem !important',
+    fontWeight: '700 !important',
+    display: 'flex !important',
+    alignItems: 'center !important',
+    gap: '12px !important',
+    background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%) !important',
+    WebkitBackgroundClip: 'text !important',
+    WebkitTextFillColor: 'transparent !important',
+    backgroundClip: 'text !important',
     '@media (max-width: 1200px)': {
-      fontSize: '1.4rem',
-      gap: '10px',
+      fontSize: '1.4rem !important',
+      gap: '10px !important',
     },
     '@media (max-width: 960px)': {
-      fontSize: '1.3rem',
-      gap: '8px',
+      fontSize: '1.3rem !important',
+      gap: '8px !important',
     },
     '@media (max-width: 600px)': {
-      fontSize: '1.25rem',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      gap: '6px',
+      fontSize: '1.25rem !important',
+      flexDirection: 'column !important',
+      alignItems: 'flex-start !important',
+      gap: '6px !important',
     },
     '@media (max-width: 480px)': {
-      fontSize: '1.2rem',
-      gap: '5px',
+      fontSize: '1.2rem !important',
+      gap: '5px !important',
     },
     '@media (max-width: 375px)': {
-      fontSize: '1.1rem',
-      gap: '4px',
+      fontSize: '1.1rem !important',
+      gap: '4px !important',
     },
   },
   sectionSubtitle: {
-    color: '#9ca3af',
-    fontSize: '0.875rem',
-    marginTop: '4px',
+    color: '#9ca3af !important',
+    fontSize: '0.875rem !important',
+    marginTop: '4px !important',
     '@media (max-width: 1200px)': {
-      fontSize: '0.85rem',
+      fontSize: '0.85rem !important',
     },
     '@media (max-width: 960px)': {
-      fontSize: '0.8rem',
-      marginTop: '3px',
+      fontSize: '0.8rem !important',
+      marginTop: '3px !important',
     },
     '@media (max-width: 600px)': {
-      fontSize: '0.75rem',
-      marginTop: '2px',
+      fontSize: '0.75rem !important',
+      marginTop: '2px !important',
     },
     '@media (max-width: 480px)': {
-      fontSize: '0.7rem',
+      fontSize: '0.7rem !important',
     },
     '@media (max-width: 375px)': {
-      fontSize: '0.65rem',
+      fontSize: '0.65rem !important',
     },
   },
   characterCount: {
-    // background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
     color: '#ffffff !important',
-    fontWeight: 600,
+    fontWeight: '600 !important',
     '& .MuiChip-label': {
       color: '#ffffff !important',
     },
     '@media (max-width: 1200px)': {
-      fontSize: '0.75rem',
+      fontSize: '0.75rem !important',
     },
     '@media (max-width: 960px)': {
-      fontSize: '0.7rem',
+      fontSize: '0.7rem !important',
     },
     '@media (max-width: 600px)': {
-      fontSize: '0.65rem',
+      fontSize: '0.65rem !important',
     },
     '@media (max-width: 480px)': {
-      fontSize: '0.6rem',
+      fontSize: '0.6rem !important',
     },
     '@media (max-width: 375px)': {
-      fontSize: '0.55rem',
+      fontSize: '0.55rem !important',
     },
   },
   viewAllLink: {
-    color: '#9ca3af',
-    textDecoration: 'none',
-    fontWeight: 500,
-    fontSize: '0.875rem',
-    cursor: 'pointer',
-    transition: 'color 0.3s ease',
+    color: '#9ca3af !important',
+    textDecoration: 'none !important',
+    fontWeight: '500 !important',
+    fontSize: '0.875rem !important',
+    cursor: 'pointer !important',
+    transition: 'color 0.3s ease !important',
     '&:hover': {
-      color: '#6366f1',
+      color: '#6366f1 !important',
     },
     '@media (max-width: 1200px)': {
-      fontSize: '0.85rem',
+      fontSize: '0.85rem !important',
     },
     '@media (max-width: 960px)': {
-      fontSize: '0.8rem',
+      fontSize: '0.8rem !important',
     },
     '@media (max-width: 600px)': {
-      fontSize: '0.75rem',
+      fontSize: '0.75rem !important',
     },
     '@media (max-width: 480px)': {
-      fontSize: '0.7rem',
+      fontSize: '0.7rem !important',
     },
     '@media (max-width: 375px)': {
-      fontSize: '0.65rem',
+      fontSize: '0.65rem !important',
     },
   },
   searchContainer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    display: 'flex !important',
+    justifyContent: 'flex-end !important',
+    alignItems: 'center !important',
     '@media (max-width: 1200px)': {
-      minWidth: '280px',
+      minWidth: '280px !important',
     },
     '@media (max-width: 960px)': {
-      minWidth: '250px',
+      minWidth: '250px !important',
     },
     '@media (max-width: 600px)': {
-      justifyContent: 'flex-start',
-      width: '100%',
-      minWidth: 'unset',
+      justifyContent: 'flex-start !important',
+      width: '100% !important',
+      minWidth: 'unset !important',
     },
     '@media (max-width: 480px)': {
       '& > *': {
-        width: '100%',
+        width: '100% !important',
       },
     },
     '@media (max-width: 375px)': {
       '& > *': {
-        fontSize: '0.8rem',
+        fontSize: '0.8rem !important',
       },
     },
   },
+  // CRITICAL FIX: Force grid layout immediately
   characterBoxContainer: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '20px',
-    marginBottom: '40px',
+    display: 'grid !important',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr)) !important',
+    gap: '20px !important',
+    marginBottom: '40px !important',
+    minHeight: '200px !important',
+    willChange: 'transform !important',
     '@media (max-width: 1200px)': {
-      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-      gap: '18px',
-      marginBottom: '36px',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr)) !important',
+      gap: '18px !important',
+      marginBottom: '36px !important',
     },
     '@media (max-width: 960px)': {
-      gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-      gap: '16px',
-      marginBottom: '32px',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr)) !important',
+      gap: '16px !important',
+      marginBottom: '32px !important',
     },
     '@media (max-width: 600px)': {
-      gridTemplateColumns: '1fr',
-      gap: '14px',
-      marginBottom: '28px',
+      gridTemplateColumns: '1fr !important',
+      gap: '14px !important',
+      marginBottom: '28px !important',
     },
     '@media (max-width: 480px)': {
-      gap: '12px',
-      marginBottom: '24px',
+      gap: '12px !important',
+      marginBottom: '24px !important',
     },
     '@media (max-width: 375px)': {
-      gap: '10px',
-      marginBottom: '20px',
+      gap: '10px !important',
+      marginBottom: '20px !important',
     },
   },
   emptyState: {
-    textAlign: 'center',
-    padding: '80px 20px',
-    color: '#9ca3af',
-    background: 'rgba(26, 26, 26, 0.3)',
-    borderRadius: '16px',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(99, 102, 241, 0.1)',
+    textAlign: 'center !important',
+    padding: '80px 20px !important',
+    color: '#9ca3af !important',
+    background: 'rgba(26, 26, 26, 0.3) !important',
+    borderRadius: '16px !important',
+    backdropFilter: 'blur(10px) !important',
+    border: '1px solid rgba(99, 102, 241, 0.1) !important',
     '@media (max-width: 1200px)': {
-      padding: '70px 18px',
-      borderRadius: '14px',
+      padding: '70px 18px !important',
+      borderRadius: '14px !important',
     },
     '@media (max-width: 960px)': {
-      padding: '60px 16px',
-      borderRadius: '12px',
+      padding: '60px 16px !important',
+      borderRadius: '12px !important',
     },
     '@media (max-width: 600px)': {
-      padding: '50px 14px',
-      borderRadius: '10px',
+      padding: '50px 14px !important',
+      borderRadius: '10px !important',
     },
     '@media (max-width: 480px)': {
-      padding: '40px 12px',
-      borderRadius: '8px',
+      padding: '40px 12px !important',
+      borderRadius: '8px !important',
     },
     '@media (max-width: 375px)': {
-      padding: '30px 10px',
-      borderRadius: '6px',
+      padding: '30px 10px !important',
+      borderRadius: '6px !important',
     },
   },
   emptyStateTitle: {
-    fontSize: '1.25rem',
-    fontWeight: 600,
-    marginBottom: '8px',
-    color: '#ffffff',
+    fontSize: '1.25rem !important',
+    fontWeight: '600 !important',
+    marginBottom: '8px !important',
+    color: '#ffffff !important',
     '@media (max-width: 1200px)': {
-      fontSize: '1.2rem',
-      marginBottom: '7px',
+      fontSize: '1.2rem !important',
+      marginBottom: '7px !important',
     },
     '@media (max-width: 960px)': {
-      fontSize: '1.15rem',
-      marginBottom: '6px',
+      fontSize: '1.15rem !important',
+      marginBottom: '6px !important',
     },
     '@media (max-width: 600px)': {
-      fontSize: '1.1rem',
-      marginBottom: '5px',
+      fontSize: '1.1rem !important',
+      marginBottom: '5px !important',
     },
     '@media (max-width: 480px)': {
-      fontSize: '1.05rem',
-      marginBottom: '4px',
+      fontSize: '1.05rem !important',
+      marginBottom: '4px !important',
     },
     '@media (max-width: 375px)': {
-      fontSize: '1rem',
-      marginBottom: '3px',
+      fontSize: '1rem !important',
+      marginBottom: '3px !important',
     },
   },
   paginationContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: '40px',
-    padding: '24px',
-    background: 'rgba(26, 26, 26, 0.8)',
-    borderRadius: '16px',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(99, 102, 241, 0.1)',
+    display: 'flex !important',
+    justifyContent: 'space-between !important',
+    alignItems: 'center !important',
+    marginTop: '40px !important',
+    padding: '24px !important',
+    background: 'rgba(26, 26, 26, 0.8) !important',
+    borderRadius: '16px !important',
+    backdropFilter: 'blur(10px) !important',
+    border: '1px solid rgba(99, 102, 241, 0.1) !important',
     '@media (max-width: 1200px)': {
-      marginTop: '36px',
-      padding: '22px',
-      borderRadius: '14px',
+      marginTop: '36px !important',
+      padding: '22px !important',
+      borderRadius: '14px !important',
     },
     '@media (max-width: 960px)': {
-      marginTop: '32px',
-      padding: '20px',
-      borderRadius: '12px',
+      marginTop: '32px !important',
+      padding: '20px !important',
+      borderRadius: '12px !important',
     },
     '@media (max-width: 600px)': {
-      flexDirection: 'column',
-      gap: '16px',
-      marginTop: '28px',
-      padding: '18px',
-      borderRadius: '10px',
+      flexDirection: 'column !important',
+      gap: '16px !important',
+      marginTop: '28px !important',
+      padding: '18px !important',
+      borderRadius: '10px !important',
     },
     '@media (max-width: 480px)': {
-      gap: '14px',
-      marginTop: '24px',
-      padding: '16px',
-      borderRadius: '8px',
+      gap: '14px !important',
+      marginTop: '24px !important',
+      padding: '16px !important',
+      borderRadius: '8px !important',
     },
     '@media (max-width: 375px)': {
-      gap: '12px',
-      marginTop: '20px',
-      padding: '14px',
-      borderRadius: '6px',
+      gap: '12px !important',
+      marginTop: '20px !important',
+      padding: '14px !important',
+      borderRadius: '6px !important',
     },
   },
   paginationInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    color: '#d1d5db',
+    display: 'flex !important',
+    alignItems: 'center !important',
+    gap: '16px !important',
+    color: '#d1d5db !important',
     '@media (max-width: 1200px)': {
-      gap: '14px',
+      gap: '14px !important',
     },
     '@media (max-width: 960px)': {
-      gap: '12px',
+      gap: '12px !important',
     },
     '@media (max-width: 600px)': {
-      flexDirection: 'column',
-      gap: '8px',
-      textAlign: 'center',
+      flexDirection: 'column !important',
+      gap: '8px !important',
+      textAlign: 'center !important',
     },
     '@media (max-width: 480px)': {
-      gap: '6px',
-      fontSize: '0.85rem',
+      gap: '6px !important',
+      fontSize: '0.85rem !important',
     },
     '@media (max-width: 375px)': {
-      gap: '4px',
-      fontSize: '0.8rem',
+      gap: '4px !important',
+      fontSize: '0.8rem !important',
     },
   },
   pageSizeSelect: {
-    minWidth: 120,
+    minWidth: '120px !important',
     '& .MuiOutlinedInput-root': {
-      background: 'rgba(42, 42, 42, 0.8)',
-      border: '1px solid rgba(99, 102, 241, 0.2)',
-      borderRadius: '8px',
-      color: '#ffffff',
+      background: 'rgba(42, 42, 42, 0.8) !important',
+      border: '1px solid rgba(99, 102, 241, 0.2) !important',
+      borderRadius: '8px !important',
+      color: '#ffffff !important',
       '&:hover': {
-        borderColor: 'rgba(99, 102, 241, 0.5)',
+        borderColor: 'rgba(99, 102, 241, 0.5) !important',
       },
       '&.Mui-focused': {
-        borderColor: '#6366f1',
+        borderColor: '#6366f1 !important',
       },
     },
     '& .MuiInputLabel-root': {
-      color: '#9ca3af',
+      color: '#9ca3af !important',
     },
     '& .MuiSelect-icon': {
-      color: '#9ca3af',
+      color: '#9ca3af !important',
     },
     '@media (max-width: 1200px)': {
-      minWidth: 110,
+      minWidth: '110px !important',
     },
     '@media (max-width: 960px)': {
-      minWidth: 100,
+      minWidth: '100px !important',
     },
     '@media (max-width: 600px)': {
-      minWidth: 90,
+      minWidth: '90px !important',
     },
     '@media (max-width: 480px)': {
-      minWidth: 80,
+      minWidth: '80px !important',
       '& .MuiOutlinedInput-root': {
-        fontSize: '0.85rem',
+        fontSize: '0.85rem !important',
       },
       '& .MuiInputLabel-root': {
-        fontSize: '0.85rem',
+        fontSize: '0.85rem !important',
       },
     },
     '@media (max-width: 375px)': {
-      minWidth: 70,
+      minWidth: '70px !important',
       '& .MuiOutlinedInput-root': {
-        fontSize: '0.8rem',
+        fontSize: '0.8rem !important',
       },
       '& .MuiInputLabel-root': {
-        fontSize: '0.8rem',
+        fontSize: '0.8rem !important',
       },
     },
   },
   loadingOverlay: {
-    position: 'relative',
-    minHeight: '400px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    // background: 'rgba(26, 26, 26, 0.3)',
-    borderRadius: '16px',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(99, 102, 241, 0.1)',
+    position: 'relative !important',
+    minHeight: '400px !important',
+    display: 'flex !important',
+    alignItems: 'center !important',
+    justifyContent: 'center !important',
+    borderRadius: '16px !important',
+    backdropFilter: 'blur(10px) !important',
+    border: '1px solid rgba(99, 102, 241, 0.1) !important',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(26, 26, 26, 0.3)',
+      borderRadius: 'inherit',
+      zIndex: 1,
+    },
+    '& > *': {
+      position: 'relative',
+      zIndex: 2,
+    },
     '@media (max-width: 1200px)': {
-      minHeight: '360px',
-      borderRadius: '14px',
+      minHeight: '360px !important',
+      borderRadius: '14px !important',
     },
     '@media (max-width: 960px)': {
-      minHeight: '320px',
-      borderRadius: '12px',
+      minHeight: '320px !important',
+      borderRadius: '12px !important',
     },
     '@media (max-width: 600px)': {
-      minHeight: '280px',
-      borderRadius: '10px',
+      minHeight: '280px !important',
+      borderRadius: '10px !important',
     },
     '@media (max-width: 480px)': {
-      minHeight: '240px',
-      borderRadius: '8px',
+      minHeight: '240px !important',
+      borderRadius: '8px !important',
     },
     '@media (max-width: 375px)': {
-      minHeight: '200px',
-      borderRadius: '6px',
+      minHeight: '200px !important',
+      borderRadius: '6px !important',
     },
   },
   enhancedPagination: {
     '& .MuiPagination-ul': {
-      gap: '8px',
+      gap: '8px !important',
     },
     '& .MuiPaginationItem-root': {
-      background: 'rgba(26, 26, 26, 0.8)',
-      border: '1px solid rgba(99, 102, 241, 0.2)',
-      color: '#9ca3af',
-      borderRadius: '12px',
-      backdropFilter: 'blur(10px)',
-      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-      minWidth: '44px',
-      height: '44px',
+      background: 'rgba(26, 26, 26, 0.8) !important',
+      border: '1px solid rgba(99, 102, 241, 0.2) !important',
+      color: '#9ca3af !important',
+      borderRadius: '12px !important',
+      backdropFilter: 'blur(10px) !important',
+      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important',
+      minWidth: '44px !important',
+      height: '44px !important',
       '&:hover': {
-        background: 'rgba(42, 42, 42, 0.9)',
-        borderColor: 'rgba(99, 102, 241, 0.5)',
-        color: '#ffffff',
-        transform: 'translateY(-2px)',
-        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3)',
+        background: 'rgba(42, 42, 42, 0.9) !important',
+        borderColor: 'rgba(99, 102, 241, 0.5) !important',
+        color: '#ffffff !important',
+        transform: 'translateY(-2px) !important',
+        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3) !important',
       },
       '&.Mui-selected': {
-        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-        borderColor: 'rgba(99, 102, 241, 0.8)',
-        color: 'white',
-        boxShadow: '0 8px 25px rgba(99, 102, 241, 0.4), 0 0 20px rgba(99, 102, 241, 0.2)',
-        transform: 'translateY(-2px)',
+        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important',
+        borderColor: 'rgba(99, 102, 241, 0.8) !important',
+        color: 'white !important',
+        boxShadow: '0 8px 25px rgba(99, 102, 241, 0.4), 0 0 20px rgba(99, 102, 241, 0.2) !important',
+        transform: 'translateY(-2px) !important',
         '&:hover': {
-          background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+          background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important',
         },
       },
     },
     '@media (max-width: 1200px)': {
       '& .MuiPagination-ul': {
-        gap: '6px',
+        gap: '6px !important',
       },
       '& .MuiPaginationItem-root': {
-        minWidth: '40px',
-        height: '40px',
-        borderRadius: '10px',
+        minWidth: '40px !important',
+        height: '40px !important',
+        borderRadius: '10px !important',
       },
     },
     '@media (max-width: 960px)': {
       '& .MuiPagination-ul': {
-        gap: '4px',
+        gap: '4px !important',
       },
       '& .MuiPaginationItem-root': {
-        minWidth: '36px',
-        height: '36px',
-        borderRadius: '8px',
-        fontSize: '0.85rem',
+        minWidth: '36px !important',
+        height: '36px !important',
+        borderRadius: '8px !important',
+        fontSize: '0.85rem !important',
       },
     },
     '@media (max-width: 600px)': {
       '& .MuiPaginationItem-root': {
-        minWidth: '32px',
-        height: '32px',
-        borderRadius: '6px',
-        fontSize: '0.8rem',
+        minWidth: '32px !important',
+        height: '32px !important',
+        borderRadius: '6px !important',
+        fontSize: '0.8rem !important',
       },
     },
     '@media (max-width: 480px)': {
       '& .MuiPagination-ul': {
-        gap: '2px',
+        gap: '2px !important',
       },
       '& .MuiPaginationItem-root': {
-        minWidth: '28px',
-        height: '28px',
-        borderRadius: '4px',
-        fontSize: '0.75rem',
+        minWidth: '28px !important',
+        height: '28px !important',
+        borderRadius: '4px !important',
+        fontSize: '0.75rem !important',
         '&:hover': {
-          transform: 'translateY(-1px)',
+          transform: 'translateY(-1px) !important',
         },
         '&.Mui-selected': {
-          transform: 'translateY(-1px)',
+          transform: 'translateY(-1px) !important',
         },
       },
     },
     '@media (max-width: 375px)': {
       '& .MuiPaginationItem-root': {
-        minWidth: '24px',
-        height: '24px',
-        fontSize: '0.7rem',
+        minWidth: '24px !important',
+        height: '24px !important',
+        fontSize: '0.7rem !important',
       },
     },
   },
@@ -530,6 +546,17 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const [totalCount, setTotalCount] = useState(0);
   const [originalTotalCount, setOriginalTotalCount] = useState(0);
   const [allCharacters, setAllCharacters] = useState([]);
+
+  // CRITICAL FIX: Add style readiness state
+  const [stylesReady, setStylesReady] = useState(false);
+
+  // CRITICAL FIX: Ensure styles are ready before rendering
+  useEffect(() => {
+    const timer = requestAnimationFrame(() => {
+      setStylesReady(true);
+    });
+    return () => cancelAnimationFrame(timer);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -607,18 +634,15 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     setTotalCount(prev => prev + 1);
   };
 
-  // Search handlers
   const handleSearchResults = (searchResults) => {
     const { characters: searchCharacters, query, totalCount: searchTotal } = searchResults;
     
     if (query && searchCharacters.length >= 0) {
-      // User performed a search
       setCharacters(searchCharacters);
       setTotalCount(searchTotal);
       setIsSearching(true);
       setSearchQuery(query);
     } else if (!query) {
-      // User cleared search - restore original characters
       setCharacters(originalCharacters);
       setTotalCount(originalTotalCount);
       setIsSearching(false);
@@ -629,7 +653,6 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const handleSearchStateChange = (searchState) => {
     const { isSearching: searching, query } = searchState;
     
-    // If user clears search completely, restore original state
     if (!searching && !query) {
       setCharacters(originalCharacters);
       setTotalCount(originalTotalCount);
@@ -695,7 +718,6 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
             name: sessionWithMessages.character,
             id: `temp_${sessionWithMessages.character}`,
             creator: 'Gigaversity',
-            // type: 'Historical Figure',
             category: 'general',
             messages: '0k',
             likes: '0k',
@@ -705,6 +727,47 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       }
     }
   };
+
+  // CRITICAL FIX: Show skeleton loader while styles are loading
+  if (!stylesReady) {
+    return (
+      <Box sx={{ 
+        display: 'grid !important',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr)) !important',
+        gap: '20px !important',
+        minHeight: '400px !important',
+        '@media (max-width: 1200px)': {
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr)) !important',
+          gap: '18px !important',
+        },
+        '@media (max-width: 960px)': {
+          gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr)) !important',
+          gap: '16px !important',
+        },
+        '@media (max-width: 600px)': {
+          gridTemplateColumns: '1fr !important',
+          gap: '14px !important',
+        },
+      }}>
+        {Array.from({ length: 6 }).map((_, index) => (
+          <Box
+            key={index}
+            sx={{
+              height: '280px',
+              background: 'rgba(26, 26, 26, 0.3)',
+              borderRadius: '16px',
+              border: '1px solid rgba(99, 102, 241, 0.1)',
+              animation: 'pulse 1.5s ease-in-out infinite',
+              '@keyframes pulse': {
+                '0%, 100%': { opacity: 0.4 },
+                '50%': { opacity: 0.6 },
+              },
+            }}
+          />
+        ))}
+      </Box>
+    );
+  }
 
   if (loading) {
     return (
@@ -757,7 +820,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       <Box className={classes.section}>
         <Box className={classes.sectionHeader}>
           <Box>
-            <Typography  variant="h2" className={classes.sectionTitle}>
+            <Typography variant="h2" className={classes.sectionTitle}>
               {isSearching ? `Search Results for "${searchQuery}"` : activeSection}
               <Chip 
                 label={`${totalCount} ${isSearching ? 'results' : 'total characters'}`} 
@@ -772,7 +835,6 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
             )}
           </Box>
           
-          {/* Search component positioned opposite to heading */}
           <Box className={classes.searchContainer}>
             <SearchComponent
               onSearchResults={handleSearchResults}
@@ -819,7 +881,6 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
           )}
         </Box>
         
-        {/* Search component positioned opposite to heading */}
         <Box className={classes.searchContainer}>
           <SearchComponent
             onSearchResults={handleSearchResults}
