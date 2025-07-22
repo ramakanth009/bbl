@@ -737,7 +737,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       <Box className={classes.section}>
         <Box className={classes.sectionHeader}>
           <Box>
-            <Typography className={classes.sectionTitle}>
+            <Typography variant="h2" className={classes.sectionTitle}>
               Chat History
               <Chip 
                 label={`${sessions.length} conversations`} 
@@ -757,7 +757,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       <Box className={classes.section}>
         <Box className={classes.sectionHeader}>
           <Box>
-            <Typography className={classes.sectionTitle}>
+            <Typography  variant="h2" className={classes.sectionTitle}>
               {isSearching ? `Search Results for "${searchQuery}"` : activeSection}
               <Chip 
                 label={`${totalCount} ${isSearching ? 'results' : 'total characters'}`} 
@@ -804,7 +804,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     <Box className={classes.section}>
       <Box className={classes.sectionHeader}>
         <Box>
-          <Typography className={classes.sectionTitle}>
+          <Typography variant="h2" className={classes.sectionTitle}>
             {isSearching ? `Search Results for "${searchQuery}"` : activeSection}
             <Chip 
               label={`${totalCount} ${isSearching ? 'results' : 'total characters'}`} 
