@@ -67,7 +67,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { theme } from './styles/theme';
 import { AuthProvider } from './context/AuthContext';
-import { CategoriesProvider } from './context/CategoriesContext'; // New import
+import { CategoriesProvider } from './context/CategoriesContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Pages
@@ -88,39 +88,39 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <CategoriesProvider> {/* Wrap with CategoriesProvider */}
-          <HashRouter>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route 
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
+        <HashRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route 
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <CategoriesProvider>
                     <Dashboard />
-                  </ProtectedRoute>
-                } 
-              >
-                {/* Nested routes for dashboard sections */}
-                <Route index element={<Navigate to="discover" replace />} />
-                <Route path="discover" element={<Discover />} />
-                <Route path="discover/chat/:characterId" element={<Discover />} />
-                <Route path="featured" element={<Featured />} />
-                <Route path="featured/chat/:characterId" element={<Featured />} />
-                <Route path="trending" element={<Trending />} />
-                <Route path="foryou" element={<Foryou />} />
-                <Route path="recent" element={<Recent />} />
-                <Route path="history" element={<History />} />
-                <Route path="history/session/:sessionId" element={<SessionChat />} />
-                
-                {/* Category Routes */}
-                <Route path="categories/:categoryKey" element={<CategoryPage />} />
-                <Route path="categories/:categoryKey/chat/:characterId" element={<CategoryPage />} />
-              </Route>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
-          </HashRouter>
-        </CategoriesProvider>
+                  </CategoriesProvider>
+                </ProtectedRoute>
+              } 
+            >
+              {/* Nested routes for dashboard sections */}
+              <Route index element={<Navigate to="discover" replace />} />
+              <Route path="discover" element={<Discover />} />
+              <Route path="discover/chat/:characterId" element={<Discover />} />
+              <Route path="featured" element={<Featured />} />
+              <Route path="featured/chat/:characterId" element={<Featured />} />
+              <Route path="trending" element={<Trending />} />
+              <Route path="foryou" element={<Foryou />} />
+              <Route path="recent" element={<Recent />} />
+              <Route path="history" element={<History />} />
+              <Route path="history/session/:sessionId" element={<SessionChat />} />
+              
+              {/* Category Routes */}
+              <Route path="categories/:categoryKey" element={<CategoryPage />} />
+              <Route path="categories/:categoryKey/chat/:characterId" element={<CategoryPage />} />
+            </Route>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </HashRouter>
       </AuthProvider>
     </ThemeProvider>
   );
