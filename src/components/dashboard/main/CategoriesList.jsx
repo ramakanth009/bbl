@@ -97,7 +97,7 @@ const useStyles = makeStyles(() => ({
   listItemIcon: {
     color: "#888",
     minWidth: '26px',
-    marginRight: '10px',
+    marginRight: '5px',
     '@media (max-width: 1200px)': {
       minWidth: '24px',
       marginRight: '9px',
