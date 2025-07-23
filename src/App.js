@@ -63,7 +63,7 @@
 // export default App;
 import React from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, StyledEngineProvider  } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { theme } from './styles/theme';
 import { AuthProvider } from './context/AuthContext';
