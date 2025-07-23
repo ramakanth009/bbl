@@ -509,6 +509,11 @@ const useStyles = makeStyles({
     borderRadius: '50%',
     border: '2px solid rgba(99, 102, 241, 0.3)',
     transition: 'all 0.3s ease',
+    '& img': {
+      objectFit: 'cover',
+      objectPosition: 'center 20%',
+      
+    },
     '@media (max-width: 1200px)': {
       width: 66,
       height: 66,
