@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, IconButton } from "@mui/material";
-import { Menu as MenuIcon, ChevronLeft } from "@mui/icons-material";
+import { ChevronRight, ChevronLeft } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/dashboard/main/Sidebar";
@@ -64,7 +64,16 @@ const useStyles = makeStyles({
     },
   },
   mainContentClosed: {
-    marginLeft: 0,
+    marginLeft: 70,
+    '@media (max-width: 1200px)': {
+      marginLeft: 65,
+    },
+    '@media (max-width: 960px)': {
+      marginLeft: 60,
+    },
+    "@media (max-width: 900px)": {
+      marginLeft: 0,
+    },
   },
   contentArea: {
     flex: 1,
@@ -130,22 +139,27 @@ const useStyles = makeStyles({
     },
   },
   menuButtonClosed: {
-    left: '20px !important',
+    left: '70px !important',
     top: '20px !important',
     transform: 'none !important',
-    backgroundColor: 'rgba(26, 26, 26, 0.9) !important',
-    border: '1px solid rgba(42, 42, 42, 0.5) !important',
-    borderRadius: '8px !important',
-    padding: '8px !important',
+    backgroundColor: 'transparent !important',
+    border: 'none !important',
+    borderLeft: '1px solid rgba(42, 42, 42, 0.5) !important',
+    borderTop: '1px solid rgba(42, 42, 42, 0.5) !important',
+    borderBottom: '1px solid rgba(42, 42, 42, 0.5) !important',
+    borderRight: '1px solid rgba(42, 42, 42, 0.5) !important',
+    borderRadius: '0 8px 8px 0 !important',
+    padding: '8px 12px 8px 8px !important',
+    marginLeft: '-1px !important',
     '&:hover': {
-      backgroundColor: 'rgba(42, 42, 42, 0.9) !important',
+      backgroundColor: 'rgba(42, 42, 42, 0.3) !important',
     },
     '@media (max-width: 1200px)': {
-      left: '18px !important',
+      left: '65px !important',
       top: '18px !important',
     },
     '@media (max-width: 960px)': {
-      left: '16px !important',
+      left: '60px !important',
       top: '16px !important',
     },
   },
@@ -167,7 +181,7 @@ const Dashboard = () => {
         onClick={toggleSidebar}
         aria-label="toggle sidebar"
       >
-        {sidebarOpen ? <ChevronLeft /> : <MenuIcon />}
+        {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
       </IconButton>
       <Box className={classes.dashboardContainer}>
         <Sidebar 

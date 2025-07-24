@@ -11,6 +11,8 @@ import {
   Chip,
   useMediaQuery,
   useTheme,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import {
   LocationOn,
@@ -22,6 +24,7 @@ import {
   Schedule,
   History,
   Logout,
+  Category,
 } from "@mui/icons-material";
 import { makeStyles } from '@mui/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -44,7 +47,7 @@ const useStyles = makeStyles(() => ({
       left: '0 !important',
       top: '0 !important',
       zIndex: '1200 !important',
-      transition: 'transform 0.3s ease !important',
+      transition: 'all 0.3s ease !important',
       '@media (max-width: 1200px)': {
         width: '260px !important',
         padding: '18px !important',
@@ -71,6 +74,24 @@ const useStyles = makeStyles(() => ({
       },
     },
   },
+  drawerCollapsed: {
+    '& .MuiDrawer-paper': {
+      width: '70px !important',
+      padding: '20px 10px !important',
+      '@media (max-width: 1200px)': {
+        width: '65px !important',
+        padding: '18px 8px !important',
+      },
+      '@media (max-width: 960px)': {
+        width: '60px !important',
+        padding: '16px 6px !important',
+      },
+      '@media (max-width: 900px)': {
+        width: '280px !important',
+        padding: '20px !important',
+      },
+    },
+  },
   contentWrapper: {
     height: '100% !important',
     display: 'flex !important',
@@ -82,6 +103,7 @@ const useStyles = makeStyles(() => ({
     alignItems: "center !important",
     gap: '12px !important',
     marginBottom: '20px !important',
+    justifyContent: 'flex-start !important',
     '@media (max-width: 1200px)': {
       gap: '10px !important',
       marginBottom: '18px !important',
@@ -101,6 +123,12 @@ const useStyles = makeStyles(() => ({
     '@media (max-width: 375px)': {
       gap: '2px !important',
       marginBottom: '10px !important',
+    },
+  },
+  logoWrapperCollapsed: {
+    justifyContent: 'center !important',
+    '@media (max-width: 900px)': {
+      justifyContent: 'flex-start !important',
     },
   },
   logoIcon: {
@@ -206,6 +234,32 @@ const useStyles = makeStyles(() => ({
       borderRadius: '3px !important',
     },
   },
+  createButtonCollapsed: {
+    minWidth: '40px !important',
+    width: '40px !important',
+    height: '40px !important',
+    padding: '0 !important',
+    marginBottom: '20px !important',
+    borderRadius: '8px !important',
+    '@media (max-width: 1200px)': {
+      minWidth: '36px !important',
+      width: '36px !important',
+      height: '36px !important',
+      marginBottom: '18px !important',
+    },
+    '@media (max-width: 960px)': {
+      minWidth: '32px !important',
+      width: '32px !important',
+      height: '32px !important',
+      marginBottom: '16px !important',
+    },
+    '@media (max-width: 900px)': {
+      width: "100% !important",
+      height: 'auto !important',
+      padding: '10px 16px !important',
+      marginBottom: '30px !important',
+    },
+  },
   navSectionWrapper: {
     marginBottom: '24px !important',
     '@media (max-width: 1200px)': {
@@ -222,6 +276,12 @@ const useStyles = makeStyles(() => ({
     },
     '@media (max-width: 375px)': {
       marginBottom: '12px !important',
+    },
+  },
+  navSectionWrapperCollapsed: {
+    marginBottom: '16px !important',
+    '@media (max-width: 900px)': {
+      marginBottom: '24px !important',
     },
   },
   sectionTitle: {
@@ -295,12 +355,55 @@ const useStyles = makeStyles(() => ({
       borderRadius: '1px !important',
     },
   },
+  listItemCollapsed: {
+    padding: '8px 4px !important',
+    justifyContent: 'center !important',
+    '@media (max-width: 1200px)': {
+      padding: '7px 3px !important',
+    },
+    '@media (max-width: 960px)': {
+      padding: '6px 2px !important',
+    },
+    '@media (max-width: 900px)': {
+      padding: '8px 12px !important',
+      justifyContent: 'flex-start !important',
+    },
+  },
   scrollableContent: {
     flex: '1 !important',
     overflow: 'hidden !important',
     '&:hover': {
       overflowY: 'auto !important'
     }
+  },
+  scrollableContentCollapsed: {
+    display: 'none !important',
+    '@media (max-width: 900px)': {
+      display: 'block !important',
+    },
+  },
+  categoriesIconWrapper: {
+    display: 'flex !important',
+    justifyContent: 'center !important',
+    marginBottom: '16px !important',
+    '@media (max-width: 900px)': {
+      display: 'none !important',
+    },
+  },
+  categoriesIcon: {
+    padding: '8px 4px !important',
+    borderRadius: '6px !important',
+    color: '#ccc !important',
+    transition: 'all 0.2s ease !important',
+    "&:hover": {
+      backgroundColor: '#252525 !important',
+    },
+    '@media (max-width: 1200px)': {
+      padding: '7px 3px !important',
+    },
+    '@media (max-width: 960px)': {
+      padding: '6px 2px !important',
+    },
   },
   chip: {
     height: '16px !important',
@@ -406,6 +509,39 @@ const useStyles = makeStyles(() => ({
       fontSize: '8px !important',
     },
   },
+  listItemIcon: {
+    color: "#888 !important", 
+    minWidth: '26px !important', 
+    marginRight: '10px !important',
+    '@media (max-width: 1200px)': {
+      minWidth: '24px !important',
+      marginRight: '9px !important',
+    },
+    '@media (max-width: 960px)': {
+      minWidth: '22px !important',
+      marginRight: '8px !important',
+    },
+    '@media (max-width: 600px)': {
+      minWidth: '20px !important',
+      marginRight: '6px !important',
+    },
+    '@media (max-width: 480px)': {
+      minWidth: '18px !important',
+      marginRight: '5px !important',
+    },
+    '@media (max-width: 375px)': {
+      minWidth: '16px !important',
+      marginRight: '3px !important',
+    },
+  },
+  listItemIconCollapsed: {
+    minWidth: 'auto !important',
+    marginRight: '0 !important',
+    '@media (max-width: 900px)': {
+      minWidth: '26px !important',
+      marginRight: '10px !important',
+    },
+  },
 }));
 
 const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
@@ -484,43 +620,19 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
     }
   };
 
-  const renderNavSection = (items, title) => (
-    <Box className={classes.navSectionWrapper}>
-      {title && <Typography className={classes.sectionTitle}>{title}</Typography>}
-      <List dense disablePadding>
-        {items.map((item) => (
-          <ListItemButton
-            key={item.text}
-            className={`${classes.listItem} ${activeSection === item.path ? "active" : ""}`}
-            onClick={() => handleNavClick(item.path, item.comingSoon)}
-          >
-            <ListItemIcon sx={{ 
-              color: "#888 !important", 
-              minWidth: '26px !important', 
-              marginRight: '10px !important',
-              '@media (max-width: 1200px)': {
-                minWidth: '24px !important',
-                marginRight: '9px !important',
-              },
-              '@media (max-width: 960px)': {
-                minWidth: '22px !important',
-                marginRight: '8px !important',
-              },
-              '@media (max-width: 600px)': {
-                minWidth: '20px !important',
-                marginRight: '6px !important',
-              },
-              '@media (max-width: 480px)': {
-                minWidth: '18px !important',
-                marginRight: '5px !important',
-              },
-              '@media (max-width: 375px)': {
-                minWidth: '16px !important',
-                marginRight: '3px !important',
-              },
-            }}>
-              {item.icon}
-            </ListItemIcon>
+  const renderNavItem = (item) => {
+    const isActive = activeSection === item.path;
+    const content = (
+      <ListItemButton
+        key={item.text}
+        className={`${classes.listItem} ${!open ? classes.listItemCollapsed : ""} ${isActive ? "active" : ""}`}
+        onClick={() => handleNavClick(item.path, item.comingSoon)}
+      >
+        <ListItemIcon className={`${classes.listItemIcon} ${!open ? classes.listItemIconCollapsed : ""}`}>
+          {item.icon}
+        </ListItemIcon>
+        {open && (
+          <>
             <ListItemText
               primary={item.text}
               primaryTypographyProps={{ 
@@ -530,8 +642,28 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
             {item.comingSoon && (
               <Chip label="Coming Soon" size="small" className={classes.chip} />
             )}
-          </ListItemButton>
-        ))}
+          </>
+        )}
+      </ListItemButton>
+    );
+
+    // Wrap with tooltip when collapsed (except on mobile)
+    if (!open && !isMobile) {
+      return (
+        <Tooltip key={item.text} title={item.text} placement="right" arrow>
+          {content}
+        </Tooltip>
+      );
+    }
+
+    return content;
+  };
+
+  const renderNavSection = (items, title) => (
+    <Box className={`${classes.navSectionWrapper} ${!open ? classes.navSectionWrapperCollapsed : ""}`}>
+      {title && open && <Typography className={classes.sectionTitle}>{title}</Typography>}
+      <List dense disablePadding>
+        {items.map(renderNavItem)}
       </List>
     </Box>
   );
@@ -543,35 +675,29 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
         position: 'fixed !important',
         left: '0 !important',
         top: '0 !important',
-        width: '280px !important',
+        width: open ? '280px !important' : '70px !important',
         height: '100vh !important',
         backgroundColor: 'rgba(26, 26, 26, 0.7) !important',
         borderRight: '1px solid rgba(42, 42, 42, 0.5) !important',
-        padding: '20px !important',
+        padding: open ? '20px !important' : '20px 10px !important',
         display: 'flex !important',
         flexDirection: 'column !important',
         overflow: 'hidden !important',
         zIndex: 1200,
-        transform: open ? 'translateX(0)' : 'translateX(-100%)',
-        transition: 'transform 0.3s ease',
-        '@media (max-width: 1200px)': {
-          width: '260px !important',
-          padding: '18px !important',
-        },
-        '@media (max-width: 960px)': {
-          width: '240px !important',
-          padding: '16px !important',
-        },
+        transition: 'all 0.3s ease',
         '@media (max-width: 900px)': {
           width: '280px !important',
+          padding: '20px !important',
+          transform: open ? 'translateX(0)' : 'translateX(-100%)',
         },
       }}>
         {/* Logo skeleton */}
         <Box sx={{
           display: 'flex',
           alignItems: 'center',
-          gap: '12px',
+          gap: open ? '12px' : '0px',
           marginBottom: '20px',
+          justifyContent: open ? 'flex-start' : 'center',
         }}>
           <Box sx={{
             width: '28px',
@@ -584,26 +710,28 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
               '50%': { opacity: 0.6 },
             },
           }} />
-          <Box sx={{
-            width: '120px',
-            height: '16px',
-            borderRadius: '4px',
-            background: 'rgba(255, 255, 255, 0.3)',
-            animation: 'pulse 1.5s ease-in-out infinite',
-            '@keyframes pulse': {
-              '0%, 100%': { opacity: 0.4 },
-              '50%': { opacity: 0.6 },
-            },
-          }} />
+          {open && (
+            <Box sx={{
+              width: '120px',
+              height: '16px',
+              borderRadius: '4px',
+              background: 'rgba(255, 255, 255, 0.3)',
+              animation: 'pulse 1.5s ease-in-out infinite',
+              '@keyframes pulse': {
+                '0%, 100%': { opacity: 0.4 },
+                '50%': { opacity: 0.6 },
+              },
+            }} />
+          )}
         </Box>
         
         {/* Button skeleton */}
         <Box sx={{
-          width: '100%',
+          width: open ? '100%' : '40px',
           height: '40px',
           borderRadius: '8px',
           background: 'rgba(99, 102, 241, 0.3)',
-          marginBottom: '30px',
+          marginBottom: open ? '30px' : '20px',
           animation: 'pulse 1.5s ease-in-out infinite',
           '@keyframes pulse': {
             '0%, 100%': { opacity: 0.4 },
@@ -631,47 +759,72 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
     );
   }
 
+  const createButtonContent = (
+    <Button
+      variant="contained"
+      startIcon={open ? <Add className={classes.iconSizing} /> : null}
+      onClick={handleCreateClick}
+      className={`${classes.createButton} ${!open ? classes.createButtonCollapsed : ""}`}
+    >
+      {!open ? <Add className={classes.iconSizing} /> : "Create"}
+    </Button>
+  );
+
   return (
     <>
       <Drawer 
         variant={isMobile ? "temporary" : "persistent"}
-        open={open}
+        open={isMobile ? open : true}
         onClose={handleDrawerClose}
-        className={classes.drawer}
+        className={`${classes.drawer} ${!open ? classes.drawerCollapsed : ""}`}
         ModalProps={{
           keepMounted: true, // Better open performance on mobile
         }}
       >
         <Box className={classes.contentWrapper}>
-          <Box className={classes.logoWrapper}>
+          <Box className={`${classes.logoWrapper} ${!open ? classes.logoWrapperCollapsed : ""}`}>
             <Box className={classes.logoIcon}>
               <LocationOn sx={{ fontSize: 14 }} />
             </Box>
-            <Typography className={classes.logoText}>
-              Bring Back Legend
-            </Typography>
+            {open && (
+              <Typography className={classes.logoText}>
+                Bring Back Legend
+              </Typography>
+            )}
           </Box>
 
-          <Button
-            variant="contained"
-            startIcon={<Add className={classes.iconSizing} />}
-            onClick={handleCreateClick}
-            className={classes.createButton}
-          >
-            Create
-          </Button>
+          {!open && !isMobile ? (
+            <Tooltip title="Create" placement="right" arrow>
+              {createButtonContent}
+            </Tooltip>
+          ) : (
+            createButtonContent
+          )}
 
-          {/* Main and history sections (no scroll) */}
+          {/* Main and history sections */}
           {renderNavSection(mainNavItems, "EXPLORE")}
           {renderNavSection(historyItems, "ACTIVITY")}
 
-          {/* Categories heading - fixed */}
-          <Typography className={classes.sectionTitle}>
-            CATEGORIES
-          </Typography>
+          {/* Categories section */}
+          {open && (
+            <Typography className={classes.sectionTitle}>
+              CATEGORIES
+            </Typography>
+          )}
           
-          {/* Dynamic categories section - scrollable */}
-          <Box className={classes.scrollableContent}>
+          {/* Categories icon when collapsed */}
+          {!open && !isMobile && (
+            <Box className={classes.categoriesIconWrapper}>
+              <Tooltip title="Categories" placement="right" arrow>
+                <IconButton className={classes.categoriesIcon}>
+                  <Category className={classes.iconSizing} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
+          
+          {/* Dynamic categories section - scrollable when open */}
+          <Box className={`${classes.scrollableContent} ${!open ? classes.scrollableContentCollapsed : ""}`}>
             <CategoriesList 
               onCategorySelect={handleCategorySelect}
               activeCategory={activeCategory}
@@ -679,41 +832,29 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
           </Box>
 
           <Box className={classes.footerWrapper}>
-            <ListItemButton onClick={logout} className={classes.listItem}>
-              <ListItemIcon sx={{ 
-                color: "#888 !important", 
-                minWidth: '26px !important', 
-                marginRight: '10px !important',
-                '@media (max-width: 1200px)': {
-                  minWidth: '24px !important',
-                  marginRight: '9px !important',
-                },
-                '@media (max-width: 960px)': {
-                  minWidth: '22px !important',
-                  marginRight: '8px !important',
-                },
-                '@media (max-width: 600px)': {
-                  minWidth: '20px !important',
-                  marginRight: '6px !important',
-                },
-                '@media (max-width: 480px)': {
-                  minWidth: '18px !important',
-                  marginRight: '5px !important',
-                },
-                '@media (max-width: 375px)': {
-                  minWidth: '16px !important',
-                  marginRight: '3px !important',
-                },
-              }}>
-                <Logout className={classes.iconSizing} />
-              </ListItemIcon>
-              <ListItemText
-                primary="Logout"
-                primaryTypographyProps={{ 
-                  className: classes.listItemText
-                }}
-              />
-            </ListItemButton>
+            {!open && !isMobile ? (
+              <Tooltip title="Logout" placement="right" arrow>
+                <ListItemButton onClick={logout} className={`${classes.listItem} ${classes.listItemCollapsed}`}>
+                  <ListItemIcon className={`${classes.listItemIcon} ${classes.listItemIconCollapsed}`}>
+                    <Logout className={classes.iconSizing} />
+                  </ListItemIcon>
+                </ListItemButton>
+              </Tooltip>
+            ) : (
+              <ListItemButton onClick={logout} className={classes.listItem}>
+                <ListItemIcon className={classes.listItemIcon}>
+                  <Logout className={classes.iconSizing} />
+                </ListItemIcon>
+                {open && (
+                  <ListItemText
+                    primary="Logout"
+                    primaryTypographyProps={{ 
+                      className: classes.listItemText
+                    }}
+                  />
+                )}
+              </ListItemButton>
+            )}
           </Box>
         </Box>
       </Drawer>
@@ -727,4 +868,4 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
   );
 };
 
-export default Sidebar;
+export default Sidebar; 
