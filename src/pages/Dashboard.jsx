@@ -1,89 +1,6 @@
-// import React from "react";
-// import { Box } from "@mui/material";
-// import { makeStyles } from "@mui/styles";
-// import { Outlet } from "react-router-dom";
-// import Sidebar from "../components/dashboard/main/Sidebar";
-// import StarField from "../components/common/StarField";
-
-// // Styles using makeStyles
-// const useStyles = makeStyles({
-//   dashboardContainer: {
-//     display: "flex",
-//     // minHeight: "100vh",
-//     padding: "20px",
-//     '@media (max-width: 1200px)': {
-//       padding: "18px",
-//     },
-//     '@media (max-width: 960px)': {
-//       padding: "16px",
-//     },
-//     '@media (max-width: 600px)': {
-//       padding: "12px",
-//     },
-//     '@media (max-width: 480px)': {
-//       padding: "8px",
-//     },
-//     '@media (max-width: 375px)': {
-//       padding: "4px",
-//     },
-//   },
-//   mainContent: {
-//     marginLeft: 260,
-//     padding: '20px !important',
-//     flex: 1,
-//     display: "flex",
-//     '@media (max-width: 1200px)': {
-//       marginLeft: 240,
-//       padding: '18px !important',
-//     },
-//     '@media (max-width: 960px)': {
-//       marginLeft: 220,
-//       padding: '16px !important',
-//     },
-//     "@media (max-width: 900px)": {
-//       marginLeft: 0,
-//     },
-//     '@media (max-width: 600px)': {
-//       padding: '12px !important',
-//     },
-//     '@media (max-width: 480px)': {
-//       padding: '8px !important',
-//     },
-//     '@media (max-width: 375px)': {
-//       padding: '4px !important',
-//     },
-//   },
-//   contentArea: {
-//     flex: 1,
-//     overflow: "hidden",
-//     '@media (max-width: 600px)': {
-//       overflow: "auto",
-//     },
-//   },
-// });
-
-// const Dashboard = () => {
-//   const classes = useStyles();
-
-//   return (
-//     <>
-//       <StarField />
-//       <Box className={classes.dashboardContainer}>
-//         <Sidebar />
-//         <Box className={classes.mainContent}>
-//           <Box className={classes.contentArea}>
-//             <Outlet />
-//           </Box>
-//         </Box>
-//       </Box>
-//     </>
-//   );
-// };
-
-// export default Dashboard;
 import React, { useState } from "react";
 import { Box, IconButton } from "@mui/material";
-import { Menu as MenuIcon } from "@mui/icons-material";
+import { Menu as MenuIcon, ChevronLeft } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/dashboard/main/Sidebar";
@@ -111,17 +28,14 @@ const useStyles = makeStyles({
     },
   },
   mainContent: {
-    marginLeft: (props) => props.sidebarOpen ? 280 : 0,
     padding: '20px !important',
     flex: 1,
     display: "flex",
     transition: 'margin-left 0.3s ease !important',
     '@media (max-width: 1200px)': {
-      marginLeft: (props) => props.sidebarOpen ? 260 : 0,
       padding: '18px !important',
     },
     '@media (max-width: 960px)': {
-      marginLeft: (props) => props.sidebarOpen ? 240 : 0,
       padding: '16px !important',
     },
     "@media (max-width: 900px)": {
@@ -137,6 +51,21 @@ const useStyles = makeStyles({
       padding: '4px !important',
     },
   },
+  mainContentOpen: {
+    marginLeft: 280,
+    '@media (max-width: 1200px)': {
+      marginLeft: 260,
+    },
+    '@media (max-width: 960px)': {
+      marginLeft: 240,
+    },
+    "@media (max-width: 900px)": {
+      marginLeft: 0,
+    },
+  },
+  mainContentClosed: {
+    marginLeft: 0,
+  },
   contentArea: {
     flex: 1,
     overflow: "hidden",
@@ -146,28 +75,22 @@ const useStyles = makeStyles({
   },
   menuButton: {
     position: 'fixed !important',
-    top: '20px !important',
-    left: (props) => props.sidebarOpen ? '300px' : '20px',
+    top: '5% !important',
+    transform: 'translateY(-50%) !important',
     zIndex: '1300 !important',
-    backgroundColor: 'rgba(26, 26, 26, 0.9) !important',
+    transition: 'all 0.3s ease !important',
     color: 'white !important',
-    border: '1px solid rgba(42, 42, 42, 0.5) !important',
-    borderRadius: '8px !important',
-    padding: '8px !important',
-    transition: 'left 0.3s ease !important',
-    '&:hover': {
-      backgroundColor: 'rgba(42, 42, 42, 0.9) !important',
-    },
-    '@media (max-width: 1200px)': {
-      left: (props) => props.sidebarOpen ? '280px' : '18px',
-      top: '18px !important',
-    },
-    '@media (max-width: 960px)': {
-      left: (props) => props.sidebarOpen ? '260px' : '16px',
-      top: '16px !important',
-    },
     '@media (max-width: 900px)': {
-      left: '16px !important',
+      top: '20px !important',
+      transform: 'none !important',
+      left: '20px !important',
+      backgroundColor: 'rgba(26, 26, 26, 0.9) !important',
+      border: '1px solid rgba(42, 42, 42, 0.9) !important',
+      borderRadius: '8px !important',
+      padding: '8px !important',
+      '&:hover': {
+        backgroundColor: 'rgba(42, 42, 42, 0.9) !important',
+      },
     },
     '@media (max-width: 600px)': {
       top: '12px !important',
@@ -185,11 +108,52 @@ const useStyles = makeStyles({
       padding: '2px !important',
     },
   },
+  menuButtonOpen: {
+    left: '280px !important',
+    backgroundColor: 'transparent !important',
+    border: 'none !important',
+    borderLeft: '1px solid rgba(42, 42, 42, 0.5) !important',
+    borderTop: '1px solid rgba(42, 42, 42, 0.5) !important',
+    borderBottom: '1px solid rgba(42, 42, 42, 0.5) !important',
+    borderRight: '1px solid rgba(42, 42, 42, 0.5) !important',
+    borderRadius: '0 8px 8px 0 !important',
+    padding: '8px 12px 8px 8px !important',
+    marginLeft: '-1px !important',
+    '&:hover': {
+      backgroundColor: 'rgba(42, 42, 42, 0.3) !important',
+    },
+    '@media (max-width: 1200px)': {
+      left: '260px !important',
+    },
+    '@media (max-width: 960px)': {
+      left: '240px !important',
+    },
+  },
+  menuButtonClosed: {
+    left: '20px !important',
+    top: '20px !important',
+    transform: 'none !important',
+    backgroundColor: 'rgba(26, 26, 26, 0.9) !important',
+    border: '1px solid rgba(42, 42, 42, 0.5) !important',
+    borderRadius: '8px !important',
+    padding: '8px !important',
+    '&:hover': {
+      backgroundColor: 'rgba(42, 42, 42, 0.9) !important',
+    },
+    '@media (max-width: 1200px)': {
+      left: '18px !important',
+      top: '18px !important',
+    },
+    '@media (max-width: 960px)': {
+      left: '16px !important',
+      top: '16px !important',
+    },
+  },
 });
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const classes = useStyles({ sidebarOpen });
+  const classes = useStyles();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -199,18 +163,18 @@ const Dashboard = () => {
     <>
       <StarField />
       <IconButton
-        className={classes.menuButton}
+        className={`${classes.menuButton} ${sidebarOpen ? classes.menuButtonOpen : classes.menuButtonClosed}`}
         onClick={toggleSidebar}
         aria-label="toggle sidebar"
       >
-        <MenuIcon />
+        {sidebarOpen ? <ChevronLeft /> : <MenuIcon />}
       </IconButton>
       <Box className={classes.dashboardContainer}>
         <Sidebar 
           open={sidebarOpen}
           onToggle={toggleSidebar}
         />
-        <Box className={classes.mainContent}>
+        <Box className={`${classes.mainContent} ${sidebarOpen ? classes.mainContentOpen : classes.mainContentClosed}`}>
           <Box className={classes.contentArea}>
             <Outlet />
           </Box>
