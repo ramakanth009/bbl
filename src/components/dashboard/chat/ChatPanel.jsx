@@ -323,16 +323,19 @@ const useStyles = makeStyles(() => ({
       width: '34px !important',
       height: '34px !important',
       borderRadius: '6px !important',
+      display:"none"
     },
     '@media (max-width: 480px)': {
       width: '32px !important',
       height: '32px !important',
       borderRadius: '4px !important',
+      display:"none"
     },
     '@media (max-width: 375px)': {
       width: '30px !important',
       height: '30px !important',
       borderRadius: '2px !important',
+      display:"none"
     },
   },
   messagesWrapper: {

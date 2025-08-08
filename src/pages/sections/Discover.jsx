@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box } from '@mui/material';
+import { Box, useTheme, useMediaQuery } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import Header from '../../components/dashboard/main/Header';
 import CharacterGrid from '../../components/dashboard/character/CharacterGrid';
@@ -7,7 +7,6 @@ import ChatPanel from '../../components/dashboard/chat/ChatPanel';
 import { useNavigate, useParams } from 'react-router-dom';
 import apiService from '../../services/api';
 
-// Styles using makeStyles
 const useStyles = makeStyles({
   discoverContainer: {
     display: 'flex',
@@ -41,10 +40,18 @@ const useStyles = makeStyles({
   contentAreaHidden: {
     display: 'none',
   },
+  desktopHeader: {
+    display: 'block',
+    '@media (max-width: 900px)': {
+      display: 'none !important',
+    },
+  },
 });
 
 const Discover = () => {
   const classes = useStyles();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [characters, setCharacters] = useState([]);
@@ -59,36 +66,29 @@ const Discover = () => {
     const fetchCharacters = async () => {
       try {
         const chars = await apiService.getCharacters();
-        // Ensure we always set an array
         const charArray = Array.isArray(chars)
           ? chars
           : Array.isArray(chars.characters)
             ? chars.characters
             : [];
-        // Only update if data actually changed (shallow compare by JSON)
-        if (
-          isMounted &&
-          JSON.stringify(charArray) !== JSON.stringify(characters)
-        ) {
+        
+        if (isMounted && JSON.stringify(charArray) !== JSON.stringify(characters)) {
           setCharacters(charArray);
         }
       } catch (e) {
-        // Optionally handle error
+        console.error('Failed to fetch characters:', e);
       }
     };
 
-    // Initial load
     fetchCharacters();
 
     return () => {
       isMounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount
+  }, []);
 
   // Open chat panel if chatCharacterId is present in the route
   useEffect(() => {
-    // Only run this effect if characters have loaded
     if (characters.length === 0) return;
 
     if (chatCharacterId) {
@@ -119,11 +119,6 @@ const Discover = () => {
     navigate('/dashboard/discover');
   };
 
-  const handleBackToCharacters = () => {
-    setIsChatOpen(false);
-    // Don't clear selectedCharacter immediately to allow for potential re-opening
-  };
-
   return (
     <Box className={classes.discoverContainer}>
       <Box
@@ -133,13 +128,18 @@ const Discover = () => {
             : classes.contentArea
         }
       >
-        <Header />
+        {/* Desktop Header - Hidden on mobile */}
+        <Box className={classes.desktopHeader}>
+          <Header />
+        </Box>
+        
         <CharacterGrid 
           onCharacterClick={handleCharacterClick}
           activeSection="Discover"
           characters={characters}
         />
       </Box>
+      
       <ChatPanel
         open={isChatOpen}
         character={selectedCharacter}

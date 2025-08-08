@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://characters-2-0.onrender.com';
-const BASE_URL = process.env.REACT_APP_API_URL || 'https://fastapi-characters.onrender.com';
+// const BASE_URL = process.env.REACT_APP_API_URL || 'https://fastapi-characters.onrender.com';
+// const BASE_URL = process.env.REACT_APP_API_URL || 'https://fastapi-characters-dikf.onrender.com';
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://characters-zwwb.onrender.com/';
 
 class ApiService {
   constructor() {
