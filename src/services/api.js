@@ -311,18 +311,17 @@ async getAllCharacters() {
   }
 
   // ===============================
-  // UPDATED CHAT ENDPOINTS WITH VOICE SUPPORT
+  // CORRECTED CHAT ENDPOINTS
   // ===============================
   
-  // UPDATED: Chat endpoint with voice support - now uses /chat_with_voice
-  async sendMessage(characterName, userInput, newSession = false, languageSettings = {}, voiceSettings = {}) {
+  // FIXED: Chat endpoint with correct API specification
+  async sendMessage(characterName, userInput, newSession = false, languageSettings = {}) {
     try {
-      console.log('🚀 Sending message with voice support:', {
+      console.log('🚀 Sending message with language settings:', {
         characterName,
         userInput,
         newSession,
-        languageSettings,
-        voiceSettings
+        languageSettings
       });
 
       // Extract the target response language from settings
@@ -335,13 +334,7 @@ async getAllCharacters() {
         character_name: characterName,
         user_input: userInput,
         new_session: newSession,
-        language: targetLanguage,
-        // Voice settings
-        enable_voice: voiceSettings.enabled !== false, // Default to true
-        voice_name: voiceSettings.voice_name || null,
-        reference_audio_path: voiceSettings.reference_audio_path || null,
-        emotion_level: voiceSettings.emotion_level || 0.4,
-        speed_factor: voiceSettings.speed_factor || 1.0,
+        language: targetLanguage, // API expects single 'language' parameter
       };
 
       console.log('📤 Request payload:', requestData);
@@ -351,88 +344,18 @@ async getAllCharacters() {
         headers: {
           'Accept-Language': targetLanguage,
           'Content-Language': languageSettings.input_language || 'english',
-          'Accept': 'application/json',
-        },
-        // Set response type to handle binary audio data if present
-        responseType: 'json'
-      };
-
-      const response = await this.client.post('/chat_with_voice', requestData, config);
-      
-      console.log('📥 Chat response received:', {
-        reply: response.data.reply?.substring(0, 100) + '...',
-        input_language: response.data.input_language,
-        response_language: response.data.response_language,
-        session_id: response.data.session_id,
-        has_audio: response.data.audio_data ? 'Yes' : 'No',
-        voice_used: response.data.voice_used
-      });
-
-      // Process audio data if present
-      if (response.data.audio_data) {
-        try {
-          // Convert base64 audio to blob URL for playback
-          const audioBytes = atob(response.data.audio_data);
-          const audioArray = new Uint8Array(audioBytes.length);
-          for (let i = 0; i < audioBytes.length; i++) {
-            audioArray[i] = audioBytes.charCodeAt(i);
-          }
-          const audioBlob = new Blob([audioArray], { type: 'audio/wav' });
-          response.data.audio_url = URL.createObjectURL(audioBlob);
-          console.log('🎵 Audio blob created successfully');
-        } catch (audioError) {
-          console.error('❌ Failed to process audio data:', audioError);
-          response.data.audio_url = null;
-        }
-      }
-
-      // Ensure chat_history is always an array and sorted
-      if (response.data.chat_history && Array.isArray(response.data.chat_history)) {
-        response.data.chat_history = this.sortMessagesByTimestamp(response.data.chat_history);
-      }
-      
-      return response.data;
-    } catch (error) {
-      console.error('❌ Chat with voice error details:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        message: error.message
-      });
-      throw this.handleError(error, 'Failed to send message with voice');
-    }
-  }
-
-  // FALLBACK: Original chat endpoint without voice (for backward compatibility)
-  async sendMessageText(characterName, userInput, newSession = false, languageSettings = {}) {
-    try {
-      console.log('🚀 Sending text-only message:', {
-        characterName,
-        userInput,
-        newSession,
-        languageSettings
-      });
-
-      const targetLanguage = languageSettings.output_language || 
-                           languageSettings.language || 
-                           languageSettings.response_language || 
-                           'english';
-
-      const requestData = {
-        character_name: characterName,
-        user_input: userInput,
-        new_session: newSession,
-        language: targetLanguage,
-      };
-
-      const config = {
-        headers: {
-          'Accept-Language': targetLanguage,
-          'Content-Language': languageSettings.input_language || 'english',
         }
       };
 
       const response = await this.client.post('/chat', requestData, config);
       
+      console.log('📥 Chat response received:', {
+        reply: response.data.reply?.substring(0, 100) + '...',
+        input_language: response.data.input_language,
+        response_language: response.data.response_language,
+        session_id: response.data.session_id
+      });
+
       // Ensure chat_history is always an array and sorted
       if (response.data.chat_history && Array.isArray(response.data.chat_history)) {
         response.data.chat_history = this.sortMessagesByTimestamp(response.data.chat_history);
@@ -440,83 +363,12 @@ async getAllCharacters() {
       
       return response.data;
     } catch (error) {
-      console.error('❌ Text chat error details:', {
+      console.error('❌ Chat error details:', {
         status: error.response?.status,
         data: error.response?.data,
         message: error.message
       });
-      throw this.handleError(error, 'Failed to send text message');
-    }
-  }
-
-  // ===============================
-  // VOICE UTILITIES
-  // ===============================
-
-  // Get available voices from backend
-  async getAvailableVoices() {
-    try {
-      console.log('🔄 Loading available voices...');
-      
-      const response = await this.client.get('/voices', {
-        headers: {
-          'Accept': 'application/json',
-        }
-      });
-      
-      console.log('✅ Voices loaded:', {
-        count: response.data.voices?.length || 0
-      });
-      
-      return response.data;
-    } catch (error) {
-      console.error('❌ Failed to load voices:', {
-        status: error.response?.status,
-        message: error.response?.data?.error || error.message
-      });
-      throw this.handleError(error, 'Failed to load available voices');
-    }
-  }
-
-  // Generate TTS for any text (separate endpoint)
-  async generateTTS(text, voiceSettings = {}) {
-    try {
-      console.log('🎵 Generating TTS:', {
-        textLength: text.length,
-        voiceSettings
-      });
-
-      const requestData = {
-        text: text,
-        voice_name: voiceSettings.voice_name || null,
-        reference_audio_path: voiceSettings.reference_audio_path || null,
-        emotion_level: voiceSettings.emotion_level || 0.4,
-        speed_factor: voiceSettings.speed_factor || 1.0,
-      };
-
-      const response = await this.client.post('/tts', requestData, {
-        responseType: 'arraybuffer', // Expect binary audio data
-      });
-
-      // Convert array buffer to blob URL
-      const audioBlob = new Blob([response.data], { type: 'audio/wav' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-
-      console.log('✅ TTS generated successfully');
-      return {
-        audio_url: audioUrl,
-        audio_blob: audioBlob
-      };
-    } catch (error) {
-      console.error('❌ TTS generation failed:', error);
-      throw this.handleError(error, 'Failed to generate TTS');
-    }
-  }
-
-  // Clean up audio URLs to prevent memory leaks
-  cleanupAudioUrl(audioUrl) {
-    if (audioUrl && audioUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(audioUrl);
+      throw this.handleError(error, 'Failed to send message');
     }
   }
 
@@ -549,6 +401,44 @@ async getAllCharacters() {
       throw this.handleError(error, 'Failed to load supported languages');
     }
   }
+
+  // // NEW: Set user language preferences (if backend supports it)
+  // async setUserLanguagePreferences(preferences) {
+  //   try {
+  //     console.log('🔧 Setting user language preferences:', preferences);
+      
+  //     const response = await this.client.post('/user/language-preferences', {
+  //       input_language: preferences.inputLanguage || 'english',
+  //       output_language: preferences.outputLanguage || 'english',
+  //       auto_detect: preferences.autoDetect || false,
+  //     });
+      
+  //     console.log('✅ Language preferences updated');
+  //     return response.data;
+  //   } catch (error) {
+  //     console.warn('⚠️ Language preferences endpoint not available, storing locally');
+  //     // Fallback: store preferences locally
+  //     localStorage.setItem('language_preferences', JSON.stringify(preferences));
+  //     return { status: 'stored_locally', preferences };
+  //   }
+  // }
+
+  // // NEW: Get user language preferences
+  // async getUserLanguagePreferences() {
+  //   try {
+  //     const response = await this.client.get('/user/language-preferences');
+  //     return response.data;
+  //   } catch (error) {
+  //     console.warn('⚠️ Language preferences endpoint not available, using local storage');
+  //     // Fallback: get from local storage
+  //     const stored = localStorage.getItem('language_preferences');
+  //     return stored ? JSON.parse(stored) : {
+  //       inputLanguage: 'english',
+  //       outputLanguage: 'english',
+  //       autoDetect: false
+  //     };
+  //   }
+  // }
 
   // NEW: Translate text (if backend supports it)
   async translateText(text, fromLanguage, toLanguage) {
