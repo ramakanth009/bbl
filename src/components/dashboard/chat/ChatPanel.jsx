@@ -689,23 +689,43 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
       console.log('📨 Message sent successfully:', {
         sessionId: response.session_id,
         responseLanguage: response.response_language,
-        inputLanguage: response.input_language
+        inputLanguage: response.input_language,
+        hasVoice: response.has_voice,
+        audioDataLength: response.audio_base64 ? response.audio_base64.length : 0
       });
       
-      if (response.chat_history) {
-        const formattedMessages = response.chat_history.map(msg => ({
-          role: msg.role,
-          content: msg.content,
-          language: msg.language || (msg.role === 'user' ? language : language),
-          timestamp: msg.timestamp
-        }));
+      if (response.chat_history && response.chat_history.length > 0) {
+        // Process the full chat history
+        const formattedMessages = response.chat_history.map((msg, index) => {
+          const isLastMessage = index === response.chat_history.length - 1;
+          const isAssistantMessage = msg.role !== 'user';
+          
+          return {
+            role: msg.role,
+            content: msg.content,
+            language: msg.language || (msg.role === 'user' ? language : language),
+            timestamp: msg.timestamp,
+            // Attach voice data to the last assistant message if available
+            ...(isLastMessage && isAssistantMessage && response.has_voice && response.audio_base64 ? {
+              audio_base64: response.audio_base64,
+              has_voice: true
+            } : {})
+          };
+        });
         setMessages(formattedMessages);
       } else {
-        setMessages(prev => [...prev, { 
+        // Fallback: add the response as a new message
+        const assistantMessage = { 
           role: character.name, 
           content: response.reply,
-          language: response.response_language || language
-        }]);
+          language: response.response_language || language,
+          // Add voice data if available
+          ...(response.has_voice && response.audio_base64 ? {
+            audio_base64: response.audio_base64,
+            has_voice: true
+          } : {})
+        };
+        setMessages(prev => [...prev, assistantMessage]);
       }
       
       if (response.session_id) {

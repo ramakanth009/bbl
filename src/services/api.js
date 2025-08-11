@@ -3,7 +3,8 @@ import axios from 'axios';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://characters-2-0.onrender.com';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://fastapi-characters.onrender.com';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://fastapi-characters-dikf.onrender.com';
-const BASE_URL = process.env.REACT_APP_API_URL || 'https://characters-zwwb.onrender.com/';
+// const BASE_URL = process.env.REACT_APP_API_URL || 'https://characters-zwwb.onrender.com/';
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000'; // For local development
 
 class ApiService {
   constructor() {
@@ -355,7 +356,7 @@ async getAllCharacters() {
       };
 
       // Use the new voice-enabled endpoint
-      const response = await this.client.post('/chat_with_voice', requestData, config);
+      const response = await this.client.post('/chat_with_voice?generate_voice=true', requestData, config);
       
       console.log('📥 Voice chat response received:', {
         reply: response.data.reply?.substring(0, 100) + '...',

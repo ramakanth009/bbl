@@ -154,54 +154,145 @@ class VoiceService {
     }
   }
 
-  // Play audio from base64 voice data
-  async playVoiceData(voiceData) {
-    try {
-      // Stop any current audio
-      this.stopAudio();
+// Replace the playVoiceData method in the VoiceService class with this corrected version:
 
-      // Convert base64 to blob
-      const byteCharacters = atob(voiceData);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const audioBlob = new Blob([byteArray], { type: 'audio/mpeg' });
-      
-      const audioUrl = URL.createObjectURL(audioBlob);
-      await this.playAudioFromUrl(audioUrl);
-      
-      // Clean up URL after playing
-      setTimeout(() => URL.revokeObjectURL(audioUrl), 1000);
-    } catch (error) {
-      console.error('Error playing voice data:', error);
-      throw error;
+// Play audio from base64 voice data
+async playVoiceData(voiceData) {
+  try {
+    console.log('🎵 Playing voice data, length:', voiceData?.length);
+    
+    // Stop any current audio
+    this.stopAudio();
+
+    if (!voiceData) {
+      throw new Error('No voice data provided');
     }
-  }
 
-  // Play audio from URL
+    // Clean the base64 string (remove data URL prefix if present)
+    let cleanBase64 = voiceData;
+    if (voiceData.includes(',')) {
+      cleanBase64 = voiceData.split(',')[1];
+    }
+    
+    console.log('🔧 Cleaned base64 length:', cleanBase64.length);
+
+    // Convert base64 to blob - improved method
+    const byteCharacters = atob(cleanBase64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    
+    // Try different audio types for better compatibility
+    const audioBlob = new Blob([byteArray], { type: 'audio/wav' });
+    
+    console.log('🔊 Created audio blob, size:', audioBlob.size);
+    
+    if (audioBlob.size === 0) {
+      throw new Error('Audio blob is empty');
+    }
+    
+    const audioUrl = URL.createObjectURL(audioBlob);
+    console.log('🎯 Created audio URL:', audioUrl);
+    
+    await this.playAudioFromUrl(audioUrl);
+    
+    // Clean up URL after a delay
+    setTimeout(() => {
+      URL.revokeObjectURL(audioUrl);
+      console.log('🧹 Cleaned up audio URL');
+    }, 5000);
+    
+  } catch (error) {
+    console.error('❌ Error playing voice data:', error);
+    
+    // Enhanced error reporting
+    if (error.message.includes('Invalid character')) {
+      console.error('📝 Base64 decode error - invalid characters in voice data');
+      throw new Error('Invalid audio data format');
+    } else if (error.message.includes('The source for this media resource')) {
+      console.error('🔇 Audio format not supported by browser');
+      throw new Error('Audio format not supported');
+    }
+    
+    throw error;
+  }
+}
+
+  // Also improve the playAudioFromUrl method for better error handling:
   async playAudioFromUrl(audioUrl) {
     return new Promise((resolve, reject) => {
       try {
         this.stopAudio();
         
-        this.currentAudio = new Audio(audioUrl);
+        this.currentAudio = new Audio();
         this.currentAudio.volume = this.settings.volume;
         
+        // Add better event listeners
+        this.currentAudio.onloadstart = () => {
+          console.log('🔄 Audio loading started');
+        };
+        
+        this.currentAudio.oncanplaythrough = () => {
+          console.log('✅ Audio can play through');
+        };
+        
         this.currentAudio.onended = () => {
+          console.log('🏁 Audio playback ended');
           this.isPlaying = false;
           resolve();
         };
         
         this.currentAudio.onerror = (error) => {
+          console.error('🚫 Audio error:', error);
           this.isPlaying = false;
-          reject(error);
+          
+          // More detailed error reporting
+          const audioError = this.currentAudio.error;
+          if (audioError) {
+            switch (audioError.code) {
+              case audioError.MEDIA_ERR_ABORTED:
+                reject(new Error('Audio playback aborted'));
+                break;
+              case audioError.MEDIA_ERR_NETWORK:
+                reject(new Error('Network error loading audio'));
+                break;
+              case audioError.MEDIA_ERR_DECODE:
+                reject(new Error('Audio decode error'));
+                break;
+              case audioError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                reject(new Error('Audio format not supported'));
+                break;
+              default:
+                reject(new Error('Unknown audio error'));
+            }
+          } else {
+            reject(new Error('Audio playback failed'));
+          }
         };
         
+        // Set source and play
+        this.currentAudio.src = audioUrl;
         this.isPlaying = true;
-        this.currentAudio.play();
+        
+        // Play with promise handling for better browser compatibility
+        const playPromise = this.currentAudio.play();
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('▶️ Audio playback started successfully');
+            })
+            .catch((error) => {
+              console.error('🚫 Play promise rejected:', error);
+              this.isPlaying = false;
+              reject(error);
+            });
+        }
+        
       } catch (error) {
+        console.error('💥 Error in playAudioFromUrl:', error);
         this.isPlaying = false;
         reject(error);
       }
