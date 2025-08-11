@@ -331,21 +331,21 @@ async getAllCharacters() {
                            languageSettings.response_language || 
                            'english';
 
-      // Build URL with voice parameters
+      // Build URL with voice parameters - always use voice endpoint
       const token = localStorage.getItem('token');
       const url = new URL(`${BASE_URL}/chat_with_voice`);
       
-      // Add voice parameters to URL if voice is enabled
+      // Always set generate_voice=true for voice capability
+      url.searchParams.append('generate_voice', 'true');
+      
+      // Add voice parameters if voice is enabled
       if (voiceOptions.voiceEnabled) {
-        url.searchParams.append('generate_voice', 'true');
         if (voiceOptions.voiceEmotion !== undefined) {
           url.searchParams.append('voice_emotion', voiceOptions.voiceEmotion.toString());
         }
         if (voiceOptions.maxVoiceLength !== undefined) {
           url.searchParams.append('max_voice_length', voiceOptions.maxVoiceLength.toString());
         }
-      } else {
-        url.searchParams.append('generate_voice', 'false');
       }
 
       const requestData = {
