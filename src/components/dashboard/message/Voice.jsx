@@ -1,28 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  Box, 
-  IconButton, 
-  Slider, 
-  Typography, 
-  Select, 
-  MenuItem, 
-  FormControl, 
-  InputLabel,
-  FormControlLabel,
-  Checkbox,
-  Button,
-  Menu,
-  Divider
-} from '@mui/material';
-import { 
-  Mic, 
-  MicOff, 
-  VolumeUp, 
-  VolumeOff, 
-  Settings,
-  PlayArrow,
-  Stop
-} from '@mui/icons-material';
+import { Box, IconButton, Slider, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Mic, MicOff, VolumeUp, VolumeOff, Settings } from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
 
 // Voice Service Class
 class VoiceService {
@@ -181,69 +160,52 @@ class VoiceService {
       // Stop any current audio
       this.stopAudio();
 
-      if (!voiceData) {
-        throw new Error('No voice data provided');
+      // Convert base64 to blob
+      const byteCharacters = atob(voiceData);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
-
-      // Create audio blob from base64
-      const audioBlob = new Blob(
-        [Uint8Array.from(atob(voiceData), c => c.charCodeAt(0))],
-        { type: 'audio/wav' }
-      );
+      const byteArray = new Uint8Array(byteNumbers);
+      const audioBlob = new Blob([byteArray], { type: 'audio/mpeg' });
       
       const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
+      await this.playAudioFromUrl(audioUrl);
       
-      this.currentAudio = audio;
-      this.isPlaying = true;
-
-      audio.onended = () => {
-        this.isPlaying = false;
-        URL.revokeObjectURL(audioUrl);
-        this.currentAudio = null;
-      };
-
-      audio.onerror = (e) => {
-        console.error('Audio playback error:', e);
-        this.isPlaying = false;
-        URL.revokeObjectURL(audioUrl);
-        this.currentAudio = null;
-      };
-
-      await audio.play();
+      // Clean up URL after playing
+      setTimeout(() => URL.revokeObjectURL(audioUrl), 1000);
     } catch (error) {
-      console.error('Voice playback failed:', error);
-      this.isPlaying = false;
+      console.error('Error playing voice data:', error);
       throw error;
     }
   }
 
   // Play audio from URL
   async playAudioFromUrl(audioUrl) {
-    try {
-      this.stopAudio();
-      
-      const audio = new Audio(audioUrl);
-      this.currentAudio = audio;
-      this.isPlaying = true;
-
-      audio.onended = () => {
+    return new Promise((resolve, reject) => {
+      try {
+        this.stopAudio();
+        
+        this.currentAudio = new Audio(audioUrl);
+        this.currentAudio.volume = this.settings.volume;
+        
+        this.currentAudio.onended = () => {
+          this.isPlaying = false;
+          resolve();
+        };
+        
+        this.currentAudio.onerror = (error) => {
+          this.isPlaying = false;
+          reject(error);
+        };
+        
+        this.isPlaying = true;
+        this.currentAudio.play();
+      } catch (error) {
         this.isPlaying = false;
-        this.currentAudio = null;
-      };
-
-      audio.onerror = (e) => {
-        console.error('Audio URL playback error:', e);
-        this.isPlaying = false;
-        this.currentAudio = null;
-      };
-
-      await audio.play();
-    } catch (error) {
-      console.error('Audio URL playback failed:', error);
-      this.isPlaying = false;
-      throw error;
-    }
+        reject(error);
+      }
+    });
   }
 
   // Stop current audio
@@ -251,70 +213,89 @@ class VoiceService {
     if (this.currentAudio) {
       this.currentAudio.pause();
       this.currentAudio.currentTime = 0;
+      this.currentAudio = null;
       this.isPlaying = false;
     }
   }
 
-  // Start recording
+  // Start voice recording
   async startRecording() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
-      this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaRecorder = new MediaRecorder(stream, {
+        mimeType: `audio/${this.settings.recordingFormat}; codecs=opus`
+      });
+      
       const audioChunks = [];
-
+      
       this.mediaRecorder.ondataavailable = (event) => {
         audioChunks.push(event.data);
       };
-
+      
       return new Promise((resolve, reject) => {
         this.mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const audioBlob = new Blob(audioChunks, { 
+            type: `audio/${this.settings.recordingFormat}` 
+          });
+          this.isRecording = false;
+          
+          // Stop all tracks to free up microphone
           stream.getTracks().forEach(track => track.stop());
+          
           resolve(audioBlob);
         };
-
-        this.mediaRecorder.onerror = reject;
+        
+        this.mediaRecorder.onerror = (error) => {
+          this.isRecording = false;
+          stream.getTracks().forEach(track => track.stop());
+          reject(error);
+        };
+        
         this.mediaRecorder.start();
         this.isRecording = true;
       });
     } catch (error) {
-      console.error('Recording failed:', error);
+      console.error('Error starting recording:', error);
       throw error;
     }
   }
 
-  // Stop recording
+  // Stop voice recording
   stopRecording() {
     if (this.mediaRecorder && this.isRecording) {
       this.mediaRecorder.stop();
-      this.isRecording = false;
     }
   }
 
   // Speech recognition
-  async speechToText() {
-    if (!this.recognition) {
-      throw new Error('Speech recognition not supported');
-    }
-
+  async startSpeechRecognition() {
     return new Promise((resolve, reject) => {
+      if (!this.recognition) {
+        reject(new Error('Speech recognition not supported'));
+        return;
+      }
+
       this.recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         resolve(transcript);
       };
 
-      this.recognition.onerror = reject;
+      this.recognition.onerror = (error) => {
+        reject(error);
+      };
+
       this.recognition.start();
     });
   }
 
   // Check browser support
-  checkSupport() {
+  static getBrowserSupport() {
     return {
-      synthesis: !!window.speechSynthesis,
-      recognition: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
-      mediaRecorder: !!window.MediaRecorder,
+      synthesis: 'speechSynthesis' in window,
+      recognition: 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window,
+      mediaRecorder: 'MediaRecorder' in window,
+      getUserMedia: 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices,
     };
   }
 }
@@ -322,30 +303,50 @@ class VoiceService {
 // Create singleton instance
 const voiceService = new VoiceService();
 
-// React Components
-
 // Voice Controls Component
-export const VoiceControls = ({ 
-  onRecord, 
-  onSpeechToText, 
-  onVoiceToggle,
-  disabled = false 
-}) => {
-  const [showSettings, setShowSettings] = useState(false);
+const VoiceControlsContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  padding: theme.spacing(1),
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.divider}`,
+}));
+
+const VoiceButton = styled(IconButton)(({ theme, active }) => ({
+  color: active ? theme.palette.primary.main : theme.palette.text.secondary,
+  backgroundColor: active ? theme.palette.primary.light + '20' : 'transparent',
+  '&:hover': {
+    backgroundColor: active 
+      ? theme.palette.primary.light + '30' 
+      : theme.palette.action.hover,
+  },
+}));
+
+export const VoiceControls = ({ onVoiceMessage, onTextMessage, disabled = false }) => {
   const [isRecording, setIsRecording] = useState(false);
-  const [settingsAnchor, setSettingsAnchor] = useState(null);
-  
-  const support = voiceService.checkSupport();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [recordingPromise, setRecordingPromise] = useState(null);
+  const [support] = useState(VoiceService.getBrowserSupport());
 
   const handleStartRecording = async () => {
     try {
       setIsRecording(true);
-      const audioBlob = await voiceService.startRecording();
-      setIsRecording(false);
-      if (onRecord) onRecord(audioBlob);
+      const promise = voiceService.startRecording();
+      setRecordingPromise(promise);
+      
+      const audioBlob = await promise;
+      if (onVoiceMessage) {
+        onVoiceMessage(audioBlob);
+      }
     } catch (error) {
-      setIsRecording(false);
       console.error('Recording error:', error);
+      alert('Recording failed: ' + error.message);
+    } finally {
+      setIsRecording(false);
+      setRecordingPromise(null);
     }
   };
 
@@ -356,83 +357,72 @@ export const VoiceControls = ({
 
   const handleSpeechToText = async () => {
     try {
-      const text = await voiceService.speechToText();
-      if (onSpeechToText) onSpeechToText(text);
+      const transcript = await voiceService.startSpeechRecognition();
+      if (onTextMessage) {
+        onTextMessage(transcript);
+      }
     } catch (error) {
-      console.error('Speech to text error:', error);
+      console.error('Speech recognition error:', error);
+      alert('Speech recognition failed: ' + error.message);
     }
   };
 
-  const handleSettingsOpen = (event) => {
-    setSettingsAnchor(event.currentTarget);
-  };
-
-  const handleSettingsClose = () => {
-    setSettingsAnchor(null);
-  };
-
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <VoiceControlsContainer>
       {/* Recording button */}
-      {support.mediaRecorder && (
-        <IconButton
+      {support.mediaRecorder && support.getUserMedia && (
+        <VoiceButton
+          active={isRecording}
           onClick={isRecording ? handleStopRecording : handleStartRecording}
           disabled={disabled}
           title={isRecording ? 'Stop recording' : 'Start voice recording'}
-          sx={{ 
-            color: isRecording ? '#f44336' : '#4fc3f7',
-            '&:hover': {
-              backgroundColor: 'rgba(79, 195, 247, 0.1)'
-            }
-          }}
         >
           {isRecording ? <MicOff /> : <Mic />}
-        </IconButton>
+        </VoiceButton>
       )}
 
       {/* Speech-to-text button */}
       {support.recognition && (
-        <IconButton
+        <VoiceButton
           onClick={handleSpeechToText}
           disabled={disabled || isRecording}
           title="Speech to text"
-          sx={{ 
-            color: '#4fc3f7',
-            '&:hover': {
-              backgroundColor: 'rgba(79, 195, 247, 0.1)'
-            }
-          }}
         >
           <VolumeUp />
-        </IconButton>
+        </VoiceButton>
       )}
 
       {/* Settings button */}
-      <IconButton
-        onClick={handleSettingsOpen}
+      <VoiceButton
+        onClick={() => setShowSettings(!showSettings)}
         title="Voice settings"
-        sx={{ 
-          color: 'rgba(255,255,255,0.7)',
-          '&:hover': {
-            backgroundColor: 'rgba(255,255,255,0.1)'
-          }
-        }}
       >
         <Settings />
-      </IconButton>
+      </VoiceButton>
 
-      {/* Voice settings menu */}
-      <VoiceSettingsMenu 
-        anchorEl={settingsAnchor}
-        open={Boolean(settingsAnchor)}
-        onClose={handleSettingsClose}
-      />
-    </Box>
+      {/* Voice settings panel */}
+      {showSettings && (
+        <VoiceSettings onClose={() => setShowSettings(false)} />
+      )}
+    </VoiceControlsContainer>
   );
 };
 
-// Voice Settings Menu Component
-export const VoiceSettingsMenu = ({ anchorEl, open, onClose }) => {
+// Voice Settings Component
+const SettingsPanel = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: '100%',
+  right: 0,
+  zIndex: 1000,
+  minWidth: 300,
+  padding: theme.spacing(2),
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[4],
+}));
+
+export const VoiceSettings = ({ onClose }) => {
   const [settings, setSettings] = useState(voiceService.settings);
   const [voices] = useState(voiceService.getAvailableVoices());
 
@@ -443,138 +433,83 @@ export const VoiceSettingsMenu = ({ anchorEl, open, onClose }) => {
   };
 
   return (
-    <Menu
-      anchorEl={anchorEl}
-      open={open}
-      onClose={onClose}
-      PaperProps={{
-        sx: {
-          backgroundColor: 'rgba(30, 30, 30, 0.95)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          color: '#ffffff',
-          minWidth: 320,
-          p: 2
-        }
-      }}
-    >
-      <Box sx={{ p: 1 }}>
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
-          Voice Settings
-        </Typography>
+    <SettingsPanel>
+      <Typography variant="h6" gutterBottom>
+        Voice Settings
+      </Typography>
 
-        {/* Voice selection */}
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel sx={{ color: '#ffffff' }}>Voice</InputLabel>
-          <Select
-            value={settings.voice || ''}
-            onChange={(e) => handleSettingChange('voice', e.target.value)}
-            sx={{ 
-              color: '#ffffff',
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'rgba(255, 255, 255, 0.23)',
-              },
-            }}
-          >
-            {voices.map((voice) => (
-              <MenuItem key={voice.name} value={voice.name}>
-                {voice.name} ({voice.lang})
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      {/* Voice selection */}
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Voice</InputLabel>
+        <Select
+          value={settings.voice || ''}
+          onChange={(e) => handleSettingChange('voice', e.target.value)}
+        >
+          {voices.map((voice) => (
+            <MenuItem key={voice.name} value={voice.name}>
+              {voice.name} ({voice.lang})
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-        <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.12)', mb: 2 }} />
-
-        {/* Rate slider */}
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="body2" sx={{ mb: 1 }}>
-            Speech Rate: {settings.rate.toFixed(1)}x
-          </Typography>
-          <Slider
-            value={settings.rate}
-            onChange={(_, value) => handleSettingChange('rate', value)}
-            min={0.5}
-            max={2}
-            step={0.1}
-            sx={{
-              color: '#4fc3f7',
-              '& .MuiSlider-thumb': {
-                backgroundColor: '#4fc3f7',
-              },
-              '& .MuiSlider-track': {
-                backgroundColor: '#4fc3f7',
-              },
-            }}
-          />
-        </Box>
-
-        {/* Pitch slider */}
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="body2" sx={{ mb: 1 }}>
-            Pitch: {settings.pitch.toFixed(1)}
-          </Typography>
-          <Slider
-            value={settings.pitch}
-            onChange={(_, value) => handleSettingChange('pitch', value)}
-            min={0}
-            max={2}
-            step={0.1}
-            sx={{
-              color: '#4fc3f7',
-              '& .MuiSlider-thumb': {
-                backgroundColor: '#4fc3f7',
-              },
-              '& .MuiSlider-track': {
-                backgroundColor: '#4fc3f7',
-              },
-            }}
-          />
-        </Box>
-
-        {/* Volume slider */}
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="body2" sx={{ mb: 1 }}>
-            Volume: {Math.round(settings.volume * 100)}%
-          </Typography>
-          <Slider
-            value={settings.volume}
-            onChange={(_, value) => handleSettingChange('volume', value)}
-            min={0}
-            max={1}
-            step={0.1}
-            sx={{
-              color: '#4fc3f7',
-              '& .MuiSlider-thumb': {
-                backgroundColor: '#4fc3f7',
-              },
-              '& .MuiSlider-track': {
-                backgroundColor: '#4fc3f7',
-              },
-            }}
-          />
-        </Box>
-
-        {/* Auto-play checkbox */}
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={settings.autoPlay}
-              onChange={(e) => handleSettingChange('autoPlay', e.target.checked)}
-              sx={{ color: '#4fc3f7' }}
-            />
-          }
-          label="Auto-play responses"
-          sx={{ color: '#ffffff' }}
+      {/* Rate slider */}
+      <Box margin="normal">
+        <Typography gutterBottom>Speech Rate</Typography>
+        <Slider
+          value={settings.rate}
+          onChange={(e, value) => handleSettingChange('rate', value)}
+          min={0.5}
+          max={2}
+          step={0.1}
+          marks={[
+            { value: 0.5, label: '0.5x' },
+            { value: 1, label: '1x' },
+            { value: 2, label: '2x' },
+          ]}
         />
-
-        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-          <Button onClick={onClose} sx={{ color: '#4fc3f7' }}>
-            Close
-          </Button>
-        </Box>
       </Box>
-    </Menu>
+
+      {/* Pitch slider */}
+      <Box margin="normal">
+        <Typography gutterBottom>Pitch</Typography>
+        <Slider
+          value={settings.pitch}
+          onChange={(e, value) => handleSettingChange('pitch', value)}
+          min={0.5}
+          max={2}
+          step={0.1}
+          marks={[
+            { value: 0.5, label: 'Low' },
+            { value: 1, label: 'Normal' },
+            { value: 2, label: 'High' },
+          ]}
+        />
+      </Box>
+
+      {/* Volume slider */}
+      <Box margin="normal">
+        <Typography gutterBottom>Volume</Typography>
+        <Slider
+          value={settings.volume}
+          onChange={(e, value) => handleSettingChange('volume', value)}
+          min={0}
+          max={1}
+          step={0.1}
+          marks={[
+            { value: 0, label: '0%' },
+            { value: 0.5, label: '50%' },
+            { value: 1, label: '100%' },
+          ]}
+        />
+      </Box>
+
+      <Box display="flex" justifyContent="flex-end" marginTop={2}>
+        <IconButton onClick={onClose} size="small">
+          <VolumeOff />
+        </IconButton>
+      </Box>
+    </SettingsPanel>
   );
 };
 
