@@ -74,6 +74,8 @@ const Message = ({ message }) => {
       <MessageContent isUser={isUser}>
         {/* Render content as React node (already parsed by MessageList) */}
         {message.content}
+        <br/>
+        speaker
       </MessageContent>
     </MessageWrapper>
   );
