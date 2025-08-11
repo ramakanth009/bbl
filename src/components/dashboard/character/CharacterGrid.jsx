@@ -1069,7 +1069,7 @@ const useStyles = makeStyles({
       width: '100% !important',
       marginBottom: '16px !important',
       '& .MuiChip-root': {
-        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important',
+        // background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important',
         color: '#ffffff !important',
         fontWeight: '600 !important',
         fontSize: '0.9rem !important',
@@ -1106,7 +1106,6 @@ const useStyles = makeStyles({
     fontWeight: '600 !important',
     background: 'rgba(99, 102, 241, 0.2) !important',
     border: '1px solid rgba(99, 102, 241, 0.3) !important',
-    backdropFilter: 'blur(10px) !important',
     '& .MuiChip-label': {
       color: '#ffffff !important',
       fontWeight: '600 !important',

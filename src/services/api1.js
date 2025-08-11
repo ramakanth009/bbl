@@ -311,18 +311,17 @@ async getAllCharacters() {
   }
 
   // ===============================
-  // VOICE-ENABLED CHAT ENDPOINTS
+  // CORRECTED CHAT ENDPOINTS
   // ===============================
   
-  // UPDATED: Voice-enabled chat endpoint
-  async sendMessage(characterName, userInput, newSession = false, languageSettings = {}, voiceSettings = {}) {
+  // FIXED: Chat endpoint with correct API specification
+  async sendMessage(characterName, userInput, newSession = false, languageSettings = {}) {
     try {
-      console.log('🚀 Sending voice-enabled message:', {
+      console.log('🚀 Sending message with language settings:', {
         characterName,
         userInput,
         newSession,
-        languageSettings,
-        voiceSettings
+        languageSettings
       });
 
       // Extract the target response language from settings
@@ -335,16 +334,10 @@ async getAllCharacters() {
         character_name: characterName,
         user_input: userInput,
         new_session: newSession,
-        language: targetLanguage,
-        // Voice-specific settings
-        voice_enabled: voiceSettings.enabled || true,
-        voice_type: voiceSettings.voice_type || 'default',
-        voice_speed: voiceSettings.speed || 1.0,
-        voice_pitch: voiceSettings.pitch || 1.0,
-        return_audio: voiceSettings.return_audio || true,
+        language: targetLanguage, // API expects single 'language' parameter
       };
 
-      console.log('📤 Voice chat request payload:', requestData);
+      console.log('📤 Request payload:', requestData);
 
       // Add language headers for better API communication
       const config = {
@@ -354,16 +347,13 @@ async getAllCharacters() {
         }
       };
 
-      // Use the new voice-enabled endpoint
-      const response = await this.client.post('/chat_with_voice', requestData, config);
+      const response = await this.client.post('/chat', requestData, config);
       
-      console.log('📥 Voice chat response received:', {
+      console.log('📥 Chat response received:', {
         reply: response.data.reply?.substring(0, 100) + '...',
         input_language: response.data.input_language,
         response_language: response.data.response_language,
-        session_id: response.data.session_id,
-        has_voice_data: !!response.data.voice_data,
-        has_audio_url: !!response.data.audio_url
+        session_id: response.data.session_id
       });
 
       // Ensure chat_history is always an array and sorted
@@ -373,47 +363,12 @@ async getAllCharacters() {
       
       return response.data;
     } catch (error) {
-      console.error('❌ Voice chat error details:', {
+      console.error('❌ Chat error details:', {
         status: error.response?.status,
         data: error.response?.data,
         message: error.message
       });
-      throw this.handleError(error, 'Failed to send voice message');
-    }
-  }
-
-  // NEW: Send voice message with audio data
-  async sendVoiceMessage(characterName, audioBlob, newSession = false, languageSettings = {}, voiceSettings = {}) {
-    try {
-      console.log('🎤 Sending voice message with audio data');
-
-      const formData = new FormData();
-      formData.append('character_name', characterName);
-      formData.append('audio_file', audioBlob, 'voice_message.webm');
-      formData.append('new_session', newSession);
-      formData.append('language', languageSettings.output_language || 'english');
-      formData.append('voice_enabled', voiceSettings.enabled || true);
-      formData.append('voice_type', voiceSettings.voice_type || 'default');
-      formData.append('return_audio', voiceSettings.return_audio || true);
-
-      const response = await this.client.post('/chat_with_voice', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Accept-Language': languageSettings.output_language || 'english',
-        },
-      });
-
-      console.log('📥 Voice message response received');
-
-      // Ensure chat_history is always an array and sorted
-      if (response.data.chat_history && Array.isArray(response.data.chat_history)) {
-        response.data.chat_history = this.sortMessagesByTimestamp(response.data.chat_history);
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error('❌ Voice message error:', error);
-      throw this.handleError(error, 'Failed to send voice message');
+      throw this.handleError(error, 'Failed to send message');
     }
   }
 
@@ -446,6 +401,44 @@ async getAllCharacters() {
       throw this.handleError(error, 'Failed to load supported languages');
     }
   }
+
+  // // NEW: Set user language preferences (if backend supports it)
+  // async setUserLanguagePreferences(preferences) {
+  //   try {
+  //     console.log('🔧 Setting user language preferences:', preferences);
+      
+  //     const response = await this.client.post('/user/language-preferences', {
+  //       input_language: preferences.inputLanguage || 'english',
+  //       output_language: preferences.outputLanguage || 'english',
+  //       auto_detect: preferences.autoDetect || false,
+  //     });
+      
+  //     console.log('✅ Language preferences updated');
+  //     return response.data;
+  //   } catch (error) {
+  //     console.warn('⚠️ Language preferences endpoint not available, storing locally');
+  //     // Fallback: store preferences locally
+  //     localStorage.setItem('language_preferences', JSON.stringify(preferences));
+  //     return { status: 'stored_locally', preferences };
+  //   }
+  // }
+
+  // // NEW: Get user language preferences
+  // async getUserLanguagePreferences() {
+  //   try {
+  //     const response = await this.client.get('/user/language-preferences');
+  //     return response.data;
+  //   } catch (error) {
+  //     console.warn('⚠️ Language preferences endpoint not available, using local storage');
+  //     // Fallback: get from local storage
+  //     const stored = localStorage.getItem('language_preferences');
+  //     return stored ? JSON.parse(stored) : {
+  //       inputLanguage: 'english',
+  //       outputLanguage: 'english',
+  //       autoDetect: false
+  //     };
+  //   }
+  // }
 
   // NEW: Translate text (if backend supports it)
   async translateText(text, fromLanguage, toLanguage) {

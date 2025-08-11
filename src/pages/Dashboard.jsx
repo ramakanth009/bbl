@@ -86,7 +86,7 @@ const useStyles = makeStyles({
   },
   menuButton: {
     position: 'fixed !important',
-    top: '5% !important',
+    top: '4% !important',
     transform: 'translateY(-50%) !important',
     zIndex: '1300 !important',
     transition: 'all 0.3s ease !important',
@@ -96,7 +96,7 @@ const useStyles = makeStyles({
     },
   },
   menuButtonOpen: {
-    left: '280px !important',
+    left: '238px !important',
     backgroundColor: 'transparent !important',
     border: 'none !important',
     borderLeft: '1px solid rgba(42, 42, 42, 0.5) !important',
