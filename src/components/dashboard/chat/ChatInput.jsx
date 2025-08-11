@@ -6,8 +6,8 @@ import { Send } from '@mui/icons-material';
 const useStyles = makeStyles(() => ({
   container: {
     padding: '16px 20px',
-    borderTop: '1px solid rgba(99, 102, 241, 0.2)',
-    background: 'linear-gradient(145deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.8) 100%)',
+    // borderTop: '1px solid rgba(99, 102, 241, 0.2)',
+    // background: 'linear-gradient(145deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.8) 100%)',
     backdropFilter: 'blur(10px)',
     '@media (max-width: 1200px)': {
       padding: '14px 18px',

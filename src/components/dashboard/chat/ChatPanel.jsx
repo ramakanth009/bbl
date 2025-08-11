@@ -17,7 +17,7 @@ import { makeStyles } from '@mui/styles';
 import apiService from '../../../services/api';
 import MessageList from '../message/MessageList';
 import ChatInput from './ChatInput';
-import LanguageSelector from '../../common/LanguageSelector';
+// import LanguageSelector from '../../common/LanguageSelector';
 import ChatHistoryPanel from './history/ChatHistoryPanel';
 
 const useStyles = makeStyles(() => ({
@@ -836,13 +836,13 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
               <HistoryIcon />
             </IconButton>
             
-            <LanguageSelector
+            {/* <LanguageSelector
               currentLanguage={language}
               mode="single"
               compact={true}
               onLanguageChange={handleLanguageChange}
               title="Language Settings"
-            />
+            /> */}
             
             <IconButton 
               onClick={startNewSession}

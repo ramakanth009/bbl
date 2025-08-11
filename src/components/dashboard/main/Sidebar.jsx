@@ -569,7 +569,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
 
   const mainNavItems = [
     { text: "Discover", path: "discover", icon: <Explore className={classes.iconSizing} />, comingSoon: false },
-    { text: "Featured", path: "featured", icon: <Star className={classes.iconSizing} />, comingSoon: false },
+    { text: "Featured", path: "featured", icon: <Star className={classes.iconSizing} />, comingSoon: true },
     { text: "Trending", path: "trending", icon: <Whatshot className={classes.iconSizing} />, comingSoon: true },
     { text: "For You", path: "foryou", icon: <Favorite className={classes.iconSizing} />, comingSoon: true },
     { text: "Recent", path: "recent", icon: <Schedule className={classes.iconSizing} />, comingSoon: true },
