@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Paper, IconButton } from '@mui/material';
-import { VolumeUp } from '@mui/icons-material';
+import { VolumeUp, Stop } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import VoiceService from './Voice';
+import voiceService from './Voice'; // Import the singleton instance, not the class
 
 const MessageWrapper = styled(Box)(({ theme, isUser }) => ({
   display: 'flex',
@@ -85,9 +85,14 @@ const VoiceControls = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(0.5),
 }));
 
-const SpeakerButton = styled(IconButton)(({ theme, isUser }) => ({
+const SpeakerButton = styled(IconButton)(({ theme, isUser, isPlaying }) => ({
   padding: theme.spacing(0.5),
-  color: isUser ? 'rgba(255, 255, 255, 0.7)' : theme.palette.text.secondary,
+  color: isPlaying 
+    ? (isUser ? '#ffeb3b' : theme.palette.secondary.main) // Highlighted when playing
+    : (isUser ? 'rgba(255, 255, 255, 0.7)' : theme.palette.text.secondary),
+  backgroundColor: isPlaying 
+    ? (isUser ? 'rgba(255, 235, 59, 0.1)' : 'rgba(156, 39, 176, 0.1)') 
+    : 'transparent',
   '&:hover': {
     color: isUser ? 'white' : theme.palette.primary.main,
     backgroundColor: isUser ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)',
@@ -95,38 +100,90 @@ const SpeakerButton = styled(IconButton)(({ theme, isUser }) => ({
   '& .MuiSvgIcon-root': {
     fontSize: '1rem',
   },
+  // Add slight animation when playing
+  animation: isPlaying ? 'pulse 2s infinite' : 'none',
+  '@keyframes pulse': {
+    '0%': {
+      boxShadow: '0 0 0 0 rgba(156, 39, 176, 0.4)',
+    },
+    '70%': {
+      boxShadow: '0 0 0 10px rgba(156, 39, 176, 0)',
+    },
+    '100%': {
+      boxShadow: '0 0 0 0 rgba(156, 39, 176, 0)',
+    },
+  },
 }));
 
 const Message = ({ message }) => {
   const isUser = message.role === 'user';
+  const [isPlaying, setIsPlaying] = useState(false);
   
   // Check for voice data using the correct property names from the backend
   const hasVoiceData = message.audio_base64 || message.voice_data || message.audio_url;
   const hasUserInput = message.user_input && message.user_input !== message.content;
 
-  const handlePlayVoice = async () => {
+  // Listen for global audio state changes
+  useEffect(() => {
+    const checkAudioState = () => {
+      // If global audio stops, update local state
+      if (!voiceService.isPlaying && isPlaying) {
+        setIsPlaying(false);
+      }
+    };
+
+    const interval = setInterval(checkAudioState, 100);
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  const handleToggleVoice = async () => {
     try {
-      console.log('🎵 Playing voice for message:', message);
-      
-      // Try different voice data sources in order of preference
-      if (message.audio_base64) {
-        console.log('🔊 Playing from audio_base64');
-        await VoiceService.playVoiceData(message.audio_base64);
-      } else if (message.voice_data) {
-        console.log('🔊 Playing from voice_data');
-        await VoiceService.playVoiceData(message.voice_data);
-      } else if (message.audio_url) {
-        console.log('🔊 Playing from audio_url');
-        await VoiceService.playAudioFromUrl(message.audio_url);
+      if (isPlaying) {
+        // Stop audio
+        console.log('🛑 Stopping audio playback');
+        voiceService.stopAudio();
+        voiceService.stopSpeaking();
+        setIsPlaying(false);
       } else {
-        // Fallback: use text-to-speech for the message content
-        console.log('🔊 Fallback: Using text-to-speech');
-        await VoiceService.speakText(message.content);
+        // Start audio
+        console.log('🎵 Starting voice playback for message:', message);
+        setIsPlaying(true);
+        
+        try {
+          // Try different voice data sources in order of preference
+          if (message.audio_base64) {
+            console.log('🔊 Playing from audio_base64');
+            await voiceService.playVoiceData(message.audio_base64);
+          } else if (message.voice_data) {
+            console.log('🔊 Playing from voice_data');
+            await voiceService.playVoiceData(message.voice_data);
+          } else if (message.audio_url) {
+            console.log('🔊 Playing from audio_url');
+            await voiceService.playAudioFromUrl(message.audio_url);
+          } else {
+            // Fallback: use text-to-speech for the message content
+            console.log('🔊 Fallback: Using text-to-speech');
+            await voiceService.speakText(message.content);
+          }
+          
+          // Audio finished playing naturally
+          setIsPlaying(false);
+        } catch (playError) {
+          console.error('❌ Error during playback:', playError);
+          setIsPlaying(false);
+          throw playError;
+        }
       }
     } catch (error) {
-      console.error('❌ Error playing voice:', error);
+      console.error('❌ Error toggling voice:', error);
+      setIsPlaying(false);
+      
       // Show user-friendly error
-      alert('Could not play audio. Please try again.');
+      const errorMessage = error.message.includes('Audio format not supported') 
+        ? 'Audio format not supported by your browser.' 
+        : 'Could not play audio. Please try again.';
+      
+      alert(errorMessage);
     }
   };
 
@@ -152,17 +209,17 @@ const Message = ({ message }) => {
           <VoiceControls>
             <SpeakerButton 
               isUser={isUser}
-              onClick={handlePlayVoice}
-              title="Play voice"
+              isPlaying={isPlaying}
+              onClick={handleToggleVoice}
+              title={isPlaying ? "Stop audio" : "Play voice"}
               size="small"
             >
-              <VolumeUp />
+              {isPlaying ? <Stop /> : <VolumeUp />}
             </SpeakerButton>
-            {hasVoiceData && (
-              <Box component="span" sx={{ fontSize: '0.7rem', opacity: 0.6 }}>
-                Voice available
-              </Box>
-            )}
+            
+            <Box component="span" sx={{ fontSize: '0.7rem', opacity: 0.6 }}>
+              {isPlaying ? 'Playing...' : (hasVoiceData ? 'Voice available' : 'Text-to-speech')}
+            </Box>
           </VoiceControls>
         )}
       </MessageContent>
