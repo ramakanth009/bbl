@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Alert, Chip, useTheme, useMediaQuery } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import Header from '../../components/dashboard/main/Header';
 import CharacterCard from '../../components/dashboard/character/CharacterCard';
 import CreateCharacterButton from '../../components/dashboard/character/CreateCharacterButton';
@@ -29,19 +29,15 @@ const useStyles = makeStyles({
     },
     '@media (max-width: 900px)': {
       padding: '16px',
-      // paddingTop: '110px', // Space for TopBar
     },
     '@media (max-width: 600px)': {
       padding: '8px',
-      // paddingTop: '106px',
     },
     '@media (max-width: 480px)': {
       padding: '6px',
-      // paddingTop: '104px',
     },
     '@media (max-width: 375px)': {
       padding: '4px',
-      // paddingTop: '102px',
     },
   },
   contentAreaHidden: {
@@ -107,7 +103,7 @@ const useStyles = makeStyles({
     flexDirection: 'column !important',
     gap: '8px !important',
     '@media (max-width: 600px)': {
-      display: 'none !important', // Hide on mobile
+      display: 'none !important',
     },
   },
   sectionTitle: {
@@ -131,7 +127,7 @@ const useStyles = makeStyles({
       gap: '8px !important',
     },
     '@media (max-width: 600px)': {
-      display: 'none !important', // Hide on mobile
+      display: 'none !important',
     },
   },
   sectionSubtitle: {
@@ -146,10 +142,9 @@ const useStyles = makeStyles({
       fontSize: '0.8rem !important',
     },
     '@media (max-width: 600px)': {
-      display: 'none !important', // Hide on mobile
+      display: 'none !important',
     },
   },
-  // Enhanced mobile-only character count
   mobileCharacterCount: {
     display: 'none !important',
     '@media (max-width: 600px)': {
@@ -201,7 +196,7 @@ const useStyles = makeStyles({
       fontSize: '0.75rem !important',
     },
     '@media (max-width: 600px)': {
-      display: 'none !important', // Hide the inline count on mobile
+      display: 'none !important',
     },
   },
   characterBoxContainer: {
@@ -350,6 +345,15 @@ const CategoryPage = ({ onSidebarToggle }) => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [existingSession, setExistingSession] = useState(null);
+
+  // Get sidebar state from Dashboard context
+  const context = useOutletContext();
+  const sidebarState = context?.sidebarState || { 
+    isOpen: true, 
+    isMobile: false, 
+    sidebarWidth: 280, 
+    isCollapsed: false 
+  };
 
   useEffect(() => {
     loadCategoryCharacters();
@@ -581,6 +585,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
           onClose={handleChatClose}
           existingSession={existingSession}
           autoStart={true}
+          sidebarState={sidebarState}
         />
       )}
     </Box>

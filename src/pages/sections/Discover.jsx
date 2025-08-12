@@ -4,7 +4,7 @@ import { makeStyles } from '@mui/styles';
 import Header from '../../components/dashboard/main/Header';
 import CharacterGrid from '../../components/dashboard/character/CharacterGrid';
 import ChatPanel from '../../components/dashboard/chat/ChatPanel';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
 import apiService from '../../services/api';
 
 const useStyles = makeStyles({
@@ -58,6 +58,15 @@ const Discover = () => {
   const navigate = useNavigate();
   const { characterId: chatCharacterId } = useParams();
   const refreshIntervalRef = useRef(null);
+  
+  // Get sidebar state from Dashboard context
+  const context = useOutletContext();
+  const sidebarState = context?.sidebarState || { 
+    isOpen: true, 
+    isMobile: false, 
+    sidebarWidth: 280, 
+    isCollapsed: false 
+  };
 
   // Load all characters once for lookup
   useEffect(() => {
@@ -145,6 +154,7 @@ const Discover = () => {
         character={selectedCharacter}
         onClose={handleChatClose}
         onBack={handleChatClose}
+        sidebarState={sidebarState}
       />
     </Box>
   );

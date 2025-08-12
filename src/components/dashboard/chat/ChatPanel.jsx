@@ -33,13 +33,8 @@ const useStyles = makeStyles(() => ({
     zIndex: 2,
   },
   chatContainerOpen: {
+    // Dynamic width based on sidebar state - will be overridden by inline styles
     width: 'calc(100vw - 280px)',
-    '@media (max-width: 1200px)': {
-      width: 'calc(100vw - 260px)',
-    },
-    '@media (max-width: 960px)': {
-      width: 'calc(100vw - 240px)',
-    },
     '@media (max-width: 900px)': {
       width: '100vw',
       left: 0,
@@ -529,7 +524,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, initialSessionId = null }) => {
+const ChatPanel = ({ 
+  open, 
+  character, 
+  onClose, 
+  onBack, 
+  initialMessages = null, 
+  initialSessionId = null,
+  sidebarState = { isOpen: true, isMobile: false, sidebarWidth: 280, isCollapsed: false }
+}) => {
   const classes = useStyles();
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -543,6 +546,29 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
   
   const messagesEndRef = useRef(null);
   const messagesWrapperRef = useRef(null);
+
+  // Calculate dynamic width based on sidebar state
+  const calculateWidth = () => {
+    if (sidebarState.isMobile) {
+      return '100vw';
+    }
+    
+    const baseViewportWidth = window.innerWidth || 1920;
+    let sidebarWidth = sidebarState.sidebarWidth;
+    
+    // Adjust for different screen sizes
+    if (baseViewportWidth <= 1200) {
+      sidebarWidth = sidebarState.isCollapsed ? 65 : 260;
+    } else if (baseViewportWidth <= 960) {
+      sidebarWidth = sidebarState.isCollapsed ? 60 : 240;
+    }
+    
+    return `calc(100vw - ${sidebarWidth}px)`;
+  };
+
+  const dynamicContainerStyle = {
+    width: open ? calculateWidth() : "0",
+  };
 
   useEffect(() => {
     if (open && character) {
@@ -767,7 +793,11 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
 
   if (open && !character) {
     return (
-      <Box className={`${classes.chatContainer} ${classes.chatContainerOpen}`} sx={{ alignItems: 'center', justifyContent: 'center', display: 'flex' }}>
+      <Box 
+        className={`${classes.chatContainer} ${classes.chatContainerOpen}`} 
+        sx={{ alignItems: 'center', justifyContent: 'center', display: 'flex' }}
+        style={dynamicContainerStyle}
+      >
         <Typography variant="h6" color="textSecondary">
           No character selected. Please choose a character to start chatting.
         </Typography>
@@ -781,6 +811,7 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
   return (
     <Box 
       className={`${classes.chatContainer} ${classes.chatContainerOpen}`}
+      style={dynamicContainerStyle}
       sx={{ 
         borderLeft: '1px solid rgba(255,255,255,0.12)',
         '@media (max-width: 960px)': {
@@ -866,7 +897,7 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
           </Box>
         )}
         
-        {language !== 'english' && (
+        {/* {language !== 'english' && (
           <Box className={classes.languageStatus}>
             <Chip 
               label={`Language: ${language}`}
@@ -887,7 +918,7 @@ const ChatPanel = ({ open, character, onClose, onBack, initialMessages = null, i
               />
             )}
           </Box>
-        )}
+        )} */}
       </Box>
 
       {error && (

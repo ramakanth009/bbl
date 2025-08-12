@@ -215,6 +215,14 @@ const Dashboard = () => {
     console.log('Search toggle');
   };
 
+  // Calculate sidebar state for child components
+  const sidebarState = {
+    isOpen: isMobile ? mobileSidebarOpen : sidebarOpen,
+    isMobile,
+    sidebarWidth: isMobile ? (mobileSidebarOpen ? 280 : 0) : (sidebarOpen ? 280 : 70),
+    isCollapsed: !isMobile && !sidebarOpen
+  };
+
   return (
     <>
       <StarField />
@@ -260,7 +268,7 @@ const Dashboard = () => {
 
         <Box className={`${classes.mainContent} ${!isMobile && sidebarOpen ? classes.mainContentOpen : classes.mainContentClosed}`}>
           <Box className={`${classes.contentArea} ${isMobile && isChatOpen ? classes.contentAreaChatOpen : ''}`}>
-            <Outlet />
+            <Outlet context={{ sidebarState }} />
           </Box>
         </Box>
       </Box>
