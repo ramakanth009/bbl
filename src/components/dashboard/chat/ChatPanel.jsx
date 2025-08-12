@@ -46,7 +46,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   chatContainerClosed: {
-    width: 0,
+    width: "0",
   },
   chatHeader: {
     display: 'flex',
