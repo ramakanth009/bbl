@@ -1,3 +1,1544 @@
+// import React, { useState, useEffect } from 'react';
+// import {
+//   Dialog,
+//   DialogTitle,
+//   DialogContent,
+//   DialogActions,
+//   Box,
+//   Typography,
+//   TextField,
+//   FormControl,
+//   InputLabel,
+//   Select,
+//   MenuItem,
+//   Switch,
+//   Chip,
+//   Button,
+//   Stepper,
+//   Step,
+//   StepLabel,
+//   Alert,
+//   CircularProgress,
+//   Autocomplete,
+//   Card,
+//   CardContent,
+//   Divider,
+//   IconButton,
+//   Fade,
+//   Grow,
+// } from '@mui/material';
+// import { styled, useTheme } from '@mui/material/styles';
+// import {
+//   Person,
+//   Psychology,
+//   Settings,
+//   Save,
+//   Close,
+//   Add,
+//   Delete,
+//   NavigateNext,
+//   NavigateBefore,
+//   CheckCircleOutline,
+// } from '@mui/icons-material';
+// import apiService from '../../../../services/api';
+
+// // Styled Components
+// const StyledDialog = styled(Dialog)(({ theme }) => ({
+//   '& .MuiDialog-paper': {
+//     backgroundColor: '#1f1f23',
+//     border: '1px solid #2a2a2e',
+//     borderRadius: 16,
+//     maxWidth: '900px',
+//     width: '100%',
+//     maxHeight: '90vh',
+//     boxShadow: theme.shadows[8],
+//     backgroundImage: 'linear-gradient(145deg, #1a1a1a 0%, #1f1f23 100%)',
+//     backdropFilter: 'blur(20px)',
+//     position: 'relative',
+//     overflow: 'hidden',
+//     '&::before': {
+//       content: '""',
+//       position: 'absolute',
+//       top: 0,
+//       left: 0,
+//       right: 0,
+//       bottom: 0,
+//       background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.02) 100%)',
+//       pointerEvents: 'none',
+//       borderRadius: 16,
+//     },
+//     '@media (max-width: 1200px)': {
+//       maxWidth: '800px',
+//       margin: theme.spacing(2),
+//     },
+//     '@media (max-width: 960px)': {
+//       maxWidth: '700px',
+//       margin: theme.spacing(1.5),
+//       borderRadius: 12,
+//     },
+//     '@media (max-width: 600px)': {
+//       maxWidth: '95vw',
+//       margin: theme.spacing(1),
+//       borderRadius: 8,
+//       maxHeight: '95vh',
+//     },
+//     '@media (max-width: 480px)': {
+//       maxWidth: '98vw',
+//       margin: theme.spacing(0.5),
+//       borderRadius: 6,
+//     },
+//     '@media (max-width: 375px)': {
+//       maxWidth: '100vw',
+//       margin: 0,
+//       borderRadius: 0,
+//       height: '100vh',
+//       maxHeight: '100vh',
+//     },
+//   },
+// }));
+
+// const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
+//   background: 'linear-gradient(135deg, #0c0c0c 0%, #1f1f23 100%)',
+//   borderBottom: '1px solid #2a2a2e',
+//   position: 'relative',
+//   zIndex: 2,
+//   padding: theme.spacing(3),
+//   '& .MuiTypography-root': {
+//     fontWeight: 600,
+//     color: '#ffffff',
+//     fontSize: '1.5rem',
+//   },
+//   '@media (max-width: 1200px)': {
+//     padding: theme.spacing(2.5),
+//     '& .MuiTypography-root': {
+//       fontSize: '1.4rem',
+//     },
+//   },
+//   '@media (max-width: 960px)': {
+//     padding: theme.spacing(2),
+//     '& .MuiTypography-root': {
+//       fontSize: '1.3rem',
+//     },
+//   },
+//   '@media (max-width: 600px)': {
+//     padding: theme.spacing(1.5),
+//     '& .MuiTypography-root': {
+//       fontSize: '1.2rem',
+//     },
+//   },
+//   '@media (max-width: 480px)': {
+//     padding: theme.spacing(1.2),
+//     '& .MuiTypography-root': {
+//       fontSize: '1.1rem',
+//     },
+//   },
+//   '@media (max-width: 375px)': {
+//     padding: theme.spacing(1),
+//     '& .MuiTypography-root': {
+//       fontSize: '1rem',
+//     },
+//   },
+// }));
+
+// const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
+//   position: 'relative',
+//   zIndex: 2,
+//   backgroundColor: 'transparent',
+//   padding: theme.spacing(3),
+//   '@media (max-width: 1200px)': {
+//     padding: theme.spacing(2.5),
+//   },
+//   '@media (max-width: 960px)': {
+//     padding: theme.spacing(2),
+//   },
+//   '@media (max-width: 600px)': {
+//     padding: theme.spacing(1.5),
+//   },
+//   '@media (max-width: 480px)': {
+//     padding: theme.spacing(1.2),
+//   },
+//   '@media (max-width: 375px)': {
+//     padding: theme.spacing(1),
+//   },
+// }));
+
+// const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
+//   background: 'linear-gradient(135deg, #1f1f23 0%, #0c0c0c 100%)',
+//   borderTop: '1px solid #2a2a2e',
+//   padding: theme.spacing(2, 3),
+//   position: 'relative',
+//   zIndex: 2,
+//   '@media (max-width: 1200px)': {
+//     padding: theme.spacing(2, 2.5),
+//   },
+//   '@media (max-width: 960px)': {
+//     padding: theme.spacing(1.5, 2),
+//   },
+//   '@media (max-width: 600px)': {
+//     padding: theme.spacing(1.2, 1.5),
+//     flexDirection: 'column',
+//     gap: theme.spacing(1),
+//   },
+//   '@media (max-width: 480px)': {
+//     padding: theme.spacing(1, 1.2),
+//   },
+//   '@media (max-width: 375px)': {
+//     padding: theme.spacing(0.8, 1),
+//   },
+// }));
+
+// const StyledStepper = styled(Stepper)(({ theme }) => ({
+//   backgroundColor: 'transparent',
+//   padding: theme.spacing(2, 0, 3, 0),
+//   '& .MuiStepLabel-label': {
+//     color: '#a0a0a0',
+//     fontWeight: 500,
+//     fontSize: '0.95rem',
+//     '&.Mui-active': {
+//       color: '#6366f1',
+//       fontWeight: 600,
+//     },
+//     '&.Mui-completed': {
+//       color: '#ffffff',
+//       fontWeight: 500,
+//     },
+//   },
+//   '& .MuiStepIcon-root': {
+//     color: '#0c0c0c',
+//     border: '2px solid #2a2a2e',
+//     borderRadius: '50%',
+//     fontSize: '1.5rem',
+//     '&.Mui-active': {
+//       color: '#6366f1',
+//       borderColor: '#6366f1',
+//     },
+//     '&.Mui-completed': {
+//       color: '#6366f1',
+//       borderColor: '#6366f1',
+//     },
+//   },
+//   '@media (max-width: 1200px)': {
+//     padding: theme.spacing(1.5, 0, 2.5, 0),
+//     '& .MuiStepLabel-label': {
+//       fontSize: '0.9rem',
+//     },
+//     '& .MuiStepIcon-root': {
+//       fontSize: '1.4rem',
+//     },
+//   },
+//   '@media (max-width: 960px)': {
+//     padding: theme.spacing(1.2, 0, 2, 0),
+//     '& .MuiStepLabel-label': {
+//       fontSize: '0.85rem',
+//     },
+//     '& .MuiStepIcon-root': {
+//       fontSize: '1.3rem',
+//     },
+//   },
+//   '@media (max-width: 600px)': {
+//     padding: theme.spacing(1, 0, 1.5, 0),
+//     '& .MuiStepLabel-label': {
+//       fontSize: '0.8rem',
+//     },
+//     '& .MuiStepIcon-root': {
+//       fontSize: '1.2rem',
+//     },
+//   },
+//   '@media (max-width: 480px)': {
+//     '& .MuiStepLabel-label': {
+//       fontSize: '0.75rem',
+//     },
+//     '& .MuiStepIcon-root': {
+//       fontSize: '1.1rem',
+//     },
+//   },
+//   '@media (max-width: 375px)': {
+//     '& .MuiStepLabel-label': {
+//       fontSize: '0.7rem',
+//     },
+//     '& .MuiStepIcon-root': {
+//       fontSize: '1rem',
+//     },
+//   },
+// }));
+
+// const StepContent = styled(Box)(({ theme }) => ({
+//   minHeight: '400px',
+//   padding: theme.spacing(2, 0),
+//   '@media (max-width: 1200px)': {
+//     minHeight: '380px',
+//     padding: theme.spacing(1.8, 0),
+//   },
+//   '@media (max-width: 960px)': {
+//     minHeight: '350px',
+//     padding: theme.spacing(1.5, 0),
+//   },
+//   '@media (max-width: 600px)': {
+//     minHeight: '300px',
+//     padding: theme.spacing(1.2, 0),
+//   },
+//   '@media (max-width: 480px)': {
+//     minHeight: '250px',
+//     padding: theme.spacing(1, 0),
+//   },
+//   '@media (max-width: 375px)': {
+//     minHeight: '200px',
+//     padding: theme.spacing(0.8, 0),
+//   },
+// }));
+
+// const FormSection = styled(Box)(({ theme }) => ({
+//   marginBottom: theme.spacing(3),
+//   '& .MuiTextField-root': {
+//     '& .MuiOutlinedInput-root': {
+//       backgroundColor: '#0c0c0c',
+//       transition: 'all 0.2s ease',
+//       '& fieldset': {
+//         borderColor: '#2a2a2e',
+//       },
+//       '&:hover': {
+//         backgroundColor: '#28282c',
+//         '& fieldset': {
+//           borderColor: '#6366f1',
+//         },
+//       },
+//       '&.Mui-focused': {
+//         backgroundColor: '#28282c',
+//         '& fieldset': {
+//           borderColor: '#6366f1',
+//           borderWidth: 2,
+//         },
+//       },
+//     },
+//     '& .MuiInputLabel-root': {
+//       fontSize: '1rem',
+//     },
+//     '& .MuiOutlinedInput-input': {
+//       fontSize: '0.95rem',
+//     },
+//   },
+//   '& .MuiFormControl-root': {
+//     '& .MuiOutlinedInput-root': {
+//       backgroundColor: '#0c0c0c',
+//       transition: 'all 0.2s ease',
+//       '& fieldset': {
+//         borderColor: '#2a2a2e',
+//       },
+//       '&:hover': {
+//         backgroundColor: '#28282c',
+//         '& fieldset': {
+//           borderColor: '#6366f1',
+//         },
+//       },
+//       '&.Mui-focused': {
+//         backgroundColor: '#28282c',
+//         '& fieldset': {
+//           borderColor: '#6366f1',
+//           borderWidth: 2,
+//         },
+//       },
+//     },
+//   },
+//   '@media (max-width: 1200px)': {
+//     marginBottom: theme.spacing(2.5),
+//     '& .MuiTextField-root': {
+//       '& .MuiInputLabel-root': {
+//         fontSize: '0.95rem',
+//       },
+//       '& .MuiOutlinedInput-input': {
+//         fontSize: '0.9rem',
+//       },
+//     },
+//   },
+//   '@media (max-width: 960px)': {
+//     marginBottom: theme.spacing(2.2),
+//     '& .MuiTextField-root': {
+//       '& .MuiInputLabel-root': {
+//         fontSize: '0.9rem',
+//       },
+//       '& .MuiOutlinedInput-input': {
+//         fontSize: '0.85rem',
+//       },
+//     },
+//   },
+//   '@media (max-width: 600px)': {
+//     marginBottom: theme.spacing(2),
+//     '& .MuiTextField-root': {
+//       '& .MuiInputLabel-root': {
+//         fontSize: '0.85rem',
+//       },
+//       '& .MuiOutlinedInput-input': {
+//         fontSize: '0.8rem',
+//       },
+//     },
+//   },
+//   '@media (max-width: 480px)': {
+//     marginBottom: theme.spacing(1.8),
+//     '& .MuiTextField-root': {
+//       '& .MuiInputLabel-root': {
+//         fontSize: '0.8rem',
+//       },
+//       '& .MuiOutlinedInput-input': {
+//         fontSize: '0.75rem',
+//       },
+//     },
+//   },
+//   '@media (max-width: 375px)': {
+//     marginBottom: theme.spacing(1.5),
+//     '& .MuiTextField-root': {
+//       '& .MuiInputLabel-root': {
+//         fontSize: '0.75rem',
+//       },
+//       '& .MuiOutlinedInput-input': {
+//         fontSize: '0.7rem',
+//       },
+//     },
+//   },
+// }));
+
+// const SectionHeader = styled(Box)(({ theme }) => ({
+//   display: 'flex',
+//   alignItems: 'center',
+//   marginBottom: theme.spacing(3),
+//   padding: theme.spacing(2),
+//   background: 'linear-gradient(135deg, #0c0c0c 0%, rgba(99, 102, 241, 0.05) 100%)',
+//   borderRadius: 12,
+//   border: '1px solid #2a2a2e',
+//   '& .MuiSvgIcon-root': {
+//     marginRight: theme.spacing(1),
+//     color: '#6366f1',
+//     fontSize: '1.5rem',
+//   },
+//   '& .MuiTypography-root': {
+//     fontWeight: 600,
+//     color: '#ffffff',
+//     fontSize: '1.2rem',
+//   },
+//   '@media (max-width: 1200px)': {
+//     marginBottom: theme.spacing(2.5),
+//     padding: theme.spacing(1.8),
+//     '& .MuiSvgIcon-root': {
+//       fontSize: '1.4rem',
+//     },
+//     '& .MuiTypography-root': {
+//       fontSize: '1.15rem',
+//     },
+//   },
+//   '@media (max-width: 960px)': {
+//     marginBottom: theme.spacing(2.2),
+//     padding: theme.spacing(1.5),
+//     borderRadius: 10,
+//     '& .MuiSvgIcon-root': {
+//       fontSize: '1.3rem',
+//     },
+//     '& .MuiTypography-root': {
+//       fontSize: '1.1rem',
+//     },
+//   },
+//   '@media (max-width: 600px)': {
+//     marginBottom: theme.spacing(2),
+//     padding: theme.spacing(1.2),
+//     borderRadius: 8,
+//     '& .MuiSvgIcon-root': {
+//       fontSize: '1.2rem',
+//     },
+//     '& .MuiTypography-root': {
+//       fontSize: '1rem',
+//     },
+//   },
+//   '@media (max-width: 480px)': {
+//     marginBottom: theme.spacing(1.8),
+//     padding: theme.spacing(1),
+//     '& .MuiSvgIcon-root': {
+//       fontSize: '1.1rem',
+//     },
+//     '& .MuiTypography-root': {
+//       fontSize: '0.95rem',
+//     },
+//   },
+//   '@media (max-width: 375px)': {
+//     marginBottom: theme.spacing(1.5),
+//     padding: theme.spacing(0.8),
+//     borderRadius: 6,
+//     '& .MuiSvgIcon-root': {
+//       fontSize: '1rem',
+//       marginRight: theme.spacing(0.5),
+//     },
+//     '& .MuiTypography-root': {
+//       fontSize: '0.9rem',
+//     },
+//   },
+// }));
+
+// const ChipContainer = styled(Box)(({ theme }) => ({
+//   display: 'flex',
+//   flexWrap: 'wrap',
+//   gap: theme.spacing(1),
+//   marginTop: theme.spacing(1),
+//   '& .MuiChip-root': {
+//     backgroundColor: '#0c0c0c',
+//     borderColor: '#2a2a2e',
+//     color: '#ffffff',
+//     transition: 'all 0.2s ease',
+//     fontSize: '0.85rem',
+//     '&:hover': {
+//       backgroundColor: '#28282c',
+//       borderColor: '#6366f1',
+//     },
+//     '&.MuiChip-colorSuccess': {
+//       backgroundColor: 'rgba(76, 175, 80, 0.1)',
+//       borderColor: 'rgba(76, 175, 80, 0.3)',
+//       color: '#81c784',
+//     },
+//     '&.MuiChip-colorError': {
+//       backgroundColor: 'rgba(244, 67, 54, 0.1)',
+//       borderColor: 'rgba(244, 67, 54, 0.3)',
+//       color: '#e57373',
+//     },
+//     '&.MuiChip-colorInfo': {
+//       backgroundColor: 'rgba(33, 150, 243, 0.1)',
+//       borderColor: 'rgba(33, 150, 243, 0.3)',
+//       color: '#64b5f6',
+//     },
+//   },
+//   '@media (max-width: 1200px)': {
+//     gap: theme.spacing(0.8),
+//     '& .MuiChip-root': {
+//       fontSize: '0.8rem',
+//     },
+//   },
+//   '@media (max-width: 960px)': {
+//     gap: theme.spacing(0.7),
+//     '& .MuiChip-root': {
+//       fontSize: '0.75rem',
+//     },
+//   },
+//   '@media (max-width: 600px)': {
+//     gap: theme.spacing(0.6),
+//     '& .MuiChip-root': {
+//       fontSize: '0.7rem',
+//       height: '28px',
+//     },
+//   },
+//   '@media (max-width: 480px)': {
+//     gap: theme.spacing(0.5),
+//     '& .MuiChip-root': {
+//       fontSize: '0.65rem',
+//       height: '26px',
+//     },
+//   },
+//   '@media (max-width: 375px)': {
+//     gap: theme.spacing(0.4),
+//     '& .MuiChip-root': {
+//       fontSize: '0.6rem',
+//       height: '24px',
+//     },
+//   },
+// }));
+
+// const TraitCard = styled(Card)(({ theme }) => ({
+//   backgroundColor: 'rgba(99, 102, 241, 0.05)',
+//   border: '1px solid #2a2a2e',
+//   borderRadius: 12,
+//   transition: 'all 0.2s ease',
+//   '&:hover': {
+//     borderColor: '#6366f1',
+//     backgroundColor: 'rgba(99, 102, 241, 0.08)',
+//   },
+//   '@media (max-width: 960px)': {
+//     borderRadius: 10,
+//   },
+//   '@media (max-width: 600px)': {
+//     borderRadius: 8,
+//   },
+//   '@media (max-width: 375px)': {
+//     borderRadius: 6,
+//   },
+// }));
+
+// const SwitchRow = styled(Box)(({ theme }) => ({
+//   display: 'flex',
+//   justifyContent: 'space-between',
+//   alignItems: 'center',
+//   padding: theme.spacing(1.5, 0),
+//   borderBottom: '1px solid #2a2a2e',
+//   '&:last-child': {
+//     borderBottom: 'none',
+//   },
+//   '& .MuiTypography-root': {
+//     fontWeight: 500,
+//     color: '#ffffff',
+//     fontSize: '0.95rem',
+//   },
+//   '& .MuiSwitch-root': {
+//     '& .MuiSwitch-switchBase.Mui-checked': {
+//       color: '#6366f1',
+//       '& + .MuiSwitch-track': {
+//         backgroundColor: '#6366f1',
+//         opacity: 0.5,
+//       },
+//     },
+//   },
+//   '@media (max-width: 1200px)': {
+//     padding: theme.spacing(1.3, 0),
+//     '& .MuiTypography-root': {
+//       fontSize: '0.9rem',
+//     },
+//   },
+//   '@media (max-width: 960px)': {
+//     padding: theme.spacing(1.2, 0),
+//     '& .MuiTypography-root': {
+//       fontSize: '0.85rem',
+//     },
+//   },
+//   '@media (max-width: 600px)': {
+//     padding: theme.spacing(1, 0),
+//     '& .MuiTypography-root': {
+//       fontSize: '0.8rem',
+//     },
+//     '& .MuiSwitch-root': {
+//       transform: 'scale(0.9)',
+//     },
+//   },
+//   '@media (max-width: 480px)': {
+//     padding: theme.spacing(0.8, 0),
+//     '& .MuiTypography-root': {
+//       fontSize: '0.75rem',
+//     },
+//     '& .MuiSwitch-root': {
+//       transform: 'scale(0.85)',
+//     },
+//   },
+//   '@media (max-width: 375px)': {
+//     padding: theme.spacing(0.6, 0),
+//     '& .MuiTypography-root': {
+//       fontSize: '0.7rem',
+//     },
+//     '& .MuiSwitch-root': {
+//       transform: 'scale(0.8)',
+//     },
+//   },
+// }));
+
+// const AddButton = styled(Button)(({ theme }) => ({
+//   borderColor: '#2a2a2e',
+//   color: '#a0a0a0',
+//   backgroundColor: 'transparent',
+//   borderRadius: 8,
+//   textTransform: 'none',
+//   fontWeight: 500,
+//   transition: 'all 0.2s ease',
+//   minWidth: '80px',
+//   fontSize: '0.85rem',
+//   '&:hover': {
+//     borderColor: '#6366f1',
+//     backgroundColor: 'rgba(99, 102, 241, 0.08)',
+//     color: '#6366f1',
+//   },
+//   '@media (max-width: 1200px)': {
+//     minWidth: '75px',
+//     fontSize: '0.8rem',
+//   },
+//   '@media (max-width: 960px)': {
+//     minWidth: '70px',
+//     fontSize: '0.75rem',
+//     borderRadius: 6,
+//   },
+//   '@media (max-width: 600px)': {
+//     minWidth: '65px',
+//     fontSize: '0.7rem',
+//     padding: theme.spacing(0.5, 1),
+//   },
+//   '@media (max-width: 480px)': {
+//     minWidth: '60px',
+//     fontSize: '0.65rem',
+//     padding: theme.spacing(0.4, 0.8),
+//   },
+//   '@media (max-width: 375px)': {
+//     minWidth: '55px',
+//     fontSize: '0.6rem',
+//     padding: theme.spacing(0.3, 0.6),
+//     borderRadius: 4,
+//   },
+// }));
+
+// const ActionButton = styled(Button)(({ theme }) => ({
+//   borderRadius: 10,
+//   textTransform: 'none',
+//   fontWeight: 600,
+//   padding: theme.spacing(1.5, 3),
+//   transition: 'all 0.2s ease',
+//   position: 'relative',
+//   overflow: 'hidden',
+//   fontSize: '0.9rem',
+//   minWidth: '120px',
+//   '&.MuiButton-contained': {
+//     background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+//     boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+//     '&:hover': {
+//       background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
+//       transform: 'translateY(-1px)',
+//       boxShadow: '0 6px 16px rgba(99, 102, 241, 0.4)',
+//     },
+//     '&:disabled': {
+//       background: '#666666',
+//       color: '#a0a0a0',
+//       boxShadow: 'none',
+//     },
+//   },
+//   '&.MuiButton-outlined': {
+//     borderColor: '#2a2a2e',
+//     color: '#ffffff',
+//     backgroundColor: 'transparent',
+//     '&:hover': {
+//       borderColor: '#6366f1',
+//       backgroundColor: 'rgba(99, 102, 241, 0.08)',
+//       color: '#6366f1',
+//     },
+//   },
+//   '@media (max-width: 1200px)': {
+//     padding: theme.spacing(1.3, 2.5),
+//     fontSize: '0.85rem',
+//     minWidth: '110px',
+//   },
+//   '@media (max-width: 960px)': {
+//     padding: theme.spacing(1.2, 2.2),
+//     fontSize: '0.8rem',
+//     minWidth: '100px',
+//     borderRadius: 8,
+//   },
+//   '@media (max-width: 600px)': {
+//     padding: theme.spacing(1, 2),
+//     fontSize: '0.75rem',
+//     minWidth: '90px',
+//     width: '100%',
+//     margin: theme.spacing(0.5, 0),
+//   },
+//   '@media (max-width: 480px)': {
+//     padding: theme.spacing(0.8, 1.5),
+//     fontSize: '0.7rem',
+//     minWidth: '80px',
+//     borderRadius: 6,
+//   },
+//   '@media (max-width: 375px)': {
+//     padding: theme.spacing(0.6, 1.2),
+//     fontSize: '0.65rem',
+//     minWidth: '70px',
+//     borderRadius: 4,
+//   },
+// }));
+
+// const LoadingOverlay = styled(Box)(({ theme }) => ({
+//   display: 'flex',
+//   justifyContent: 'center',
+//   alignItems: 'center',
+//   padding: theme.spacing(4),
+//   backgroundColor: 'rgba(31, 31, 35, 0.9)',
+//   borderRadius: 12,
+//   backdropFilter: 'blur(10px)',
+//   '@media (max-width: 960px)': {
+//     padding: theme.spacing(3),
+//     borderRadius: 10,
+//   },
+//   '@media (max-width: 600px)': {
+//     padding: theme.spacing(2.5),
+//     borderRadius: 8,
+//   },
+//   '@media (max-width: 375px)': {
+//     padding: theme.spacing(2),
+//     borderRadius: 6,
+//   },
+// }));
+
+// // Grid system for responsive layouts
+// const ResponsiveGrid = styled(Box)(({ theme }) => ({
+//   display: 'grid',
+//   gap: theme.spacing(2),
+//   gridTemplateColumns: 'repeat(3, 1fr)',
+//   '@media (max-width: 1200px)': {
+//     gap: theme.spacing(1.8),
+//   },
+//   '@media (max-width: 960px)': {
+//     gap: theme.spacing(1.5),
+//     gridTemplateColumns: 'repeat(2, 1fr)',
+//   },
+//   '@media (max-width: 600px)': {
+//     gap: theme.spacing(1.2),
+//     gridTemplateColumns: '1fr',
+//   },
+//   '@media (max-width: 480px)': {
+//     gap: theme.spacing(1),
+//   },
+//   '@media (max-width: 375px)': {
+//     gap: theme.spacing(0.8),
+//   },
+// }));
+
+// const ResponsiveGrid2Col = styled(Box)(({ theme }) => ({
+//   display: 'grid',
+//   gap: theme.spacing(2),
+//   gridTemplateColumns: 'repeat(2, 1fr)',
+//   '@media (max-width: 1200px)': {
+//     gap: theme.spacing(1.8),
+//   },
+//   '@media (max-width: 960px)': {
+//     gap: theme.spacing(1.5),
+//   },
+//   '@media (max-width: 600px)': {
+//     gap: theme.spacing(1.2),
+//     gridTemplateColumns: '1fr',
+//   },
+//   '@media (max-width: 480px)': {
+//     gap: theme.spacing(1),
+//   },
+//   '@media (max-width: 375px)': {
+//     gap: theme.spacing(0.8),
+//   },
+// }));
+
+// // Main Component
+// const steps = ['Basic Info', 'Personality', 'Advanced Settings'];
+
+// const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
+//   const theme = useTheme();
+//   const [activeStep, setActiveStep] = useState(0);
+//   const [loading, setLoading] = useState(false);
+//   const [formOptions, setFormOptions] = useState(null);
+//   const [error, setError] = useState(null);
+//   const [success, setSuccess] = useState(false);
+  
+//   // Form state
+//   const [characterData, setCharacterData] = useState({
+//     name: '',
+//     description: '',
+//     img: '',
+//     age_range: '',
+//     setting: '',
+//     profession: '',
+//     cultural_background: '',
+//     known_for: [],
+//     speaking_style: '',
+//     common_phrases: '',
+//     response_length: '',
+//     communication_quirks: [],
+//     excited_about: [],
+//     frustrated_by: [],
+//     deep_values: '',
+//     good_at: [],
+//     not_good_at: [],
+//     love_discussing: '',
+//     avoid_discussing: '',
+//     personality_optimistic: false,
+//     personality_patient: false,
+//     personality_serious: false,
+//     personality_introverted: false,
+//     character_flaws: [],
+//     unique_trait: '',
+//     disagreement_style: '',
+//     emotional_triggers: '',
+//     help_style: '',
+//     safety_level: '',
+//     content_tone: '',
+//     restricted_topics: '',
+//     knowledge_entries: [],
+//   });
+
+//   // Temporary input states for array fields
+//   const [newKnownFor, setNewKnownFor] = useState('');
+//   const [newGoodAt, setNewGoodAt] = useState('');
+//   const [newNotGoodAt, setNewNotGoodAt] = useState('');
+//   const [newKnowledgeEntry, setNewKnowledgeEntry] = useState('');
+
+//   useEffect(() => {
+//     if (open) {
+//       loadFormOptions();
+//     }
+//   }, [open]);
+
+//   const loadFormOptions = async () => {
+//     try {
+//       setLoading(true);
+//       const options = await apiService.getCharacterFormOptions();
+//       setFormOptions(options);
+//     } catch (err) {
+//       setError('Failed to load form options: ' + err.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleInputChange = (field, value) => {
+//     setCharacterData(prev => ({
+//       ...prev,
+//       [field]: value
+//     }));
+//   };
+
+//   const addToArray = (field, value, clearInput) => {
+//     if (value.trim()) {
+//       handleInputChange(field, [...characterData[field], value.trim()]);
+//       clearInput('');
+//     }
+//   };
+
+//   const removeFromArray = (field, index) => {
+//     const newArray = characterData[field].filter((_, i) => i !== index);
+//     handleInputChange(field, newArray);
+//   };
+
+//   const handleNext = () => {
+//     setActiveStep(prev => prev + 1);
+//   };
+
+//   const handleBack = () => {
+//     setActiveStep(prev => prev - 1);
+//   };
+
+//   const handleSubmit = async () => {
+//     try {
+//       setLoading(true);
+//       setError(null);
+      
+//       // Filter out empty fields
+//       const cleanedData = Object.fromEntries(
+//         Object.entries(characterData).filter(([key, value]) => {
+//           if (Array.isArray(value)) return value.length > 0;
+//           if (typeof value === 'string') return value.trim() !== '';
+//           return value !== null && value !== undefined;
+//         })
+//       );
+
+//       const result = await apiService.createCharacter(cleanedData);
+      
+//       setSuccess(true);
+//       setTimeout(() => {
+//         onCharacterCreated?.(result.character);
+//         handleClose();
+//       }, 2000);
+      
+//     } catch (err) {
+//       setError('Failed to create character: ' + err.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleClose = () => {
+//     setActiveStep(0);
+//     setError(null);
+//     setSuccess(false);
+//     setCharacterData({
+//       name: '',
+//       description: '',
+//       img: '',
+//       age_range: '',
+//       setting: '',
+//       profession: '',
+//       cultural_background: '',
+//       known_for: [],
+//       speaking_style: '',
+//       common_phrases: '',
+//       response_length: '',
+//       communication_quirks: [],
+//       excited_about: [],
+//       frustrated_by: [],
+//       deep_values: '',
+//       good_at: [],
+//       not_good_at: [],
+//       love_discussing: '',
+//       avoid_discussing: '',
+//       personality_optimistic: false,
+//       personality_patient: false,
+//       personality_serious: false,
+//       personality_introverted: false,
+//       character_flaws: [],
+//       unique_trait: '',
+//       disagreement_style: '',
+//       emotional_triggers: '',
+//       help_style: '',
+//       safety_level: '',
+//       content_tone: '',
+//       restricted_topics: '',
+//       knowledge_entries: [],
+//     });
+//     onClose();
+//   };
+
+//   const renderBasicInfo = () => (
+//     <Fade in={activeStep === 0} timeout={300}>
+//       <Box>
+//         <SectionHeader>
+//           <Person />
+//           <Typography variant="h6">Character Basic Information</Typography>
+//         </SectionHeader>
+        
+//         <FormSection>
+//           <TextField
+//             fullWidth
+//             label="Character Name *"
+//             value={characterData.name}
+//             onChange={(e) => handleInputChange('name', e.target.value)}
+//             margin="normal"
+//             required
+//             variant="outlined"
+//           />
+          
+//           <TextField
+//             fullWidth
+//             label="Description *"
+//             value={characterData.description}
+//             onChange={(e) => handleInputChange('description', e.target.value)}
+//             margin="normal"
+//             multiline
+//             rows={3}
+//             required
+//             placeholder="Describe your character's background and role..."
+//             variant="outlined"
+//           />
+          
+//           <TextField
+//             fullWidth
+//             label="Image URL"
+//             value={characterData.img}
+//             onChange={(e) => handleInputChange('img', e.target.value)}
+//             margin="normal"
+//             placeholder="https://example.com/character-image.jpg"
+//             variant="outlined"
+//           />
+//         </FormSection>
+
+//         <FormSection>
+//           <ResponsiveGrid2Col>
+//             <FormControl fullWidth margin="normal" variant="outlined">
+//               <InputLabel>Age Range</InputLabel>
+//               <Select
+//                 value={characterData.age_range}
+//                 onChange={(e) => handleInputChange('age_range', e.target.value)}
+//                 label="Age Range"
+//               >
+//                 {formOptions?.age_ranges?.map((age) => (
+//                   <MenuItem key={age} value={age}>{age}</MenuItem>
+//                 ))}
+//               </Select>
+//             </FormControl>
+
+//             <FormControl fullWidth margin="normal" variant="outlined">
+//               <InputLabel>Setting</InputLabel>
+//               <Select
+//                 value={characterData.setting}
+//                 onChange={(e) => handleInputChange('setting', e.target.value)}
+//                 label="Setting"
+//               >
+//                 {formOptions?.settings?.map((setting) => (
+//                   <MenuItem key={setting} value={setting}>{setting}</MenuItem>
+//                 ))}
+//               </Select>
+//             </FormControl>
+//           </ResponsiveGrid2Col>
+
+//           <ResponsiveGrid2Col>
+//             <TextField
+//               fullWidth
+//               label="Profession"
+//               value={characterData.profession}
+//               onChange={(e) => handleInputChange('profession', e.target.value)}
+//               margin="normal"
+//               variant="outlined"
+//             />
+
+//             <TextField
+//               fullWidth
+//               label="Cultural Background"
+//               value={characterData.cultural_background}
+//               onChange={(e) => handleInputChange('cultural_background', e.target.value)}
+//               margin="normal"
+//               variant="outlined"
+//             />
+//           </ResponsiveGrid2Col>
+//         </FormSection>
+
+//         <FormSection>
+//           <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
+//             Known For
+//           </Typography>
+//           <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
+//             <TextField
+//               fullWidth
+//               size="small"
+//               value={newKnownFor}
+//               onChange={(e) => setNewKnownFor(e.target.value)}
+//               placeholder="Add what they're known for..."
+//               variant="outlined"
+//               onKeyPress={(e) => {
+//                 if (e.key === 'Enter') {
+//                   addToArray('known_for', newKnownFor, setNewKnownFor);
+//                 }
+//               }}
+//             />
+//             <AddButton
+//               variant="outlined"
+//               size="small"
+//               onClick={() => addToArray('known_for', newKnownFor, setNewKnownFor)}
+//               startIcon={<Add />}
+//             >
+//               Add
+//             </AddButton>
+//           </Box>
+//           <ChipContainer>
+//             {characterData.known_for.map((item, index) => (
+//               <Chip
+//                 key={index}
+//                 label={item}
+//                 variant="outlined"
+//                 onDelete={() => removeFromArray('known_for', index)}
+//                 deleteIcon={<Delete />}
+//               />
+//             ))}
+//           </ChipContainer>
+//         </FormSection>
+//       </Box>
+//     </Fade>
+//   );
+
+//   const renderPersonality = () => (
+//     <Fade in={activeStep === 1} timeout={300}>
+//       <Box>
+//         <SectionHeader>
+//           <Psychology />
+//           <Typography variant="h6">Personality & Communication</Typography>
+//         </SectionHeader>
+
+//         <FormSection>
+//           <ResponsiveGrid>
+//             <FormControl fullWidth margin="normal" variant="outlined">
+//               <InputLabel>Speaking Style</InputLabel>
+//               <Select
+//                 value={characterData.speaking_style}
+//                 onChange={(e) => handleInputChange('speaking_style', e.target.value)}
+//                 label="Speaking Style"
+//               >
+//                 {formOptions?.speaking_styles?.map((style) => (
+//                   <MenuItem key={style.key} value={style.key}>
+//                     {style.label}
+//                   </MenuItem>
+//                 ))}
+//               </Select>
+//             </FormControl>
+
+//             <FormControl fullWidth margin="normal" variant="outlined">
+//               <InputLabel>Response Length</InputLabel>
+//               <Select
+//                 value={characterData.response_length}
+//                 onChange={(e) => handleInputChange('response_length', e.target.value)}
+//                 label="Response Length"
+//               >
+//                 {formOptions?.response_lengths?.map((length) => (
+//                   <MenuItem key={length.key} value={length.key}>
+//                     {length.label}
+//                   </MenuItem>
+//                 ))}
+//               </Select>
+//             </FormControl>
+
+//             <FormControl fullWidth margin="normal" variant="outlined">
+//               <InputLabel>Help Style</InputLabel>
+//               <Select
+//                 value={characterData.help_style}
+//                 onChange={(e) => handleInputChange('help_style', e.target.value)}
+//                 label="Help Style"
+//               >
+//                 {formOptions?.help_styles?.map((style) => (
+//                   <MenuItem key={style.key} value={style.key}>
+//                     {style.label}
+//                   </MenuItem>
+//                 ))}
+//               </Select>
+//             </FormControl>
+//           </ResponsiveGrid>
+//         </FormSection>
+
+//         <FormSection>
+//           <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary', mb: 2 }}>
+//             Personality Traits
+//           </Typography>
+//           <TraitCard variant="outlined">
+//             <CardContent>
+//               <SwitchRow>
+//                 <Typography>Optimistic</Typography>
+//                 <Switch
+//                   checked={characterData.personality_optimistic}
+//                   onChange={(e) => handleInputChange('personality_optimistic', e.target.checked)}
+//                 />
+//               </SwitchRow>
+//               <SwitchRow>
+//                 <Typography>Patient</Typography>
+//                 <Switch
+//                   checked={characterData.personality_patient}
+//                   onChange={(e) => handleInputChange('personality_patient', e.target.checked)}
+//                 />
+//               </SwitchRow>
+//               <SwitchRow>
+//                 <Typography>Serious</Typography>
+//                 <Switch
+//                   checked={characterData.personality_serious}
+//                   onChange={(e) => handleInputChange('personality_serious', e.target.checked)}
+//                 />
+//               </SwitchRow>
+//               <SwitchRow>
+//                 <Typography>Introverted</Typography>
+//                 <Switch
+//                   checked={characterData.personality_introverted}
+//                   onChange={(e) => handleInputChange('personality_introverted', e.target.checked)}
+//                 />
+//               </SwitchRow>
+//             </CardContent>
+//           </TraitCard>
+//         </FormSection>
+
+//         <FormSection>
+//           <ResponsiveGrid2Col>
+//             <Box>
+//               <Autocomplete
+//                 multiple
+//                 freeSolo
+//                 options={formOptions?.excitement_topics || []}
+//                 value={characterData.excited_about}
+//                 onChange={(_, value) => handleInputChange('excited_about', value)}
+//                 renderTags={(value, getTagProps) =>
+//                   value.map((option, index) => (
+//                     <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+//                   ))
+//                 }
+//                 renderInput={(params) => (
+//                   <TextField
+//                     {...params}
+//                     label="Excited About"
+//                     placeholder="Topics that excite them..."
+//                     margin="normal"
+//                     variant="outlined"
+//                   />
+//                 )}
+//               />
+//             </Box>
+
+//             <Box>
+//               <Autocomplete
+//                 multiple
+//                 freeSolo
+//                 options={formOptions?.frustration_topics || []}
+//                 value={characterData.frustrated_by}
+//                 onChange={(_, value) => handleInputChange('frustrated_by', value)}
+//                 renderTags={(value, getTagProps) =>
+//                   value.map((option, index) => (
+//                     <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+//                   ))
+//                 }
+//                 renderInput={(params) => (
+//                   <TextField
+//                     {...params}
+//                     label="Frustrated By"
+//                     placeholder="Things that frustrate them..."
+//                     margin="normal"
+//                     variant="outlined"
+//                   />
+//                 )}
+//               />
+//             </Box>
+//           </ResponsiveGrid2Col>
+//         </FormSection>
+//       </Box>
+//     </Fade>
+//   );
+
+//   const renderAdvancedSettings = () => (
+//     <Fade in={activeStep === 2} timeout={300}>
+//       <Box>
+//         <SectionHeader>
+//           <Settings />
+//           <Typography variant="h6">Advanced Character Settings</Typography>
+//         </SectionHeader>
+
+//         <FormSection>
+//           <ResponsiveGrid>
+//             <TextField
+//               fullWidth
+//               label="Unique Trait"
+//               value={characterData.unique_trait}
+//               onChange={(e) => handleInputChange('unique_trait', e.target.value)}
+//               margin="normal"
+//               placeholder="What makes this character special?"
+//               variant="outlined"
+//             />
+
+//             <FormControl fullWidth margin="normal" variant="outlined">
+//               <InputLabel>Disagreement Style</InputLabel>
+//               <Select
+//                 value={characterData.disagreement_style}
+//                 onChange={(e) => handleInputChange('disagreement_style', e.target.value)}
+//                 label="Disagreement Style"
+//               >
+//                 {formOptions?.disagreement_styles?.map((style) => (
+//                   <MenuItem key={style.key} value={style.key}>
+//                     {style.label}
+//                   </MenuItem>
+//                 ))}
+//               </Select>
+//             </FormControl>
+
+//             <FormControl fullWidth margin="normal" variant="outlined">
+//               <InputLabel>Safety Level</InputLabel>
+//               <Select
+//                 value={characterData.safety_level}
+//                 onChange={(e) => handleInputChange('safety_level', e.target.value)}
+//                 label="Safety Level"
+//               >
+//                 {formOptions?.safety_levels?.map((level) => (
+//                   <MenuItem key={level.key} value={level.key}>
+//                     {level.label}
+//                   </MenuItem>
+//                 ))}
+//               </Select>
+//             </FormControl>
+//           </ResponsiveGrid>
+//         </FormSection>
+
+//         <FormSection>
+//           <ResponsiveGrid2Col sx={{ gap: 3 }}>
+//             <Box>
+//               <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
+//                 Strengths
+//               </Typography>
+//               <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
+//                 <TextField
+//                   fullWidth
+//                   size="small"
+//                   value={newGoodAt}
+//                   onChange={(e) => setNewGoodAt(e.target.value)}
+//                   placeholder="What are they good at?"
+//                   variant="outlined"
+//                   onKeyPress={(e) => {
+//                     if (e.key === 'Enter') {
+//                       addToArray('good_at', newGoodAt, setNewGoodAt);
+//                     }
+//                   }}
+//                 />
+//                 <AddButton
+//                   variant="outlined"
+//                   size="small"
+//                   onClick={() => addToArray('good_at', newGoodAt, setNewGoodAt)}
+//                   startIcon={<Add />}
+//                 >
+//                   Add
+//                 </AddButton>
+//               </Box>
+//               <ChipContainer>
+//                 {characterData.good_at.map((item, index) => (
+//                   <Chip
+//                     key={index}
+//                     label={item}
+//                     color="success"
+//                     variant="outlined"
+//                     onDelete={() => removeFromArray('good_at', index)}
+//                     deleteIcon={<Delete />}
+//                   />
+//                 ))}
+//               </ChipContainer>
+//             </Box>
+
+//             <Box>
+//               <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
+//                 Weaknesses
+//               </Typography>
+//               <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
+//                 <TextField
+//                   fullWidth
+//                   size="small"
+//                   value={newNotGoodAt}
+//                   onChange={(e) => setNewNotGoodAt(e.target.value)}
+//                   placeholder="What are they not good at?"
+//                   variant="outlined"
+//                   onKeyPress={(e) => {
+//                     if (e.key === 'Enter') {
+//                       addToArray('not_good_at', newNotGoodAt, setNewNotGoodAt);
+//                     }
+//                   }}
+//                 />
+//                 <AddButton
+//                   variant="outlined"
+//                   size="small"
+//                   onClick={() => addToArray('not_good_at', newNotGoodAt, setNewNotGoodAt)}
+//                   startIcon={<Add />}
+//                 >
+//                   Add
+//                 </AddButton>
+//               </Box>
+//               <ChipContainer>
+//                 {characterData.not_good_at.map((item, index) => (
+//                   <Chip
+//                     key={index}
+//                     label={item}
+//                     color="error"
+//                     variant="outlined"
+//                     onDelete={() => removeFromArray('not_good_at', index)}
+//                     deleteIcon={<Delete />}
+//                   />
+//                 ))}
+//               </ChipContainer>
+//             </Box>
+//           </ResponsiveGrid2Col>
+//         </FormSection>
+
+//         <FormSection>
+//           <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
+//             Knowledge Base
+//           </Typography>
+//           <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
+//             <TextField
+//               fullWidth
+//               size="small"
+//               value={newKnowledgeEntry}
+//               onChange={(e) => setNewKnowledgeEntry(e.target.value)}
+//               placeholder="Add specialized knowledge..."
+//               variant="outlined"
+//               onKeyPress={(e) => {
+//                 if (e.key === 'Enter') {
+//                   addToArray('knowledge_entries', newKnowledgeEntry, setNewKnowledgeEntry);
+//                 }
+//               }}
+//             />
+//             <AddButton
+//               variant="outlined"
+//               size="small"
+//               onClick={() => addToArray('knowledge_entries', newKnowledgeEntry, setNewKnowledgeEntry)}
+//               startIcon={<Add />}
+//             >
+//               Add
+//             </AddButton>
+//           </Box>
+//           <ChipContainer>
+//             {characterData.knowledge_entries.map((item, index) => (
+//               <Chip
+//                 key={index}
+//                 label={item}
+//                 color="info"
+//                 variant="outlined"
+//                 onDelete={() => removeFromArray('knowledge_entries', index)}
+//                 deleteIcon={<Delete />}
+//               />
+//             ))}
+//           </ChipContainer>
+//         </FormSection>
+//       </Box>
+//     </Fade>
+//   );
+
+//   if (!formOptions && !loading) return null;
+
+//   return (
+//     <StyledDialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+//       <StyledDialogTitle>
+//         <Box display="flex" justifyContent="space-between" alignItems="center">
+//           <Typography variant="h5">Create New Character</Typography>
+//           <IconButton onClick={handleClose} color="inherit" size="large">
+//             <Close />
+//           </IconButton>
+//         </Box>
+//       </StyledDialogTitle>
+
+//       <StyledDialogContent>
+//         {loading && (
+//           <LoadingOverlay>
+//             <CircularProgress size={40} />
+//           </LoadingOverlay>
+//         )}
+
+//         {error && (
+//           <Grow in={!!error}>
+//             <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+//               {error}
+//             </Alert>
+//           </Grow>
+//         )}
+
+//         {success && (
+//           <Grow in={success}>
+//             <Alert 
+//               severity="success" 
+//               sx={{ mb: 2, borderRadius: 2 }}
+//               icon={<CheckCircleOutline />}
+//             >
+//               Character created successfully! 🎉
+//             </Alert>
+//           </Grow>
+//         )}
+
+//         {formOptions && !loading && (
+//           <>
+//             <StyledStepper activeStep={activeStep} alternativeLabel>
+//               {steps.map((label) => (
+//                 <Step key={label}>
+//                   <StepLabel>{label}</StepLabel>
+//                 </Step>
+//               ))}
+//             </StyledStepper>
+
+//             <StepContent>
+//               {activeStep === 0 && renderBasicInfo()}
+//               {activeStep === 1 && renderPersonality()}
+//               {activeStep === 2 && renderAdvancedSettings()}
+//             </StepContent>
+//           </>
+//         )}
+//       </StyledDialogContent>
+
+//       <StyledDialogActions>
+//         <Box display="flex" justifyContent="space-between" width="100%" sx={{
+//           '@media (max-width: 600px)': {
+//             flexDirection: 'column-reverse',
+//             alignItems: 'stretch',
+//           }
+//         }}>
+//           <ActionButton
+//             variant="outlined"
+//             onClick={handleBack}
+//             disabled={activeStep === 0 || loading}
+//             startIcon={<NavigateBefore />}
+//           >
+//             Back
+//           </ActionButton>
+          
+//           <Box sx={{
+//             '@media (max-width: 600px)': {
+//               width: '100%',
+//             }
+//           }}>
+//             {activeStep < steps.length - 1 ? (
+//               <ActionButton
+//                 variant="contained"
+//                 onClick={handleNext}
+//                 disabled={!characterData.name || !characterData.description || loading}
+//                 endIcon={<NavigateNext />}
+//               >
+//                 Next
+//               </ActionButton>
+//             ) : (
+//               <ActionButton
+//                 variant="contained"
+//                 onClick={handleSubmit}
+//                 disabled={!characterData.name || !characterData.description || loading}
+//                 startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Save />}
+//               >
+//                 {loading ? 'Creating...' : 'Create Character'}
+//               </ActionButton>
+//             )}
+//           </Box>
+//         </Box>
+//       </StyledDialogActions>
+//     </StyledDialog>
+//   );
+// };
+
+// export default CharacterCreationForm;
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -27,7 +1568,7 @@ import {
   Fade,
   Grow,
 } from '@mui/material';
-import { styled, useTheme } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 import {
   Person,
   Psychology,
@@ -42,765 +1583,662 @@ import {
 } from '@mui/icons-material';
 import apiService from '../../../../services/api';
 
-// Styled Components
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialog-paper': {
-    backgroundColor: '#1f1f23',
-    border: '1px solid #2a2a2e',
-    borderRadius: 16,
-    maxWidth: '900px',
-    width: '100%',
-    maxHeight: '90vh',
-    boxShadow: theme.shadows[8],
-    backgroundImage: 'linear-gradient(145deg, #1a1a1a 0%, #1f1f23 100%)',
-    backdropFilter: 'blur(20px)',
+const useStyles = makeStyles({
+  dialog: {
+    '& .MuiDialog-paper': {
+      backgroundColor: '#1f1f23',
+      border: '1px solid #2a2a2e',
+      borderRadius: '16px',
+      maxWidth: '900px',
+      width: '100%',
+      maxHeight: '90vh',
+      boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)',
+      backgroundImage: 'linear-gradient(145deg, #1a1a1a 0%, #1f1f23 100%)',
+      backdropFilter: 'blur(20px)',
+      position: 'relative',
+      overflow: 'hidden',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.02) 100%)',
+        pointerEvents: 'none',
+        borderRadius: '16px',
+      },
+      '@media (max-width: 1200px)': {
+        maxWidth: '800px',
+        margin: '16px',
+      },
+      '@media (max-width: 960px)': {
+        maxWidth: '700px',
+        margin: '12px',
+        borderRadius: '12px',
+      },
+      '@media (max-width: 600px)': {
+        maxWidth: '95vw',
+        margin: '8px',
+        borderRadius: '8px',
+        maxHeight: '95vh',
+      },
+      '@media (max-width: 480px)': {
+        maxWidth: '98vw',
+        margin: '4px',
+        borderRadius: '6px',
+      },
+      '@media (max-width: 375px)': {
+        maxWidth: '100vw',
+        margin: '0',
+        borderRadius: '0',
+        height: '100vh',
+        maxHeight: '100vh',
+      },
+    },
+  },
+  dialogTitle: {
+    background: 'linear-gradient(135deg, #0c0c0c 0%, #1f1f23 100%)',
+    borderBottom: '1px solid #2a2a2e',
     position: 'relative',
-    overflow: 'hidden',
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.02) 100%)',
-      pointerEvents: 'none',
-      borderRadius: 16,
+    zIndex: 2,
+    padding: '24px',
+    '& .MuiTypography-root': {
+      fontWeight: 600,
+      color: '#ffffff',
+      fontSize: '1.5rem',
     },
     '@media (max-width: 1200px)': {
-      maxWidth: '800px',
-      margin: theme.spacing(2),
+      padding: '20px',
+      '& .MuiTypography-root': {
+        fontSize: '1.4rem',
+      },
     },
     '@media (max-width: 960px)': {
-      maxWidth: '700px',
-      margin: theme.spacing(1.5),
-      borderRadius: 12,
+      padding: '16px',
+      '& .MuiTypography-root': {
+        fontSize: '1.3rem',
+      },
     },
     '@media (max-width: 600px)': {
-      maxWidth: '95vw',
-      margin: theme.spacing(1),
-      borderRadius: 8,
-      maxHeight: '95vh',
+      padding: '12px',
+      '& .MuiTypography-root': {
+        fontSize: '1.2rem',
+      },
     },
     '@media (max-width: 480px)': {
-      maxWidth: '98vw',
-      margin: theme.spacing(0.5),
-      borderRadius: 6,
+      padding: '9.6px',
+      '& .MuiTypography-root': {
+        fontSize: '1.1rem',
+      },
     },
     '@media (max-width: 375px)': {
-      maxWidth: '100vw',
-      margin: 0,
-      borderRadius: 0,
-      height: '100vh',
-      maxHeight: '100vh',
+      padding: '8px',
+      '& .MuiTypography-root': {
+        fontSize: '1rem',
+      },
     },
   },
-}));
-
-const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #0c0c0c 0%, #1f1f23 100%)',
-  borderBottom: '1px solid #2a2a2e',
-  position: 'relative',
-  zIndex: 2,
-  padding: theme.spacing(3),
-  '& .MuiTypography-root': {
-    fontWeight: 600,
-    color: '#ffffff',
-    fontSize: '1.5rem',
-  },
-  '@media (max-width: 1200px)': {
-    padding: theme.spacing(2.5),
-    '& .MuiTypography-root': {
-      fontSize: '1.4rem',
+  dialogContent: {
+    position: 'relative',
+    zIndex: 2,
+    backgroundColor: 'transparent',
+    padding: '24px',
+    '@media (max-width: 1200px)': {
+      padding: '20px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '16px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '12px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '9.6px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '8px',
     },
   },
-  '@media (max-width: 960px)': {
-    padding: theme.spacing(2),
-    '& .MuiTypography-root': {
-      fontSize: '1.3rem',
+  dialogActions: {
+    background: 'linear-gradient(135deg, #1f1f23 0%, #0c0c0c 100%)',
+    borderTop: '1px solid #2a2a2e',
+    padding: '16px 24px',
+    position: 'relative',
+    zIndex: 2,
+    '@media (max-width: 1200px)': {
+      padding: '16px 20px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '12px 16px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '9.6px 12px',
+      flexDirection: 'column',
+      gap: '8px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '8px 9.6px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '6.4px 8px',
     },
   },
-  '@media (max-width: 600px)': {
-    padding: theme.spacing(1.5),
-    '& .MuiTypography-root': {
-      fontSize: '1.2rem',
-    },
-  },
-  '@media (max-width: 480px)': {
-    padding: theme.spacing(1.2),
-    '& .MuiTypography-root': {
-      fontSize: '1.1rem',
-    },
-  },
-  '@media (max-width: 375px)': {
-    padding: theme.spacing(1),
-    '& .MuiTypography-root': {
-      fontSize: '1rem',
-    },
-  },
-}));
-
-const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
-  position: 'relative',
-  zIndex: 2,
-  backgroundColor: 'transparent',
-  padding: theme.spacing(3),
-  '@media (max-width: 1200px)': {
-    padding: theme.spacing(2.5),
-  },
-  '@media (max-width: 960px)': {
-    padding: theme.spacing(2),
-  },
-  '@media (max-width: 600px)': {
-    padding: theme.spacing(1.5),
-  },
-  '@media (max-width: 480px)': {
-    padding: theme.spacing(1.2),
-  },
-  '@media (max-width: 375px)': {
-    padding: theme.spacing(1),
-  },
-}));
-
-const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #1f1f23 0%, #0c0c0c 100%)',
-  borderTop: '1px solid #2a2a2e',
-  padding: theme.spacing(2, 3),
-  position: 'relative',
-  zIndex: 2,
-  '@media (max-width: 1200px)': {
-    padding: theme.spacing(2, 2.5),
-  },
-  '@media (max-width: 960px)': {
-    padding: theme.spacing(1.5, 2),
-  },
-  '@media (max-width: 600px)': {
-    padding: theme.spacing(1.2, 1.5),
-    flexDirection: 'column',
-    gap: theme.spacing(1),
-  },
-  '@media (max-width: 480px)': {
-    padding: theme.spacing(1, 1.2),
-  },
-  '@media (max-width: 375px)': {
-    padding: theme.spacing(0.8, 1),
-  },
-}));
-
-const StyledStepper = styled(Stepper)(({ theme }) => ({
-  backgroundColor: 'transparent',
-  padding: theme.spacing(2, 0, 3, 0),
-  '& .MuiStepLabel-label': {
-    color: '#a0a0a0',
-    fontWeight: 500,
-    fontSize: '0.95rem',
-    '&.Mui-active': {
-      color: '#6366f1',
-      fontWeight: 600,
-    },
-    '&.Mui-completed': {
-      color: '#ffffff',
+  stepper: {
+    backgroundColor: 'transparent',
+    padding: '16px 0 24px 0',
+    '& .MuiStepLabel-label': {
+      color: '#a0a0a0',
       fontWeight: 500,
-    },
-  },
-  '& .MuiStepIcon-root': {
-    color: '#0c0c0c',
-    border: '2px solid #2a2a2e',
-    borderRadius: '50%',
-    fontSize: '1.5rem',
-    '&.Mui-active': {
-      color: '#6366f1',
-      borderColor: '#6366f1',
-    },
-    '&.Mui-completed': {
-      color: '#6366f1',
-      borderColor: '#6366f1',
-    },
-  },
-  '@media (max-width: 1200px)': {
-    padding: theme.spacing(1.5, 0, 2.5, 0),
-    '& .MuiStepLabel-label': {
-      fontSize: '0.9rem',
-    },
-    '& .MuiStepIcon-root': {
-      fontSize: '1.4rem',
-    },
-  },
-  '@media (max-width: 960px)': {
-    padding: theme.spacing(1.2, 0, 2, 0),
-    '& .MuiStepLabel-label': {
-      fontSize: '0.85rem',
-    },
-    '& .MuiStepIcon-root': {
-      fontSize: '1.3rem',
-    },
-  },
-  '@media (max-width: 600px)': {
-    padding: theme.spacing(1, 0, 1.5, 0),
-    '& .MuiStepLabel-label': {
-      fontSize: '0.8rem',
-    },
-    '& .MuiStepIcon-root': {
-      fontSize: '1.2rem',
-    },
-  },
-  '@media (max-width: 480px)': {
-    '& .MuiStepLabel-label': {
-      fontSize: '0.75rem',
-    },
-    '& .MuiStepIcon-root': {
-      fontSize: '1.1rem',
-    },
-  },
-  '@media (max-width: 375px)': {
-    '& .MuiStepLabel-label': {
-      fontSize: '0.7rem',
-    },
-    '& .MuiStepIcon-root': {
-      fontSize: '1rem',
-    },
-  },
-}));
-
-const StepContent = styled(Box)(({ theme }) => ({
-  minHeight: '400px',
-  padding: theme.spacing(2, 0),
-  '@media (max-width: 1200px)': {
-    minHeight: '380px',
-    padding: theme.spacing(1.8, 0),
-  },
-  '@media (max-width: 960px)': {
-    minHeight: '350px',
-    padding: theme.spacing(1.5, 0),
-  },
-  '@media (max-width: 600px)': {
-    minHeight: '300px',
-    padding: theme.spacing(1.2, 0),
-  },
-  '@media (max-width: 480px)': {
-    minHeight: '250px',
-    padding: theme.spacing(1, 0),
-  },
-  '@media (max-width: 375px)': {
-    minHeight: '200px',
-    padding: theme.spacing(0.8, 0),
-  },
-}));
-
-const FormSection = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
-  '& .MuiTextField-root': {
-    '& .MuiOutlinedInput-root': {
-      backgroundColor: '#0c0c0c',
-      transition: 'all 0.2s ease',
-      '& fieldset': {
-        borderColor: '#2a2a2e',
-      },
-      '&:hover': {
-        backgroundColor: '#28282c',
-        '& fieldset': {
-          borderColor: '#6366f1',
-        },
-      },
-      '&.Mui-focused': {
-        backgroundColor: '#28282c',
-        '& fieldset': {
-          borderColor: '#6366f1',
-          borderWidth: 2,
-        },
-      },
-    },
-    '& .MuiInputLabel-root': {
-      fontSize: '1rem',
-    },
-    '& .MuiOutlinedInput-input': {
       fontSize: '0.95rem',
-    },
-  },
-  '& .MuiFormControl-root': {
-    '& .MuiOutlinedInput-root': {
-      backgroundColor: '#0c0c0c',
-      transition: 'all 0.2s ease',
-      '& fieldset': {
-        borderColor: '#2a2a2e',
+      '&.Mui-active': {
+        color: '#6366f1',
+        fontWeight: 600,
       },
-      '&:hover': {
-        backgroundColor: '#28282c',
-        '& fieldset': {
-          borderColor: '#6366f1',
-        },
-      },
-      '&.Mui-focused': {
-        backgroundColor: '#28282c',
-        '& fieldset': {
-          borderColor: '#6366f1',
-          borderWidth: 2,
-        },
+      '&.Mui-completed': {
+        color: '#ffffff',
+        fontWeight: 500,
       },
     },
-  },
-  '@media (max-width: 1200px)': {
-    marginBottom: theme.spacing(2.5),
-    '& .MuiTextField-root': {
-      '& .MuiInputLabel-root': {
-        fontSize: '0.95rem',
+    '& .MuiStepIcon-root': {
+      color: '#0c0c0c',
+      border: '2px solid #2a2a2e',
+      borderRadius: '50%',
+      fontSize: '1.5rem',
+      '&.Mui-active': {
+        color: '#6366f1',
+        borderColor: '#6366f1',
       },
-      '& .MuiOutlinedInput-input': {
+      '&.Mui-completed': {
+        color: '#6366f1',
+        borderColor: '#6366f1',
+      },
+    },
+    '@media (max-width: 1200px)': {
+      padding: '12px 0 20px 0',
+      '& .MuiStepLabel-label': {
         fontSize: '0.9rem',
       },
-    },
-  },
-  '@media (max-width: 960px)': {
-    marginBottom: theme.spacing(2.2),
-    '& .MuiTextField-root': {
-      '& .MuiInputLabel-root': {
-        fontSize: '0.9rem',
+      '& .MuiStepIcon-root': {
+        fontSize: '1.4rem',
       },
-      '& .MuiOutlinedInput-input': {
+    },
+    '@media (max-width: 960px)': {
+      padding: '9.6px 0 16px 0',
+      '& .MuiStepLabel-label': {
         fontSize: '0.85rem',
       },
-    },
-  },
-  '@media (max-width: 600px)': {
-    marginBottom: theme.spacing(2),
-    '& .MuiTextField-root': {
-      '& .MuiInputLabel-root': {
-        fontSize: '0.85rem',
+      '& .MuiStepIcon-root': {
+        fontSize: '1.3rem',
       },
-      '& .MuiOutlinedInput-input': {
+    },
+    '@media (max-width: 600px)': {
+      padding: '8px 0 12px 0',
+      '& .MuiStepLabel-label': {
         fontSize: '0.8rem',
       },
-    },
-  },
-  '@media (max-width: 480px)': {
-    marginBottom: theme.spacing(1.8),
-    '& .MuiTextField-root': {
-      '& .MuiInputLabel-root': {
-        fontSize: '0.8rem',
-      },
-      '& .MuiOutlinedInput-input': {
-        fontSize: '0.75rem',
+      '& .MuiStepIcon-root': {
+        fontSize: '1.2rem',
       },
     },
-  },
-  '@media (max-width: 375px)': {
-    marginBottom: theme.spacing(1.5),
-    '& .MuiTextField-root': {
-      '& .MuiInputLabel-root': {
+    '@media (max-width: 480px)': {
+      '& .MuiStepLabel-label': {
         fontSize: '0.75rem',
       },
-      '& .MuiOutlinedInput-input': {
+      '& .MuiStepIcon-root': {
+        fontSize: '1.1rem',
+      },
+    },
+    '@media (max-width: 375px)': {
+      '& .MuiStepLabel-label': {
         fontSize: '0.7rem',
       },
-    },
-  },
-}));
-
-const SectionHeader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  marginBottom: theme.spacing(3),
-  padding: theme.spacing(2),
-  background: 'linear-gradient(135deg, #0c0c0c 0%, rgba(99, 102, 241, 0.05) 100%)',
-  borderRadius: 12,
-  border: '1px solid #2a2a2e',
-  '& .MuiSvgIcon-root': {
-    marginRight: theme.spacing(1),
-    color: '#6366f1',
-    fontSize: '1.5rem',
-  },
-  '& .MuiTypography-root': {
-    fontWeight: 600,
-    color: '#ffffff',
-    fontSize: '1.2rem',
-  },
-  '@media (max-width: 1200px)': {
-    marginBottom: theme.spacing(2.5),
-    padding: theme.spacing(1.8),
-    '& .MuiSvgIcon-root': {
-      fontSize: '1.4rem',
-    },
-    '& .MuiTypography-root': {
-      fontSize: '1.15rem',
-    },
-  },
-  '@media (max-width: 960px)': {
-    marginBottom: theme.spacing(2.2),
-    padding: theme.spacing(1.5),
-    borderRadius: 10,
-    '& .MuiSvgIcon-root': {
-      fontSize: '1.3rem',
-    },
-    '& .MuiTypography-root': {
-      fontSize: '1.1rem',
-    },
-  },
-  '@media (max-width: 600px)': {
-    marginBottom: theme.spacing(2),
-    padding: theme.spacing(1.2),
-    borderRadius: 8,
-    '& .MuiSvgIcon-root': {
-      fontSize: '1.2rem',
-    },
-    '& .MuiTypography-root': {
-      fontSize: '1rem',
-    },
-  },
-  '@media (max-width: 480px)': {
-    marginBottom: theme.spacing(1.8),
-    padding: theme.spacing(1),
-    '& .MuiSvgIcon-root': {
-      fontSize: '1.1rem',
-    },
-    '& .MuiTypography-root': {
-      fontSize: '0.95rem',
-    },
-  },
-  '@media (max-width: 375px)': {
-    marginBottom: theme.spacing(1.5),
-    padding: theme.spacing(0.8),
-    borderRadius: 6,
-    '& .MuiSvgIcon-root': {
-      fontSize: '1rem',
-      marginRight: theme.spacing(0.5),
-    },
-    '& .MuiTypography-root': {
-      fontSize: '0.9rem',
-    },
-  },
-}));
-
-const ChipContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: theme.spacing(1),
-  marginTop: theme.spacing(1),
-  '& .MuiChip-root': {
-    backgroundColor: '#0c0c0c',
-    borderColor: '#2a2a2e',
-    color: '#ffffff',
-    transition: 'all 0.2s ease',
-    fontSize: '0.85rem',
-    '&:hover': {
-      backgroundColor: '#28282c',
-      borderColor: '#6366f1',
-    },
-    '&.MuiChip-colorSuccess': {
-      backgroundColor: 'rgba(76, 175, 80, 0.1)',
-      borderColor: 'rgba(76, 175, 80, 0.3)',
-      color: '#81c784',
-    },
-    '&.MuiChip-colorError': {
-      backgroundColor: 'rgba(244, 67, 54, 0.1)',
-      borderColor: 'rgba(244, 67, 54, 0.3)',
-      color: '#e57373',
-    },
-    '&.MuiChip-colorInfo': {
-      backgroundColor: 'rgba(33, 150, 243, 0.1)',
-      borderColor: 'rgba(33, 150, 243, 0.3)',
-      color: '#64b5f6',
-    },
-  },
-  '@media (max-width: 1200px)': {
-    gap: theme.spacing(0.8),
-    '& .MuiChip-root': {
-      fontSize: '0.8rem',
-    },
-  },
-  '@media (max-width: 960px)': {
-    gap: theme.spacing(0.7),
-    '& .MuiChip-root': {
-      fontSize: '0.75rem',
-    },
-  },
-  '@media (max-width: 600px)': {
-    gap: theme.spacing(0.6),
-    '& .MuiChip-root': {
-      fontSize: '0.7rem',
-      height: '28px',
-    },
-  },
-  '@media (max-width: 480px)': {
-    gap: theme.spacing(0.5),
-    '& .MuiChip-root': {
-      fontSize: '0.65rem',
-      height: '26px',
-    },
-  },
-  '@media (max-width: 375px)': {
-    gap: theme.spacing(0.4),
-    '& .MuiChip-root': {
-      fontSize: '0.6rem',
-      height: '24px',
-    },
-  },
-}));
-
-const TraitCard = styled(Card)(({ theme }) => ({
-  backgroundColor: 'rgba(99, 102, 241, 0.05)',
-  border: '1px solid #2a2a2e',
-  borderRadius: 12,
-  transition: 'all 0.2s ease',
-  '&:hover': {
-    borderColor: '#6366f1',
-    backgroundColor: 'rgba(99, 102, 241, 0.08)',
-  },
-  '@media (max-width: 960px)': {
-    borderRadius: 10,
-  },
-  '@media (max-width: 600px)': {
-    borderRadius: 8,
-  },
-  '@media (max-width: 375px)': {
-    borderRadius: 6,
-  },
-}));
-
-const SwitchRow = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: theme.spacing(1.5, 0),
-  borderBottom: '1px solid #2a2a2e',
-  '&:last-child': {
-    borderBottom: 'none',
-  },
-  '& .MuiTypography-root': {
-    fontWeight: 500,
-    color: '#ffffff',
-    fontSize: '0.95rem',
-  },
-  '& .MuiSwitch-root': {
-    '& .MuiSwitch-switchBase.Mui-checked': {
-      color: '#6366f1',
-      '& + .MuiSwitch-track': {
-        backgroundColor: '#6366f1',
-        opacity: 0.5,
+      '& .MuiStepIcon-root': {
+        fontSize: '1rem',
       },
     },
   },
-  '@media (max-width: 1200px)': {
-    padding: theme.spacing(1.3, 0),
-    '& .MuiTypography-root': {
-      fontSize: '0.9rem',
+  stepContent: {
+    minHeight: '400px',
+    padding: '16px 0',
+    '@media (max-width: 1200px)': {
+      minHeight: '380px',
+      padding: '14.4px 0',
+    },
+    '@media (max-width: 960px)': {
+      minHeight: '350px',
+      padding: '12px 0',
+    },
+    '@media (max-width: 600px)': {
+      minHeight: '300px',
+      padding: '9.6px 0',
+    },
+    '@media (max-width: 480px)': {
+      minHeight: '250px',
+      padding: '8px 0',
+    },
+    '@media (max-width: 375px)': {
+      minHeight: '200px',
+      padding: '6.4px 0',
     },
   },
-  '@media (max-width: 960px)': {
-    padding: theme.spacing(1.2, 0),
-    '& .MuiTypography-root': {
-      fontSize: '0.85rem',
+  formSection: {
+    marginBottom: '24px',
+    '& .MuiTextField-root': {
+      '& .MuiOutlinedInput-root': {
+        backgroundColor: '#0c0c0c',
+        transition: 'all 0.2s ease',
+        '& fieldset': {
+          borderColor: '#2a2a2e',
+        },
+        '&:hover': {
+          backgroundColor: '#28282c',
+          '& fieldset': {
+            borderColor: '#6366f1',
+          },
+        },
+        '&.Mui-focused': {
+          backgroundColor: '#28282c',
+          '& fieldset': {
+            borderColor: '#6366f1',
+            borderWidth: '2px',
+          },
+        },
+      },
+      '& .MuiInputLabel-root': {
+        fontSize: '1rem',
+      },
+      '& .MuiOutlinedInput-input': {
+        fontSize: '0.95rem',
+      },
+    },
+    '& .MuiFormControl-root': {
+      '& .MuiOutlinedInput-root': {
+        backgroundColor: '#0c0c0c',
+        transition: 'all 0.2s ease',
+        '& fieldset': {
+          borderColor: '#2a2a2e',
+        },
+        '&:hover': {
+          backgroundColor: '#28282c',
+          '& fieldset': {
+            borderColor: '#6366f1',
+          },
+        },
+        '&.Mui-focused': {
+          backgroundColor: '#28282c',
+          '& fieldset': {
+            borderColor: '#6366f1',
+            borderWidth: '2px',
+          },
+        },
+      },
+    },
+    '@media (max-width: 1200px)': {
+      marginBottom: '20px',
+      '& .MuiTextField-root': {
+        '& .MuiInputLabel-root': {
+          fontSize: '0.95rem',
+        },
+        '& .MuiOutlinedInput-input': {
+          fontSize: '0.9rem',
+        },
+      },
+    },
+    '@media (max-width: 960px)': {
+      marginBottom: '17.6px',
+      '& .MuiTextField-root': {
+        '& .MuiInputLabel-root': {
+          fontSize: '0.9rem',
+        },
+        '& .MuiOutlinedInput-input': {
+          fontSize: '0.85rem',
+        },
+      },
+    },
+    '@media (max-width: 600px)': {
+      marginBottom: '16px',
+      '& .MuiTextField-root': {
+        '& .MuiInputLabel-root': {
+          fontSize: '0.85rem',
+        },
+        '& .MuiOutlinedInput-input': {
+          fontSize: '0.8rem',
+        },
+      },
+    },
+    '@media (max-width: 480px)': {
+      marginBottom: '14.4px',
+      '& .MuiTextField-root': {
+        '& .MuiInputLabel-root': {
+          fontSize: '0.8rem',
+        },
+        '& .MuiOutlinedInput-input': {
+          fontSize: '0.75rem',
+        },
+      },
+    },
+    '@media (max-width: 375px)': {
+      marginBottom: '12px',
+      '& .MuiTextField-root': {
+        '& .MuiInputLabel-root': {
+          fontSize: '0.75rem',
+        },
+        '& .MuiOutlinedInput-input': {
+          fontSize: '0.7rem',
+        },
+      },
     },
   },
-  '@media (max-width: 600px)': {
-    padding: theme.spacing(1, 0),
+  sectionHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '24px',
+    padding: '16px',
+    background: 'linear-gradient(135deg, #0c0c0c 0%, rgba(99, 102, 241, 0.05) 100%)',
+    borderRadius: '12px',
+    border: '1px solid #2a2a2e',
+    '& .MuiSvgIcon-root': {
+      marginRight: '8px',
+      color: '#6366f1',
+      fontSize: '1.5rem',
+    },
     '& .MuiTypography-root': {
+      fontWeight: 600,
+      color: '#ffffff',
+      fontSize: '1.2rem',
+    },
+    '@media (max-width: 1200px)': {
+      marginBottom: '20px',
+      padding: '14.4px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '1.4rem',
+      },
+      '& .MuiTypography-root': {
+        fontSize: '1.15rem',
+      },
+    },
+    '@media (max-width: 960px)': {
+      marginBottom: '18px',
+      padding: '12.8px',
+      borderRadius: '10px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '1.3rem',
+      },
+      '& .MuiTypography-root': {
+        fontSize: '1.1rem',
+      },
+    },
+    '@media (max-width: 600px)': {
+      marginBottom: '16px',
+      padding: '11.2px',
+      borderRadius: '8px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '1.2rem',
+      },
+      '& .MuiTypography-root': {
+        fontSize: '1.05rem',
+      },
+    },
+    '@media (max-width: 480px)': {
+      marginBottom: '14px',
+      padding: '9.6px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '1.1rem',
+      },
+      '& .MuiTypography-root': {
+        fontSize: '1rem',
+      },
+    },
+    '@media (max-width: 375px)': {
+      marginBottom: '12px',
+      padding: '8px',
+      '& .MuiSvgIcon-root': {
+        fontSize: '1rem',
+      },
+      '& .MuiTypography-root': {
+        fontSize: '0.95rem',
+      },
+    },
+  },
+  chipContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '8px',
+    marginTop: '8px',
+    '& .MuiChip-root': {
+      backgroundColor: 'rgba(99, 102, 241, 0.1)',
+      color: '#6366f1',
+      border: '1px solid rgba(99, 102, 241, 0.3)',
       fontSize: '0.8rem',
+      height: '32px',
+      '&:hover': {
+        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+        borderColor: '#6366f1',
+      },
     },
-    '& .MuiSwitch-root': {
-      transform: 'scale(0.9)',
+    '@media (max-width: 1200px)': {
+      gap: '7px',
+      '& .MuiChip-root': {
+        fontSize: '0.75rem',
+        height: '30px',
+      },
     },
-  },
-  '@media (max-width: 480px)': {
-    padding: theme.spacing(0.8, 0),
-    '& .MuiTypography-root': {
-      fontSize: '0.75rem',
+    '@media (max-width: 960px)': {
+      gap: '6px',
+      '& .MuiChip-root': {
+        fontSize: '0.7rem',
+        height: '28px',
+      },
     },
-    '& .MuiSwitch-root': {
-      transform: 'scale(0.85)',
+    '@media (max-width: 600px)': {
+      gap: '5px',
+      '& .MuiChip-root': {
+        fontSize: '0.68rem',
+        height: '27px',
+      },
     },
-  },
-  '@media (max-width: 375px)': {
-    padding: theme.spacing(0.6, 0),
-    '& .MuiTypography-root': {
-      fontSize: '0.7rem',
+    '@media (max-width: 480px)': {
+      gap: '4px',
+      '& .MuiChip-root': {
+        fontSize: '0.65rem',
+        height: '26px',
+      },
     },
-    '& .MuiSwitch-root': {
-      transform: 'scale(0.8)',
-    },
-  },
-}));
-
-const AddButton = styled(Button)(({ theme }) => ({
-  borderColor: '#2a2a2e',
-  color: '#a0a0a0',
-  backgroundColor: 'transparent',
-  borderRadius: 8,
-  textTransform: 'none',
-  fontWeight: 500,
-  transition: 'all 0.2s ease',
-  minWidth: '80px',
-  fontSize: '0.85rem',
-  '&:hover': {
-    borderColor: '#6366f1',
-    backgroundColor: 'rgba(99, 102, 241, 0.08)',
-    color: '#6366f1',
-  },
-  '@media (max-width: 1200px)': {
-    minWidth: '75px',
-    fontSize: '0.8rem',
-  },
-  '@media (max-width: 960px)': {
-    minWidth: '70px',
-    fontSize: '0.75rem',
-    borderRadius: 6,
-  },
-  '@media (max-width: 600px)': {
-    minWidth: '65px',
-    fontSize: '0.7rem',
-    padding: theme.spacing(0.5, 1),
-  },
-  '@media (max-width: 480px)': {
-    minWidth: '60px',
-    fontSize: '0.65rem',
-    padding: theme.spacing(0.4, 0.8),
-  },
-  '@media (max-width: 375px)': {
-    minWidth: '55px',
-    fontSize: '0.6rem',
-    padding: theme.spacing(0.3, 0.6),
-    borderRadius: 4,
-  },
-}));
-
-const ActionButton = styled(Button)(({ theme }) => ({
-  borderRadius: 10,
-  textTransform: 'none',
-  fontWeight: 600,
-  padding: theme.spacing(1.5, 3),
-  transition: 'all 0.2s ease',
-  position: 'relative',
-  overflow: 'hidden',
-  fontSize: '0.9rem',
-  minWidth: '120px',
-  '&.MuiButton-contained': {
-    background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
-    '&:hover': {
-      background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 6px 16px rgba(99, 102, 241, 0.4)',
-    },
-    '&:disabled': {
-      background: '#666666',
-      color: '#a0a0a0',
-      boxShadow: 'none',
+    '@media (max-width: 375px)': {
+      gap: '3.2px',
+      '& .MuiChip-root': {
+        fontSize: '0.6rem',
+        height: '24px',
+      },
     },
   },
-  '&.MuiButton-outlined': {
-    borderColor: '#2a2a2e',
-    color: '#ffffff',
-    backgroundColor: 'transparent',
+  traitCard: {
+    backgroundColor: 'rgba(99, 102, 241, 0.05)',
+    border: '1px solid #2a2a2e',
+    borderRadius: '12px',
+    transition: 'all 0.2s ease',
     '&:hover': {
       borderColor: '#6366f1',
       backgroundColor: 'rgba(99, 102, 241, 0.08)',
-      color: '#6366f1',
+    },
+    '@media (max-width: 960px)': {
+      borderRadius: '10px',
+    },
+    '@media (max-width: 600px)': {
+      borderRadius: '8px',
+    },
+    '@media (max-width: 375px)': {
+      borderRadius: '6px',
     },
   },
-  '@media (max-width: 1200px)': {
-    padding: theme.spacing(1.3, 2.5),
-    fontSize: '0.85rem',
-    minWidth: '110px',
+  switchRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '12px 0',
+    borderBottom: '1px solid #2a2a2e',
+    '&:last-child': {
+      borderBottom: 'none',
+    },
+    '& .MuiTypography-root': {
+      fontWeight: 500,
+      color: '#ffffff',
+      fontSize: '0.95rem',
+    },
+    '& .MuiSwitch-root': {
+      '& .MuiSwitch-switchBase.Mui-checked': {
+        color: '#6366f1',
+        '& + .MuiSwitch-track': {
+          backgroundColor: '#6366f1',
+          opacity: 0.5,
+        },
+      },
+    },
+    '@media (max-width: 1200px)': {
+      padding: '10.4px 0',
+      '& .MuiTypography-root': {
+        fontSize: '0.9rem',
+      },
+    },
+    '@media (max-width: 960px)': {
+      padding: '9.6px 0',
+      '& .MuiTypography-root': {
+        fontSize: '0.85rem',
+      },
+    },
+    '@media (max-width: 600px)': {
+      padding: '8px 0',
+      '& .MuiTypography-root': {
+        fontSize: '0.8rem',
+      },
+      '& .MuiSwitch-root': {
+        transform: 'scale(0.9)',
+      },
+    },
+    '@media (max-width: 480px)': {
+      padding: '6.4px 0',
+      '& .MuiTypography-root': {
+        fontSize: '0.75rem',
+      },
+      '& .MuiSwitch-root': {
+        transform: 'scale(0.85)',
+      },
+    },
+    '@media (max-width: 375px)': {
+      padding: '4.8px 0',
+      '& .MuiTypography-root': {
+        fontSize: '0.7rem',
+      },
+      '& .MuiSwitch-root': {
+        transform: 'scale(0.8)',
+      },
+    },
   },
-  '@media (max-width: 960px)': {
-    padding: theme.spacing(1.2, 2.2),
-    fontSize: '0.8rem',
-    minWidth: '100px',
-    borderRadius: 8,
+  addButton: {
+    borderColor: '#2a2a2e',
+    color: '#a0a0a0',
+    backgroundColor: 'transparent',
+    borderRadius: '8px',
+    textTransform: 'none',
+    fontWeight: 500,
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      borderColor: '#6366f1',
+      backgroundColor: 'rgba(99, 102, 241, 0.05)',
+      color: '#6366f1',
+    },
+    '@media (max-width: 960px)': {
+      borderRadius: '6px',
+    },
+    '@media (max-width: 600px)': {
+      borderRadius: '4px',
+      fontSize: '0.8rem',
+    },
   },
-  '@media (max-width: 600px)': {
-    padding: theme.spacing(1, 2),
-    fontSize: '0.75rem',
-    minWidth: '90px',
-    width: '100%',
-    margin: theme.spacing(0.5, 0),
+  deleteButton: {
+    color: '#ef4444',
+    minWidth: '36px',
+    padding: '6px',
+    '&:hover': {
+      backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    },
+    '@media (max-width: 600px)': {
+      minWidth: '32px',
+      padding: '4px',
+    },
   },
-  '@media (max-width: 480px)': {
-    padding: theme.spacing(0.8, 1.5),
-    fontSize: '0.7rem',
-    minWidth: '80px',
-    borderRadius: 6,
+  loadingOverlay: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '32px',
+    backgroundColor: 'rgba(31, 31, 35, 0.9)',
+    borderRadius: '12px',
+    backdropFilter: 'blur(10px)',
+    '@media (max-width: 960px)': {
+      padding: '24px',
+      borderRadius: '10px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '20px',
+      borderRadius: '8px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '16px',
+      borderRadius: '6px',
+    },
   },
-  '@media (max-width: 375px)': {
-    padding: theme.spacing(0.6, 1.2),
-    fontSize: '0.65rem',
-    minWidth: '70px',
-    borderRadius: 4,
+  responsiveGrid: {
+    display: 'grid',
+    gap: '16px',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    '@media (max-width: 1200px)': {
+      gap: '14.4px',
+    },
+    '@media (max-width: 960px)': {
+      gap: '12px',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+    },
+    '@media (max-width: 600px)': {
+      gap: '9.6px',
+      gridTemplateColumns: '1fr',
+    },
+    '@media (max-width: 480px)': {
+      gap: '8px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '6.4px',
+    },
   },
-}));
-
-const LoadingOverlay = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: theme.spacing(4),
-  backgroundColor: 'rgba(31, 31, 35, 0.9)',
-  borderRadius: 12,
-  backdropFilter: 'blur(10px)',
-  '@media (max-width: 960px)': {
-    padding: theme.spacing(3),
-    borderRadius: 10,
-  },
-  '@media (max-width: 600px)': {
-    padding: theme.spacing(2.5),
-    borderRadius: 8,
-  },
-  '@media (max-width: 375px)': {
-    padding: theme.spacing(2),
-    borderRadius: 6,
-  },
-}));
-
-// Grid system for responsive layouts
-const ResponsiveGrid = styled(Box)(({ theme }) => ({
-  display: 'grid',
-  gap: theme.spacing(2),
-  gridTemplateColumns: 'repeat(3, 1fr)',
-  '@media (max-width: 1200px)': {
-    gap: theme.spacing(1.8),
-  },
-  '@media (max-width: 960px)': {
-    gap: theme.spacing(1.5),
+  responsiveGrid2Col: {
+    display: 'grid',
+    gap: '16px',
     gridTemplateColumns: 'repeat(2, 1fr)',
+    '@media (max-width: 1200px)': {
+      gap: '14.4px',
+    },
+    '@media (max-width: 960px)': {
+      gap: '12px',
+    },
+    '@media (max-width: 600px)': {
+      gap: '9.6px',
+      gridTemplateColumns: '1fr',
+    },
+    '@media (max-width: 480px)': {
+      gap: '8px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '6.4px',
+    },
   },
-  '@media (max-width: 600px)': {
-    gap: theme.spacing(1.2),
-    gridTemplateColumns: '1fr',
-  },
-  '@media (max-width: 480px)': {
-    gap: theme.spacing(1),
-  },
-  '@media (max-width: 375px)': {
-    gap: theme.spacing(0.8),
-  },
-}));
-
-const ResponsiveGrid2Col = styled(Box)(({ theme }) => ({
-  display: 'grid',
-  gap: theme.spacing(2),
-  gridTemplateColumns: 'repeat(2, 1fr)',
-  '@media (max-width: 1200px)': {
-    gap: theme.spacing(1.8),
-  },
-  '@media (max-width: 960px)': {
-    gap: theme.spacing(1.5),
-  },
-  '@media (max-width: 600px)': {
-    gap: theme.spacing(1.2),
-    gridTemplateColumns: '1fr',
-  },
-  '@media (max-width: 480px)': {
-    gap: theme.spacing(1),
-  },
-  '@media (max-width: 375px)': {
-    gap: theme.spacing(0.8),
-  },
-}));
+});
 
 // Main Component
 const steps = ['Basic Info', 'Personality', 'Advanced Settings'];
 
 const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
-  const theme = useTheme();
+  const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [formOptions, setFormOptions] = useState(null);
@@ -843,12 +2281,6 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
     knowledge_entries: [],
   });
 
-  // Temporary input states for array fields
-  const [newKnownFor, setNewKnownFor] = useState('');
-  const [newGoodAt, setNewGoodAt] = useState('');
-  const [newNotGoodAt, setNewNotGoodAt] = useState('');
-  const [newKnowledgeEntry, setNewKnowledgeEntry] = useState('');
-
   useEffect(() => {
     if (open) {
       loadFormOptions();
@@ -857,13 +2289,11 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
 
   const loadFormOptions = async () => {
     try {
-      setLoading(true);
       const options = await apiService.getCharacterFormOptions();
       setFormOptions(options);
-    } catch (err) {
-      setError('Failed to load form options: ' + err.message);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Failed to load form options:', error);
+      setError('Failed to load form options');
     }
   };
 
@@ -874,45 +2304,34 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
     }));
   };
 
-  const addToArray = (field, value, clearInput) => {
-    if (value.trim()) {
-      handleInputChange(field, [...characterData[field], value.trim()]);
-      clearInput('');
-    }
-  };
-
-  const removeFromArray = (field, index) => {
-    const newArray = characterData[field].filter((_, i) => i !== index);
-    handleInputChange(field, newArray);
+  const handleArrayFieldChange = (field, values) => {
+    setCharacterData(prev => ({
+      ...prev,
+      [field]: values
+    }));
   };
 
   const handleNext = () => {
-    setActiveStep(prev => prev + 1);
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
   const handleBack = () => {
-    setActiveStep(prev => prev - 1);
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // Filter out empty fields
-      const cleanedData = Object.fromEntries(
-        Object.entries(characterData).filter(([key, value]) => {
-          if (Array.isArray(value)) return value.length > 0;
-          if (typeof value === 'string') return value.trim() !== '';
-          return value !== null && value !== undefined;
-        })
-      );
 
-      const result = await apiService.createCharacter(cleanedData);
+      const result = await apiService.createCharacter(characterData);
       
       setSuccess(true);
+      
       setTimeout(() => {
-        onCharacterCreated?.(result.character);
+        if (onCharacterCreated) {
+          onCharacterCreated(result.character);
+        }
         handleClose();
       }, 2000);
       
@@ -967,12 +2386,12 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
   const renderBasicInfo = () => (
     <Fade in={activeStep === 0} timeout={300}>
       <Box>
-        <SectionHeader>
+        <Box className={classes.sectionHeader}>
           <Person />
           <Typography variant="h6">Character Basic Information</Typography>
-        </SectionHeader>
+        </Box>
         
-        <FormSection>
+        <Box className={classes.formSection}>
           <TextField
             fullWidth
             label="Character Name *"
@@ -989,10 +2408,9 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
             value={characterData.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
             margin="normal"
+            required
             multiline
             rows={3}
-            required
-            placeholder="Describe your character's background and role..."
             variant="outlined"
           />
           
@@ -1002,41 +2420,38 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
             value={characterData.img}
             onChange={(e) => handleInputChange('img', e.target.value)}
             margin="normal"
-            placeholder="https://example.com/character-image.jpg"
             variant="outlined"
+            placeholder="https://example.com/image.jpg"
           />
-        </FormSection>
-
-        <FormSection>
-          <ResponsiveGrid2Col>
-            <FormControl fullWidth margin="normal" variant="outlined">
-              <InputLabel>Age Range</InputLabel>
-              <Select
-                value={characterData.age_range}
-                onChange={(e) => handleInputChange('age_range', e.target.value)}
-                label="Age Range"
-              >
-                {formOptions?.age_ranges?.map((age) => (
-                  <MenuItem key={age} value={age}>{age}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth margin="normal" variant="outlined">
-              <InputLabel>Setting</InputLabel>
-              <Select
-                value={characterData.setting}
-                onChange={(e) => handleInputChange('setting', e.target.value)}
-                label="Setting"
-              >
-                {formOptions?.settings?.map((setting) => (
-                  <MenuItem key={setting} value={setting}>{setting}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </ResponsiveGrid2Col>
-
-          <ResponsiveGrid2Col>
+          
+          <Box className={classes.responsiveGrid2Col}>
+            {formOptions?.age_ranges && (
+              <FormControl fullWidth margin="normal" variant="outlined">
+                <InputLabel>Age Range</InputLabel>
+                <Select
+                  value={characterData.age_range}
+                  onChange={(e) => handleInputChange('age_range', e.target.value)}
+                  label="Age Range"
+                >
+                  {formOptions.age_ranges.map(range => (
+                    <MenuItem key={range} value={range}>{range}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            
+            <TextField
+              fullWidth
+              label="Setting/Era"
+              value={characterData.setting}
+              onChange={(e) => handleInputChange('setting', e.target.value)}
+              margin="normal"
+              variant="outlined"
+              placeholder="e.g., Modern day, 1920s, Medieval"
+            />
+          </Box>
+          
+          <Box className={classes.responsiveGrid2Col}>
             <TextField
               fullWidth
               label="Profession"
@@ -1045,7 +2460,7 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
               margin="normal"
               variant="outlined"
             />
-
+            
             <TextField
               fullWidth
               label="Cultural Background"
@@ -1054,48 +2469,37 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
               margin="normal"
               variant="outlined"
             />
-          </ResponsiveGrid2Col>
-        </FormSection>
-
-        <FormSection>
-          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
-            Known For
-          </Typography>
-          <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
-            <TextField
-              fullWidth
-              size="small"
-              value={newKnownFor}
-              onChange={(e) => setNewKnownFor(e.target.value)}
-              placeholder="Add what they're known for..."
-              variant="outlined"
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  addToArray('known_for', newKnownFor, setNewKnownFor);
-                }
-              }}
-            />
-            <AddButton
-              variant="outlined"
-              size="small"
-              onClick={() => addToArray('known_for', newKnownFor, setNewKnownFor)}
-              startIcon={<Add />}
-            >
-              Add
-            </AddButton>
           </Box>
-          <ChipContainer>
-            {characterData.known_for.map((item, index) => (
-              <Chip
-                key={index}
-                label={item}
-                variant="outlined"
-                onDelete={() => removeFromArray('known_for', index)}
-                deleteIcon={<Delete />}
+          
+          {formOptions?.known_for_options && (
+            <FormControl fullWidth margin="normal">
+              <Autocomplete
+                multiple
+                options={formOptions.known_for_options}
+                value={characterData.known_for}
+                onChange={(e, newValue) => handleArrayFieldChange('known_for', newValue)}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      variant="outlined"
+                      label={option}
+                      {...getTagProps({ index })}
+                      key={index}
+                    />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    label="Known For"
+                    placeholder="What is this character famous for?"
+                  />
+                )}
               />
-            ))}
-          </ChipContainer>
-        </FormSection>
+            </FormControl>
+          )}
+        </Box>
       </Box>
     </Fade>
   );
@@ -1103,149 +2507,96 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
   const renderPersonality = () => (
     <Fade in={activeStep === 1} timeout={300}>
       <Box>
-        <SectionHeader>
+        <Box className={classes.sectionHeader}>
           <Psychology />
           <Typography variant="h6">Personality & Communication</Typography>
-        </SectionHeader>
-
-        <FormSection>
-          <ResponsiveGrid>
-            <FormControl fullWidth margin="normal" variant="outlined">
-              <InputLabel>Speaking Style</InputLabel>
-              <Select
-                value={characterData.speaking_style}
-                onChange={(e) => handleInputChange('speaking_style', e.target.value)}
-                label="Speaking Style"
-              >
-                {formOptions?.speaking_styles?.map((style) => (
-                  <MenuItem key={style.key} value={style.key}>
-                    {style.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth margin="normal" variant="outlined">
-              <InputLabel>Response Length</InputLabel>
-              <Select
-                value={characterData.response_length}
-                onChange={(e) => handleInputChange('response_length', e.target.value)}
-                label="Response Length"
-              >
-                {formOptions?.response_lengths?.map((length) => (
-                  <MenuItem key={length.key} value={length.key}>
-                    {length.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth margin="normal" variant="outlined">
-              <InputLabel>Help Style</InputLabel>
-              <Select
-                value={characterData.help_style}
-                onChange={(e) => handleInputChange('help_style', e.target.value)}
-                label="Help Style"
-              >
-                {formOptions?.help_styles?.map((style) => (
-                  <MenuItem key={style.key} value={style.key}>
-                    {style.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </ResponsiveGrid>
-        </FormSection>
-
-        <FormSection>
-          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary', mb: 2 }}>
-            Personality Traits
-          </Typography>
-          <TraitCard variant="outlined">
+        </Box>
+        
+        <Box className={classes.formSection}>
+          <Box className={classes.responsiveGrid2Col}>
+            {formOptions?.speaking_styles && (
+              <FormControl fullWidth margin="normal" variant="outlined">
+                <InputLabel>Speaking Style</InputLabel>
+                <Select
+                  value={characterData.speaking_style}
+                  onChange={(e) => handleInputChange('speaking_style', e.target.value)}
+                  label="Speaking Style"
+                >
+                  {formOptions.speaking_styles.map(style => (
+                    <MenuItem key={style} value={style}>{style}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            
+            {formOptions?.response_lengths && (
+              <FormControl fullWidth margin="normal" variant="outlined">
+                <InputLabel>Response Length</InputLabel>
+                <Select
+                  value={characterData.response_length}
+                  onChange={(e) => handleInputChange('response_length', e.target.value)}
+                  label="Response Length"
+                >
+                  {formOptions.response_lengths.map(length => (
+                    <MenuItem key={length} value={length}>{length}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          </Box>
+          
+          <TextField
+            fullWidth
+            label="Common Phrases"
+            value={characterData.common_phrases}
+            onChange={(e) => handleInputChange('common_phrases', e.target.value)}
+            margin="normal"
+            variant="outlined"
+            placeholder="Catchphrases, favorite expressions..."
+            multiline
+            rows={2}
+          />
+          
+          <Card className={classes.traitCard}>
             <CardContent>
-              <SwitchRow>
+              <Typography variant="h6" gutterBottom>
+                Personality Traits
+              </Typography>
+              
+              <Box className={classes.switchRow}>
                 <Typography>Optimistic</Typography>
                 <Switch
                   checked={characterData.personality_optimistic}
                   onChange={(e) => handleInputChange('personality_optimistic', e.target.checked)}
                 />
-              </SwitchRow>
-              <SwitchRow>
+              </Box>
+              
+              <Box className={classes.switchRow}>
                 <Typography>Patient</Typography>
                 <Switch
                   checked={characterData.personality_patient}
                   onChange={(e) => handleInputChange('personality_patient', e.target.checked)}
                 />
-              </SwitchRow>
-              <SwitchRow>
+              </Box>
+              
+              <Box className={classes.switchRow}>
                 <Typography>Serious</Typography>
                 <Switch
                   checked={characterData.personality_serious}
                   onChange={(e) => handleInputChange('personality_serious', e.target.checked)}
                 />
-              </SwitchRow>
-              <SwitchRow>
+              </Box>
+              
+              <Box className={classes.switchRow}>
                 <Typography>Introverted</Typography>
                 <Switch
                   checked={characterData.personality_introverted}
                   onChange={(e) => handleInputChange('personality_introverted', e.target.checked)}
                 />
-              </SwitchRow>
+              </Box>
             </CardContent>
-          </TraitCard>
-        </FormSection>
-
-        <FormSection>
-          <ResponsiveGrid2Col>
-            <Box>
-              <Autocomplete
-                multiple
-                freeSolo
-                options={formOptions?.excitement_topics || []}
-                value={characterData.excited_about}
-                onChange={(_, value) => handleInputChange('excited_about', value)}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-                  ))
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Excited About"
-                    placeholder="Topics that excite them..."
-                    margin="normal"
-                    variant="outlined"
-                  />
-                )}
-              />
-            </Box>
-
-            <Box>
-              <Autocomplete
-                multiple
-                freeSolo
-                options={formOptions?.frustration_topics || []}
-                value={characterData.frustrated_by}
-                onChange={(_, value) => handleInputChange('frustrated_by', value)}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-                  ))
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Frustrated By"
-                    placeholder="Things that frustrate them..."
-                    margin="normal"
-                    variant="outlined"
-                  />
-                )}
-              />
-            </Box>
-          </ResponsiveGrid2Col>
-        </FormSection>
+          </Card>
+        </Box>
       </Box>
     </Fade>
   );
@@ -1253,288 +2604,181 @@ const CharacterCreationForm = ({ open, onClose, onCharacterCreated }) => {
   const renderAdvancedSettings = () => (
     <Fade in={activeStep === 2} timeout={300}>
       <Box>
-        <SectionHeader>
+        <Box className={classes.sectionHeader}>
           <Settings />
-          <Typography variant="h6">Advanced Character Settings</Typography>
-        </SectionHeader>
-
-        <FormSection>
-          <ResponsiveGrid>
-            <TextField
-              fullWidth
-              label="Unique Trait"
-              value={characterData.unique_trait}
-              onChange={(e) => handleInputChange('unique_trait', e.target.value)}
-              margin="normal"
-              placeholder="What makes this character special?"
-              variant="outlined"
-            />
-
-            <FormControl fullWidth margin="normal" variant="outlined">
-              <InputLabel>Disagreement Style</InputLabel>
-              <Select
-                value={characterData.disagreement_style}
-                onChange={(e) => handleInputChange('disagreement_style', e.target.value)}
-                label="Disagreement Style"
-              >
-                {formOptions?.disagreement_styles?.map((style) => (
-                  <MenuItem key={style.key} value={style.key}>
-                    {style.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth margin="normal" variant="outlined">
-              <InputLabel>Safety Level</InputLabel>
-              <Select
-                value={characterData.safety_level}
-                onChange={(e) => handleInputChange('safety_level', e.target.value)}
-                label="Safety Level"
-              >
-                {formOptions?.safety_levels?.map((level) => (
-                  <MenuItem key={level.key} value={level.key}>
-                    {level.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </ResponsiveGrid>
-        </FormSection>
-
-        <FormSection>
-          <ResponsiveGrid2Col sx={{ gap: 3 }}>
-            <Box>
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
-                Strengths
-              </Typography>
-              <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  value={newGoodAt}
-                  onChange={(e) => setNewGoodAt(e.target.value)}
-                  placeholder="What are they good at?"
-                  variant="outlined"
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      addToArray('good_at', newGoodAt, setNewGoodAt);
-                    }
-                  }}
-                />
-                <AddButton
-                  variant="outlined"
-                  size="small"
-                  onClick={() => addToArray('good_at', newGoodAt, setNewGoodAt)}
-                  startIcon={<Add />}
+          <Typography variant="h6">Advanced Settings</Typography>
+        </Box>
+        
+        <Box className={classes.formSection}>
+          <Box className={classes.responsiveGrid2Col}>
+            {formOptions?.safety_levels && (
+              <FormControl fullWidth margin="normal" variant="outlined">
+                <InputLabel>Safety Level</InputLabel>
+                <Select
+                  value={characterData.safety_level}
+                  onChange={(e) => handleInputChange('safety_level', e.target.value)}
+                  label="Safety Level"
                 >
-                  Add
-                </AddButton>
-              </Box>
-              <ChipContainer>
-                {characterData.good_at.map((item, index) => (
-                  <Chip
-                    key={index}
-                    label={item}
-                    color="success"
-                    variant="outlined"
-                    onDelete={() => removeFromArray('good_at', index)}
-                    deleteIcon={<Delete />}
-                  />
-                ))}
-              </ChipContainer>
-            </Box>
-
-            <Box>
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
-                Weaknesses
-              </Typography>
-              <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  value={newNotGoodAt}
-                  onChange={(e) => setNewNotGoodAt(e.target.value)}
-                  placeholder="What are they not good at?"
-                  variant="outlined"
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      addToArray('not_good_at', newNotGoodAt, setNewNotGoodAt);
-                    }
-                  }}
-                />
-                <AddButton
-                  variant="outlined"
-                  size="small"
-                  onClick={() => addToArray('not_good_at', newNotGoodAt, setNewNotGoodAt)}
-                  startIcon={<Add />}
+                  {formOptions.safety_levels.map(level => (
+                    <MenuItem key={level} value={level}>{level}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            
+            {formOptions?.content_tones && (
+              <FormControl fullWidth margin="normal" variant="outlined">
+                <InputLabel>Content Tone</InputLabel>
+                <Select
+                  value={characterData.content_tone}
+                  onChange={(e) => handleInputChange('content_tone', e.target.value)}
+                  label="Content Tone"
                 >
-                  Add
-                </AddButton>
-              </Box>
-              <ChipContainer>
-                {characterData.not_good_at.map((item, index) => (
-                  <Chip
-                    key={index}
-                    label={item}
-                    color="error"
-                    variant="outlined"
-                    onDelete={() => removeFromArray('not_good_at', index)}
-                    deleteIcon={<Delete />}
-                  />
-                ))}
-              </ChipContainer>
-            </Box>
-          </ResponsiveGrid2Col>
-        </FormSection>
-
-        <FormSection>
-          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
-            Knowledge Base
-          </Typography>
-          <Box display="flex" gap={1} flexDirection={{ xs: 'column', sm: 'row' }}>
-            <TextField
-              fullWidth
-              size="small"
-              value={newKnowledgeEntry}
-              onChange={(e) => setNewKnowledgeEntry(e.target.value)}
-              placeholder="Add specialized knowledge..."
-              variant="outlined"
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  addToArray('knowledge_entries', newKnowledgeEntry, setNewKnowledgeEntry);
-                }
-              }}
-            />
-            <AddButton
-              variant="outlined"
-              size="small"
-              onClick={() => addToArray('knowledge_entries', newKnowledgeEntry, setNewKnowledgeEntry)}
-              startIcon={<Add />}
-            >
-              Add
-            </AddButton>
+                  {formOptions.content_tones.map(tone => (
+                    <MenuItem key={tone} value={tone}>{tone}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
           </Box>
-          <ChipContainer>
-            {characterData.knowledge_entries.map((item, index) => (
-              <Chip
-                key={index}
-                label={item}
-                color="info"
-                variant="outlined"
-                onDelete={() => removeFromArray('knowledge_entries', index)}
-                deleteIcon={<Delete />}
-              />
-            ))}
-          </ChipContainer>
-        </FormSection>
+          
+          <TextField
+            fullWidth
+            label="Restricted Topics"
+            value={characterData.restricted_topics}
+            onChange={(e) => handleInputChange('restricted_topics', e.target.value)}
+            margin="normal"
+            variant="outlined"
+            placeholder="Topics the character should avoid discussing..."
+            multiline
+            rows={2}
+          />
+          
+          <TextField
+            fullWidth
+            label="Unique Trait"
+            value={characterData.unique_trait}
+            onChange={(e) => handleInputChange('unique_trait', e.target.value)}
+            margin="normal"
+            variant="outlined"
+            placeholder="What makes this character special or unique?"
+          />
+        </Box>
       </Box>
     </Fade>
   );
 
-  if (!formOptions && !loading) return null;
+  if (loading) {
+    return (
+      <Dialog open={open} maxWidth="md" fullWidth classes={{ paper: classes.dialog }}>
+        <Box className={classes.loadingOverlay}>
+          <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+            <CircularProgress size={40} />
+            <Typography>Creating your character...</Typography>
+          </Box>
+        </Box>
+      </Dialog>
+    );
+  }
+
+  if (success) {
+    return (
+      <Dialog open={open} maxWidth="md" fullWidth classes={{ paper: classes.dialog }}>
+        <Box className={classes.loadingOverlay}>
+          <Grow in={success}>
+            <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+              <CheckCircleOutline sx={{ fontSize: 60, color: '#10b981' }} />
+              <Typography variant="h5" color="#10b981">
+                Character Created Successfully!
+              </Typography>
+              <Typography color="text.secondary">
+                Your new character is ready to chat
+              </Typography>
+            </Box>
+          </Grow>
+        </Box>
+      </Dialog>
+    );
+  }
 
   return (
-    <StyledDialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <StyledDialogTitle>
+    <Dialog 
+      open={open} 
+      onClose={handleClose}
+      maxWidth="md" 
+      fullWidth
+      classes={{ paper: classes.dialog }}
+    >
+      <DialogTitle className={classes.dialogTitle}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h5">Create New Character</Typography>
-          <IconButton onClick={handleClose} color="inherit" size="large">
+          <IconButton onClick={handleClose} sx={{ color: 'white' }}>
             <Close />
           </IconButton>
         </Box>
-      </StyledDialogTitle>
-
-      <StyledDialogContent>
-        {loading && (
-          <LoadingOverlay>
-            <CircularProgress size={40} />
-          </LoadingOverlay>
-        )}
-
+      </DialogTitle>
+      
+      <DialogContent className={classes.dialogContent}>
+        <Stepper activeStep={activeStep} className={classes.stepper}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        
         {error && (
-          <Grow in={!!error}>
-            <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
-              {error}
-            </Alert>
-          </Grow>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
         )}
-
-        {success && (
-          <Grow in={success}>
-            <Alert 
-              severity="success" 
-              sx={{ mb: 2, borderRadius: 2 }}
-              icon={<CheckCircleOutline />}
-            >
-              Character created successfully! 🎉
-            </Alert>
-          </Grow>
-        )}
-
-        {formOptions && !loading && (
-          <>
-            <StyledStepper activeStep={activeStep} alternativeLabel>
-              {steps.map((label) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </StyledStepper>
-
-            <StepContent>
-              {activeStep === 0 && renderBasicInfo()}
-              {activeStep === 1 && renderPersonality()}
-              {activeStep === 2 && renderAdvancedSettings()}
-            </StepContent>
-          </>
-        )}
-      </StyledDialogContent>
-
-      <StyledDialogActions>
-        <Box display="flex" justifyContent="space-between" width="100%" sx={{
-          '@media (max-width: 600px)': {
-            flexDirection: 'column-reverse',
-            alignItems: 'stretch',
-          }
-        }}>
-          <ActionButton
-            variant="outlined"
-            onClick={handleBack}
-            disabled={activeStep === 0 || loading}
-            startIcon={<NavigateBefore />}
-          >
-            Back
-          </ActionButton>
-          
-          <Box sx={{
-            '@media (max-width: 600px)': {
-              width: '100%',
-            }
-          }}>
-            {activeStep < steps.length - 1 ? (
-              <ActionButton
-                variant="contained"
-                onClick={handleNext}
-                disabled={!characterData.name || !characterData.description || loading}
-                endIcon={<NavigateNext />}
-              >
-                Next
-              </ActionButton>
-            ) : (
-              <ActionButton
-                variant="contained"
-                onClick={handleSubmit}
-                disabled={!characterData.name || !characterData.description || loading}
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Save />}
-              >
-                {loading ? 'Creating...' : 'Create Character'}
-              </ActionButton>
-            )}
-          </Box>
+        
+        <Box className={classes.stepContent}>
+          {activeStep === 0 && renderBasicInfo()}
+          {activeStep === 1 && renderPersonality()}
+          {activeStep === 2 && renderAdvancedSettings()}
         </Box>
-      </StyledDialogActions>
-    </StyledDialog>
+      </DialogContent>
+      
+      <DialogActions className={classes.dialogActions}>
+        <Button 
+          disabled={activeStep === 0}
+          onClick={handleBack}
+          startIcon={<NavigateBefore />}
+        >
+          Back
+        </Button>
+        
+        <Box flex={1} />
+        
+        {activeStep === steps.length - 1 ? (
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            startIcon={<Save />}
+            disabled={!characterData.name || !characterData.description}
+            sx={{
+              bgcolor: '#6366f1',
+              '&:hover': { bgcolor: '#4f46e5' }
+            }}
+          >
+            Create Character
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={handleNext}
+            endIcon={<NavigateNext />}
+            sx={{
+              bgcolor: '#6366f1',
+              '&:hover': { bgcolor: '#4f46e5' }
+            }}
+          >
+            Next
+          </Button>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 };
 

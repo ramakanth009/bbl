@@ -1,36 +1,63 @@
 import React, { forwardRef } from 'react';
 import { Box, Typography, CircularProgress, Fade } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 import Message from './Message';
 
-const MessagesContainer = styled(Box)(({ theme }) => ({
-  flex: 1,
-  padding: theme.spacing(2.5),
-  overflowY: 'auto',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(2),
-  '@media (max-width: 1200px)': {
-    padding: theme.spacing(2.2),
-    gap: theme.spacing(1.8),
+const useStyles = makeStyles({
+  messagesContainer: {
+    flex: 1,
+    padding: '20px',
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    '@media (max-width: 1200px)': {
+      padding: '17.6px',
+      gap: '14.4px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '16px',
+      gap: '12.8px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '14.4px',
+      gap: '11.2px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '12px',
+      gap: '9.6px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '9.6px',
+      gap: '8px',
+    },
   },
-  '@media (max-width: 960px)': {
-    padding: theme.spacing(2),
-    gap: theme.spacing(1.6),
+  loadingContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    '@media (max-width: 600px)': {
+      gap: '6.4px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '4.8px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '3.2px',
+    },
   },
-  '@media (max-width: 600px)': {
-    padding: theme.spacing(1.8),
-    gap: theme.spacing(1.4),
+  loadingText: {
+    '@media (max-width: 600px)': {
+      fontSize: '0.8rem !important',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.75rem !important',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.7rem !important',
+    },
   },
-  '@media (max-width: 480px)': {
-    padding: theme.spacing(1.5),
-    gap: theme.spacing(1.2),
-  },
-  '@media (max-width: 375px)': {
-    padding: theme.spacing(1.2),
-    gap: theme.spacing(1),
-  },
-}));
+});
 
 // Step 1: Process asterisk formatting (*text* becomes italic/bold)
 function processAsteriskFormatting(text) {
@@ -167,8 +194,10 @@ function processMessageContent(content) {
 }
 
 const MessageList = forwardRef(({ messages, loading }, ref) => {
+  const classes = useStyles();
+  
   return (
-    <MessagesContainer className="chat-messages" ref={ref}>
+    <Box className={`${classes.messagesContainer} chat-messages`} ref={ref}>
       {messages.map((message, index) => (
         <Fade in timeout={400} key={index}>
           <div>
@@ -191,20 +220,7 @@ const MessageList = forwardRef(({ messages, loading }, ref) => {
         <Message message={{
           role: 'assistant',
           content: (
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 1,
-              '@media (max-width: 600px)': {
-                gap: 0.8,
-              },
-              '@media (max-width: 480px)': {
-                gap: 0.6,
-              },
-              '@media (max-width: 375px)': {
-                gap: 0.4,
-              },
-            }}>
+            <Box className={classes.loadingContainer}>
               <CircularProgress size={16} sx={{
                 '@media (max-width: 600px)': {
                   width: 14,
@@ -219,22 +235,14 @@ const MessageList = forwardRef(({ messages, loading }, ref) => {
                   height: 10,
                 },
               }} />
-              <Typography variant="body2" sx={{
-                '@media (max-width: 600px)': {
-                  fontSize: '0.8rem',
-                },
-                '@media (max-width: 480px)': {
-                  fontSize: '0.75rem',
-                },
-                '@media (max-width: 375px)': {
-                  fontSize: '0.7rem',
-                },
-              }}>Thinking...</Typography>
+              <Typography variant="body2" className={classes.loadingText}>
+                Thinking...
+              </Typography>
             </Box>
           )
         }} />
       )}
-    </MessagesContainer>
+    </Box>
   );
 });
 

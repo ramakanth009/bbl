@@ -20,45 +20,43 @@ import {
   ExpandMore,
   ExpandLess
 } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-const SettingsMenu = styled(Menu)(({ theme }) => ({
-  '& .MuiPaper-root': {
-    backgroundColor: theme.palette.background.paper,
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: 12,
-    padding: theme.spacing(3),
-    minWidth: 380,
-    maxWidth: 420,
+const useStyles = makeStyles({
+  settingsMenu: {
+    '& .MuiPaper-root': {
+      backgroundColor: '#1e1e1e',
+      border: '1px solid rgba(255, 255, 255, 0.12)',
+      borderRadius: '12px',
+      padding: '24px',
+      minWidth: '380px',
+      maxWidth: '420px',
+    },
   },
-}));
-
-const SettingBox = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
-  padding: theme.spacing(2),
-  backgroundColor: theme.palette.background.secondary,
-  borderRadius: 8,
-  border: `1px solid ${theme.palette.divider}`,
-}));
-
-const SettingHeader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  marginBottom: theme.spacing(1),
-}));
-
-const SettingTitle = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-}));
-
-const PresetChip = styled(Chip)(({ theme }) => ({
-  margin: theme.spacing(0.25),
-  fontSize: '0.75rem',
-  height: 24,
-}));
+  settingBox: {
+    marginBottom: '24px',
+    padding: '16px',
+    backgroundColor: '#252525',
+    borderRadius: '8px',
+    border: '1px solid rgba(255, 255, 255, 0.12)',
+  },
+  settingHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '8px',
+  },
+  settingTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  presetChip: {
+    margin: '2px',
+    fontSize: '0.75rem',
+    height: '24px',
+  },
+});
 
 const CreativitySettingsMenu = ({ 
   anchorEl, 
@@ -71,6 +69,7 @@ const CreativitySettingsMenu = ({
   topK, 
   setTopK 
 }) => {
+  const classes = useStyles();
   const [showExplanations, setShowExplanations] = useState(false);
 
   const presets = {
@@ -104,7 +103,8 @@ const CreativitySettingsMenu = ({
   };
 
   return (
-    <SettingsMenu
+    <Menu
+      className={classes.settingsMenu}
       anchorEl={anchorEl}
       open={open}
       onClose={onClose}
@@ -119,66 +119,64 @@ const CreativitySettingsMenu = ({
           onClick={() => setShowExplanations(!showExplanations)}
           sx={{ fontSize: '0.75rem' }}
         >
-          {showExplanations ? 'Hide' : 'Explain'}
+          {showExplanations ? 'Hide' : 'Show'} Details
         </Button>
       </Box>
 
-      <Collapse in={showExplanations}>
-        <Box sx={{ mb: 3, p: 2, backgroundColor: 'background.default', borderRadius: 1 }}>
-          <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
-            These settings control how your AI character responds. Higher values = more creative and varied responses. Lower values = more consistent and predictable responses.
-          </Typography>
-        </Box>
-      </Collapse>
-
       {/* Quick Presets */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
-          Quick Presets:
-        </Typography>
-        <Box>
-          <PresetChip 
-            label="🎯 Conservative" 
+      <Box className={classes.settingBox}>
+        <Box className={classes.settingHeader}>
+          <Box className={classes.settingTitle}>
+            <AutoAwesome fontSize="small" />
+            <Typography variant="subtitle2" fontWeight="bold">
+              Quick Presets
+            </Typography>
+          </Box>
+        </Box>
+        
+        <Box display="flex" gap={1} flexWrap="wrap">
+          <Chip
+            className={classes.presetChip}
+            label="Conservative"
+            variant="outlined"
             onClick={() => applyPreset(presets.conservative)}
-            color="default"
-            variant="outlined"
+            color={temperature === 0.2 ? 'primary' : 'default'}
           />
-          <PresetChip 
-            label="⚖️ Balanced" 
+          <Chip
+            className={classes.presetChip}
+            label="Balanced"
+            variant="outlined"
             onClick={() => applyPreset(presets.balanced)}
-            color="primary"
-            variant="outlined"
+            color={temperature === 0.7 ? 'primary' : 'default'}
           />
-          <PresetChip 
-            label="🎨 Creative" 
-            onClick={() => applyPreset(presets.creative)}
-            color="secondary"
+          <Chip
+            className={classes.presetChip}
+            label="Creative"
             variant="outlined"
+            onClick={() => applyPreset(presets.creative)}
+            color={temperature === 0.9 ? 'primary' : 'default'}
           />
         </Box>
       </Box>
 
-      <Divider sx={{ mb: 3 }} />
-
-      {/* Temperature Setting */}
-      <SettingBox>
-        <SettingHeader>
-          <SettingTitle>
-            <Psychology color="primary" fontSize="small" />
-            <Typography variant="body2" fontWeight="medium">
-              Temperature
+      {/* Temperature */}
+      <Box className={classes.settingBox}>
+        <Box className={classes.settingHeader}>
+          <Box className={classes.settingTitle}>
+            <Psychology fontSize="small" />
+            <Typography variant="subtitle2" fontWeight="bold">
+              Temperature: {getTemperatureLabel(temperature)}
             </Typography>
-            <Chip 
-              label={getTemperatureLabel(temperature)} 
-              size="small" 
-              color="primary"
-              sx={{ fontSize: '0.7rem', height: 20 }}
-            />
-          </SettingTitle>
-          <Typography variant="caption" color="text.secondary">
-            {temperature}
-          </Typography>
-        </SettingHeader>
+            <Typography variant="caption" color="text.secondary">
+              ({temperature})
+            </Typography>
+          </Box>
+          <Tooltip title="Controls randomness in responses">
+            <IconButton size="small">
+              <Info fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
         
         <Slider
           value={temperature}
@@ -186,81 +184,79 @@ const CreativitySettingsMenu = ({
           min={0}
           max={1}
           step={0.1}
-          size="small"
           marks={[
-            { value: 0, label: '0.0' },
+            { value: 0, label: '0' },
             { value: 0.5, label: '0.5' },
-            { value: 1, label: '1.0' }
+            { value: 1, label: '1' }
           ]}
+          size="small"
         />
         
         <Collapse in={showExplanations}>
           <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-            Controls response creativity. 0.0 = very predictable, 1.0 = highly creative and varied
+            Lower values make responses more focused and deterministic. Higher values increase creativity and randomness.
           </Typography>
         </Collapse>
-      </SettingBox>
+      </Box>
 
-      {/* Top P Setting */}
-      <SettingBox>
-        <SettingHeader>
-          <SettingTitle>
-            <AutoAwesome color="secondary" fontSize="small" />
-            <Typography variant="body2" fontWeight="medium">
-              Top P (Nucleus)
+      {/* Top P */}
+      <Box className={classes.settingBox}>
+        <Box className={classes.settingHeader}>
+          <Box className={classes.settingTitle}>
+            <Tune fontSize="small" />
+            <Typography variant="subtitle2" fontWeight="bold">
+              Top P: {getTopPLabel(topP)}
             </Typography>
-            <Chip 
-              label={getTopPLabel(topP)} 
-              size="small" 
-              color="secondary"
-              sx={{ fontSize: '0.7rem', height: 20 }}
-            />
-          </SettingTitle>
-          <Typography variant="caption" color="text.secondary">
-            {topP}
-          </Typography>
-        </SettingHeader>
+            <Typography variant="caption" color="text.secondary">
+              ({topP})
+            </Typography>
+          </Box>
+          <Tooltip title="Controls diversity via nucleus sampling">
+            <IconButton size="small">
+              <Info fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
         
         <Slider
           value={topP}
           onChange={(_, value) => setTopP(value)}
-          min={0}
+          min={0.1}
           max={1}
-          step={0.05}
-          size="small"
+          step={0.01}
           marks={[
-            { value: 0, label: '0.0' },
+            { value: 0.1, label: '0.1' },
             { value: 0.5, label: '0.5' },
-            { value: 1, label: '1.0' }
+            { value: 1, label: '1' }
           ]}
+          size="small"
         />
         
         <Collapse in={showExplanations}>
           <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-            Controls word choice diversity. 0.1 = focused vocabulary, 0.95+ = rich and varied language
+            Considers only the most probable tokens that add up to P probability mass. Lower values focus on likely tokens.
           </Typography>
         </Collapse>
-      </SettingBox>
+      </Box>
 
-      {/* Top K Setting */}
-      <SettingBox>
-        <SettingHeader>
-          <SettingTitle>
-            <Speed color="warning" fontSize="small" />
-            <Typography variant="body2" fontWeight="medium">
-              Top K (Vocabulary)
+      {/* Top K */}
+      <Box className={classes.settingBox}>
+        <Box className={classes.settingHeader}>
+          <Box className={classes.settingTitle}>
+            <Speed fontSize="small" />
+            <Typography variant="subtitle2" fontWeight="bold">
+              Top K: {getTopKLabel(topK)}
             </Typography>
-            <Chip 
-              label={getTopKLabel(topK)} 
-              size="small" 
-              color="warning"
-              sx={{ fontSize: '0.7rem', height: 20 }}
-            />
-          </SettingTitle>
-          <Typography variant="caption" color="text.secondary">
-            {topK}
-          </Typography>
-        </SettingHeader>
+            <Typography variant="caption" color="text.secondary">
+              ({topK})
+            </Typography>
+          </Box>
+          <Tooltip title="Limits token choices to top K options">
+            <IconButton size="small">
+              <Info fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
         
         <Slider
           value={topK}
@@ -268,40 +264,33 @@ const CreativitySettingsMenu = ({
           min={1}
           max={100}
           step={1}
-          size="small"
           marks={[
             { value: 1, label: '1' },
             { value: 50, label: '50' },
             { value: 100, label: '100' }
           ]}
+          size="small"
         />
         
         <Collapse in={showExplanations}>
           <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-            Limits vocabulary choices. Low = safe words, High = adventurous vocabulary
+            Considers only the K most likely next tokens. Lower values are more conservative, higher values more adventurous.
           </Typography>
         </Collapse>
-      </SettingBox>
-
-      {/* Current Combination Effect */}
-      <Box sx={{ mt: 2, p: 2, backgroundColor: 'action.hover', borderRadius: 1 }}>
-        <Typography variant="caption" fontWeight="medium" color="text.secondary">
-          Current Style: {getCurrentStyle()}
-        </Typography>
       </Box>
-    </SettingsMenu>
-  );
 
-  function getCurrentStyle() {
-    const tempScore = temperature;
-    const diversity = (topP + topK/100) / 2;
-    const overall = (tempScore + diversity) / 2;
-    
-    if (overall <= 0.4) return "📚 Academic & Precise";
-    if (overall <= 0.6) return "💬 Conversational & Balanced";
-    if (overall <= 0.8) return "🎭 Expressive & Engaging";
-    return "🌟 Highly Creative & Unpredictable";
-  }
+      <Divider sx={{ my: 2 }} />
+      
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="caption" color="text.secondary">
+          Advanced AI Parameters
+        </Typography>
+        <Button size="small" onClick={onClose} variant="outlined">
+          Done
+        </Button>
+      </Box>
+    </Menu>
+  );
 };
 
 export default CreativitySettingsMenu;
