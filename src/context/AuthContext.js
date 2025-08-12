@@ -17,12 +17,24 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
-      // You could decode the JWT to get user info if needed
-    }
-    setLoading(false);
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          // Optional: Verify token with a simple API call
+          // You could add a /verify endpoint or use any authenticated endpoint
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        // Token invalid or expired
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const login = async (username, password) => {
@@ -51,10 +63,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    apiService.logout();
-    setIsAuthenticated(false);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await apiService.logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      localStorage.removeItem('token');
+      setIsAuthenticated(false);
+      setUser(null);
+    }
   };
 
   const value = {

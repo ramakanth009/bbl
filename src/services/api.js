@@ -7,49 +7,67 @@ const BASE_URL = process.env.REACT_APP_API_URL || 'https://characters-zwwb.onren
 // const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000'; 
 
 class ApiService {
-  constructor() {
-    this.client = axios.create({
-      baseURL: BASE_URL,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // timeout: 50000, // 50 second timeout for AI responses
-    });
+constructor() {
+  this.client = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    // timeout: 50000, // 50 second timeout for AI responses
+  });
 
-    // Add auth token to requests
-    this.client.interceptors.request.use((config) => {
+  // Add auth token to requests
+  this.client.interceptors.request.use(
+    (config) => {
       const token = localStorage.getItem('token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
-    });
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
 
-    // Enhanced response interceptor with better error handling
-    this.client.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (error.response?.status === 401) {
-          localStorage.removeItem('token');
-          // Only redirect if not already on login page
-          if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
-          }
+  // Enhanced response interceptor with better error handling
+  this.client.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      // Handle authentication errors
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        
+        // Only redirect if not already on auth pages
+        const currentPath = window.location.pathname;
+        if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
+          // Use replace to avoid back button issues
+          window.location.replace('/login');
         }
-        
-        // Log errors for debugging (remove in production)
-        console.error('API Error:', {
-          url: error.config?.url,
-          method: error.config?.method,
-          status: error.response?.status,
-          data: error.response?.data,
-          message: error.message
-        });
-        
-        return Promise.reject(error);
       }
-    );
-  }
+      
+      // Handle other common errors
+      if (error.response?.status === 403) {
+        console.warn('Access forbidden - insufficient permissions');
+      }
+      
+      if (error.response?.status >= 500) {
+        console.error('Server error - please try again later');
+      }
+      
+      // Log errors for debugging (remove in production)
+      console.error('API Error:', {
+        url: error.config?.url,
+        method: error.config?.method,
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
+      
+      return Promise.reject(error);
+    }
+  );
+}
 
   // Auth endpoints
   async register(username, password) {
@@ -598,12 +616,25 @@ async getAllCharacters() {
     }
   }
 
-  // Utility methods
-  logout() {
+async logout() {
+  try {
+    // Check if user is authenticated before making logout call
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Make API call to logout endpoint to blacklist the JWT token
+      await this.client.post('/logout');
+    }
+  } catch (error) {
+    // Log the error but don't prevent logout from completing
+    console.error('Logout API call failed:', error.message);
+    // Even if API call fails, we should still proceed with local logout
+  } finally {
+    // Always clean up local storage and redirect regardless of API call result
     localStorage.removeItem('token');
     localStorage.removeItem('language_preferences');
-    window.location.href = '/login';
+    // window.location.href = '#/login';
   }
+}
 
   isAuthenticated() {
     const token = localStorage.getItem('token');

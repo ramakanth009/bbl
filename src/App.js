@@ -62,7 +62,8 @@
 
 // export default App;
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+// import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { theme } from './styles/theme';
@@ -89,7 +90,8 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <HashRouter>
+        {/* <HashRouter> */}
+        <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -121,7 +123,8 @@ function App() {
             </Route>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>
-        </HashRouter>
+          </BrowserRouter>
+        {/* </HashRouter> */}
       </AuthProvider>
     </ThemeProvider>
     </StyledEngineProvider>

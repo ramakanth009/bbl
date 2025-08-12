@@ -6,12 +6,13 @@ import { CircularProgress, Box } from '@mui/material';
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
+  // Show loading while checking authentication
   if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
+      <Box 
+        display="flex" 
+        justifyContent="center" 
+        alignItems="center" 
         minHeight="100vh"
       >
         <CircularProgress />
@@ -19,7 +20,13 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Render children if authenticated
+  return children;
 };
 
 export default ProtectedRoute;
