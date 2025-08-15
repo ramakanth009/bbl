@@ -15,7 +15,8 @@ import {
   IconButton,
 } from "@mui/material";
 import {
-  LocationOn,
+  // LocationOn,
+  WorkspacePremium,
   Add,
   Explore,
   Star,
@@ -784,7 +785,8 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
         <Box className={classes.contentWrapper}>
           <Box className={`${classes.logoWrapper} ${!open ? classes.logoWrapperCollapsed : ""}`}>
             <Box className={classes.logoIcon}>
-              <LocationOn sx={{ fontSize: 14 }} />
+              {/* <LocationOn sx={{ fontSize: 14 }} /> */}
+              <WorkspacePremium sx={{ fontSize: 14 }} />
             </Box>
             {open && (
               <Typography className={classes.logoText}>
