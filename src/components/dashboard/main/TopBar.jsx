@@ -21,10 +21,12 @@ import {
   MoreVert,
   Menu as MenuIcon,
   Search,
-  LocationOn
+  LocationOn,
+  Logout
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useCategories } from '../../../context/CategoriesContext';
+import { useAuth } from '../../../context/AuthContext';
 
 const useStyles = makeStyles({
   topBar: {
@@ -156,6 +158,7 @@ const TopBar = ({ activeSection, onSectionChange, onMenuToggle, onSearchToggle }
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { categories, loading } = useCategories();
+  const { logout } = useAuth();
   const [menuAnchor, setMenuAnchor] = useState(null);
 
   const mainTabs = [
@@ -293,6 +296,14 @@ const TopBar = ({ activeSection, onSectionChange, onMenuToggle, onSearchToggle }
           >
             <MoreVert />
           </IconButton> */}
+          <IconButton 
+            className={classes.actionButton}
+            onClick={logout}
+            aria-label="Logout"
+          >
+            <History sx={{ display: 'none' }} /> {/* Just to keep icon order, can be removed */}
+            <Logout />
+          </IconButton>
         </Box>
       </Box>
 
