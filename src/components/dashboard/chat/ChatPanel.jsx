@@ -943,6 +943,7 @@ const ChatPanel = ({
           <MessageList 
             messages={messages} 
             loading={loading}
+            character={character}
             showLanguageLabels={language !== 'english'}
           />
           <div ref={messagesEndRef} className={classes.messagesEnd} />

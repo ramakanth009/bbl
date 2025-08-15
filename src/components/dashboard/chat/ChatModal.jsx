@@ -16,7 +16,7 @@ import {
   History as HistoryIcon 
 } from '@mui/icons-material';
 import apiService from '../../../services/api';
-import MessageList from '../MessageList';
+import MessageList from '../message/MessageList';
 import ChatInput from './ChatInput';
 import CreativitySettingsMenu from '../CreativitySettingsMenu';
 import SessionHistory from '../sessions/SessionHistory';
@@ -461,6 +461,7 @@ const ChatModal = ({ open, character, onClose }) => {
         <MessageList 
           messages={messages} 
           loading={loading} 
+          character={character}
           ref={messagesEndRef} 
         />
 

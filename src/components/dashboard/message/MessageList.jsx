@@ -57,6 +57,31 @@ const useStyles = makeStyles({
       fontSize: '0.7rem !important',
     },
   },
+  // Add new style for loading message bubble
+  loadingMessageContent: {
+    maxWidth: '40% !important', // Smaller width for loading bubble
+    minWidth: '120px', // Ensure minimum width for content
+    '@media (max-width: 1200px)': {
+      maxWidth: '45% !important',
+      minWidth: '110px',
+    },
+    '@media (max-width: 960px)': {
+      maxWidth: '50% !important',
+      minWidth: '100px',
+    },
+    '@media (max-width: 600px)': {
+      maxWidth: '55% !important',
+      minWidth: '90px',
+    },
+    '@media (max-width: 480px)': {
+      maxWidth: '60% !important',
+      minWidth: '80px',
+    },
+    '@media (max-width: 375px)': {
+      maxWidth: '65% !important',
+      minWidth: '70px',
+    },
+  },
 });
 
 // Step 1: Process asterisk formatting (*text* becomes italic/bold)
@@ -193,7 +218,7 @@ function processMessageContent(content) {
   return processed;
 }
 
-const MessageList = forwardRef(({ messages, loading }, ref) => {
+const MessageList = forwardRef(({ messages, loading, character }, ref) => {
   const classes = useStyles();
   
   return (
@@ -211,36 +236,42 @@ const MessageList = forwardRef(({ messages, loading }, ref) => {
                     </span>
                   : message.content,
               }}
+              character={character}
             />
           </div>
         </Fade>
       ))}
       
       {loading && (
-        <Message message={{
-          role: 'assistant',
-          content: (
-            <Box className={classes.loadingContainer}>
-              <CircularProgress size={16} sx={{
-                '@media (max-width: 600px)': {
-                  width: 14,
-                  height: 14,
-                },
-                '@media (max-width: 480px)': {
-                  width: 12,
-                  height: 12,
-                },
-                '@media (max-width: 375px)': {
-                  width: 10,
-                  height: 10,
-                },
-              }} />
-              <Typography variant="body2" className={classes.loadingText}>
-                Thinking...
-              </Typography>
-            </Box>
-          )
-        }} />
+        <Message 
+          message={{
+            role: 'assistant',
+            content: (
+              <Box className={classes.loadingContainer}>
+                <CircularProgress size={16} sx={{
+                  '@media (max-width: 600px)': {
+                    width: 14,
+                    height: 14,
+                  },
+                  '@media (max-width: 480px)': {
+                    width: 12,
+                    height: 12,
+                  },
+                  '@media (max-width: 375px)': {
+                    width: 10,
+                    height: 10,
+                  },
+                }} />
+                <Typography variant="body2" className={classes.loadingText}>
+                  Thinking...
+                </Typography>
+              </Box>
+            )
+          }} 
+          character={character}
+          // Add custom className prop to Message component
+          className={classes.loadingMessageContent}
+        />
       )}
     </Box>
   );

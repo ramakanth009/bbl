@@ -229,7 +229,7 @@
 
 // export default Message;
 import React, { useState, useEffect } from 'react';
-import { Box, Paper, IconButton } from '@mui/material';
+import { Box, Paper, IconButton, Avatar } from '@mui/material';
 import { VolumeUp, Stop } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import voiceService from './Voice'; // Import the singleton instance, not the class
@@ -310,6 +310,92 @@ const useStyles = makeStyles({
     color: '#ffffff',
     border: '1px solid rgba(255, 255, 255, 0.12)',
   },
+  messageWithAvatar: {
+    display: 'flex',
+    alignItems: 'flex-end',
+    gap: '8px',
+    '@media (max-width: 1200px)': {
+      gap: '7px',
+    },
+    '@media (max-width: 960px)': {
+      gap: '6px',
+    },
+    '@media (max-width: 600px)': {
+      gap: '5px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '4px',
+    },
+    '@media (max-width: 375px)': {
+      gap: '3px',
+    },
+  },
+  characterAvatar: {
+    width: '32px',
+    height: '32px',
+    borderRadius: '50%',
+    border: '2px solid rgba(99, 102, 241, 0.3)',
+    flexShrink: 0,
+    '@media (max-width: 1200px)': {
+      width: '30px',
+      height: '30px',
+    },
+    '@media (max-width: 960px)': {
+      width: '28px',
+      height: '28px',
+    },
+    '@media (max-width: 600px)': {
+      width: '26px',
+      height: '26px',
+    },
+    '@media (max-width: 480px)': {
+      width: '24px',
+      height: '24px',
+    },
+    '@media (max-width: 375px)': {
+      width: '22px',
+      height: '22px',
+    },
+  },
+  userAvatar: {
+    width: '32px',
+    height: '32px',
+    borderRadius: '50%',
+    border: '2px solid rgba(99, 102, 241, 0.3)',
+    flexShrink: 0,
+    backgroundColor: '#6366f1',
+    color: 'white',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '0.875rem',
+    fontWeight: 'bold',
+    '@media (max-width: 1200px)': {
+      width: '30px',
+      height: '30px',
+      fontSize: '0.8rem',
+    },
+    '@media (max-width: 960px)': {
+      width: '28px',
+      height: '28px',
+      fontSize: '0.75rem',
+    },
+    '@media (max-width: 600px)': {
+      width: '26px',
+      height: '26px',
+      fontSize: '0.7rem',
+    },
+    '@media (max-width: 480px)': {
+      width: '24px',
+      height: '24px',
+      fontSize: '0.65rem',
+    },
+    '@media (max-width: 375px)': {
+      width: '22px',
+      height: '22px',
+      fontSize: '0.6rem',
+    },
+  },
   messageHeader: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -373,7 +459,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Message = ({ message }) => {
+const Message = ({ message, character, className }) => {
   const classes = useStyles();
   const isUser = message.role === 'user';
   const [isPlaying, setIsPlaying] = useState(false);
@@ -446,44 +532,92 @@ const Message = ({ message }) => {
     }
   };
 
-  return (
-    <Box className={`${classes.messageWrapper} ${isUser ? classes.messageWrapperUser : classes.messageWrapperAssistant}`}>
-      <Paper 
-        className={`${classes.messageContent} ${isUser ? classes.messageContentUser : classes.messageContentAssistant}`}
-        elevation={0}
-      >
-        {/* Show original user input if different from processed content */}
-        {hasUserInput && !isUser && (
-          <Box className={classes.messageHeader}>
-            <Box component="span" sx={{ fontStyle: 'italic' }}>
-              User said: "{message.user_input}"
-            </Box>
-          </Box>
-        )}
-        
-        {/* Main message content */}
-        <Box>
-          {message.content}
-        </Box>
-
-        {/* Voice controls for assistant messages or messages with voice data */}
-        {(hasVoiceData || !isUser) && (
-          <Box className={classes.voiceControls}>
-            <IconButton 
-              className={`${classes.speakerButton} ${isUser ? classes.speakerButtonUser : classes.speakerButtonAssistant} ${isPlaying ? 'playing' : ''}`}
-              onClick={handleToggleVoice}
-              title={isPlaying ? "Stop audio" : "Play voice"}
-              size="small"
-            >
-              {isPlaying ? <Stop /> : <VolumeUp />}
-            </IconButton>
+  // For assistant messages, show avatar and message content
+  if (!isUser && character) {
+    return (
+      <Box className={`${classes.messageWrapper} ${classes.messageWrapperAssistant}`}>
+        <Box className={classes.messageWithAvatar}>
+          <Avatar
+            src={character.img}
+            alt={character.name}
+            className={classes.characterAvatar}
+          />
+          <Paper 
+            className={`${classes.messageContent} ${classes.messageContentAssistant} ${className || ''}`}
+            elevation={0}
+          >
+            {/* Show original user input if different from processed content */}
+            {hasUserInput && (
+              <Box className={classes.messageHeader}>
+                <Box component="span" sx={{ fontStyle: 'italic' }}>
+                  User said: "{message.user_input}"
+                </Box>
+              </Box>
+            )}
             
-            <Box component="span" sx={{ fontSize: '0.7rem', opacity: 0.6 }}>
-              {isPlaying ? 'Playing...' : (hasVoiceData ? 'Voice available' : 'Text-to-speech')}
+            {/* Main message content */}
+            <Box>
+              {message.content}
             </Box>
+
+            {/* Voice controls for assistant messages or messages with voice data */}
+            {(hasVoiceData || !isUser) && (
+              <Box className={classes.voiceControls}>
+                <IconButton 
+                  className={`${classes.speakerButton} ${classes.speakerButtonAssistant} ${isPlaying ? 'playing' : ''}`}
+                  onClick={handleToggleVoice}
+                  title={isPlaying ? "Stop audio" : "Play voice"}
+                  size="small"
+                >
+                  {isPlaying ? <Stop /> : <VolumeUp />}
+                </IconButton>
+                
+                <Box component="span" sx={{ fontSize: '0.7rem', opacity: 0.6 }}>
+                  {isPlaying ? 'Playing...' : (hasVoiceData ? 'Voice available' : 'voice')}
+                </Box>
+              </Box>
+            )}
+          </Paper>
+        </Box>
+      </Box>
+    );
+  }
+
+  // For user messages, show avatar and message content
+  return (
+    <Box className={`${classes.messageWrapper} ${classes.messageWrapperUser}`}>
+      <Box className={classes.messageWithAvatar}>
+        <Paper 
+          className={`${classes.messageContent} ${classes.messageContentUser} ${className || ''}`}
+          elevation={0}
+        >
+          {/* Main message content */}
+          <Box>
+            {message.content}
           </Box>
-        )}
-      </Paper>
+
+          {/* Voice controls for user messages with voice data */}
+          {hasVoiceData && (
+            <Box className={classes.voiceControls}>
+              <IconButton 
+                className={`${classes.speakerButton} ${classes.speakerButtonUser} ${isPlaying ? 'playing' : ''}`}
+                onClick={handleToggleVoice}
+                title={isPlaying ? "Stop audio" : "Play voice"}
+                size="small"
+              >
+                {isPlaying ? <Stop /> : <VolumeUp />}
+              </IconButton>
+              
+              <Box component="span" sx={{ fontSize: '0.7rem', opacity: 0.6 }}>
+                {isPlaying ? 'Playing...' : (hasVoiceData ? 'Voice available' : 'voice')}
+              </Box>
+            </Box>
+          )}
+        </Paper>
+        <Box className={classes.userAvatar}>
+          U
+        </Box>
+      </Box>
     </Box>
   );
 };

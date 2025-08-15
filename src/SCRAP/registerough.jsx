@@ -108,7 +108,7 @@ const useStyles = makeStyles(() => ({
   logoIcon: {
     width: 52,
     height: 52,
-    backgroundColor:"#fff !important",
+    backgroundColor: '#fff !important',
     borderRadius: 14,
     display: 'flex',
     alignItems: 'center',
@@ -132,6 +132,49 @@ const useStyles = makeStyles(() => ({
     '@media (max-width: 375px)': {
       width: 36,
       height: 36,
+    },
+  },
+  titleText: {
+    '@media (max-width: 960px)': {
+      fontSize: '1.9rem !important',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.7rem !important',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '1.5rem !important',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '1.3rem !important',
+    },
+  },
+  logoText: {
+    '@media (max-width: 960px)': {
+      fontSize: '1.3rem !important',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.2rem !important',
+      textAlign: 'center',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '1.1rem !important',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '1rem !important',
+    },
+  },
+  logoIconResponsive: {
+    '@media (max-width: 960px)': {
+      fontSize: '36px !important',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '32px !important',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '28px !important',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '24px !important',
     },
   },
   styledTextField: {
@@ -191,7 +234,7 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     padding: '13px',
     borderRadius: 14,
-    backgroundColor:"#fff !important",
+    backgroundColor: '#fff !important',
     color: '#111 !important',
     fontSize: '1.08rem',
     fontWeight: 700,
@@ -257,145 +300,99 @@ const useStyles = makeStyles(() => ({
     '&:hover': {
       backgroundColor: 'rgba(255,255,255,0.05)',
       color: '#1a73e8',
-      boxShadow: '0 2px 4px rgba(60,64,67,.13)',
+      borderColor: '#dadce0',
     },
-    '&:active': {
-      background: '#ececec',
-    },
-    '&:focus': {
-      outline: '2px solid #4285F4',
-      outlineOffset: '2px',
+    '&:disabled': {
+      backgroundColor: 'transparent',
+      color: '#ffffff',
+      opacity: 0.7,
     },
     '@media (max-width: 960px)': {
       padding: '12px !important',
       fontSize: '0.96rem',
       borderRadius: 12,
-      gap: '10px',
+      marginBottom: '12px',
     },
     '@media (max-width: 600px)': {
       padding: '11px !important',
       fontSize: '0.92rem',
       borderRadius: 10,
-      gap: '8px',
+      gap: '10px',
+      marginBottom: '10px',
     },
     '@media (max-width: 480px)': {
       padding: '10px !important',
       fontSize: '0.88rem',
       borderRadius: 8,
-      gap: '6px',
+      gap: '8px',
+      marginBottom: '8px',
     },
     '@media (max-width: 375px)': {
       padding: '9px !important',
       fontSize: '0.84rem',
-      gap: '4px',
+      gap: '6px',
+      marginBottom: '6px',
     },
   },
   divider: {
-    display: 'flex',
-    alignItems: 'center',
-    margin: '28px 0',
-    '&::before, &::after': {
+    position: 'relative',
+    margin: '20px 0',
+    textAlign: 'center',
+    '&::before': {
       content: '""',
-      flex: 1,
-      height: 1,
-      background: 'linear-gradient(90deg, #222 0%, #444 100%)',
+      position: 'absolute',
+      top: '50%',
+      left: 0,
+      right: 0,
+      height: '1px',
+      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3) 20%, rgba(255,255,255,0.3) 80%, transparent)',
     },
     '@media (max-width: 960px)': {
-      margin: '24px 0',
-    },
-    '@media (max-width: 600px)': {
-      margin: '20px 0',
-    },
-    '@media (max-width: 480px)': {
       margin: '18px 0',
     },
-    '@media (max-width: 375px)': {
+    '@media (max-width: 600px)': {
       margin: '16px 0',
+    },
+    '@media (max-width: 480px)': {
+      margin: '14px 0',
+    },
+    '@media (max-width: 375px)': {
+      margin: '12px 0',
     },
   },
   dividerText: {
-    padding: '0 18px',
-    color: '#888',
-    fontSize: '0.92rem',
+    backgroundColor: 'transparent',
+    color: 'rgba(255,255,255,0.7)',
+    padding: '0 16px',
+    fontSize: '0.9rem',
     fontWeight: 500,
-    letterSpacing: '0.03em',
-    '@media (max-width: 960px)': {
-      padding: '0 16px',
-      fontSize: '0.9rem',
-    },
     '@media (max-width: 600px)': {
+      fontSize: '0.85rem',
       padding: '0 14px',
-      fontSize: '0.88rem',
     },
     '@media (max-width: 480px)': {
+      fontSize: '0.8rem',
       padding: '0 12px',
-      fontSize: '0.86rem',
     },
     '@media (max-width: 375px)': {
+      fontSize: '0.75rem',
       padding: '0 10px',
-      fontSize: '0.84rem',
     },
   },
   styledLink: {
-    color: '#fff',
-    textDecoration: 'underline',
+    color: '#fff !important',
+    textDecoration: 'none',
     fontWeight: 600,
-    transition: 'color 0.3s',
+    borderBottom: '1px solid transparent',
+    transition: 'border-bottom-color 0.2s',
     '&:hover': {
-      color: '#fff',
-    },
-  },
-  titleText: {
-    '@media (max-width: 960px)': {
-      fontSize: '1.9rem !important',
-    },
-    '@media (max-width: 600px)': {
-      fontSize: '1.7rem !important',
-    },
-    '@media (max-width: 480px)': {
-      fontSize: '1.5rem !important',
-    },
-    '@media (max-width: 375px)': {
-      fontSize: '1.3rem !important',
-    },
-  },
-  logoText: {
-    '@media (max-width: 960px)': {
-      fontSize: '1.3rem !important',
-    },
-    '@media (max-width: 600px)': {
-      fontSize: '1.2rem !important',
-      textAlign: 'center',
-    },
-    '@media (max-width: 480px)': {
-      fontSize: '1.1rem !important',
-    },
-    '@media (max-width: 375px)': {
-      fontSize: '1rem !important',
-    },
-  },
-  logoIconResponsive: {
-    '@media (max-width: 960px)': {
-      fontSize: '36px !important',
-    },
-    '@media (max-width: 600px)': {
-      fontSize: '32px !important',
-    },
-    '@media (max-width: 480px)': {
-      fontSize: '28px !important',
-    },
-    '@media (max-width: 375px)': {
-      fontSize: '24px !important',
+      borderBottomColor: '#fff',
     },
   },
   oauthUnavailable: {
-    opacity: 0.7,
-    cursor: 'not-allowed',
-    '&:hover': {
-      backgroundColor: 'transparent !important',
-      color: '#fff !important',
-      boxShadow: 'none !important',
-    },
+    opacity: 0.5,
+    cursor: 'not-allowed !important',
+    pointerEvents: 'none',
   },
 }));
 
@@ -406,13 +403,13 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [searchParams] = useSearchParams();
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [searchParams] = useSearchParams();
   const { register, loginWithGoogle, isAuthenticated, oauthStatus } = useAuth();
   const navigate = useNavigate();
 
+  // Handle OAuth errors passed via URL params
   useEffect(() => {
-    // Handle OAuth errors passed via URL params
     const error = searchParams.get('error');
     const message = searchParams.get('message');
     
@@ -428,9 +425,9 @@ const Register = () => {
     }
   }, [searchParams]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -465,7 +462,7 @@ const Register = () => {
     setLoading(false);
   };
 
-  const handleGoogleRegister = async () => {
+  const handleGoogleSignup = async () => {
     if (!oauthStatus?.oauth_configured || !oauthStatus?.google_available) {
       setError('Google OAuth is not available. Please try again later or contact support.');
       return;
@@ -481,8 +478,8 @@ const Register = () => {
       // Note: User will be redirected to Google, so this component will unmount
       // The callback will be handled by the AuthCallback component
     } catch (error) {
-      console.error('Google registration failed:', error);
-      setError('Failed to initiate Google registration. Please try again.');
+      console.error('Google signup failed:', error);
+      setError('Failed to initiate Google signup. Please try again.');
       setGoogleLoading(false);
     }
   };
@@ -502,74 +499,47 @@ const Register = () => {
               <Box>
                 <Box className={classes.logoContainer}>
                   <Box className={classes.logoIcon}>
-                    <WorkspacePremium sx={{ color: '#232526', fontSize: 40, filter: 'drop-shadow(0 1px 4px #bbb)' }} className={classes.logoIconResponsive} />
+                    <WorkspacePremium 
+                      sx={{ color: '#232526', fontSize: 40, filter: 'drop-shadow(0 1px 4px #bbb)' }} 
+                      className={classes.logoIconResponsive} 
+                    />
                   </Box>
-                  <Typography
-                    variant="h5"
+                  <Typography 
+                    variant="h5" 
                     fontWeight="bold"
                     className={classes.logoText}
-                    sx={{
-                      background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
+                    sx={{ 
+                      color: '#fff',
+                      background: 'linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.8) 100%)',
+                      backgroundClip: 'text',
                       WebkitBackgroundClip: 'text',
+                      textFillColor: 'transparent',
                       WebkitTextFillColor: 'transparent',
-                      letterSpacing: '0.02em',
+                      textAlign: 'center'
                     }}
                   >
-                    Bring Back Legend
+                    Character Chat
                   </Typography>
                 </Box>
 
-                <Typography
-                  variant="h4"
-                  fontWeight="bold"
-                  align="center"
-                  gutterBottom
+                <Typography 
+                  variant="h4" 
+                  fontWeight="700"
+                  sx={{ 
+                    color: '#fff', 
+                    marginBottom: 3,
+                    textAlign: 'center'
+                  }}
                   className={classes.titleText}
-                  sx={{
-                    color: '#fff',
-                    fontSize: '2.1rem',
-                    mb: 1,
-                    letterSpacing: '0.01em',
-                  }}
                 >
-                  Create your account
+                  Create Account
                 </Typography>
 
-                <Typography
-                  variant="body1"
-                  align="center"
-                  sx={{
-                    color: '#bbb',
-                    mb: 4,
-                  }}
-                >
-                  Join the legendary conversations
-                </Typography>
-
-                {error && (
-                  <Fade in>
-                    <Alert
-                      severity="error"
-                      sx={{
-                        mb: 3,
-                        backgroundColor: 'transparent',
-                        border: '1.5px solid #f44336',
-                        color: '#f44336',
-                        borderRadius: 2,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {error}
-                    </Alert>
-                  </Fade>
-                )}
-
-                {/* Social Login Buttons */}
                 <Button
-                  className={`${classes.googleButton} ${!isOAuthAvailable ? classes.oauthUnavailable : ''}`}
-                  onClick={handleGoogleRegister}
+                  fullWidth
+                  onClick={handleGoogleSignup}
                   disabled={googleLoading || !isOAuthAvailable}
-                  disableElevation
+                  className={`${classes.googleButton} ${!isOAuthAvailable ? classes.oauthUnavailable : ''}`}
                   startIcon={
                     googleLoading ? (
                       <CircularProgress size={20} sx={{ color: '#fff' }} />
@@ -601,13 +571,31 @@ const Register = () => {
                       fontSize: '0.75rem' 
                     }}
                   >
-                    Google Sign-In temporarily unavailable
+                    Google Sign-Up temporarily unavailable
                   </Typography>
                 )}
 
                 <Box className={classes.divider}>
                   <Typography className={classes.dividerText}>OR</Typography>
                 </Box>
+
+                {error && (
+                  <Fade in>
+                    <Alert
+                      severity="error"
+                      sx={{
+                        mb: 3,
+                        backgroundColor: 'transparent',
+                        border: '1.5px solid #444',
+                        color: '#fff',
+                        borderRadius: 2,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {error}
+                    </Alert>
+                  </Fade>
+                )}
 
                 <Box component="form" onSubmit={handleSubmit}>
                   <TextField
@@ -648,9 +636,8 @@ const Register = () => {
 
                   <Button
                     type="submit"
-                    disabled={loading || googleLoading}
+                    disabled={loading}
                     className={classes.registerButton}
-                    startIcon={loading ? <CircularProgress size={20} sx={{ color: '#111' }} /> : null}
                   >
                     {loading ? 'Creating Account...' : 'Sign Up'}
                   </Button>

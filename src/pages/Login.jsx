@@ -1,5 +1,597 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+// import React, { useState } from 'react';
+// import { useNavigate, Link } from 'react-router-dom';
+// import {
+//   Box,
+//   Card,
+//   TextField,
+//   Button,
+//   Typography,
+//   Alert,
+//   Container,
+//   IconButton,
+//   InputAdornment,
+//   Fade,
+//   Zoom,
+// } from '@mui/material';
+// import {
+//   Visibility,
+//   VisibilityOff,
+//   WorkspacePremium,
+//   Apple,
+//   Email,
+// } from '@mui/icons-material';
+// import { makeStyles } from '@mui/styles';
+// import { useAuth } from '../context/AuthContext';
+// import GoogleLogo from '../assets/google-logo.svg'; // Import the actual Google logo SVG
+
+// // Import the StarField component
+// const StarField = React.lazy(() => import('../components/common/StarField'));
+
+// // Styles using makeStyles
+// const useStyles = makeStyles(() => ({
+//   pageContainer: {
+//     minHeight: '100vh',
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'flex-end',
+//     position: 'relative',
+//     zIndex: 1,
+//     padding: '24px',
+//     '@media (max-width: 1200px)': {
+//       justifyContent: 'center',
+//       padding: '20px',
+//     },
+//     '@media (max-width: 960px)': {
+//       padding: '16px',
+//     },
+//     '@media (max-width: 600px)': {
+//       padding: '12px',
+//       minHeight: '100vh',
+//     },
+//     '@media (max-width: 480px)': {
+//       padding: '8px',
+//     },
+//     '@media (max-width: 375px)': {
+//       padding: '4px',
+//     },
+//   },
+//   authCard: {
+//     width: '100%',
+//     maxWidth: 440,
+//     padding: '36px 36px 32px 36px',
+//     background: 'none !important',
+//     backgroundColor: 'transparent !important',
+//     border: 'none !important',
+//     borderRadius: 28,
+//     boxShadow: 'none !important',
+//     transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
+//     '&:hover': {
+//       // transform: 'translateY(-1px) scale(1.01)',
+//       // boxShadow: '0 48px 96px rgba(0,0,0,0.85), 0 0 0 1.5px #444',
+//     },
+//     '@media (max-width: 1200px)': {
+//       maxWidth: 400,
+//       padding: '32px 32px 28px 32px',
+//     },
+//     '@media (max-width: 960px)': {
+//       maxWidth: 380,
+//       padding: '28px 28px 24px 28px',
+//       borderRadius: 24,
+//     },
+//     '@media (max-width: 600px)': {
+//       maxWidth: '100%',
+//       padding: '24px 24px 20px 24px',
+//       borderRadius: 20,
+//     },
+//     '@media (max-width: 480px)': {
+//       padding: '20px 20px 16px 20px',
+//       borderRadius: 16,
+//     },
+//     '@media (max-width: 375px)': {
+//       padding: '16px 16px 12px 16px',
+//       borderRadius: 12,
+//     },
+//   },
+//   logoContainer: {
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     gap: '18px',
+//     marginBottom: '36px',
+//     '@media (max-width: 960px)': {
+//       gap: '16px',
+//       marginBottom: '32px',
+//     },
+//     '@media (max-width: 600px)': {
+//       gap: '14px',
+//       marginBottom: '28px',
+//       flexDirection: 'column',
+//     },
+//     '@media (max-width: 480px)': {
+//       gap: '12px',
+//       marginBottom: '24px',
+//     },
+//     '@media (max-width: 375px)': {
+//       gap: '10px',
+//       marginBottom: '20px',
+//     },
+//   },
+//   logoIcon: {
+//     width: 52,
+//     height: 52,
+//     background: 'linear-gradient(135deg, #fff 0%, #bbb 100%)',
+//     borderRadius: 14,
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     boxShadow: '0 8px 32px rgba(255,255,255,0.10)',
+//     '@media (max-width: 960px)': {
+//       width: 48,
+//       height: 48,
+//       borderRadius: 12,
+//     },
+//     '@media (max-width: 600px)': {
+//       width: 44,
+//       height: 44,
+//       borderRadius: 10,
+//     },
+//     '@media (max-width: 480px)': {
+//       width: 40,
+//       height: 40,
+//       borderRadius: 8,
+//     },
+//     '@media (max-width: 375px)': {
+//       width: 36,
+//       height: 36,
+//     },
+//   },
+//   styledTextField: {
+//     marginBottom: '22px',
+//     '& .MuiOutlinedInput-root': {
+//       backgroundColor: 'transparent !important',
+//       border: '1.5px solid #fff',
+//       borderRadius: 14,
+//       transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
+//       '& fieldset': {
+//         border: 'none',
+//       },
+//       '&:hover': {
+//         backgroundColor: 'transparent',
+//         border: '1.5px solid #fff',
+//       },
+//       '&.Mui-focused': {
+//         backgroundColor: 'transparent',
+//         border: '1.5px solid #fff',
+//         boxShadow: '0 0 0 4px rgba(255,255,255,0.08)',
+//       },
+//     },
+//     '& .MuiInputLabel-root': {
+//       color: '#bbb',
+//       '&.Mui-focused': {
+//         color: '#fff',
+//       },
+//     },
+//     '& .MuiInputBase-input': {
+//       color: '#fff',
+//       fontWeight: 500,
+//       letterSpacing: '0.02em',
+//     },
+//     '@media (max-width: 960px)': {
+//       marginBottom: '20px',
+//       '& .MuiOutlinedInput-root': {
+//         borderRadius: 12,
+//       },
+//     },
+//     '@media (max-width: 600px)': {
+//       marginBottom: '18px',
+//       '& .MuiOutlinedInput-root': {
+//         borderRadius: 10,
+//       },
+//     },
+//     '@media (max-width: 480px)': {
+//       marginBottom: '16px',
+//       '& .MuiOutlinedInput-root': {
+//         borderRadius: 8,
+//       },
+//     },
+//     '@media (max-width: 375px)': {
+//       marginBottom: '14px',
+//     },
+//   },
+//   loginButton: {
+//     width: '100%',
+//     padding: '13px',
+//     borderRadius: 14,
+//     background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
+//     color: '#111 !important',
+//     fontSize: '1.08rem',
+//     fontWeight: 700,
+//     textTransform: 'none',
+//     marginBottom: '26px !important',
+//     marginTop: '26px !important',
+//     boxShadow: '0 8px 32px rgba(255,255,255,0.10)',
+//     transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
+//     '&:hover': {
+//       // background: 'linear-gradient(90deg, #eee 0%, #888 100%)',
+//       color: '#000',
+//       transform: 'translateY(-2px) scale(1.01)',
+//       boxShadow: '0 12px 40px rgba(255,255,255,0.13)',
+//     },
+//     '&:disabled': {
+//       background: 'transparent !important',
+//       color: '#fff !important',
+//     },
+//     '@media (max-width: 960px)': {
+//       padding: '12px',
+//       fontSize: '1.04rem',
+//       borderRadius: 12,
+//       marginBottom: '24px !important',
+//       marginTop: '24px !important',
+//     },
+//     '@media (max-width: 600px)': {
+//       padding: '11px',
+//       fontSize: '1rem',
+//       borderRadius: 10,
+//       marginBottom: '22px !important',
+//       marginTop: '22px !important',
+//     },
+//     '@media (max-width: 480px)': {
+//       padding: '10px',
+//       fontSize: '0.96rem',
+//       borderRadius: 8,
+//       marginBottom: '20px !important',
+//       marginTop: '20px !important',
+//     },
+//     '@media (max-width: 375px)': {
+//       padding: '9px',
+//       fontSize: '0.92rem',
+//       marginBottom: '18px !important',
+//       marginTop: '18px !important',
+//     },
+//   },
+//   googleButton: {
+//     width: '100%',
+//     padding: '13px !important',
+//     borderRadius: 14,
+//     border: '0.2px solid #dadce0 !important',
+//     color: '#ffffff !important',
+//     textTransform: 'none',
+//     marginBottom: '14px',
+//     fontWeight: 600,
+//     fontSize: '1rem',
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     gap: '12px',
+//     boxShadow: '0 1px 2px rgba(60,64,67,.08)',
+//     transition: 'background 0.2s, border 0.2s, box-shadow 0.2s',
+//     '&:hover': {
+//       // background: '#f7f8fa',
+//       // border: '1.5px solid #4285F4',
+//       color: '#1a73e8',
+//       boxShadow: '0 2px 4px rgba(60,64,67,.13)',
+//     },
+//     '&:active': {
+//       background: '#ececec',
+//     },
+//     '&:focus': {
+//       outline: '2px solid #4285F4',
+//       outlineOffset: '2px',
+//     },
+//     '@media (max-width: 960px)': {
+//       padding: '12px !important',
+//       fontSize: '0.96rem',
+//       borderRadius: 12,
+//       gap: '10px',
+//     },
+//     '@media (max-width: 600px)': {
+//       padding: '11px !important',
+//       fontSize: '0.92rem',
+//       borderRadius: 10,
+//       gap: '8px',
+//     },
+//     '@media (max-width: 480px)': {
+//       padding: '10px !important',
+//       fontSize: '0.88rem',
+//       borderRadius: 8,
+//       gap: '6px',
+//     },
+//     '@media (max-width: 375px)': {
+//       padding: '9px !important',
+//       fontSize: '0.84rem',
+//       gap: '4px',
+//     },
+//   },
+//   divider: {
+//     display: 'flex',
+//     alignItems: 'center',
+//     margin: '28px 0',
+//     '&::before': {
+//       content: '""',
+//       flex: 1,
+//       height: 1,
+//       background: 'linear-gradient(90deg, #222 0%, #fff 100%)',
+//     },
+//     '&::after': {
+//       content: '""',
+//       flex: 1,
+//       height: 1,
+//       background: 'linear-gradient(90deg, #fff 0%, #444 100%)',
+//     },
+//     '@media (max-width: 960px)': {
+//       margin: '24px 0',
+//     },
+//     '@media (max-width: 600px)': {
+//       margin: '20px 0',
+//     },
+//     '@media (max-width: 480px)': {
+//       margin: '18px 0',
+//     },
+//     '@media (max-width: 375px)': {
+//       margin: '16px 0',
+//     },
+//   },
+//   dividerText: {
+//     padding: '0 18px',
+//     color: '#fff',
+//     fontSize: '0.92rem',
+//     fontWeight: 500,
+//     letterSpacing: '0.03em',
+//     '@media (max-width: 960px)': {
+//       padding: '0 16px',
+//       fontSize: '0.9rem',
+//     },
+//     '@media (max-width: 600px)': {
+//       padding: '0 14px',
+//       fontSize: '0.88rem',
+//     },
+//     '@media (max-width: 480px)': {
+//       padding: '0 12px',
+//       fontSize: '0.86rem',
+//     },
+//     '@media (max-width: 375px)': {
+//       padding: '0 10px',
+//       fontSize: '0.84rem',
+//     },
+//   },
+//   styledLink: {
+//     color: '#fff',
+//     textDecoration: 'underline',
+//     fontWeight: "bold",
+//     transition: 'color 0.3s',
+//     '&:hover': {
+//       color: '#eee',
+//     },
+//   },
+//   titleText: {
+//     '@media (max-width: 960px)': {
+//       fontSize: '1.9rem !important',
+//     },
+//     '@media (max-width: 600px)': {
+//       fontSize: '1.7rem !important',
+//     },
+//     '@media (max-width: 480px)': {
+//       fontSize: '1.5rem !important',
+//     },
+//     '@media (max-width: 375px)': {
+//       fontSize: '1.3rem !important',
+//     },
+//   },
+//   logoText: {
+//     '@media (max-width: 960px)': {
+//       fontSize: '1.3rem !important',
+//     },
+//     '@media (max-width: 600px)': {
+//       fontSize: '1.2rem !important',
+//       textAlign: 'center',
+//     },
+//     '@media (max-width: 480px)': {
+//       fontSize: '1.1rem !important',
+//     },
+//     '@media (max-width: 375px)': {
+//       fontSize: '1rem !important',
+//     },
+//   },
+//   logoIconResponsive: {
+//     '@media (max-width: 960px)': {
+//       fontSize: '36px !important',
+//     },
+//     '@media (max-width: 600px)': {
+//       fontSize: '32px !important',
+//     },
+//     '@media (max-width: 480px)': {
+//       fontSize: '28px !important',
+//     },
+//     '@media (max-width: 375px)': {
+//       fontSize: '24px !important',
+//     },
+//   },
+// }));
+
+// const Login = () => {
+//   const classes = useStyles();
+//   const [username, setUsername] = useState('');
+//   const [password, setPassword] = useState('');
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [error, setError] = useState('');
+//   const [loading, setLoading] = useState(false);
+//   const { login, isAuthenticated } = useAuth();
+//   const navigate = useNavigate();
+
+//   React.useEffect(() => {
+//     if (isAuthenticated) {
+//       navigate('/dashboard');
+//     }
+//   }, [isAuthenticated, navigate]);
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     if (!username || !password) {
+//       setError('Username and password are required');
+//       return;
+//     }
+
+//     setLoading(true);
+//     setError('');
+
+//     const result = await login(username, password);
+    
+//     if (result.success) {
+//       navigate('/dashboard');
+//     } else {
+//       setError(result.error);
+//     }
+    
+//     setLoading(false);
+//   };
+
+//   return (
+//     <>
+//       <React.Suspense fallback={<div />}>
+//         <StarField />
+//       </React.Suspense>
+      
+//       <Container maxWidth="sm" className={classes.pageContainer}>
+//         <Fade in timeout={800}>
+//           <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
+//             {/* Removed CardStarPattern */}
+//             <Zoom in timeout={1000}>
+//               <Box>
+//                 <Box className={classes.logoContainer}>
+//                   <Box className={classes.logoIcon}>
+//                     <WorkspacePremium sx={{ color: '#232526', fontSize: 40, filter: 'drop-shadow(0 1px 4px #bbb)' }} className={classes.logoIconResponsive} />
+//                   </Box>
+//                   <Typography 
+//                     variant="h5" 
+//                     fontWeight="bold"
+//                     className={classes.logoText}
+//                     sx={{ 
+//                       // background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
+//                       background: '#fff',
+//                       WebkitBackgroundClip: 'text',
+//                       WebkitTextFillColor: 'transparent',
+//                       letterSpacing: '0.02em',
+//                     }}
+//                   >
+//                     Bring Back Legend
+//                   </Typography>
+//                 </Box>
+
+//                 <Typography 
+//                   variant="h4" 
+//                   fontWeight="bold" 
+//                   align="center" 
+//                   gutterBottom
+//                   className={classes.titleText}
+//                   sx={{ 
+//                     color: '#fff',
+//                     fontSize: '2.1rem',
+//                     mb: 1,
+//                     letterSpacing: '0.01em',
+//                   }}
+//                 >
+//                   Welcome back
+//                 </Typography>
+                
+//                 <Typography 
+//                   variant="body1" 
+//                   align="center" 
+//                   sx={{ 
+//                     color: '#fff',
+//                     mb: 4,
+//                   }}
+//                 >
+//                   Sign in to continue your legendary conversations
+//                 </Typography>
+
+//                 {/* Social Login Buttons */}
+//                 <Button
+//                   className={classes.googleButton}
+//                   startIcon={
+//                     <img src={GoogleLogo} alt="Google" style={{ width: 22, height: 22, display: 'block' }} />
+//                   }
+//                   onClick={() => console.log('Google login')}
+//                   disableElevation
+//                 >
+//                   Continue with Google
+//                 </Button>
+//                 <Box className={classes.divider}>
+//                   <Typography className={classes.dividerText}>OR</Typography>
+//                 </Box>
+
+//                 {error && (
+//                   <Fade in>
+//                     <Alert 
+//                       severity="error" 
+//                       sx={{ 
+//                         mb: 3,
+//                         backgroundColor: 'transparent',
+//                         border: '1.5px solid #444',
+//                         color: '#fff',
+//                         borderRadius: 2,
+//                         fontWeight: 500,
+//                       }}
+//                     >
+//                       {error}
+//                     </Alert>
+//                   </Fade>
+//                 )}
+
+//                 <Box component="form" onSubmit={handleSubmit}>
+//                   <TextField
+//                     fullWidth
+//                     label="Username"
+//                     value={username}
+//                     onChange={(e) => setUsername(e.target.value)}
+//                     margin="normal"
+//                     required
+//                     autoFocus
+//                     className={classes.styledTextField}
+//                   />
+
+//                   <TextField
+//                     fullWidth
+//                     label="Password"
+//                     type="password"
+//                     value={password}
+//                     onChange={(e) => setPassword(e.target.value)}
+//                     margin="normal"
+//                     required
+//                     className={classes.styledTextField}
+//                   />
+
+//                   <Button
+//                     type="submit"
+//                     disabled={loading}
+//                     className={classes.loginButton}
+//                   >
+//                     {loading ? 'Signing in...' : 'Sign In'}
+//                   </Button>
+
+//                   <Box textAlign="center">
+//                     <Typography 
+//                       variant="body2" 
+//                       sx={{ color: '#fff' }}
+//                     >
+//                       Don't have an account?{' '}
+//                       <Link to="/register" className={classes.styledLink}>
+//                         Create one
+//                       </Link>
+//                     </Typography>
+//                   </Box>
+//                 </Box>
+//               </Box>
+//             </Zoom>
+//           </Card>
+//         </Fade>
+//       </Container>
+//     </>
+//   );
+// };
+
+// export default Login;
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -12,13 +604,12 @@ import {
   InputAdornment,
   Fade,
   Zoom,
+  CircularProgress,
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
   WorkspacePremium,
-  Apple,
-  Email,
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useAuth } from '../context/AuthContext';
@@ -254,6 +845,7 @@ const useStyles = makeStyles(() => ({
     padding: '13px !important',
     borderRadius: 14,
     border: '0.2px solid #dadce0 !important',
+    backgroundColor: 'transparent',
     color: '#ffffff !important',
     textTransform: 'none',
     marginBottom: '14px',
@@ -264,19 +856,31 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center',
     gap: '12px',
     boxShadow: '0 1px 2px rgba(60,64,67,.08)',
-    transition: 'background 0.2s, border 0.2s, box-shadow 0.2s',
+    transition: 'all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)',
+    position: 'relative',
     '&:hover': {
-      // background: '#f7f8fa',
-      // border: '1.5px solid #4285F4',
-      color: '#1a73e8',
+      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+      border: '1.5px solid #4285F4 !important',
+      color: '#4285F4 !important',
       boxShadow: '0 2px 4px rgba(60,64,67,.13)',
+      transform: 'translateY(-1px)',
     },
     '&:active': {
-      background: '#ececec',
+      transform: 'translateY(0)',
     },
     '&:focus': {
       outline: '2px solid #4285F4',
       outlineOffset: '2px',
+    },
+    '&:disabled': {
+      opacity: 0.6,
+      cursor: 'not-allowed',
+      '&:hover': {
+        backgroundColor: 'transparent',
+        border: '0.2px solid #dadce0 !important',
+        color: '#ffffff !important',
+        transform: 'none',
+      }
     },
     '@media (max-width: 960px)': {
       padding: '12px !important',
@@ -406,6 +1010,11 @@ const useStyles = makeStyles(() => ({
       fontSize: '24px !important',
     },
   },
+  oauthUnavailable: {
+    opacity: 0.5,
+    cursor: 'not-allowed !important',
+    pointerEvents: 'none',
+  },
 }));
 
 const Login = () => {
@@ -415,35 +1024,90 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, isAuthenticated } = useAuth();
+    const [searchParams] = useSearchParams();
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const { login, loginWithGoogle, isAuthenticated, oauthStatus } = useAuth();
   const navigate = useNavigate();
+  
 
-  React.useEffect(() => {
+  useEffect(() => {
+    // Handle OAuth errors passed via URL params
+    const error = searchParams.get('error');
+    const message = searchParams.get('message');
+    
+    if (error) {
+      const errorMessages = {
+        'oauth_not_configured': 'Google sign-in is temporarily unavailable. Please try regular login.',
+        'authentication_failed': 'Google authentication failed. Please try again.',
+        'user_info_failed': 'Failed to get user information from Google.',
+        'access_denied': 'Google access was denied. Please try again.'
+      };
+      
+      setError(errorMessages[error] || message || 'Authentication failed');
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!username || !password) {
+  //     setError('Username and password are required');
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   setError('');
+
+  //   const result = await login(username, password);
+    
+  //   if (result.success) {
+  //     navigate('/dashboard');
+  //   } else {
+  //     setError(result.error);
+  //   }
+    
+  //   setLoading(false);
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !password) {
-      setError('Username and password are required');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
     const result = await login(username, password);
-    
     if (result.success) {
-      navigate('/dashboard');
+      // Navigation is handled by the useEffect above
     } else {
       setError(result.error);
     }
-    
-    setLoading(false);
   };
+
+
+  const handleGoogleLogin = async () => {
+    if (!oauthStatus?.oauth_configured || !oauthStatus?.google_available) {
+      setError('Google OAuth is not available. Please try again later or contact support.');
+      return;
+    }
+
+    try {
+      setGoogleLoading(true);
+      setError('');
+      
+      // Initiate Google OAuth flow
+      loginWithGoogle();
+      
+      // Note: User will be redirected to Google, so this component will unmount
+      // The callback will be handled by the AuthCallback component
+    } catch (error) {
+      console.error('Google login failed:', error);
+      setError('Failed to initiate Google login. Please try again.');
+      setGoogleLoading(false);
+    }
+  };
+
+  // Check if OAuth is available
+  const isOAuthAvailable = oauthStatus?.oauth_configured && oauthStatus?.google_available;
 
   return (
     <>
@@ -504,21 +1168,6 @@ const Login = () => {
                   Sign in to continue your legendary conversations
                 </Typography>
 
-                {/* Social Login Buttons */}
-                <Button
-                  className={classes.googleButton}
-                  startIcon={
-                    <img src={GoogleLogo} alt="Google" style={{ width: 22, height: 22, display: 'block' }} />
-                  }
-                  onClick={() => console.log('Google login')}
-                  disableElevation
-                >
-                  Continue with Google
-                </Button>
-                <Box className={classes.divider}>
-                  <Typography className={classes.dividerText}>OR</Typography>
-                </Box>
-
                 {error && (
                   <Fade in>
                     <Alert 
@@ -526,8 +1175,8 @@ const Login = () => {
                       sx={{ 
                         mb: 3,
                         backgroundColor: 'transparent',
-                        border: '1.5px solid #444',
-                        color: '#fff',
+                        border: '1.5px solid #f44336',
+                        color: '#f44336',
                         borderRadius: 2,
                         fontWeight: 500,
                       }}
@@ -536,6 +1185,51 @@ const Login = () => {
                     </Alert>
                   </Fade>
                 )}
+
+                {/* Social Login Buttons */}
+                <Button
+                  className={`${classes.googleButton} ${!isOAuthAvailable ? classes.oauthUnavailable : ''}`}
+                  onClick={handleGoogleLogin}
+                  disabled={googleLoading || !isOAuthAvailable}
+                  disableElevation
+                  startIcon={
+                    googleLoading ? (
+                      <CircularProgress size={20} sx={{ color: '#fff' }} />
+                    ) : (
+                      <img 
+                        src={GoogleLogo} 
+                        alt="Google" 
+                        style={{ 
+                          width: 22, 
+                          height: 22, 
+                          display: 'block',
+                          opacity: !isOAuthAvailable ? 0.5 : 1 
+                        }} 
+                      />
+                    )
+                  }
+                >
+                  {googleLoading ? 'Connecting...' : 'Continue with Google'}
+                </Button>
+
+                {!isOAuthAvailable && (
+                  <Typography 
+                    variant="caption" 
+                    sx={{ 
+                      color: '#999', 
+                      display: 'block', 
+                      textAlign: 'center', 
+                      mb: 2,
+                      fontSize: '0.75rem' 
+                    }}
+                  >
+                    Google Sign-In temporarily unavailable
+                  </Typography>
+                )}
+
+                <Box className={classes.divider}>
+                  <Typography className={classes.dividerText}>OR</Typography>
+                </Box>
 
                 <Box component="form" onSubmit={handleSubmit}>
                   <TextField
@@ -547,23 +1241,39 @@ const Login = () => {
                     required
                     autoFocus
                     className={classes.styledTextField}
+                    disabled={loading}
                   />
 
                   <TextField
                     fullWidth
                     label="Password"
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     margin="normal"
                     required
                     className={classes.styledTextField}
+                    disabled={loading}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                            sx={{ color: '#fff' }}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
 
                   <Button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || googleLoading}
                     className={classes.loginButton}
+                    startIcon={loading ? <CircularProgress size={20} sx={{ color: '#111' }} /> : null}
                   >
                     {loading ? 'Signing in...' : 'Sign In'}
                   </Button>
