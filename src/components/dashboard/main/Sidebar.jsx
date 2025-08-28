@@ -30,7 +30,7 @@ import {
 import { makeStyles } from '@mui/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from "../../../context/AuthContext";
-import CharacterCreationForm from "../character/creation/CharacterCreationForm";
+
 import CategoriesList from './CategoriesList';
 
 const useStyles = makeStyles(() => ({
@@ -79,6 +79,9 @@ const useStyles = makeStyles(() => ({
     '& .MuiDrawer-paper': {
       width: '70px !important',
       padding: '20px 10px !important',
+      display: 'flex !important',
+      flexDirection: 'column !important',
+      alignItems: 'center !important',
       '@media (max-width: 1200px)': {
         width: '65px !important',
         padding: '18px 8px !important',
@@ -90,6 +93,7 @@ const useStyles = makeStyles(() => ({
       '@media (max-width: 900px)': {
         width: '280px !important',
         padding: '20px !important',
+        alignItems: 'stretch !important',
       },
     },
   },
@@ -97,7 +101,14 @@ const useStyles = makeStyles(() => ({
     height: '100% !important',
     display: 'flex !important',
     flexDirection: 'column !important',
-    overflow: 'hidden !important'
+    overflow: 'hidden !important',
+    width: '100% !important',
+  },
+  contentWrapperCollapsed: {
+    alignItems: 'center !important',
+    '@media (max-width: 900px)': {
+      alignItems: 'stretch !important',
+    },
   },
   logoWrapper: {
     display: "flex !important",
@@ -242,23 +253,27 @@ const useStyles = makeStyles(() => ({
     padding: '0 !important',
     marginBottom: '20px !important',
     borderRadius: '8px !important',
+    display: 'flex !important',
+    alignItems: 'center !important',
+    justifyContent: 'center !important',
+    margin: '0 auto 20px auto !important',
     '@media (max-width: 1200px)': {
       minWidth: '36px !important',
       width: '36px !important',
       height: '36px !important',
-      marginBottom: '18px !important',
+      margin: '0 auto 18px auto !important',
     },
     '@media (max-width: 960px)': {
       minWidth: '32px !important',
       width: '32px !important',
       height: '32px !important',
-      marginBottom: '16px !important',
+      margin: '0 auto 16px auto !important',
     },
     '@media (max-width: 900px)': {
       width: "100% !important",
       height: 'auto !important',
       padding: '10px 16px !important',
-      marginBottom: '30px !important',
+      margin: '0 0 30px 0 !important',
     },
   },
   navSectionWrapper: {
@@ -359,15 +374,20 @@ const useStyles = makeStyles(() => ({
   listItemCollapsed: {
     padding: '8px 4px !important',
     justifyContent: 'center !important',
+    alignItems: 'center !important',
+    minHeight: '40px !important',
     '@media (max-width: 1200px)': {
       padding: '7px 3px !important',
+      minHeight: '36px !important',
     },
     '@media (max-width: 960px)': {
       padding: '6px 2px !important',
+      minHeight: '32px !important',
     },
     '@media (max-width: 900px)': {
       padding: '8px 12px !important',
       justifyContent: 'flex-start !important',
+      minHeight: 'auto !important',
     },
   },
   scrollableContent: {
@@ -386,6 +406,7 @@ const useStyles = makeStyles(() => ({
   categoriesIconWrapper: {
     display: 'flex !important',
     justifyContent: 'center !important',
+    alignItems: 'center !important',
     marginBottom: '16px !important',
     '@media (max-width: 900px)': {
       display: 'none !important',
@@ -396,14 +417,23 @@ const useStyles = makeStyles(() => ({
     borderRadius: '6px !important',
     color: '#ccc !important',
     transition: 'all 0.2s ease !important',
+    display: 'flex !important',
+    alignItems: 'center !important',
+    justifyContent: 'center !important',
+    minWidth: '40px !important',
+    minHeight: '40px !important',
     "&:hover": {
       backgroundColor: '#252525 !important',
     },
     '@media (max-width: 1200px)': {
       padding: '7px 3px !important',
+      minWidth: '36px !important',
+      minHeight: '36px !important',
     },
     '@media (max-width: 960px)': {
       padding: '6px 2px !important',
+      minWidth: '32px !important',
+      minHeight: '32px !important',
     },
   },
   chip: {
@@ -538,6 +568,9 @@ const useStyles = makeStyles(() => ({
   listItemIconCollapsed: {
     minWidth: 'auto !important',
     marginRight: '0 !important',
+    display: 'flex !important',
+    alignItems: 'center !important',
+    justifyContent: 'center !important',
     '@media (max-width: 900px)': {
       minWidth: '26px !important',
       marginRight: '10px !important',
@@ -552,7 +585,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [showCharacterForm, setShowCharacterForm] = useState(false);
+
   const [stylesReady, setStylesReady] = useState(false);
 
   useEffect(() => {
@@ -591,26 +624,21 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
   };
 
   const handleCreateClick = () => {
-    setShowCharacterForm(true);
-  };
-
-  const handleCharacterFormClose = () => {
-    setShowCharacterForm(false);
-  };
-
-  const handleCharacterCreated = (newCharacter) => {
-    setShowCharacterForm(false);
-    navigate('/dashboard/discover');
-    
-    if (onCharacterCreated) {
-      onCharacterCreated(newCharacter);
-    }
+    // Coming soon - no action for now
+    console.log('Create character feature coming soon');
   };
 
   const handleCategorySelect = (categoryKey) => {
     navigate(`/dashboard/categories/${categoryKey}`);
     // Close sidebar on mobile after navigation
     if (isMobile && onToggle) {
+      onToggle();
+    }
+  };
+
+  const handleCategoryIconClick = () => {
+    // Expand sidebar when category icon is clicked in collapsed state
+    if (!open && onToggle) {
       onToggle();
     }
   };
@@ -766,8 +794,18 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
       startIcon={open ? <Add className={classes.iconSizing} /> : null}
       onClick={handleCreateClick}
       className={`${classes.createButton} ${!open ? classes.createButtonCollapsed : ""}`}
+      disabled
+      sx={{
+        opacity: 0.6,
+        cursor: 'not-allowed',
+        '&:hover': {
+          background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important',
+          transform: 'none !important',
+          boxShadow: 'none !important',
+        }
+      }}
     >
-      {!open ? <Add className={classes.iconSizing} /> : "Create"}
+      {!open ? <Add className={classes.iconSizing} /> : "Coming Soon"}
     </Button>
   );
 
@@ -782,7 +820,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
           keepMounted: true, // Better open performance on mobile
         }}
       >
-        <Box className={classes.contentWrapper}>
+        <Box className={`${classes.contentWrapper} ${!open ? classes.contentWrapperCollapsed : ""}`}>
           <Box className={`${classes.logoWrapper} ${!open ? classes.logoWrapperCollapsed : ""}`}>
             <Box className={classes.logoIcon}>
               {/* <LocationOn sx={{ fontSize: 14 }} /> */}
@@ -796,7 +834,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
           </Box>
 
           {!open && !isMobile ? (
-            <Tooltip title="Create" placement="right" arrow>
+            <Tooltip title="Coming Soon" placement="right" arrow>
               {createButtonContent}
             </Tooltip>
           ) : (
@@ -814,16 +852,19 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
             </Typography>
           )}
           
-          {/* Categories icon when collapsed */}
-          {!open && !isMobile && (
-            <Box className={classes.categoriesIconWrapper}>
-              <Tooltip title="Categories" placement="right" arrow>
-                <IconButton className={classes.categoriesIcon}>
-                  <Category className={classes.iconSizing} />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          )}
+                     {/* Categories icon when collapsed */}
+           {!open && !isMobile && (
+             <Box className={classes.categoriesIconWrapper}>
+               <Tooltip title="Categories" placement="right" arrow>
+                 <IconButton 
+                   className={classes.categoriesIcon}
+                   onClick={handleCategoryIconClick}
+                 >
+                   <Category className={classes.iconSizing} />
+                 </IconButton>
+               </Tooltip>
+             </Box>
+           )}
           
           {/* Dynamic categories section - scrollable when open */}
           <Box className={`${classes.scrollableContent} ${!open ? classes.scrollableContentCollapsed : ""}`}>
@@ -836,7 +877,16 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
           <Box className={classes.footerWrapper}>
             {!open && !isMobile ? (
               <Tooltip title="Logout" placement="right" arrow>
-                <ListItemButton onClick={logout} className={`${classes.listItem} ${classes.listItemCollapsed}`}>
+                <ListItemButton 
+                  onClick={logout} 
+                  className={`${classes.listItem} ${classes.listItemCollapsed}`}
+                  sx={{
+                    display: 'flex !important',
+                    alignItems: 'center !important',
+                    justifyContent: 'center !important',
+                    minHeight: '40px !important',
+                  }}
+                >
                   <ListItemIcon className={`${classes.listItemIcon} ${classes.listItemIconCollapsed}`}>
                     <Logout className={classes.iconSizing} />
                   </ListItemIcon>
@@ -861,11 +911,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
         </Box>
       </Drawer>
 
-      <CharacterCreationForm
-        open={showCharacterForm}
-        onClose={handleCharacterFormClose}
-        onCharacterCreated={handleCharacterCreated}
-      />
+
     </>
   );
 };
