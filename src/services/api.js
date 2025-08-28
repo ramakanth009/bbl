@@ -17,6 +17,10 @@ class ApiService {
             // timeout: 50000, // 50 second timeout for AI responses
         });
 
+        // Add caching for API calls to prevent duplicates
+        this.cache = new Map();
+        this.pendingRequests = new Map();
+
         // Add auth token to requests
         this.client.interceptors.request.use(
             (config) => {
@@ -70,6 +74,64 @@ class ApiService {
         );
     }
 
+    // Helper method to create cache key
+    createCacheKey(method, url, params = {}) {
+        return `${method}_${url}_${JSON.stringify(params)}`;
+    }
+
+    // Helper method to get cached or pending request
+    async getCachedOrFetch(cacheKey, fetchFn, cacheDuration = 30000) {
+        // Prevent multiple simultaneous requests for the same cacheKey
+        if (this.pendingRequests.has(cacheKey)) {
+            // Only log once per cacheKey
+            if (!this.pendingRequests.get(cacheKey)._logged) {
+                console.log(`⏳ Request already pending: ${cacheKey}`);
+                this.pendingRequests.get(cacheKey)._logged = true;
+            }
+            return await this.pendingRequests.get(cacheKey);
+        }
+
+        // Check cache
+        const cached = this.cache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < cacheDuration) {
+            console.log(`📦 Using cached data: ${cacheKey}`);
+            return cached.data;
+        }
+
+        // Execute request and store in pending
+        console.log(`🔄 Making new request: ${cacheKey}`);
+        const requestPromise = fetchFn();
+        // Attach a _logged property for debug
+        requestPromise._logged = false;
+        this.pendingRequests.set(cacheKey, requestPromise);
+
+        try {
+            const result = await requestPromise;
+            
+            // Cache the result
+            this.cache.set(cacheKey, {
+                data: result,
+                timestamp: Date.now()
+            });
+
+            return result;
+        } catch (error) {
+            throw error;
+        } finally {
+            // Remove from pending requests
+            this.pendingRequests.delete(cacheKey);
+        }
+    }
+
+    // Clear cache for specific key or all
+    clearCache(key = null) {
+        if (key) {
+            this.cache.delete(key);
+        } else {
+            this.cache.clear();
+        }
+    }
+
     // ===============================
     // GOOGLE OAUTH METHODS
     // ===============================
@@ -79,15 +141,19 @@ class ApiService {
         window.location.href = `${BASE_URL}/auth/google/login`;
     }
 
-    // // Check OAuth status
-    // async checkOAuthStatus() {
-    //     try {
-    //         const response = await this.client.get('/auth/oauth/status');
-    //         return response.data;
-    //     } catch (error) {
-    //         throw this.handleError(error, 'Failed to check OAuth status');
-    //     }
-    // }
+    // Check OAuth status with caching
+    async checkOAuthStatus() {
+        const cacheKey = this.createCacheKey('GET', '/auth/oauth/status');
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                const response = await this.client.get('/auth/oauth/status');
+                return response.data;
+            } catch (error) {
+                throw this.handleError(error, 'Failed to check OAuth status');
+            }
+        }, 60000); // Cache for 1 minute
+    }
 
     // Process OAuth callback parameters
     processOAuthCallback() {
@@ -136,6 +202,9 @@ class ApiService {
     // UPDATED: Register method now accepts email and mobile_number
     async register(username, email, mobile_number, password) {
         try {
+            // Clear any cached data on new registration
+            this.clearCache();
+            
             const response = await this.client.post('/register', {
                 username,
                 email,
@@ -150,6 +219,9 @@ class ApiService {
 
     async login(username, password) {
         try {
+            // Clear any cached data on new login
+            this.clearCache();
+            
             const response = await this.client.post('/login', {
                 username,
                 password,
@@ -167,29 +239,43 @@ class ApiService {
     }
 
     // ===============================
-    // NEW USER PROFILE ENDPOINTS
+    // NEW USER PROFILE ENDPOINTS - CACHED
     // ===============================
 
-    // Get user profile status
-    async getUserProfileStatus() {
-        try {
-            console.log('🔄 Loading user profile status...');
-            const response = await this.client.get('/user/profile/status');
-            console.log('✅ User profile status loaded:', response.data);
-            return response.data;
-        } catch (error) {
-            console.error('❌ Failed to load user profile status:', {
-                status: error.response?.status,
-                message: error.response?.data?.detail || error.message,
-            });
-            throw this.handleError(error, 'Failed to load user profile status');
+    // Get user profile status with caching to prevent multiple calls
+    async getUserProfileStatus(force = false) {
+        const cacheKey = this.createCacheKey('GET', '/user/profile/status');
+        
+        // If force refresh, clear cache first
+        if (force) {
+            this.clearCache(cacheKey);
         }
+
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                console.log('🔄 Loading user profile status...');
+                const response = await this.client.get('/user/profile/status');
+                console.log('✅ User profile status loaded:', response.data);
+                return response.data;
+            } catch (error) {
+                console.error('❌ Failed to load user profile status:', {
+                    status: error.response?.status,
+                    message: error.response?.data?.detail || error.message,
+                });
+                throw this.handleError(error, 'Failed to load user profile status');
+            }
+        }, 10000); // Cache for 10 seconds
     }
 
     // Update user mobile number
     async updateUserMobile(mobile_number) {
         try {
             console.log('🔄 Updating user mobile number...');
+            
+            // Clear profile status cache since it will change
+            const cacheKey = this.createCacheKey('GET', '/user/profile/status');
+            this.clearCache(cacheKey);
+            
             const response = await this.client.post('/user/update-mobile', {
                 mobile_number,
             });
@@ -204,58 +290,66 @@ class ApiService {
         }
     }
 
-    // Character endpoints
+    // Character endpoints with caching
     async getCharacters() {
-        try {
-            const response = await this.client.get('/characters');
-            return response.data;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to load characters');
-        }
+        const cacheKey = this.createCacheKey('GET', '/characters');
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                const response = await this.client.get('/characters');
+                return response.data;
+            } catch (error) {
+                throw this.handleError(error, 'Failed to load characters');
+            }
+        }, 15000); // Cache for 15 seconds
     }
 
-    // Updated paginated characters method - only use API total_count
+    // Updated paginated characters method with caching
     async getCharactersPaginated(page = 1, perPage = 20, section = null) {
-        try {
-            const params = {
-                page,
-                per_page: perPage,
-            };
-            if (section) {
-                params.section = section;
-            }
-            const response = await this.client.get('/characters', { params });
-            let characters, pagination;
-            if (response.data.pagination) {
-                characters = response.data.characters || [];
-                pagination = response.data.pagination;
-            } else {
-                characters = response.data.characters || response.data || [];
-                pagination = {
-                    page: response.data.page || 1,
+        const cacheKey = this.createCacheKey('GET', '/characters', { page, perPage, section });
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                const params = {
+                    page,
                     per_page: perPage,
-                    total_count: response.data.total_count || 0,
-                    total_pages: response.data.total_pages || 1,
-                    has_next: response.data.next_url !== null,
-                    has_prev: response.data.prev_url !== null,
                 };
+                if (section) {
+                    params.section = section;
+                }
+                const response = await this.client.get('/characters', { params });
+                let characters, pagination;
+                if (response.data.pagination) {
+                    characters = response.data.characters || [];
+                    pagination = response.data.pagination;
+                } else {
+                    characters = response.data.characters || response.data || [];
+                    pagination = {
+                        page: response.data.page || 1,
+                        per_page: perPage,
+                        total_count: response.data.total_count || 0,
+                        total_pages: response.data.total_pages || 1,
+                        has_next: response.data.next_url !== null,
+                        has_prev: response.data.prev_url !== null,
+                    };
+                }
+                // Only use total_count from API response
+                const total_count = pagination.total_count || response.data.total_count || 0;
+                return {
+                    characters,
+                    page: pagination.page || 1,
+                    per_page: pagination.per_page || perPage,
+                    total_pages: pagination.total_pages || 1,
+                    total_count: total_count,
+                    has_next: pagination.has_next || false,
+                    has_prev: pagination.has_prev || false,
+                    next_url: pagination.next_url || null,
+                    prev_url: pagination.prev_url || null,
+                };
+            } catch (error) {
+                throw this.handleError(error, 'Failed to load characters');
             }
-            // Only use total_count from API response
-            const total_count = pagination.total_count || response.data.total_count || 0;
-            return {
-                characters,
-                page: pagination.page || 1,
-                per_page: pagination.per_page || perPage,
-                total_pages: pagination.total_pages || 1,
-                total_count: total_count,
-                has_next: pagination.has_next || false,
-                has_prev: pagination.has_prev || false,
-                next_url: pagination.next_url || null,
-                prev_url: pagination.prev_url || null,
-            };
-        } catch (error) {
-            throw this.handleError(error, 'Failed to load characters');
-        }
+        }, 15000); // Cache for 15 seconds
     }
 
     // Fixed getAllCharacters method to prevent infinite loops
@@ -306,73 +400,89 @@ class ApiService {
 
     // Add this method if you want to fetch a single character by ID
     async getCharacterById(characterId) {
-        try {
-            const response = await this.client.get(`/characters/${characterId}`);
-            return response.data;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to load character');
-        }
+        const cacheKey = this.createCacheKey('GET', `/characters/${characterId}`);
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                const response = await this.client.get(`/characters/${characterId}`);
+                return response.data;
+            } catch (error) {
+                throw this.handleError(error, 'Failed to load character');
+            }
+        }, 30000); // Cache for 30 seconds
     }
 
     // Get single character by ID (alternative endpoint)
     async getSingleCharacter(characterId) {
-        try {
-            const response = await this.client.get(`/character/${characterId}`);
-            return response.data;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to load character');
-        }
+        const cacheKey = this.createCacheKey('GET', `/character/${characterId}`);
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                const response = await this.client.get(`/character/${characterId}`);
+                return response.data;
+            } catch (error) {
+                throw this.handleError(error, 'Failed to load character');
+            }
+        }, 30000); // Cache for 30 seconds
     }
 
     // ===============================
-    // NEW CATEGORIES ENDPOINTS
+    // NEW CATEGORIES ENDPOINTS - CACHED
     // ===============================
 
-    // Get all available categories
+    // Get all available categories with caching
     async getCategories() {
-        try {
-            console.log('🔄 Loading categories...');
-            const response = await this.client.get('/categories', {
-                headers: {
-                    'Accept': 'application/json',
-                },
-            });
-            console.log('✅ Categories loaded:', {
-                count: Object.keys(response.data.categories || {}).length,
-                status: response.data.status,
-            });
-            return response.data;
-        } catch (error) {
-            console.error('❌ Failed to load categories:', {
-                status: error.response?.status,
-                message: error.response?.data?.error || error.message,
-            });
-            throw this.handleError(error, 'Failed to load categories');
-        }
+        const cacheKey = this.createCacheKey('GET', '/categories');
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                console.log('🔄 Loading categories...');
+                const response = await this.client.get('/categories', {
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                });
+                console.log('✅ Categories loaded:', {
+                    count: Object.keys(response.data.categories || {}).length,
+                    status: response.data.status,
+                });
+                return response.data;
+            } catch (error) {
+                console.error('❌ Failed to load categories:', {
+                    status: error.response?.status,
+                    message: error.response?.data?.error || error.message,
+                });
+                throw this.handleError(error, 'Failed to load categories');
+            }
+        }, 60000); // Cache for 1 minute
     }
 
-    // Get characters from specific category
+    // Get characters from specific category with caching
     async getCharactersByCategory(categoryKey) {
-        try {
-            console.log(`🔄 Loading characters for category: ${categoryKey}`);
-            const response = await this.client.get(`/characters/category/${categoryKey}`, {
-                headers: {
-                    'Accept': 'application/json',
-                },
-            });
-            console.log('✅ Category characters loaded:', {
-                category: response.data.category_name,
-                count: response.data.count,
-                charactersLength: response.data.characters?.length || 0,
-            });
-            return response.data;
-        } catch (error) {
-            console.error(`❌ Failed to load characters for category ${categoryKey}:`, {
-                status: error.response?.status,
-                message: error.response?.data?.error || error.message,
-            });
-            throw this.handleError(error, `Failed to load characters for category: ${categoryKey}`);
-        }
+        const cacheKey = this.createCacheKey('GET', `/characters/category/${categoryKey}`);
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                console.log(`🔄 Loading characters for category: ${categoryKey}`);
+                const response = await this.client.get(`/characters/category/${categoryKey}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                });
+                console.log('✅ Category characters loaded:', {
+                    category: response.data.category_name,
+                    count: response.data.count,
+                    charactersLength: response.data.characters?.length || 0,
+                });
+                return response.data;
+            } catch (error) {
+                console.error(`❌ Failed to load characters for category ${categoryKey}:`, {
+                    status: error.response?.status,
+                    message: error.response?.data?.error || error.message,
+                });
+                throw this.handleError(error, `Failed to load characters for category: ${categoryKey}`);
+            }
+        }, 30000); // Cache for 30 seconds
     }
 
     // Search characters with pagination
@@ -462,30 +572,34 @@ class ApiService {
     }
 
     // ===============================
-    // LANGUAGE ENDPOINTS - FIXED
+    // LANGUAGE ENDPOINTS - FIXED & CACHED
     // ===============================
 
-    // FIXED: Get supported languages with proper authentication
+    // Get supported languages with proper authentication and caching
     async getSupportedLanguages() {
-        try {
-            console.log('🔄 Loading supported languages...');
-            const response = await this.client.get('/languages', {
-                headers: {
-                    'Accept': 'application/json',
-                },
-            });
-            console.log('✅ Languages loaded:', {
-                count: response.data.languages?.length || 0,
-                status: response.data.status,
-            });
-            return response.data;
-        } catch (error) {
-            console.error('❌ Failed to load languages:', {
-                status: error.response?.status,
-                message: error.response?.data?.error || error.message,
-            });
-            throw this.handleError(error, 'Failed to load supported languages');
-        }
+        const cacheKey = this.createCacheKey('GET', '/languages');
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                console.log('🔄 Loading supported languages...');
+                const response = await this.client.get('/languages', {
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                });
+                console.log('✅ Languages loaded:', {
+                    count: response.data.languages?.length || 0,
+                    status: response.data.status,
+                });
+                return response.data;
+            } catch (error) {
+                console.error('❌ Failed to load languages:', {
+                    status: error.response?.status,
+                    message: error.response?.data?.error || error.message,
+                });
+                throw this.handleError(error, 'Failed to load supported languages');
+            }
+        }, 300000); // Cache for 5 minutes (languages don't change often)
     }
 
     // NEW: Translate text (if backend supports it)
@@ -559,6 +673,9 @@ class ApiService {
     // Character management - CREATE CHARACTER
     async createCharacter(characterData) {
         try {
+            // Clear character-related caches when creating new character
+            this.clearCache();
+            
             const response = await this.client.post('/create_character', characterData);
             return response.data;
         } catch (error) {
@@ -568,16 +685,28 @@ class ApiService {
 
     // NEW: Get character form options
     async getCharacterFormOptions() {
-        try {
-            const response = await this.client.get('/character_form_options');
-            return response.data;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to load character form options');
-        }
+        const cacheKey = this.createCacheKey('GET', '/character_form_options');
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                const response = await this.client.get('/character_form_options');
+                return response.data;
+            } catch (error) {
+                throw this.handleError(error, 'Failed to load character form options');
+            }
+        }, 300000); // Cache for 5 minutes
     }
 
     async updateCharacter(characterId, characterData) {
         try {
+            // Clear character-related caches when updating
+            const characterCacheKeys = [
+                this.createCacheKey('GET', `/characters/${characterId}`),
+                this.createCacheKey('GET', `/character/${characterId}`),
+                this.createCacheKey('GET', '/characters')
+            ];
+            characterCacheKeys.forEach(key => this.clearCache(key));
+            
             const response = await this.client.put(`/characters/${characterId}`, characterData);
             return response.data;
         } catch (error) {
@@ -587,6 +716,9 @@ class ApiService {
 
     async deleteCharacter(characterId) {
         try {
+            // Clear character-related caches when deleting
+            this.clearCache();
+            
             const response = await this.client.delete(`/characters/${characterId}`);
             return response.data;
         } catch (error) {
@@ -596,12 +728,16 @@ class ApiService {
 
     // NEW: Get statistics endpoint
     async getStats() {
-        try {
-            const response = await this.client.get('/stats');
-            return response.data;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to load statistics');
-        }
+        const cacheKey = this.createCacheKey('GET', '/stats');
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                const response = await this.client.get('/stats');
+                return response.data;
+            } catch (error) {
+                throw this.handleError(error, 'Failed to load statistics');
+            }
+        }, 60000); // Cache for 1 minute
     }
 
     // Utility method to sort messages by timestamp
@@ -660,6 +796,10 @@ class ApiService {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             localStorage.removeItem('language_preferences');
+            
+            // Clear all caches on logout
+            this.clearCache();
+            
             // window.location.href = '#/login';
         }
     }
