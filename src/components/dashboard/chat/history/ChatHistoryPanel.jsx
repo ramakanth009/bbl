@@ -466,22 +466,106 @@ const ChatHistoryPanel = ({
     }
   };
 
+  // Fixed formatSessionDate function to handle "YYYY-MM-DD HH:MM:SS IST" format
   const formatSessionDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (!dateString) {
+      console.warn('formatSessionDate received empty dateString');
+      return 'Unknown Date';
+    }
+
+    let date;
     
-    if (diffDays === 1) return 'Today';
-    if (diffDays === 2) return 'Yesterday';
-    if (diffDays <= 7) return `${diffDays} days ago`;
-    
-    return date.toLocaleDateString();
+    try {
+      // Handle different date formats
+      if (typeof dateString === 'string') {
+        // Check if it's a Unix timestamp string
+        if (dateString.match(/^\d+$/)) {
+          const timestamp = parseInt(dateString);
+          date = new Date(timestamp < 10000000000 ? timestamp * 1000 : timestamp);
+        }
+        // Handle "YYYY-MM-DD HH:MM:SS IST" format from your backend
+        else if (dateString.includes('IST')) {
+          // Remove IST and parse the datetime part
+          const cleanDateString = dateString.replace(' IST', '').trim();
+          // Convert to ISO format for better parsing
+          const isoString = cleanDateString.replace(' ', 'T') + '+05:30'; // IST is UTC+5:30
+          date = new Date(isoString);
+        }
+        // Handle other date formats
+        else {
+          date = new Date(dateString);
+        }
+      } else {
+        date = new Date(dateString);
+      }
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date created from:', dateString);
+        return 'Invalid Date';
+      }
+      
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) return 'Today';
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays <= 7) return `${diffDays} days ago`;
+      
+      return date.toLocaleDateString();
+      
+    } catch (error) {
+      console.error('Error parsing session date:', dateString, error);
+      return 'Invalid Date';
+    }
   };
 
+  // Fixed formatSessionTime function to handle "YYYY-MM-DD HH:MM:SS IST" format
   const formatSessionTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (!dateString) {
+      console.warn('formatSessionTime received empty dateString');
+      return 'Unknown Time';
+    }
+
+    let date;
+    
+    try {
+      // Handle different date formats
+      if (typeof dateString === 'string') {
+        // Check if it's a Unix timestamp string
+        if (dateString.match(/^\d+$/)) {
+          const timestamp = parseInt(dateString);
+          date = new Date(timestamp < 10000000000 ? timestamp * 1000 : timestamp);
+        }
+        // Handle "YYYY-MM-DD HH:MM:SS IST" format from your backend
+        else if (dateString.includes('IST')) {
+          // Remove IST and parse the datetime part
+          const cleanDateString = dateString.replace(' IST', '').trim();
+          // Convert to ISO format for better parsing
+          const isoString = cleanDateString.replace(' ', 'T') + '+05:30'; // IST is UTC+5:30
+          date = new Date(isoString);
+        }
+        // Handle other date formats
+        else {
+          date = new Date(dateString);
+        }
+      } else {
+        date = new Date(dateString);
+      }
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date for time formatting:', dateString);
+        return 'Invalid Time';
+      }
+      
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+    } catch (error) {
+      console.error('Error formatting session time:', dateString, error);
+      return 'Invalid Time';
+    }
   };
 
   // Calculate dynamic panel width and right position
