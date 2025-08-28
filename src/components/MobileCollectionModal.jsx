@@ -8,12 +8,11 @@ import {
   Box,
   Alert,
   CircularProgress,
-  Chip,
   Backdrop,
   IconButton,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { Phone, CheckCircle, Close } from '@mui/icons-material';
+import { Phone, Close } from '@mui/icons-material';
 
 const useStyles = makeStyles({
   backdrop: {
@@ -228,26 +227,7 @@ const useStyles = makeStyles({
       color: '#f59e0b',
     },
   },
-  successChip: {
-    position: 'fixed !important',
-    top: '20px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    zIndex: '10002 !important',
-    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%) !important',
-    color: 'white !important',
-    fontWeight: '500 !important',
-    padding: '6px 16px !important',
-    borderRadius: '20px !important',
-    border: '1px solid rgba(16, 185, 129, 0.3) !important',
-    boxShadow: '0 8px 25px rgba(16, 185, 129, 0.3) !important',
-    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important',
-    fontSize: '0.8125rem !important',
-    transition: 'opacity 0.3s ease-in-out 0.2s',
-    '& .MuiChip-icon': {
-      color: 'white !important',
-    },
-  },
+
 });
 
 function validateIndianMobile(input) {
@@ -303,16 +283,6 @@ const MobileCollectionModal = ({
 
   return (
     <>
-      {/* Success indicator */}
-      {showModal && (
-        <Chip
-          icon={<CheckCircle />}
-          label="Dashboard loaded successfully"
-          className={classes.successChip}
-          style={{ opacity: showModal ? 1 : 0 }}
-        />
-      )}
-
       <Dialog
         open={open}
         maxWidth={false}

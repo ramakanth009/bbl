@@ -624,25 +624,14 @@ const useStyles = makeStyles(() => ({
     minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     position: 'relative',
     zIndex: 1,
-    padding: '24px',
-    '@media (max-width: 1200px)': {
-      justifyContent: 'center',
-      padding: '20px',
-    },
-    '@media (max-width: 960px)': {
-      padding: '16px',
-    },
-    '@media (max-width: 600px)': {
-      padding: '12px',
-      minHeight: '100vh',
-    },
-    '@media (max-width: 480px)': {
+    padding: '16px',
+    '@media (max-height: 800px)': {
       padding: '8px',
     },
-    '@media (max-width: 375px)': {
+    '@media (max-height: 700px)': {
       padding: '4px',
     },
   },
@@ -656,10 +645,8 @@ const useStyles = makeStyles(() => ({
     borderRadius: 28,
     boxShadow: 'none !important',
     transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
-    '&:hover': {
-      // transform: 'translateY(-1px) scale(1.01)',
-      // boxShadow: '0 48px 96px rgba(0,0,0,0.85), 0 0 0 1.5px #444',
-    },
+    position: 'relative',
+    overflow: 'hidden',
     '@media (max-width: 1200px)': {
       maxWidth: 400,
       padding: '32px 32px 28px 32px',
@@ -737,11 +724,12 @@ const useStyles = makeStyles(() => ({
     },
   },
   styledTextField: {
-    marginBottom: '22px',
+    marginBottom: '16px',
     '& .MuiOutlinedInput-root': {
       backgroundColor: 'transparent !important',
       border: '1.5px solid #fff',
-      borderRadius: 14,
+      borderRadius: 12,
+      height: '48px', // Fixed height for consistency
       transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
       '& fieldset': {
         border: 'none',
@@ -757,7 +745,8 @@ const useStyles = makeStyles(() => ({
       },
     },
     '& .MuiInputLabel-root': {
-      color: '#bbb',
+      color: '#fff',
+      fontSize: '0.9rem',
       '&.Mui-focused': {
         color: '#fff',
       },
@@ -766,44 +755,37 @@ const useStyles = makeStyles(() => ({
       color: '#fff',
       fontWeight: 500,
       letterSpacing: '0.02em',
+      fontSize: '0.9rem',
     },
-    '@media (max-width: 960px)': {
-      marginBottom: '20px',
+    '& .MuiFormHelperText-root': {
+      color: '#aaa',
+      fontSize: '0.7rem',
+      marginTop: '4px',
+    },
+    '@media (max-height: 700px)': {
+      marginBottom: '12px',
       '& .MuiOutlinedInput-root': {
-        borderRadius: 12,
+        height: '44px',
       },
-    },
-    '@media (max-width: 600px)': {
-      marginBottom: '18px',
-      '& .MuiOutlinedInput-root': {
-        borderRadius: 10,
+      '& .MuiFormHelperText-root': {
+        fontSize: '0.65rem',
       },
-    },
-    '@media (max-width: 480px)': {
-      marginBottom: '16px',
-      '& .MuiOutlinedInput-root': {
-        borderRadius: 8,
-      },
-    },
-    '@media (max-width: 375px)': {
-      marginBottom: '14px',
     },
   },
   loginButton: {
     width: '100%',
-    padding: '13px',
-    borderRadius: 14,
-    background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
+    padding: '12px',
+    borderRadius: 12,
+    backgroundColor: '#fff !important',
     color: '#111 !important',
-    fontSize: '1.08rem',
+    fontSize: '1rem',
     fontWeight: 700,
     textTransform: 'none',
-    marginBottom: '26px !important',
-    marginTop: '26px !important',
+    marginBottom: '20px !important',
+    marginTop: '8px !important',
     boxShadow: '0 8px 32px rgba(255,255,255,0.10)',
     transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
     '&:hover': {
-      // background: 'linear-gradient(90deg, #eee 0%, #888 100%)',
       color: '#000',
       transform: 'translateY(-2px) scale(1.01)',
       boxShadow: '0 12px 40px rgba(255,255,255,0.13)',
@@ -812,151 +794,67 @@ const useStyles = makeStyles(() => ({
       background: 'transparent !important',
       color: '#fff !important',
     },
-    '@media (max-width: 960px)': {
-      padding: '12px',
-      fontSize: '1.04rem',
-      borderRadius: 12,
-      marginBottom: '24px !important',
-      marginTop: '24px !important',
-    },
-    '@media (max-width: 600px)': {
-      padding: '11px',
-      fontSize: '1rem',
-      borderRadius: 10,
-      marginBottom: '22px !important',
-      marginTop: '22px !important',
-    },
-    '@media (max-width: 480px)': {
+    '@media (max-height: 700px)': {
       padding: '10px',
-      fontSize: '0.96rem',
-      borderRadius: 8,
-      marginBottom: '20px !important',
-      marginTop: '20px !important',
-    },
-    '@media (max-width: 375px)': {
-      padding: '9px',
-      fontSize: '0.92rem',
-      marginBottom: '18px !important',
-      marginTop: '18px !important',
+      fontSize: '0.9rem',
+      marginBottom: '16px !important',
     },
   },
   googleButton: {
     width: '100%',
-    padding: '13px !important',
-    borderRadius: 14,
+    padding: '11px !important',
+    borderRadius: 12,
     border: '0.2px solid #dadce0 !important',
-    backgroundColor: 'transparent',
     color: '#ffffff !important',
     textTransform: 'none',
-    marginBottom: '14px',
+    marginBottom: '16px',
     fontWeight: 600,
-    fontSize: '1rem',
+    fontSize: '0.9rem',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '12px',
+    gap: '10px',
     boxShadow: '0 1px 2px rgba(60,64,67,.08)',
-    transition: 'all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)',
-    position: 'relative',
+    transition: 'background 0.2s, border 0.2s, box-shadow 0.2s',
+    backgroundColor: 'transparent',
     '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-      border: '1.5px solid #4285F4 !important',
-      color: '#4285F4 !important',
+      backgroundColor: 'rgba(255,255,255,0.05)',
+      color: '#1a73e8',
       boxShadow: '0 2px 4px rgba(60,64,67,.13)',
-      transform: 'translateY(-1px)',
     },
     '&:active': {
-      transform: 'translateY(0)',
+      background: '#ececec',
     },
     '&:focus': {
       outline: '2px solid #4285F4',
       outlineOffset: '2px',
     },
-    '&:disabled': {
-      opacity: 0.6,
-      cursor: 'not-allowed',
-      '&:hover': {
-        backgroundColor: 'transparent',
-        border: '0.2px solid #dadce0 !important',
-        color: '#ffffff !important',
-        transform: 'none',
-      }
-    },
-    '@media (max-width: 960px)': {
-      padding: '12px !important',
-      fontSize: '0.96rem',
-      borderRadius: 12,
-      gap: '10px',
-    },
-    '@media (max-width: 600px)': {
-      padding: '11px !important',
-      fontSize: '0.92rem',
-      borderRadius: 10,
-      gap: '8px',
-    },
-    '@media (max-width: 480px)': {
-      padding: '10px !important',
-      fontSize: '0.88rem',
-      borderRadius: 8,
-      gap: '6px',
-    },
-    '@media (max-width: 375px)': {
+    '@media (max-height: 700px)': {
       padding: '9px !important',
-      fontSize: '0.84rem',
-      gap: '4px',
+      fontSize: '0.85rem',
+      marginBottom: '12px',
     },
   },
   divider: {
     display: 'flex',
     alignItems: 'center',
-    margin: '28px 0',
-    '&::before': {
+    margin: '16px 0',
+    '&::before, &::after': {
       content: '""',
       flex: 1,
       height: 1,
-      background: 'linear-gradient(90deg, #222 0%, #fff 100%)',
+      background: 'linear-gradient(90deg, #222 0%, #444 100%)',
     },
-    '&::after': {
-      content: '""',
-      flex: 1,
-      height: 1,
-      background: 'linear-gradient(90deg, #fff 0%, #444 100%)',
-    },
-    '@media (max-width: 960px)': {
-      margin: '24px 0',
-    },
-    '@media (max-width: 600px)': {
-      margin: '20px 0',
-    },
-    '@media (max-width: 480px)': {
-      margin: '18px 0',
-    },
-    '@media (max-width: 375px)': {
-      margin: '16px 0',
+    '@media (max-height: 700px)': {
+      margin: '12px 0',
     },
   },
   dividerText: {
-    padding: '0 18px',
-    color: '#fff',
-    fontSize: '0.92rem',
+    padding: '0 16px',
+    color: '#888',
+    fontSize: '0.85rem',
     fontWeight: 500,
     letterSpacing: '0.03em',
-    '@media (max-width: 960px)': {
-      padding: '0 16px',
-      fontSize: '0.9rem',
-    },
-    '@media (max-width: 600px)': {
-      padding: '0 14px',
-      fontSize: '0.88rem',
-    },
-    '@media (max-width: 480px)': {
-      padding: '0 12px',
-      fontSize: '0.86rem',
-    },
-    '@media (max-width: 375px)': {
-      padding: '0 10px',
-      fontSize: '0.84rem',
-    },
   },
   styledLink: {
     color: '#fff',
