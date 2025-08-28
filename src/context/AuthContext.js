@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
   const [oauthStatus, setOauthStatus] = useState(null);
   const [profileStatus, setProfileStatus] = useState(null);
   const [needsMobileCollection, setNeedsMobileCollection] = useState(false);
+  const [mobileCollectionSkipped, setMobileCollectionSkipped] = useState(false); // NEW
 
   // Add refs to prevent multiple simultaneous API calls
   const profileStatusLoadingRef = useRef(false);
@@ -231,6 +232,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         if (result.user.needs_mobile) {
           setNeedsMobileCollection(true);
+          setMobileCollectionSkipped(false); // Reset skip state
         }
         await loadProfileStatus(true);
         return { success: true, user: result.user };
@@ -278,6 +280,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // NEW: Skip mobile collection handler
+  const skipMobileCollection = useCallback(() => {
+    setNeedsMobileCollection(false);
+    setMobileCollectionSkipped(true);
+    // Optionally update user/profile status to reflect skip
+    setProfileStatus(prev => ({
+      ...prev,
+      needs_mobile: false,
+      mobile_skipped: true
+    }));
+  }, []);
+
   // Refresh profile status - now uses the memoized function
   const refreshProfileStatus = useCallback(async () => {
     return await loadProfileStatus(true);
@@ -313,6 +327,7 @@ export const AuthProvider = ({ children }) => {
     oauthStatus,
     profileStatus,
     needsMobileCollection,
+    mobileCollectionSkipped, // NEW
     login,
     register,
     logout,
@@ -320,6 +335,7 @@ export const AuthProvider = ({ children }) => {
     handleOAuthCallback,
     getUserInfo,
     updateMobile,
+    skipMobileCollection, // NEW
     refreshProfileStatus
   };
 
