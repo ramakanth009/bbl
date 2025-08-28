@@ -79,15 +79,15 @@ class ApiService {
         window.location.href = `${BASE_URL}/auth/google/login`;
     }
 
-    // Check OAuth status
-    async checkOAuthStatus() {
-        try {
-            const response = await this.client.get('/auth/oauth/status');
-            return response.data;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to check OAuth status');
-        }
-    }
+    // // Check OAuth status
+    // async checkOAuthStatus() {
+    //     try {
+    //         const response = await this.client.get('/auth/oauth/status');
+    //         return response.data;
+    //     } catch (error) {
+    //         throw this.handleError(error, 'Failed to check OAuth status');
+    //     }
+    // }
 
     // Process OAuth callback parameters
     processOAuthCallback() {
