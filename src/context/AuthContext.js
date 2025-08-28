@@ -1,4 +1,4 @@
-// AuthContext.js - Updated with fixes, new profile management, and single mount enforcement
+// AuthContext.js - Updated with fixes and new profile management
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import apiService from '../services/api';
@@ -19,8 +19,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [oauthStatus, setOauthStatus] = useState(null);
   const [profileStatus, setProfileStatus] = useState(null);
-  const [needsMobileCollection, setNeedsMobileCollection] = useState(false);
-  const [mobileCollectionSkipped, setMobileCollectionSkipped] = useState(false); // NEW
 
   // Add refs to prevent multiple simultaneous API calls
   const profileStatusLoadingRef = useRef(false);
@@ -43,12 +41,6 @@ export const AuthProvider = ({ children }) => {
       
       console.log('✅ Profile status loaded:', profile);
       setProfileStatus(profile);
-      
-      if (profile.needs_mobile) {
-        setNeedsMobileCollection(true);
-      } else {
-        setNeedsMobileCollection(false);
-      }
       
       return profile;
     } catch (error) {
@@ -90,7 +82,6 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     setUser(null);
     setProfileStatus(null);
-    setNeedsMobileCollection(false);
   }, []);
 
   // Check authentication status on initial load - FIXED with proper dependencies
@@ -116,10 +107,6 @@ export const AuthProvider = ({ children }) => {
               const userData = JSON.parse(storedUser);
               if (isMounted) {
                 setUser(userData);
-                // Check if mobile collection is needed from stored data
-                if (userData.is_oauth_user && userData.needs_mobile) {
-                  setNeedsMobileCollection(true);
-                }
               }
             } else {
               // Try to get user info from token
@@ -230,10 +217,6 @@ export const AuthProvider = ({ children }) => {
       if (result.success && result.token) {
         setUser(result.user);
         setIsAuthenticated(true);
-        if (result.user.needs_mobile) {
-          setNeedsMobileCollection(true);
-          setMobileCollectionSkipped(false); // Reset skip state
-        }
         await loadProfileStatus(true);
         return { success: true, user: result.user };
       }
@@ -268,7 +251,6 @@ export const AuthProvider = ({ children }) => {
         needs_mobile: false
       }));
 
-      setNeedsMobileCollection(false);
       return { success: true };
     } catch (error) {
       return {
@@ -279,18 +261,6 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-
-  // NEW: Skip mobile collection handler
-  const skipMobileCollection = useCallback(() => {
-    setNeedsMobileCollection(false);
-    setMobileCollectionSkipped(true);
-    // Optionally update user/profile status to reflect skip
-    setProfileStatus(prev => ({
-      ...prev,
-      needs_mobile: false,
-      mobile_skipped: true
-    }));
-  }, []);
 
   // Refresh profile status - now uses the memoized function
   const refreshProfileStatus = useCallback(async () => {
@@ -326,8 +296,6 @@ export const AuthProvider = ({ children }) => {
     loading,
     oauthStatus,
     profileStatus,
-    needsMobileCollection,
-    mobileCollectionSkipped, // NEW
     login,
     register,
     logout,
@@ -335,7 +303,6 @@ export const AuthProvider = ({ children }) => {
     handleOAuthCallback,
     getUserInfo,
     updateMobile,
-    skipMobileCollection, // NEW
     refreshProfileStatus
   };
 

@@ -24,19 +24,20 @@ import History from './pages/sections/History';
 import SessionChat from './pages/sections/SessionChat';
 import CategoryPage from './pages/sections/CategoryPage';
 
-function AppContent() {
-  const {
-    needsMobileCollection,
-    mobileCollectionSkipped,
-    updateMobile,
-    skipMobileCollection,
-    loading,
-    user,
-    // ...other context values...
-  } = useAuth();
-
+function DashboardWithMobileModal() {
+  const { profileStatus, updateMobile, refreshProfileStatus } = useAuth();
+  const [modalOpen, setModalOpen] = React.useState(false);
   const [modalError, setModalError] = React.useState('');
   const [modalLoading, setModalLoading] = React.useState(false);
+
+  // Show modal only after dashboard is loaded and needs_mobile is true
+  React.useEffect(() => {
+    if (profileStatus && profileStatus.needs_mobile) {
+      setModalOpen(true);
+    } else {
+      setModalOpen(false);
+    }
+  }, [profileStatus]);
 
   const handleMobileSubmit = async (mobile) => {
     setModalLoading(true);
@@ -44,33 +45,39 @@ function AppContent() {
     const result = await updateMobile(mobile);
     if (!result.success) {
       setModalError(result.error);
+    } else {
+      setModalOpen(false);
+      await refreshProfileStatus();
     }
     setModalLoading(false);
   };
 
-  const handleSkip = () => {
-    skipMobileCollection();
+  const handleSkip = async () => {
+    setModalOpen(false);
+    // Optionally refresh profile status if skipping is supported
+    await refreshProfileStatus();
   };
 
-  // Show modal if needsMobileCollection and not skipped
-  if (needsMobileCollection && !mobileCollectionSkipped) {
-    return (
+  return (
+    <>
+      <Dashboard />
       <MobileCollectionModal
-        open={true}
+        open={modalOpen}
         onSubmit={handleMobileSubmit}
         onSkip={handleSkip}
         loading={modalLoading}
         error={modalError}
       />
-    );
-  }
+    </>
+  );
+}
 
+function AppContent() {
   return (
     <StyledEngineProvider injectFirst>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        {/* <HashRouter> */}
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
@@ -81,7 +88,7 @@ function AppContent() {
               element={
                 <ProtectedRoute>
                   <CategoriesProvider>
-                    <Dashboard />
+                    <DashboardWithMobileModal />
                   </CategoriesProvider>
                 </ProtectedRoute>
               } 
@@ -104,8 +111,7 @@ function AppContent() {
             </Route>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>
-          </BrowserRouter>
-        {/* </HashRouter> */}
+        </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>
     </StyledEngineProvider>
