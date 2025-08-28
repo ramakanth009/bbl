@@ -232,7 +232,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Paper, IconButton, Avatar } from '@mui/material';
 import { VolumeUp, Stop } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
-import voiceService from './Voice'; // Import the singleton instance, not the class
+// import voiceService from './Voice'; // Import the singleton instance, not the class
 
 const useStyles = makeStyles({
   messageWrapper: {
@@ -462,75 +462,75 @@ const useStyles = makeStyles({
 const Message = ({ message, character, className }) => {
   const classes = useStyles();
   const isUser = message.role === 'user';
-  const [isPlaying, setIsPlaying] = useState(false);
+  // const [isPlaying, setIsPlaying] = useState(false);
   
   // Check for voice data using the correct property names from the backend
-  const hasVoiceData = message.audio_base64 || message.voice_data || message.audio_url;
+  // const hasVoiceData = message.audio_base64 || message.voice_data || message.audio_url;
   const hasUserInput = message.user_input && message.user_input !== message.content;
 
-  // Listen for global audio state changes
-  useEffect(() => {
-    const checkAudioState = () => {
-      // If global audio stops, update local state
-      if (!voiceService.isPlaying && isPlaying) {
-        setIsPlaying(false);
-      }
-    };
+  // // Listen for global audio state changes
+  // useEffect(() => {
+  //   const checkAudioState = () => {
+  //     // If global audio stops, update local state
+  //     if (!voiceService.isPlaying && isPlaying) {
+  //       setIsPlaying(false);
+  //     }
+  //   };
 
-    const interval = setInterval(checkAudioState, 100);
-    return () => clearInterval(interval);
-  }, [isPlaying]);
+  //   const interval = setInterval(checkAudioState, 100);
+  //   return () => clearInterval(interval);
+  // }, [isPlaying]);
 
-  const handleToggleVoice = async () => {
-    try {
-      if (isPlaying) {
-        // Stop audio
-        console.log('🛑 Stopping audio playback');
-        voiceService.stopAudio();
-        voiceService.stopSpeaking();
-        setIsPlaying(false);
-      } else {
-        // Start audio
-        console.log('🎵 Starting voice playback for message:', message);
-        setIsPlaying(true);
+  // const handleToggleVoice = async () => {
+  //   try {
+  //     if (isPlaying) {
+  //       // Stop audio
+  //       console.log('🛑 Stopping audio playback');
+  //       // voiceService.stopAudio();
+  //       // voiceService.stopSpeaking();
+  //       setIsPlaying(false);
+  //     } else {
+  //       // Start audio
+  //       console.log('🎵 Starting voice playback for message:', message);
+  //       setIsPlaying(true);
         
-        try {
-          // Try different voice data sources in order of preference
-          if (message.audio_base64) {
-            console.log('🔊 Playing from audio_base64');
-            await voiceService.playVoiceData(message.audio_base64);
-          } else if (message.voice_data) {
-            console.log('🔊 Playing from voice_data');
-            await voiceService.playVoiceData(message.voice_data);
-          } else if (message.audio_url) {
-            console.log('🔊 Playing from audio_url');
-            await voiceService.playAudioFromUrl(message.audio_url);
-          } else {
-            // Fallback: use text-to-speech for the message content
-            console.log('🔊 Fallback: Using text-to-speech');
-            await voiceService.speakText(message.content);
-          }
+  //       try {
+  //         // Try different voice data sources in order of preference
+  //         if (message.audio_base64) {
+  //           console.log('🔊 Playing from audio_base64');
+  //           await voiceService.playVoiceData(message.audio_base64);
+  //         } else if (message.voice_data) {
+  //           console.log('🔊 Playing from voice_data');
+  //           await voiceService.playVoiceData(message.voice_data);
+  //         } else if (message.audio_url) {
+  //           console.log('🔊 Playing from audio_url');
+  //           await voiceService.playAudioFromUrl(message.audio_url);
+  //         } else {
+  //           // Fallback: use text-to-speech for the message content
+  //           console.log('🔊 Fallback: Using text-to-speech');
+  //           await voiceService.speakText(message.content);
+  //         }
           
-          // Audio finished playing naturally
-          setIsPlaying(false);
-        } catch (playError) {
-          console.error('❌ Error during playback:', playError);
-          setIsPlaying(false);
-          throw playError;
-        }
-      }
-    } catch (error) {
-      console.error('❌ Error toggling voice:', error);
-      setIsPlaying(false);
+  //         // Audio finished playing naturally
+  //         setIsPlaying(false);
+  //       } catch (playError) {
+  //         console.error('❌ Error during playback:', playError);
+  //         setIsPlaying(false);
+  //         throw playError;
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('❌ Error toggling voice:', error);
+  //     setIsPlaying(false);
       
-      // Show user-friendly error
-      const errorMessage = error.message.includes('Audio format not supported') 
-        ? 'Audio format not supported by your browser.' 
-        : 'Could not play audio. Please try again.';
+  //     // Show user-friendly error
+  //     const errorMessage = error.message.includes('Audio format not supported') 
+  //       ? 'Audio format not supported by your browser.' 
+  //       : 'Could not play audio. Please try again.';
       
-      alert(errorMessage);
-    }
-  };
+  //     alert(errorMessage);
+  //   }
+  // };
 
   // For assistant messages, show avatar and message content
   if (!isUser && character) {
@@ -561,11 +561,11 @@ const Message = ({ message, character, className }) => {
             </Box>
 
             {/* Voice controls for assistant messages or messages with voice data */}
-            {(hasVoiceData || !isUser) && (
+            {/* {(hasVoiceData || !isUser) && (
               <Box className={classes.voiceControls}>
                 <IconButton 
                   className={`${classes.speakerButton} ${classes.speakerButtonAssistant} ${isPlaying ? 'playing' : ''}`}
-                  onClick={handleToggleVoice}
+                  // onClick={handleToggleVoice}
                   title={isPlaying ? "Stop audio" : "Play voice"}
                   size="small"
                 >
@@ -576,7 +576,7 @@ const Message = ({ message, character, className }) => {
                   {isPlaying ? 'Playing...' : (hasVoiceData ? 'Voice available' : 'voice')}
                 </Box>
               </Box>
-            )}
+            )} */}
           </Paper>
         </Box>
       </Box>
@@ -597,7 +597,7 @@ const Message = ({ message, character, className }) => {
           </Box>
 
           {/* Voice controls for user messages with voice data */}
-          {hasVoiceData && (
+          {/* {hasVoiceData && (
             <Box className={classes.voiceControls}>
               <IconButton 
                 className={`${classes.speakerButton} ${classes.speakerButtonUser} ${isPlaying ? 'playing' : ''}`}
@@ -612,7 +612,7 @@ const Message = ({ message, character, className }) => {
                 {isPlaying ? 'Playing...' : (hasVoiceData ? 'Voice available' : 'voice')}
               </Box>
             </Box>
-          )}
+          )} */}
         </Paper>
         <Box className={classes.userAvatar}>
           U

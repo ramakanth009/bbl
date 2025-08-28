@@ -402,43 +402,43 @@ async getAllCharacters() {
     }
   }
 
-  // // NEW: Set user language preferences (if backend supports it)
-  // async setUserLanguagePreferences(preferences) {
-  //   try {
-  //     console.log('🔧 Setting user language preferences:', preferences);
+  // NEW: Set user language preferences (if backend supports it)
+  async setUserLanguagePreferences(preferences) {
+    try {
+      console.log('🔧 Setting user language preferences:', preferences);
       
-  //     const response = await this.client.post('/user/language-preferences', {
-  //       input_language: preferences.inputLanguage || 'english',
-  //       output_language: preferences.outputLanguage || 'english',
-  //       auto_detect: preferences.autoDetect || false,
-  //     });
+      const response = await this.client.post('/user/language-preferences', {
+        input_language: preferences.inputLanguage || 'english',
+        output_language: preferences.outputLanguage || 'english',
+        auto_detect: preferences.autoDetect || false,
+      });
       
-  //     console.log('✅ Language preferences updated');
-  //     return response.data;
-  //   } catch (error) {
-  //     console.warn('⚠️ Language preferences endpoint not available, storing locally');
-  //     // Fallback: store preferences locally
-  //     localStorage.setItem('language_preferences', JSON.stringify(preferences));
-  //     return { status: 'stored_locally', preferences };
-  //   }
-  // }
+      console.log('✅ Language preferences updated');
+      return response.data;
+    } catch (error) {
+      console.warn('⚠️ Language preferences endpoint not available, storing locally');
+      // Fallback: store preferences locally
+      localStorage.setItem('language_preferences', JSON.stringify(preferences));
+      return { status: 'stored_locally', preferences };
+    }
+  }
 
-  // // NEW: Get user language preferences
-  // async getUserLanguagePreferences() {
-  //   try {
-  //     const response = await this.client.get('/user/language-preferences');
-  //     return response.data;
-  //   } catch (error) {
-  //     console.warn('⚠️ Language preferences endpoint not available, using local storage');
-  //     // Fallback: get from local storage
-  //     const stored = localStorage.getItem('language_preferences');
-  //     return stored ? JSON.parse(stored) : {
-  //       inputLanguage: 'english',
-  //       outputLanguage: 'english',
-  //       autoDetect: false
-  //     };
-  //   }
-  // }
+  // NEW: Get user language preferences
+  async getUserLanguagePreferences() {
+    try {
+      const response = await this.client.get('/user/language-preferences');
+      return response.data;
+    } catch (error) {
+      console.warn('⚠️ Language preferences endpoint not available, using local storage');
+      // Fallback: get from local storage
+      const stored = localStorage.getItem('language_preferences');
+      return stored ? JSON.parse(stored) : {
+        inputLanguage: 'english',
+        outputLanguage: 'english',
+        autoDetect: false
+      };
+    }
+  }
 
   // NEW: Translate text (if backend supports it)
   async translateText(text, fromLanguage, toLanguage) {
