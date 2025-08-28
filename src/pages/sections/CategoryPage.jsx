@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Alert, Chip, useTheme, useMediaQuery } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
+import { flushSync } from 'react-dom';
 import Header from '../../components/dashboard/main/Header';
 import CharacterCard from '../../components/dashboard/character/CharacterCard';
 import CreateCharacterButton from '../../components/dashboard/character/CreateCharacterButton';
@@ -359,16 +360,66 @@ const CategoryPage = ({ onSidebarToggle }) => {
     loadCategoryCharacters();
   }, [categoryKey]);
 
-  // Handle URL-based chat opening
+  // FIXED: Handle URL-based chat opening with navigation state priority
   useEffect(() => {
-    if (characterId && characters.length > 0 && !isChatOpen) {
-      const character = characters.find(c => c.id === characterId || c.id === parseInt(characterId));
-      if (character) {
+    console.log('🔍 Category URL Effect - characterId:', characterId, 'characters.length:', characters.length);
+    
+    if (!characterId) {
+      if (isChatOpen) {
+        console.log('🚪 No character ID in URL, closing chat');
+        setIsChatOpen(false);
+        setTimeout(() => setSelectedCharacter(null), 300);
+      }
+      return;
+    }
+
+    // First priority: Find in loaded characters array (most common case)
+    const character = characters.find(c => 
+      String(c.id) === String(characterId) || c.id === parseInt(characterId)
+    );
+    
+    if (character) {
+      console.log('✅ Found character for URL:', character.name);
+      // Only update if different character or chat is closed
+      if (!selectedCharacter || selectedCharacter.id !== character.id || !isChatOpen) {
+        console.log('🔄 Updating chat state from URL');
         setSelectedCharacter(character);
         setIsChatOpen(true);
       }
+      return;
     }
-  }, [characterId, characters, isChatOpen]);
+
+    // Second priority: Try to fetch character by ID if not in current category
+    const fetchCharacterById = async () => {
+      try {
+        console.log('🔍 Character not in category, fetching from API...');
+        
+        let foundCharacter = null;
+        
+        try {
+          foundCharacter = await apiService.getCharacterById(characterId);
+          console.log('✅ Found character using getCharacterById:', foundCharacter?.name);
+        } catch (error) {
+          console.log('⚠️ getCharacterById failed for category page');
+        }
+        
+        if (foundCharacter) {
+          console.log('✅ Successfully fetched character for category:', foundCharacter.name);
+          setSelectedCharacter(foundCharacter);
+          setIsChatOpen(true);
+        } else {
+          console.log('❌ Character not found for ID:', characterId);
+        }
+      } catch (error) {
+        console.error('Failed to fetch character by ID:', error);
+      }
+    };
+
+    // Only fetch if we have characters loaded but didn't find the one we need
+    if (characters.length > 0) {
+      fetchCharacterById();
+    }
+  }, [characterId, characters])
 
   const loadCategoryCharacters = async () => {
     try {
@@ -386,16 +437,22 @@ const CategoryPage = ({ onSidebarToggle }) => {
     }
   };
 
+  // FIXED: Improved handleStartChat with better state management
   const handleStartChat = async (character, session = null) => {
     console.log('🚀 Starting chat with character:', character.name);
     
     try {
-      setSelectedCharacter(character);
-      setExistingSession(session);
-      setIsChatOpen(true);
+      // Use flushSync to ensure all state updates happen synchronously
+      flushSync(() => {
+        setSelectedCharacter(character);
+        setExistingSession(session);
+        setIsChatOpen(true);
+      });
       
-      // Update URL to reflect chat state
-      navigate(`/dashboard/categories/${categoryKey}/chat/${character.id}`);
+      // Now navigate - states are guaranteed to be set
+      navigate(`/dashboard/categories/${categoryKey}/chat/${character.id}`, { 
+        replace: false 
+      });
       
       // If there's an existing session, load it
       if (session && session.session_id) {
@@ -452,6 +509,16 @@ const CategoryPage = ({ onSidebarToggle }) => {
   const getCountLabel = (count) => {
     return count === 1 ? 'character' : 'characters';
   };
+
+  // Add debugging effect to monitor state changes
+  useEffect(() => {
+    console.log('📊 State Update:', {
+      selectedCharacter: selectedCharacter?.name || 'None',
+      isChatOpen,
+      characterId,
+      charactersLength: characters.length
+    });
+  }, [selectedCharacter, isChatOpen, characterId, characters.length]);
 
   if (loading) {
     return (
