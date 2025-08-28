@@ -692,7 +692,6 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
                             }} />
                           </Avatar>
                         </ListItemAvatar>
-                        
                         <ListItemText
                           primary={
                             <Box display="flex" alignItems="center" gap={1} sx={{
@@ -742,66 +741,68 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
                             </Box>
                           }
                           secondary={
-                            <Box display="flex" alignItems="center" gap={1} mt={0.5}>
-                              <AccessTime fontSize="small" sx={{ 
-                                color: 'text.disabled',
-                                '@media (max-width: 600px)': {
-                                  fontSize: '0.9rem',
-                                },
-                                '@media (max-width: 480px)': {
-                                  fontSize: '0.8rem',
-                                },
-                                '@media (max-width: 375px)': {
-                                  fontSize: '0.7rem',
-                                },
-                              }} />
-                              <Typography variant="caption" color="text.disabled" sx={{
-                                '@media (max-width: 600px)': {
-                                  fontSize: '0.7rem',
-                                },
-                                '@media (max-width: 480px)': {
-                                  fontSize: '0.65rem',
-                                },
-                                '@media (max-width: 375px)': {
-                                  fontSize: '0.6rem',
-                                },
-                              }}>
-                                Started {new Date(session.created_at).toLocaleString()}
-                              </Typography>
+                            // Arrange timestamp left, Resume Chat button right in one row
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap={2} mt={0.5}>
+                              <Box display="flex" alignItems="center" gap={1}>
+                                <AccessTime fontSize="small" sx={{ 
+                                  color: 'text.disabled',
+                                  '@media (max-width: 600px)': {
+                                    fontSize: '0.9rem',
+                                  },
+                                  '@media (max-width: 480px)': {
+                                    fontSize: '0.8rem',
+                                  },
+                                  '@media (max-width: 375px)': {
+                                    fontSize: '0.7rem',
+                                  },
+                                }} />
+                                <Typography variant="caption" color="text.disabled" sx={{
+                                  '@media (max-width: 600px)': {
+                                    fontSize: '0.7rem',
+                                  },
+                                  '@media (max-width: 480px)': {
+                                    fontSize: '0.65rem',
+                                  },
+                                  '@media (max-width: 375px)': {
+                                    fontSize: '0.6rem',
+                                  },
+                                }}>
+                                  Started {new Date(session.created_at).toLocaleString()}
+                                </Typography>
+                              </Box>
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSessionClick(session);
+                                }}
+                                sx={{
+                                  fontWeight: 600,
+                                  borderRadius: 8,
+                                  textTransform: 'none',
+                                  boxShadow: 'none',
+                                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                                  '&:hover': {
+                                    background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                                  },
+                                  '@media (max-width: 600px)': {
+                                    fontSize: '0.85rem',
+                                  },
+                                  '@media (max-width: 480px)': {
+                                    fontSize: '0.8rem',
+                                  },
+                                  '@media (max-width: 375px)': {
+                                    fontSize: '0.75rem',
+                                  },
+                                }}
+                              >
+                                Resume Chat
+                              </Button>
                             </Box>
                           }
                         />
-                        
-                        <IconButton
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // Handle delete session (if you implement this endpoint)
-                            console.log('Delete session:', session.session_id);
-                          }}
-                          sx={{ 
-                            opacity: 0.7, 
-                            color: theme.palette.error.main,
-                            '@media (max-width: 600px)': {
-                              padding: '4px',
-                            },
-                            '@media (max-width: 480px)': {
-                              padding: '2px',
-                            },
-                          }}
-                        >
-                          <Delete fontSize="small" sx={{
-                            '@media (max-width: 600px)': {
-                              fontSize: '0.9rem',
-                            },
-                            '@media (max-width: 480px)': {
-                              fontSize: '0.8rem',
-                            },
-                            '@media (max-width: 375px)': {
-                              fontSize: '0.7rem',
-                            },
-                          }} />
-                        </IconButton>
                       </SessionItem>
                     ))}
                   </List>

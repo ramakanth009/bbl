@@ -25,47 +25,36 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     top: 0,
     right: 0,
-    width: 400,
+    // Remove fixed width - will be set dynamically via inline styles
     height: '100vh',
     backgroundColor: theme?.palette?.background?.paper || '#232526',
     borderLeft: `1px solid ${theme?.palette?.divider || '#333'}`,
     zIndex: 1500,
-    transition: 'right 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    transition: 'right 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease', // Added width transition
     display: 'flex',
     flexDirection: 'column',
     boxShadow: theme?.shadows?.[8] || '0 0 20px rgba(0,0,0,0.5)',
     borderTopLeftRadius: 16,
     borderBottomLeftRadius: 16,
-    '@media (max-width: 1200px)': {
-      width: 380,
-    },
-    '@media (max-width: 960px)': {
-      width: 360,
-    },
+    // Mobile responsive widths
     '@media (max-width: 600px)': {
-      width: '100vw',
-      right: 0,
+      width: '100vw !important', // Force full width on mobile
+      right: '0 !important',
       borderRadius: 0,
     },
     '@media (max-width: 480px)': {
-      width: '100vw',
+      width: '100vw !important',
     },
     '@media (max-width: 375px)': {
-      width: '100vw',
+      width: '100vw !important',
     },
   },
   panelContainerClosed: {
-    right: -400,
-    '@media (max-width: 1200px)': {
-      right: -380,
-    },
-    '@media (max-width: 960px)': {
-      right: -360,
-    },
-    '@media (max-width: 600px)': {
-      right: '-100vw',
-    },
+    // Dynamic right position will be set via inline styles
     boxShadow: 'none',
+    '@media (max-width: 600px)': {
+      right: '-100vw !important',
+    },
   },
   panelHeader: {
     display: 'flex',
@@ -424,10 +413,58 @@ const ChatHistoryPanel = ({
   currentSessionId, 
   onSessionSelect, 
   onNewSession,
-  characterName 
+  characterName,
+  sidebarState = { isOpen: true, isMobile: false, sidebarWidth: 280, isCollapsed: false } // Added sidebarState prop
 }) => {
   const theme = useTheme();
   const classes = useStyles(theme);
+
+  // Calculate panel width based on sidebar state
+  const calculatePanelWidth = () => {
+    if (sidebarState.isMobile || (typeof window !== 'undefined' && window.innerWidth <= 600)) {
+      return '100vw'; // Full width on mobile
+    }
+    
+    const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
+    
+    // Determine sidebar width based on collapse state and screen size
+    let sidebarWidth;
+    if (sidebarState.isCollapsed) {
+      // Collapsed sidebar widths
+      if (viewportWidth <= 960) {
+        sidebarWidth = 60;
+      } else if (viewportWidth <= 1200) {
+        sidebarWidth = 65;
+      } else {
+        sidebarWidth = 70;
+      }
+    } else {
+      // Expanded sidebar widths
+      if (viewportWidth <= 960) {
+        sidebarWidth = 240;
+      } else if (viewportWidth <= 1200) {
+        sidebarWidth = 260;
+      } else {
+        sidebarWidth = 280;
+      }
+    }
+    
+    // Calculate available space and determine panel width
+    const availableWidth = viewportWidth - sidebarWidth;
+    
+    // Different panel widths based on sidebar state
+    if (sidebarState.isCollapsed) {
+      // Expand panel when sidebar is collapsed (more space available)
+      const expandedWidth = Math.min(500, Math.max(400, availableWidth * 0.35)); // Between 400-500px or 35% of available space
+      return expandedWidth;
+    } else {
+      // Use standard width when sidebar is expanded
+      const standardWidth = Math.min(400, Math.max(360, availableWidth * 0.3)); // Between 360-400px or 30% of available space
+      if (viewportWidth <= 1200) return 380;
+      if (viewportWidth <= 960) return 360;
+      return standardWidth;
+    }
+  };
 
   const formatSessionDate = (dateString) => {
     const date = new Date(dateString);
@@ -447,6 +484,13 @@ const ChatHistoryPanel = ({
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  // Calculate dynamic panel width and right position
+  const panelWidth = calculatePanelWidth();
+  const panelStyle = {
+    width: panelWidth,
+    right: open ? 0 : -panelWidth, // Slide out based on actual calculated width
+  };
+
   return (
     <>
       <Box
@@ -463,7 +507,7 @@ const ChatHistoryPanel = ({
             ? classes.panelContainer
             : `${classes.panelContainer} ${classes.panelContainerClosed}`
         }
-        style={{ right: open ? 0 : undefined }}
+        style={panelStyle} // Apply dynamic width and position
       >
         <Box className={classes.panelHeader}>
           <Box>

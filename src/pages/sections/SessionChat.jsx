@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useOutletContext } from 'react-router-dom'; // ✅ Add useOutletContext
 import { Box, CircularProgress, Alert, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import ChatPanel from '../../components/dashboard/chat/ChatPanel';
@@ -59,54 +59,50 @@ const useStyles = makeStyles({
   errorAlert: {
     background: 'rgba(239, 68, 68, 0.1)',
     border: '1px solid rgba(239, 68, 68, 0.2)',
+    color: '#fca5a5',
     borderRadius: '12px',
-    '& .MuiAlert-message': {
-      color: '#fecaca',
-    },
-    '& .MuiAlert-icon': {
-      color: '#ef4444',
-    },
-    '@media (max-width: 960px)': {
+    '@media (max-width: 1200px)': {
       borderRadius: '10px',
     },
-    '@media (max-width: 600px)': {
+    '@media (max-width: 960px)': {
       borderRadius: '8px',
-      '& .MuiAlert-message': {
-        fontSize: '0.875rem',
-      },
     },
-    '@media (max-width: 480px)': {
-      borderRadius: '6px',
-      '& .MuiAlert-message': {
-        fontSize: '0.825rem',
-      },
-    },
-    '@media (max-width: 375px)': {
-      '& .MuiAlert-message': {
-        fontSize: '0.8rem',
-      },
-    },
-  },
-  backText: {
     '@media (max-width: 600px)': {
-      fontSize: '0.875rem',
+      borderRadius: '6px',
     },
     '@media (max-width: 480px)': {
-      fontSize: '0.825rem',
+      borderRadius: '4px',
     },
     '@media (max-width: 375px)': {
-      fontSize: '0.8rem',
+      borderRadius: '2px',
     },
   },
   loadingText: {
+    '@media (max-width: 960px)': {
+      fontSize: '0.85rem',
+    },
     '@media (max-width: 600px)': {
-      fontSize: '0.875rem',
+      fontSize: '0.8rem',
     },
     '@media (max-width: 480px)': {
-      fontSize: '0.825rem',
+      fontSize: '0.75rem',
     },
     '@media (max-width: 375px)': {
+      fontSize: '0.7rem',
+    },
+  },
+  backText: {
+    '@media (max-width: 960px)': {
+      fontSize: '0.85rem',
+    },
+    '@media (max-width: 600px)': {
       fontSize: '0.8rem',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.75rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.7rem',
     },
   },
 });
@@ -115,11 +111,19 @@ const SessionChat = () => {
   const classes = useStyles();
   const { sessionId } = useParams();
   const navigate = useNavigate();
-  
-  const [sessionData, setSessionData] = useState(null);
   const [character, setCharacter] = useState(null);
+  const [sessionData, setSessionData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // ✅ GET SIDEBAR STATE FROM DASHBOARD CONTEXT - This was missing!
+  const context = useOutletContext();
+  const sidebarState = context?.sidebarState || { 
+    isOpen: true, 
+    isMobile: false, 
+    sidebarWidth: 280, 
+    isCollapsed: false 
+  };
 
   useEffect(() => {
     if (sessionId) {
@@ -131,46 +135,50 @@ const SessionChat = () => {
     try {
       setLoading(true);
       setError(null);
+
+      // Load session messages
+      const sessionResponse = await apiService.getSessionMessages(sessionId);
       
-      console.log('Loading session data for:', sessionId);
-      
-      // Fetch session messages
-      const sessionMessages = await apiService.getSessionMessages(sessionId);
-      
-      // Fetch all sessions to get session metadata
-      const allSessions = await apiService.getSessions();
-      const currentSession = allSessions.find(s => 
-        s.session_id === sessionId || s.session_id === parseInt(sessionId)
-      );
-      
-      if (!currentSession) {
-        throw new Error('Session not found');
+      if (!sessionResponse.chat_history) {
+        throw new Error('Session data is invalid');
       }
+
+      // Extract character name from the session
+      const characterName = sessionResponse.character || 
+        (sessionResponse.chat_history.length > 0 && sessionResponse.chat_history[0].character);
       
-      console.log('Session found:', currentSession);
-      console.log('Session messages:', sessionMessages);
+      if (!characterName) {
+        throw new Error('Could not determine character from session');
+      }
+
+      // Load character data
+      const characters = await apiService.getCharacters();
+      const charArray = Array.isArray(characters) ? characters : 
+                       Array.isArray(characters.characters) ? characters.characters : [];
       
-      // Create character object from session data
-      const characterData = {
-        name: currentSession.character,
-        img: currentSession.img || undefined,
-        description: currentSession.description || '',
-        native_language: currentSession.native_language || 
-                        currentSession.primary_language || 'english',
-      };
-      
-      // Format session data for ChatPanel
-      const formattedSessionData = {
-        sessionId: currentSession.session_id,
-        character: currentSession.character,
-        messages: sessionMessages.chat_history || [],
-        createdAt: currentSession.created_at,
-        ...currentSession
-      };
-      
-      setCharacter(characterData);
-      setSessionData(formattedSessionData);
-      
+      const selectedCharacter = charArray.find(char => 
+        char.name?.toLowerCase() === characterName.toLowerCase()
+      );
+
+      if (!selectedCharacter) {
+        throw new Error(`Character "${characterName}" not found`);
+      }
+
+      // Format messages
+      const formattedMessages = sessionResponse.chat_history.map(msg => ({
+        role: msg.role,
+        content: msg.content,
+        timestamp: msg.timestamp,
+        language: msg.language
+      }));
+
+      setCharacter(selectedCharacter);
+      setSessionData({
+        sessionId: sessionId,
+        messages: formattedMessages,
+        character: selectedCharacter
+      });
+
     } catch (error) {
       console.error('Failed to load session:', error);
       setError(error.message || 'Failed to load session. Please try again.');
@@ -260,6 +268,7 @@ const SessionChat = () => {
       onBack={handleBackToHistory}
       initialMessages={sessionData.messages}
       initialSessionId={sessionData.sessionId}
+      sidebarState={sidebarState} // ✅ PASS SIDEBAR STATE - This was missing!
     />
   );
 };

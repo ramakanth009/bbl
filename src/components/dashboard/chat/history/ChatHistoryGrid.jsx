@@ -7,10 +7,7 @@ import {
   Typography,
   Avatar,
   Chip,
-  IconButton,
-  Menu,
-  MenuItem,
-  Divider,
+  Button,
   CircularProgress,
   Alert,
   Snackbar,
@@ -19,9 +16,6 @@ import {
 } from '@mui/material';
 import {
   Chat,
-  MoreVert,
-  Delete,
-  Refresh,
   AccessTime,
   Launch,
   MessageOutlined,
@@ -659,8 +653,6 @@ const useStyles = makeStyles({
 const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const [menuAnchor, setMenuAnchor] = useState(null);
-  const [selectedSession, setSelectedSession] = useState(null);
   const [loadingSessionId, setLoadingSessionId] = useState(null);
   const [error, setError] = useState(null);
 
@@ -711,17 +703,6 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
     );
   }
 
-  const handleMenuOpen = (event, session) => {
-    event.stopPropagation();
-    setSelectedSession(session);
-    setMenuAnchor(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setMenuAnchor(null);
-    setSelectedSession(null);
-  };
-
   const handleSessionClick = async (session) => {
     if (loadingSessionId === session.session_id) return;
     
@@ -741,52 +722,111 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
     }
   };
 
-  const handleDeleteSession = async () => {
+  const formatDate = (dateString) => {
+    if (!dateString) {
+      console.warn('formatDate received empty dateString');
+      return 'Unknown Date';
+    }
+
+    let date;
+    
     try {
-      console.log('Delete session:', selectedSession);
-      
-      if (onRefreshSessions) {
-        await onRefreshSessions();
+      // Handle different date formats
+      if (typeof dateString === 'string') {
+        // Check if it's a Unix timestamp string
+        if (dateString.match(/^\d+$/)) {
+          const timestamp = parseInt(dateString);
+          date = new Date(timestamp < 10000000000 ? timestamp * 1000 : timestamp);
+        }
+        // Handle "YYYY-MM-DD HH:MM:SS IST" format from your backend
+        else if (dateString.includes('IST')) {
+          // Remove IST and parse the datetime part
+          const cleanDateString = dateString.replace(' IST', '').trim();
+          // Convert to ISO format for better parsing
+          const isoString = cleanDateString.replace(' ', 'T') + '+05:30'; // IST is UTC+5:30
+          date = new Date(isoString);
+        }
+        // Handle other date formats
+        else {
+          date = new Date(dateString);
+        }
+      } else {
+        date = new Date(dateString);
       }
       
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date created from:', dateString);
+        return 'Invalid Date';
+      }
+      
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) return 'Today';
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays <= 7) return `${diffDays} days ago`;
+      
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      
     } catch (error) {
-      console.error('Failed to delete session:', error);
-      setError(`Failed to delete session: ${error.message}`);
+      console.error('Error parsing date:', dateString, error);
+      return 'Invalid Date';
     }
-    handleMenuClose();
   };
 
-  const handleMenuItemClick = (action, session) => {
-    switch (action) {
-      case 'open':
-      case 'resume':
-        handleSessionClick(session);
-        break;
-      case 'delete':
-        handleDeleteSession();
-        break;
-      default:
-        break;
-    }
-    handleMenuClose();
-  };
+  // Helper function to safely format time display for IST format
+  const formatTimeDisplay = (dateString) => {
+    if (!dateString) return 'Unknown Time';
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    let date;
     
-    if (diffDays === 1) return 'Today';
-    if (diffDays === 2) return 'Yesterday';
-    if (diffDays <= 7) return `${diffDays} days ago`;
-    
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
+    try {
+      if (typeof dateString === 'string') {
+        // Check if it's a Unix timestamp string
+        if (dateString.match(/^\d+$/)) {
+          const timestamp = parseInt(dateString);
+          date = new Date(timestamp < 10000000000 ? timestamp * 1000 : timestamp);
+        }
+        // Handle "YYYY-MM-DD HH:MM:SS IST" format from your backend
+        else if (dateString.includes('IST')) {
+          // Remove IST and parse the datetime part
+          const cleanDateString = dateString.replace(' IST', '').trim();
+          // Convert to ISO format for better parsing
+          const isoString = cleanDateString.replace(' ', 'T') + '+05:30'; // IST is UTC+5:30
+          date = new Date(isoString);
+        }
+        // Handle other date formats
+        else {
+          date = new Date(dateString);
+        }
+      } else {
+        date = new Date(dateString);
+      }
+      
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date for time display:', dateString);
+        return 'Invalid Time';
+      }
+      
+      return date.toLocaleString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        month: 'short',
+        day: 'numeric'
+      });
+      
+    } catch (error) {
+      console.error('Error formatting time display:', dateString, error);
+      return 'Invalid Time';
+    }
   };
 
   const getSessionDuration = (session) => {
@@ -818,7 +858,6 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
       <Fade in timeout={300 + index * 100} key={session.session_id}>
         <Card 
           className={`${classes.sessionCard} ${isLoading ? 'loading' : ''}`}
-          onClick={() => !isLoading && handleSessionClick(session)}
         >
           <CardContent className={classes.cardContent}>
             <Box className={classes.sessionHeader}>
@@ -835,17 +874,7 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
                   </Typography>
                 </Box>
               </Box>
-
-              <IconButton
-                size="small"
-                onClick={(e) => handleMenuOpen(e, session)}
-                className={classes.moreButton}
-                disabled={isLoading}
-              >
-                <MoreVert fontSize="small" />
-              </IconButton>
             </Box>
-
             <Box className={classes.sessionMeta}>
               <Box className={classes.metaRow}>
                 <AccessTime fontSize="inherit" />
@@ -865,25 +894,50 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
                   />
                 )}
               </Box>
-
-              <Box className={classes.metaRow}>
-                <CalendarToday fontSize="inherit" />
-                <span>{new Date(session.created_at).toLocaleString('en-US', {
-                  hour: 'numeric',
-                  minute: '2-digit',
-                  hour12: true,
-                  month: 'short',
-                  day: 'numeric'
-                })}</span>
+              {/* Arrange timestamp left, Resume Chat button right in one row */}
+              <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <CalendarToday fontSize="inherit" sx={{ color: '#9ca3af' }} />
+                  <Typography variant="caption" sx={{ color: '#9ca3af' }}>
+                    {formatTimeDisplay(session.created_at)}
+                  </Typography>
+                </Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  disabled={isLoading}
+                  onClick={() => handleSessionClick(session)}
+                  sx={{
+                    fontWeight: 600,
+                    borderRadius: 8,
+                    textTransform: 'none',
+                    boxShadow: 'none',
+                    background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                    },
+                    '@media (max-width: 600px)': {
+                      fontSize: '0.85rem',
+                    },
+                    '@media (max-width: 480px)': {
+                      fontSize: '0.8rem',
+                    },
+                    '@media (max-width: 375px)': {
+                      fontSize: '0.75rem',
+                    },
+                  }}
+                >
+                  Resume Chat
+                </Button>
               </Box>
             </Box>
+            {isLoading && (
+              <Box className={classes.loadingOverlay}>
+                <CircularProgress size={32} sx={{ color: '#667eea' }} />
+              </Box>
+            )}
           </CardContent>
-
-          {isLoading && (
-            <Box className={classes.loadingOverlay}>
-              <CircularProgress size={32} sx={{ color: '#667eea' }} />
-            </Box>
-          )}
         </Card>
       </Fade>
     );
@@ -909,32 +963,6 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
           </Box>
         </Box>
       ))}
-
-      <Menu
-        anchorEl={menuAnchor}
-        open={Boolean(menuAnchor)}
-        onClose={handleMenuClose}
-        PaperProps={{
-          className: classes.menuPaper,
-          elevation: 0,
-        }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      >
-        <MenuItem onClick={() => handleMenuItemClick('open', selectedSession)} className={classes.menuItem}>
-          <Launch sx={{ mr: 1, fontSize: 18 }} />
-          Open Session
-        </MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick('resume', selectedSession)} className={classes.menuItem}>
-          <Refresh sx={{ mr: 1, fontSize: 18 }} />
-          Resume Chat
-        </MenuItem>
-        <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
-        <MenuItem onClick={() => handleMenuItemClick('delete', selectedSession)} className={`${classes.menuItem} delete`}>
-          <Delete sx={{ mr: 1, fontSize: 18 }} />
-          Delete Session
-        </MenuItem>
-      </Menu>
 
       <Snackbar 
         open={!!error} 
