@@ -18,6 +18,9 @@ import { Phone, CheckCircle, Close } from '@mui/icons-material';
 const useStyles = makeStyles({
   backdrop: {
     transition: 'all 0.3s ease-in-out',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    backdropFilter: 'blur(8px)', // Add blur effect
+    WebkitBackdropFilter: 'blur(8px)', // For Safari
   },
   dialog: {
     '& .MuiDialog-paper': {
@@ -184,11 +187,11 @@ const useStyles = makeStyles({
     top: 12,
     right: 12,
     zIndex: 10,
-    color: '#a0a0a0',
-    background: 'rgba(0,0,0,0.05)',
+    color: '#ef4444', // Tailwind red-500
+    background: 'rgba(239,68,68,0.08)', // subtle red background
     '&:hover': {
-      color: '#ffffff',
-      background: 'rgba(255, 0, 0, 0.49)',
+      color: '#fff',
+      background: 'rgba(239,68,68,0.25)',
     },
   },
   loadingWrapper: {
