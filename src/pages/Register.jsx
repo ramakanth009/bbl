@@ -11,12 +11,18 @@ import {
   Fade,
   Zoom,
   CircularProgress,
-  Grid,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
-import { WorkspacePremium } from "@mui/icons-material";
+import {
+  WorkspacePremium,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
 import { useAuth } from "../context/AuthContext";
 import GoogleLogo from "../assets/google-logo.svg";
+import apiService from "../services/api";
 
 const StarField = React.lazy(() => import("../components/common/StarField"));
 
@@ -39,7 +45,7 @@ const useStyles = makeStyles(() => ({
 
   authCard: {
     width: "100%",
-    maxWidth: 900, // Increased for side-by-side layout
+    maxWidth: 900,
     padding: "24px",
     background: "none !important",
     backgroundColor: "transparent !important",
@@ -123,21 +129,22 @@ const useStyles = makeStyles(() => ({
     marginBottom: "16px",
     "& .MuiOutlinedInput-root": {
       backgroundColor: "transparent !important",
-      border: "1.5px solid #fff",
       borderRadius: 12,
-      height: "48px", // Fixed height for consistency
+      height: "48px",
       transition: "all 0.3s cubic-bezier(.4,2,.6,1)",
       "& fieldset": {
-        border: "none",
-      },
-      "&:hover": {
-        backgroundColor: "transparent",
         border: "1.5px solid #fff",
       },
-      "&.Mui-focused": {
-        backgroundColor: "transparent",
-        border: "1.5px solid #fff",
+      "&:hover fieldset": {
+        borderColor: "#fff",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#fff",
         boxShadow: "0 0 0 4px rgba(255,255,255,0.08)",
+      },
+      "&.Mui-error fieldset": {
+        borderColor: "#f44336 !important",
+        boxShadow: "0 0 0 4px rgba(244, 67, 54, 0.08) !important",
       },
     },
     "& .MuiInputLabel-root": {
@@ -145,6 +152,9 @@ const useStyles = makeStyles(() => ({
       fontSize: "0.9rem",
       "&.Mui-focused": {
         color: "#fff",
+      },
+      "&.Mui-error": {
+        color: "#f44336",
       },
     },
     "& .MuiInputBase-input": {
@@ -157,6 +167,9 @@ const useStyles = makeStyles(() => ({
       color: "#aaa",
       fontSize: "0.7rem",
       marginTop: "4px",
+      "&.Mui-error": {
+        color: "#f44336",
+      },
     },
     "@media (max-height: 700px)": {
       marginBottom: "12px",
@@ -326,6 +339,17 @@ const useStyles = makeStyles(() => ({
   bottomSection: {
     marginTop: "auto",
   },
+
+  oauthStatusMessage: {
+    fontSize: '0.75rem',
+    color: '#999',
+    textAlign: 'center',
+    marginBottom: '12px',
+    minHeight: '18px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 }));
 
 const Register = () => {
@@ -335,11 +359,32 @@ const Register = () => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const [googleLoading, setGoogleLoading] = useState(false);
-  const { register, loginWithGoogle, isAuthenticated, oauthStatus } = useAuth();
+  
+  // Field-specific error states
+  const [fieldErrors, setFieldErrors] = useState({
+    username: "",
+    email: "",
+    mobileNumber: "",
+    password: "",
+    confirmPassword: "",
+  });
+  
+  // Track validation states to avoid repeated checks
+  const [fieldValidated, setFieldValidated] = useState({
+    username: false,
+    email: false,
+    mobileNumber: false,
+    password: false,
+    confirmPassword: false,
+  });
+
+  const { register, loginWithGoogle, isAuthenticated, oauthStatus, oauthStatusLoading, isOAuthReady, getOAuthStatusMessage } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -364,56 +409,166 @@ const Register = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const validateEmail = (email) => {
-    const regex = /^[\w.\-]+@[\w\-]+\.[\w.]{2,}$/;
-    return regex.test(email);
+  // Helper function to clear field error
+  const clearFieldError = (fieldName) => {
+    setFieldErrors(prev => ({
+      ...prev,
+      [fieldName]: ""
+    }));
+    setFieldValidated(prev => ({
+      ...prev,
+      [fieldName]: false
+    }));
   };
 
-  const validateMobile = (mobile) => {
-    const normalized = mobile.replace(/\s+/g, "").replace(/^(\+91|91)/, "");
-    const regex = /^[6-9]\d{9}$/;
-    return regex.test(normalized);
+  // Helper function to set field error
+  const setFieldError = (fieldName, errorMessage) => {
+    setFieldErrors(prev => ({
+      ...prev,
+      [fieldName]: errorMessage
+    }));
+    setFieldValidated(prev => ({
+      ...prev,
+      [fieldName]: true
+    }));
   };
 
+  // Frontend validation based on backend requirements (NO API CALLS)
+  const validateField = (fieldName, value) => {
+    if (!value || value.trim() === "") {
+      setFieldError(fieldName, "This field is required");
+      return false;
+    }
+
+    switch (fieldName) {
+      case 'username':
+        // Backend validation: 3-50 characters, alphanumeric + dots, underscores, hyphens
+        if (value.length < 3) {
+          setFieldError(fieldName, 'String should have at least 3 characters');
+          return false;
+        }
+        if (value.length > 50) {
+          setFieldError(fieldName, 'String should have at most 50 characters');
+          return false;
+        }
+        if (!/^[a-zA-Z0-9._-]+$/.test(value)) {
+          setFieldError(fieldName, 'Username can only contain letters, numbers, dots, underscores, and hyphens');
+          return false;
+        }
+        break;
+        
+      case 'email':
+        // Backend validation: Valid email format, converted to lowercase
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(value)) {
+          setFieldError(fieldName, 'Please enter a valid email address');
+          return false;
+        }
+        break;
+        
+      case 'mobileNumber':
+        // Backend validation: 10-digit Indian mobile number (6-9 prefix)
+        const normalized = value.replace(/\s+/g, "").replace(/^(\+91|91)/, "");
+        if (!/^[6-9]\d{9}$/.test(normalized)) {
+          setFieldError(fieldName, 'Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9');
+          return false;
+        }
+        break;
+        
+      case 'password':
+        // Backend validation: Minimum 6 characters, maximum 100 characters
+        if (value.length < 6) {
+          setFieldError(fieldName, 'String should have at least 6 characters');
+          return false;
+        }
+        if (value.length > 100) {
+          setFieldError(fieldName, 'String should have at most 100 characters');
+          return false;
+        }
+        break;
+        
+      default:
+        break;
+    }
+    
+    clearFieldError(fieldName);
+    setFieldValidated(prev => ({
+      ...prev,
+      [fieldName]: true
+    }));
+    return true;
+  };
+
+  // Handle field blur (when user moves away from field) - NO API CALLS
+  const handleFieldBlur = (fieldName, value) => {
+    validateField(fieldName, value);
+  };
+
+  // Handle password confirmation validation
+  const handleConfirmPasswordBlur = (value) => {
+    if (!value) {
+      setFieldError('confirmPassword', 'Please confirm your password');
+    } else if (value !== password) {
+      setFieldError('confirmPassword', 'Passwords do not match');
+    } else {
+      clearFieldError('confirmPassword');
+    }
+  };
+
+  // Handle form submission - NO FRONTEND VALIDATION, all handled by backend
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !email || !mobileNumber || !password || !confirmPassword) {
-      setError("All fields are required");
-      return;
-    }
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-    if (!validateMobile(mobileNumber)) {
-      setError("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
-
+    
     setLoading(true);
     setError("");
-    const result = await register(username, email, mobileNumber, password);
-    if (result.success) {
-      navigate("/login");
-    } else {
-      setError(result.error);
+    setFieldErrors({
+      username: "",
+      email: "",
+      mobileNumber: "",
+      password: "",
+      confirmPassword: "",
+    });
+
+    try {
+      const result = await register(username, email, mobileNumber, password);
+      if (result.success) {
+        navigate("/login");
+      } else {
+        // Parse backend error and map to specific fields if possible
+        const errorMessage = result.error || 'Registration failed';
+        
+        // Try to map error to specific field
+        if (errorMessage.toLowerCase().includes('username')) {
+          setFieldError('username', errorMessage);
+        } else if (errorMessage.toLowerCase().includes('email')) {
+          setFieldError('email', errorMessage);
+        } else if (errorMessage.toLowerCase().includes('mobile') || errorMessage.toLowerCase().includes('phone')) {
+          setFieldError('mobileNumber', errorMessage);
+        } else if (errorMessage.toLowerCase().includes('password')) {
+          setFieldError('password', errorMessage);
+        } else {
+          // Show general error if we can't map to specific field
+          setError(errorMessage);
+        }
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleGoogleRegister = async () => {
-    if (!oauthStatus?.oauth_configured || !oauthStatus?.google_available) {
+    if (oauthStatusLoading) {
+      setError('Please wait while we check Google sign-in availability.');
+      return;
+    }
+
+    if (!isOAuthReady()) {
       setError("Google OAuth is not available. Please try again later or contact support.");
       return;
     }
+    
     try {
       setGoogleLoading(true);
       setError("");
@@ -425,7 +580,9 @@ const Register = () => {
     }
   };
 
-  const isOAuthAvailable = oauthStatus?.oauth_configured && oauthStatus?.google_available;
+  const oauthStatusMessage = getOAuthStatusMessage();
+  const showGoogleButton = !oauthStatusLoading;
+  const isGoogleAvailable = isOAuthReady();
 
   return (
     <>
@@ -516,44 +673,43 @@ const Register = () => {
               </Alert>
             )}
 
-            <Button
-              className={`${classes.googleButton} ${
-                !isOAuthAvailable ? classes.oauthUnavailable : ""
-              }`}
-              onClick={handleGoogleRegister}
-              disabled={googleLoading || !isOAuthAvailable}
-              startIcon={
-                googleLoading ? (
-                  <CircularProgress size={18} sx={{ color: "inherit" }} />
-                ) : (
-                  <img
-                    src={GoogleLogo}
-                    alt="Google"
-                    style={{
-                      width: "18px",
-                      height: "18px",
-                    }}
-                  />
-                )
-              }
-            >
-              {googleLoading ? "Connecting..." : "Continue with Google"}
-            </Button>
-
-            {!isOAuthAvailable && (
-              <Typography
-                variant="caption"
-                sx={{
-                  display: "block",
-                  textAlign: "center",
-                  color: "#888",
-                  fontSize: "0.75rem",
-                  marginBottom: "12px",
-                }}
+            {/* Google OAuth Section */}
+            {showGoogleButton && (
+              <Button
+                className={`${classes.googleButton} ${!isGoogleAvailable ? classes.oauthUnavailable : ""}`}
+                onClick={handleGoogleRegister}
+                disabled={googleLoading || !isGoogleAvailable || oauthStatusLoading}
+                disableElevation
+                startIcon={
+                  googleLoading ? (
+                    <CircularProgress size={18} sx={{ color: "inherit" }} />
+                  ) : oauthStatusLoading ? (
+                    <CircularProgress size={18} sx={{ color: "inherit" }} />
+                  ) : (
+                    <img
+                      src={GoogleLogo}
+                      alt="Google"
+                      style={{
+                        width: "18px",
+                        height: "18px",
+                        opacity: isGoogleAvailable ? 1 : 0.5
+                      }}
+                    />
+                  )
+                }
               >
-                Google Sign-In temporarily unavailable
-              </Typography>
+                {googleLoading ? "Connecting..." : oauthStatusLoading ? "Loading..." : "Continue with Google"}
+              </Button>
             )}
+
+            {/* OAuth Status Message */}
+            <Box className={classes.oauthStatusMessage}>
+              {oauthStatusMessage && (
+                <Typography variant="caption">
+                  {oauthStatusMessage}
+                </Typography>
+              )}
+            </Box>
 
             <Box className={classes.divider}>
               <Typography className={classes.dividerText}>OR</Typography>
@@ -567,12 +723,18 @@ const Register = () => {
                     type="text"
                     fullWidth
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    autoFocus
+                    onChange={(e) => {
+                      setUsername(e.target.value);
+                      // Clear error when user starts typing
+                      if (fieldErrors.username) {
+                        clearFieldError('username');
+                      }
+                    }}
+                    onBlur={() => handleFieldBlur('username', username)}
                     className={classes.styledTextField}
                     disabled={loading}
-                    helperText="3-50 characters allowed"
+                    error={!!fieldErrors.username}
+                    helperText={fieldErrors.username || "3-50 characters, letters, numbers, dots, underscores, hyphens"}
                   />
 
                   <TextField
@@ -580,11 +742,18 @@ const Register = () => {
                     type="email"
                     fullWidth
                     value={email}
-                    onChange={(e) => setEmail(e.target.value.toLowerCase())}
-                    required
+                    onChange={(e) => {
+                      setEmail(e.target.value.toLowerCase());
+                      // Clear error when user starts typing
+                      if (fieldErrors.email) {
+                        clearFieldError('email');
+                      }
+                    }}
+                    onBlur={() => handleFieldBlur('email', email)}
                     className={classes.styledTextField}
                     disabled={loading}
-                    helperText="Valid email format required"
+                    error={!!fieldErrors.email}
+                    helperText={fieldErrors.email || "Valid email format required"}
                   />
 
                   <TextField
@@ -592,37 +761,90 @@ const Register = () => {
                     type="tel"
                     fullWidth
                     value={mobileNumber}
-                    onChange={(e) => setMobileNumber(e.target.value)}
-                    required
+                    onChange={(e) => {
+                      setMobileNumber(e.target.value);
+                      // Clear error when user starts typing
+                      if (fieldErrors.mobileNumber) {
+                        clearFieldError('mobileNumber');
+                      }
+                    }}
+                    onBlur={() => handleFieldBlur('mobileNumber', mobileNumber)}
                     className={classes.styledTextField}
                     disabled={loading}
-                    helperText="10-digit Indian mobile (6-9 prefix)"
+                    error={!!fieldErrors.mobileNumber}
+                    helperText={fieldErrors.mobileNumber || "10-digit Indian mobile (6-9 prefix)"}
                   />
                 </div>
 
                 <div className={classes.rightColumn}>
                   <TextField
                     label="Password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     fullWidth
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      // Clear error when user starts typing
+                      if (fieldErrors.password) {
+                        clearFieldError('password');
+                      }
+                      // Also clear confirm password error if passwords now match
+                      if (fieldErrors.confirmPassword && confirmPassword && e.target.value === confirmPassword) {
+                        clearFieldError('confirmPassword');
+                      }
+                    }}
+                    onBlur={() => handleFieldBlur('password', password)}
                     className={classes.styledTextField}
                     disabled={loading}
-                    helperText="Minimum 6 characters"
+                    error={!!fieldErrors.password}
+                    helperText={fieldErrors.password || "Minimum 6 characters, maximum 100"}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                            sx={{ color: '#fff' }}
+                            disabled={loading}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
 
                   <TextField
                     label="Confirm Password"
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     fullWidth
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      // Clear error when user starts typing
+                      if (fieldErrors.confirmPassword) {
+                        clearFieldError('confirmPassword');
+                      }
+                    }}
+                    onBlur={() => handleConfirmPasswordBlur(confirmPassword)}
                     className={classes.styledTextField}
                     disabled={loading}
-                    helperText="Must match password"
+                    error={!!fieldErrors.confirmPassword}
+                    helperText={fieldErrors.confirmPassword || "Must match password"}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            edge="end"
+                            sx={{ color: '#fff' }}
+                            disabled={loading}
+                          >
+                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </div>
               </div>

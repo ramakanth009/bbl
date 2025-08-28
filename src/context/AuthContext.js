@@ -1,4 +1,4 @@
-// AuthContext.js - Updated with fixes and new profile management
+// AuthContext.js - Updated with proper OAuth status handling
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import apiService from '../services/api';
@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [oauthStatus, setOauthStatus] = useState(null);
+  const [oauthStatusLoading, setOauthStatusLoading] = useState(true);
   const [profileStatus, setProfileStatus] = useState(null);
 
   // Add refs to prevent multiple simultaneous API calls
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }) => {
   const oauthStatusLoadingRef = useRef(false);
   const contextMountedRef = useRef(false);
 
-  // Memoized function to load profile status (prevents recreation on every render)
+  // Memoized function to load profile status
   const loadProfileStatus = useCallback(async (force = false) => {
     // Prevent multiple simultaneous calls
     if (profileStatusLoadingRef.current && !force) {
@@ -51,27 +52,41 @@ export const AuthProvider = ({ children }) => {
     }
   }, [profileStatus]);
 
-  // Memoized function to load OAuth status
-  const loadOAuthStatus = useCallback(async () => {
-    if (oauthStatusLoadingRef.current) {
+  // Improved OAuth status loading with proper state management
+  const checkOAuthStatus = useCallback(async (force = false) => {
+    // Prevent multiple simultaneous calls unless forced
+    if (oauthStatusLoadingRef.current && !force) {
       console.log('OAuth status already loading, skipping...');
       return oauthStatus;
     }
 
     try {
       oauthStatusLoadingRef.current = true;
-      const oauth = await apiService.checkOAuthStatus();
-      setOauthStatus(oauth);
-      return oauth;
+      setOauthStatusLoading(true);
+      
+      console.log('🔄 Checking OAuth status...');
+      const status = await apiService.checkOAuthStatus();
+      
+      console.log('✅ OAuth status loaded:', status);
+      setOauthStatus(status);
+      
+      return status;
     } catch (error) {
-      console.error('Failed to check OAuth status:', error);
-      setOauthStatus({
+      console.error('❌ Failed to check OAuth status:', error);
+      
+      // Set default values when OAuth check fails
+      const fallbackStatus = {
+        status: 'error',
         oauth_configured: false,
-        google_available: false
-      });
-      return null;
+        google_available: false,
+        error: 'Failed to check OAuth configuration'
+      };
+      
+      setOauthStatus(fallbackStatus);
+      return fallbackStatus;
     } finally {
       oauthStatusLoadingRef.current = false;
+      setOauthStatusLoading(false);
     }
   }, [oauthStatus]);
 
@@ -84,20 +99,27 @@ export const AuthProvider = ({ children }) => {
     setProfileStatus(null);
   }, []);
 
-  // Check authentication status on initial load - FIXED with proper dependencies
+  // Check authentication status on initial load
   useEffect(() => {
     if (contextMountedRef.current) {
       console.warn('AuthProvider mounted more than once. This may cause duplicate API calls.');
     }
     contextMountedRef.current = true;
 
-    let isMounted = true; // Cleanup flag
+    let isMounted = true;
     
-    const checkAuth = async () => {
+    const initializeAuth = async () => {
       try {
+        console.log('🔄 Initializing authentication...');
+        
+        // Check OAuth status first (this doesn't require authentication)
+        await checkOAuthStatus(true);
+        
+        // Then check user authentication
         const token = localStorage.getItem('token');
         
         if (token && apiService.isAuthenticated()) {
+          console.log('✅ Valid token found');
           setIsAuthenticated(true);
           
           // Load user data
@@ -107,53 +129,50 @@ export const AuthProvider = ({ children }) => {
               const userData = JSON.parse(storedUser);
               if (isMounted) {
                 setUser(userData);
+                console.log('✅ User data loaded from localStorage');
               }
             } else {
               // Try to get user info from token
               const userInfo = apiService.getUserInfo();
-              if (userInfo && isMounted) setUser(userInfo);
+              if (userInfo && isMounted) {
+                setUser(userInfo);
+                console.log('✅ User data loaded from token');
+              }
             }
           } catch (e) {
-            console.error('Failed to parse stored user data:', e);
+            console.error('❌ Failed to parse stored user data:', e);
           }
 
-          // Load profile status ONLY ONCE on initial authentication check
-          if (isMounted && !profileStatusLoadingRef.current && !profileStatus) {
-            await loadProfileStatus(true); // Force load on initial check
+          // Load profile status for authenticated users
+          if (isMounted && !profileStatusLoadingRef.current) {
+            await loadProfileStatus(true);
           }
         } else {
+          console.log('❌ No valid token found');
           if (isMounted) clearAuthData();
         }
         
-        // Check OAuth status ONLY ONCE
-        if (isMounted) {
-          await loadOAuthStatus();
-        }
       } catch (error) {
-        console.error('Auth check error:', error);
+        console.error('❌ Auth initialization error:', error);
         if (isMounted) clearAuthData();
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+          console.log('✅ Auth initialization complete');
+        }
       }
     };
 
-    checkAuth();
+    initializeAuth();
 
     // Cleanup function
     return () => {
       isMounted = false;
     };
-  }, []); // Only run once on mount
+  }, []); // Empty dependency array - only run once
 
   // Login with username/password
   const login = async (username, password) => {
-    if (!username || !password) {
-      return {
-        success: false,
-        error: 'Username and password are required'
-      };
-    }
-    
     try {
       setLoading(true);
       const response = await apiService.login(username, password);
@@ -199,36 +218,52 @@ export const AuthProvider = ({ children }) => {
   // Google OAuth login
   const loginWithGoogle = () => {
     try {
-      if (!oauthStatus?.oauth_configured || !oauthStatus?.google_available) {
-        throw new Error('Google OAuth is not available');
+      // Check if OAuth status is still loading
+      if (oauthStatusLoading) {
+        throw new Error('Please wait while we check Google sign-in availability');
       }
+      
+      if (!oauthStatus?.oauth_configured || !oauthStatus?.google_available) {
+        throw new Error('Google OAuth is not available at this time');
+      }
+      
+      console.log('🔄 Initiating Google OAuth flow...');
       apiService.initiateGoogleLogin();
     } catch (error) {
-      console.error('Google login failed:', error);
+      console.error('❌ Google login failed:', error);
       throw error;
     }
   };
 
   // Handle OAuth callback
   const handleOAuthCallback = useCallback(async () => {
-    setLoading(true); // Block API calls until done
+    setLoading(true);
     try {
+      console.log('🔄 Processing OAuth callback...');
       const result = apiService.processOAuthCallback();
+      
       if (result.success && result.token) {
+        console.log('✅ OAuth callback successful');
         setUser(result.user);
         setIsAuthenticated(true);
+        
+        // Load profile status after OAuth login
         await loadProfileStatus(true);
+        
         return { success: true, user: result.user };
       }
+      
+      console.log('❌ OAuth callback failed:', result.error);
       return { success: false, error: result.error || result.message };
     } catch (error) {
+      console.error('❌ OAuth callback processing error:', error);
       clearAuthData();
       return {
         success: false,
         error: error.message || 'OAuth callback processing failed'
       };
     } finally {
-      setLoading(false); // Only allow API calls after auth state is set
+      setLoading(false);
     }
   }, [loadProfileStatus, clearAuthData]);
 
@@ -262,17 +297,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Refresh profile status - now uses the memoized function
+  // Refresh profile status
   const refreshProfileStatus = useCallback(async () => {
     return await loadProfileStatus(true);
   }, [loadProfileStatus]);
 
+  // Refresh OAuth status (useful for retry scenarios)
+  const refreshOAuthStatus = useCallback(async () => {
+    return await checkOAuthStatus(true);
+  }, [checkOAuthStatus]);
+
   // Logout
   const logout = async () => {
     try {
+      console.log('🔄 Logging out...');
       await apiService.logout();
+      console.log('✅ Logout successful');
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error('❌ Logout failed:', error);
     } finally {
       clearAuthData();
     }
@@ -290,20 +332,58 @@ export const AuthProvider = ({ children }) => {
     return null;
   }, [user]);
 
+  // Helper function to check if OAuth is ready
+  const isOAuthReady = useCallback(() => {
+    return !oauthStatusLoading && oauthStatus?.oauth_configured && oauthStatus?.google_available;
+  }, [oauthStatusLoading, oauthStatus]);
+
+  // Helper function to get OAuth status message
+  const getOAuthStatusMessage = useCallback(() => {
+    if (oauthStatusLoading) {
+      return 'Checking Google Sign-In availability...';
+    }
+    
+    if (!oauthStatus) {
+      return 'Unable to check Google Sign-In status';
+    }
+    
+    if (!oauthStatus.oauth_configured) {
+      return 'Google Sign-In not configured';
+    }
+    
+    if (!oauthStatus.google_available) {
+      return 'Google Sign-In temporarily unavailable';
+    }
+    
+    return null; // No message needed when everything is working
+  }, [oauthStatusLoading, oauthStatus]);
+
   const value = {
+    // State
     isAuthenticated,
     user,
     loading,
     oauthStatus,
+    oauthStatusLoading,
     profileStatus,
+    
+    // Auth methods
     login,
     register,
     logout,
     loginWithGoogle,
     handleOAuthCallback,
     getUserInfo,
+    
+    // Profile methods
     updateMobile,
-    refreshProfileStatus
+    refreshProfileStatus,
+    
+    // OAuth methods and helpers
+    checkOAuthStatus,
+    refreshOAuthStatus,
+    isOAuthReady,
+    getOAuthStatusMessage
   };
 
   return (

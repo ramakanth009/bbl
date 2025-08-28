@@ -57,28 +57,28 @@ const useStyles = makeStyles({
       fontSize: '0.7rem !important',
     },
   },
-  // Add new style for loading message bubble
+  // FIXED: More generous width for loading bubble
   loadingMessageContent: {
-    maxWidth: '40% !important', // Smaller width for loading bubble
-    minWidth: '120px', // Ensure minimum width for content
+    maxWidth: '70% !important', // Increased from 40% to 70%
+    minWidth: '120px',
     '@media (max-width: 1200px)': {
-      maxWidth: '45% !important',
+      maxWidth: '75% !important', // Increased from 45% to 75%
       minWidth: '110px',
     },
     '@media (max-width: 960px)': {
-      maxWidth: '50% !important',
+      maxWidth: '80% !important', // Increased from 50% to 80%
       minWidth: '100px',
     },
     '@media (max-width: 600px)': {
-      maxWidth: '55% !important',
+      maxWidth: '85% !important', // Increased from 55% to 85%
       minWidth: '90px',
     },
     '@media (max-width: 480px)': {
-      maxWidth: '60% !important',
+      maxWidth: '90% !important', // Increased from 60% to 90%
       minWidth: '80px',
     },
     '@media (max-width: 375px)': {
-      maxWidth: '65% !important',
+      maxWidth: '95% !important', // Increased from 65% to 95%
       minWidth: '70px',
     },
   },
@@ -145,7 +145,7 @@ function linkifyString(text, keyPrefix = '') {
           href={part}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: '#818cf8', wordBreak: 'break-all' }}
+          style={{ color: '#818cf8', wordBreak: 'break-word' }} // Changed from break-all to break-word
         >
           {part}
         </a>
@@ -160,7 +160,7 @@ function linkifyString(text, keyPrefix = '') {
           href={`https://${part}`}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: '#818cf8', wordBreak: 'break-all' }}
+          style={{ color: '#818cf8', wordBreak: 'break-word' }} // Changed from break-all to break-word
         >
           {part}
         </a>
@@ -231,7 +231,11 @@ const MessageList = forwardRef(({ messages, loading, character }, ref) => {
                 ...message,
                 // Apply our complete processing pipeline
                 content: typeof message.content === 'string'
-                  ? <span style={{ whiteSpace: 'pre-wrap' }}>
+                  ? <span style={{ 
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word', // Changed from normal to break-word for better text wrapping
+                      overflowWrap: 'break-word' // Added for better long word handling
+                    }}>
                       {processMessageContent(message.content)}
                     </span>
                   : message.content,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 import { Box, TextField, IconButton } from '@mui/material';
 import { Send } from '@mui/icons-material';
@@ -179,6 +179,13 @@ const useStyles = makeStyles(() => ({
 
 const ChatInput = ({ value, onChange, onSend, loading, placeholder = "Message..." }) => {
   const classes = useStyles();
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (!loading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [loading]);
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -199,6 +206,7 @@ const ChatInput = ({ value, onChange, onSend, loading, placeholder = "Message...
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={loading}
+          inputRef={inputRef}
         />
         <IconButton
           className={`${classes.sendButton} ${value.trim() ? 'visible' : ''}`}

@@ -198,8 +198,7 @@ class ApiService {
         };
     }
 
-    // Auth endpoints
-    // UPDATED: Register method now accepts email and mobile_number
+    // Auth endpoints - REMOVED ALL FRONTEND VALIDATION
     async register(username, email, mobile_number, password) {
         try {
             // Clear any cached data on new registration
@@ -217,6 +216,7 @@ class ApiService {
         }
     }
 
+    // Login method - REMOVED ALL FRONTEND VALIDATION
     async login(username, password) {
         try {
             // Clear any cached data on new login
@@ -749,16 +749,43 @@ class ApiService {
         });
     }
 
-    // Enhanced error handling
+    // Enhanced error handling - IMPROVED TO PARSE BACKEND ERRORS
     handleError(error, defaultMessage) {
         if (error.response) {
             // Server responded with error status
             const { status, data } = error.response;
+            
+            // Handle FastAPI validation errors (400 status with detail array)
+            if (status === 400 && data.detail && Array.isArray(data.detail)) {
+                // Parse validation errors from backend
+                const validationErrors = data.detail.map(err => {
+                    if (err.loc && err.msg) {
+                        const field = err.loc[err.loc.length - 1]; // Get the field name
+                        return `${field}: ${err.msg}`;
+                    }
+                    return err.msg || 'Validation error';
+                }).join(', ');
+                return new Error(validationErrors);
+            }
+            
+            // Handle other structured errors
+            if (data.detail && typeof data.detail === 'string') {
+                return new Error(data.detail);
+            }
+            
+            if (data.error) {
+                return new Error(data.error);
+            }
+            
+            if (data.message) {
+                return new Error(data.message);
+            }
+            
             switch (status) {
                 case 400:
-                    return new Error(data.error || data.detail || 'Invalid request');
+                    return new Error('Invalid request data');
                 case 401:
-                    return new Error('Authentication required');
+                    return new Error('Invalid username or password');
                 case 403:
                     return new Error('Access forbidden');
                 case 404:
@@ -768,7 +795,7 @@ class ApiService {
                 case 500:
                     return new Error('Server error. Please try again later.');
                 default:
-                    return new Error(data.error || data.detail || defaultMessage);
+                    return new Error(defaultMessage);
             }
         } else if (error.request) {
             // Network error
