@@ -15,7 +15,6 @@ import {
   IconButton,
 } from "@mui/material";
 import {
-  // LocationOn,
   WorkspacePremium,
   Add,
   Explore,
@@ -26,6 +25,8 @@ import {
   History,
   Logout,
   Category,
+  ChevronRight,
+  ChevronLeft, // Add this import for the collapse button
 } from "@mui/icons-material";
 import { makeStyles } from '@mui/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -198,6 +199,42 @@ const useStyles = makeStyles(() => ({
     },
     '@media (max-width: 375px)': {
       fontSize: '11px !important',
+    },
+  },
+  // Add expand button styles
+  expandButton: {
+    width: '40px !important',
+    height: '40px !important',
+    minWidth: '40px !important',
+    padding: '0 !important',
+    backgroundColor: '#333 !important',
+    color: '#ccc !important',
+    borderRadius: '6px !important',
+    transition: 'all 0.2s ease !important',
+    border: '1px solid rgba(255, 255, 255, 0.1) !important',
+    marginBottom: '16px !important',
+    display: 'flex !important',
+    alignItems: 'center !important',
+    justifyContent: 'center !important',
+    '&:hover': {
+      backgroundColor: '#404040 !important',
+      color: '#6366f1 !important',
+      borderColor: 'rgba(99, 102, 241, 0.3) !important',
+    },
+    '@media (max-width: 1200px)': {
+      width: '36px !important',
+      height: '36px !important',
+      minWidth: '36px !important',
+      marginBottom: '14px !important',
+    },
+    '@media (max-width: 960px)': {
+      width: '32px !important',
+      height: '32px !important',
+      minWidth: '32px !important',
+      marginBottom: '12px !important',
+    },
+    '@media (max-width: 900px)': {
+      display: 'none !important', // Hide on mobile since sidebar behavior is different
     },
   },
   createButton: {
@@ -579,13 +616,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
+const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
   const classes = useStyles();
   const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobileView = useMediaQuery(theme.breakpoints.down('md'));
 
   const [stylesReady, setStylesReady] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
@@ -619,7 +656,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
     if (!comingSoon) {
       navigate(`/dashboard/${path}`);
       // Close sidebar on mobile after navigation
-      if (isMobile && onToggle) {
+      if (isMobileView && onToggle) {
         onToggle();
       }
     }
@@ -636,7 +673,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
   const handleCategorySelect = (categoryKey) => {
     navigate(`/dashboard/categories/${categoryKey}`);
     // Close sidebar on mobile after navigation
-    if (isMobile && onToggle) {
+    if (isMobileView && onToggle) {
       onToggle();
     }
   };
@@ -649,7 +686,21 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
   };
 
   const handleDrawerClose = () => {
-    if (isMobile && onToggle) {
+    if (isMobileView && onToggle) {
+      onToggle();
+    }
+  };
+
+  // Handle expand button click
+  const handleExpandClick = () => {
+    if (onToggle) {
+      onToggle();
+    }
+  };
+
+  // Handle collapse button click
+  const handleCollapseClick = () => {
+    if (onToggle) {
       onToggle();
     }
   };
@@ -682,7 +733,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
     );
 
     // Wrap with tooltip when collapsed (except on mobile)
-    if (!open && !isMobile) {
+    if (!open && !isMobileView) {
       return (
         <Tooltip key={item.text} title={item.text} placement="right" arrow>
           {content}
@@ -821,13 +872,40 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
         onClose={handleDrawerClose}
         className={`${classes.drawer} ${!open ? classes.drawerCollapsed : ""}`}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile
+          keepMounted: true,
         }}
       >
         <Box className={`${classes.contentWrapper} ${!open ? classes.contentWrapperCollapsed : ""}`}>
+          {/* Top right button for collapse/expand (desktop only) */}
+          {!isMobile && (
+            <Box sx={{
+              position: 'absolute',
+              top: 16,
+              right: 16,
+              zIndex: 1500,
+            }}>
+              <Tooltip title={open ? "Collapse Sidebar" : "Expand Sidebar"} placement="left" arrow>
+                <IconButton
+                  onClick={open ? handleCollapseClick : handleExpandClick}
+                  className={classes.expandButton}
+                  sx={{
+                    backgroundColor: '#333 !important',
+                    color: '#ccc !important',
+                    width: '32px !important',
+                    height: '32px !important',
+                    minWidth: '32px !important',
+                    borderRadius: '6px !important',
+                    boxShadow: 1,
+                  }}
+                >
+                  {open ? <ChevronLeft sx={{ fontSize: '16px' }} /> : <ChevronRight sx={{ fontSize: '16px' }} />}
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
+
           <Box className={`${classes.logoWrapper} ${!open ? classes.logoWrapperCollapsed : ""}`}>
             <Box className={classes.logoIcon}>
-              {/* <LocationOn sx={{ fontSize: 14 }} /> */}
               <WorkspacePremium sx={{ fontSize: 14 }} />
             </Box>
             {open && (
@@ -856,19 +934,19 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
             </Typography>
           )}
           
-                     {/* Categories icon when collapsed */}
-           {!open && !isMobile && (
-             <Box className={classes.categoriesIconWrapper}>
-               <Tooltip title="Categories" placement="right" arrow>
-                 <IconButton 
-                   className={classes.categoriesIcon}
-                   onClick={handleCategoryIconClick}
-                 >
-                   <Category className={classes.iconSizing} />
-                 </IconButton>
-               </Tooltip>
-             </Box>
-           )}
+          {/* Categories icon when collapsed */}
+          {!open && !isMobile && (
+            <Box className={classes.categoriesIconWrapper}>
+              <Tooltip title="Categories" placement="right" arrow>
+                <IconButton 
+                  className={classes.categoriesIcon}
+                  onClick={handleCategoryIconClick}
+                >
+                  <Category className={classes.iconSizing} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
           
           {/* Dynamic categories section - scrollable when open */}
           <Box className={`${classes.scrollableContent} ${!open ? classes.scrollableContentCollapsed : ""}`}>
@@ -912,6 +990,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
               </ListItemButton>
             )}
           </Box>
+          
           {/* Beta version label */}
           <Box
             sx={{

@@ -228,6 +228,8 @@ const Dashboard = () => {
       <StarField />
       
       {/* Desktop toggle button - Hidden on mobile */}
+      {/* REMOVE THIS OUTSIDE TOGGLE BUTTON */}
+      {/* 
       {!isMobile && (
         <IconButton
           className={`${classes.menuButton} ${sidebarOpen ? classes.menuButtonOpen : classes.menuButtonClosed}`}
@@ -237,6 +239,7 @@ const Dashboard = () => {
           {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
         </IconButton>
       )}
+      */}
 
       {/* Mobile TopBar - Hidden when chat is open */}
       {isMobile && !isChatOpen && (
