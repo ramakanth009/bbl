@@ -145,45 +145,67 @@ const useStyles = makeStyles((theme) => ({
   flagEmoji: {
     fontSize: '1.2rem',
     marginRight: '8px',
+    minWidth: '32px',
+    display: 'inline-block',
+    textAlign: 'center',
+    fontWeight: 600,
     '@media (max-width: 1200px)': {
       fontSize: '1.1rem',
       marginRight: '6px',
+      minWidth: '28px',
     },
     '@media (max-width: 960px)': {
       fontSize: '1rem',
       marginRight: '4px',
+      minWidth: '26px',
     },
     '@media (max-width: 600px)': {
       fontSize: '0.9rem',
       marginRight: '3px',
+      minWidth: '24px',
     },
     '@media (max-width: 480px)': {
-      fontSize: '0.8rem',
+      fontSize: '0.85rem',
       marginRight: '2px',
+      minWidth: '22px',
     },
     '@media (max-width: 375px)': {
-      fontSize: '0.75rem',
+      fontSize: '0.8rem',
       marginRight: '1px',
+      minWidth: '20px',
     },
   },
   compactButton: {
+    minWidth: '48px !important',
     '& span': {
       fontSize: '1rem',
-      fontWeight: 600,
+      fontWeight: 700,
+      minWidth: '32px',
+      display: 'inline-block',
+      textAlign: 'center',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      letterSpacing: '0.5px',
       '@media (max-width: 1200px)': {
-        fontSize: '0.9rem',
+        fontSize: '0.95rem',
+        minWidth: '30px',
       },
       '@media (max-width: 960px)': {
-        fontSize: '0.85rem',
+        fontSize: '0.9rem',
+        minWidth: '28px',
       },
       '@media (max-width: 600px)': {
-        fontSize: '0.8rem',
+        fontSize: '0.85rem',
+        minWidth: '26px',
       },
       '@media (max-width: 480px)': {
-        fontSize: '0.75rem',
+        fontSize: '0.8rem',
+        minWidth: '24px',
       },
       '@media (max-width: 375px)': {
-        fontSize: '0.7rem',
+        fontSize: '0.75rem',
+        minWidth: '22px',
       },
     },
   },
@@ -351,6 +373,46 @@ const LanguageMenuItem = ({ selected, children, ...props }) => {
   );
 };
 
+// Define a mapping for proper language codes and ISO codes
+const DEFAULT_LANGUAGES = [
+  { code: 'english', name: 'English', native_name: 'English', iso_code: 'EN' },
+  { code: 'hindi', name: 'Hindi', native_name: 'हिन्दी', iso_code: 'HI' },
+  { code: 'tamil', name: 'Tamil', native_name: 'தமிழ்', iso_code: 'TA' },
+  { code: 'telugu', name: 'Telugu', native_name: 'తెలుగు', iso_code: 'TE' },
+  { code: 'kannada', name: 'Kannada', native_name: 'ಕನ್ನಡ', iso_code: 'KN' },
+  { code: 'malayalam', name: 'Malayalam', native_name: 'മലയാളം', iso_code: 'ML' },
+  { code: 'gujarati', name: 'Gujarati', native_name: 'ગુજરાતી', iso_code: 'GU' },
+  { code: 'marathi', name: 'Marathi', native_name: 'मराठी', iso_code: 'MR' },
+  { code: 'punjabi', name: 'Punjabi', native_name: 'ਪੰਜਾਬੀ', iso_code: 'PA' },
+  { code: 'bengali', name: 'Bengali', native_name: 'বাংলা', iso_code: 'BN' },
+];
+
+// Function to get proper ISO code
+const getProperISOCode = (language) => {
+  // First try to get from the language object itself
+  if (language.iso_code && language.iso_code.length <= 3) {
+    return language.iso_code.toUpperCase();
+  }
+  
+  // Look up in default languages
+  const defaultLang = DEFAULT_LANGUAGES.find(dl => 
+    dl.code.toLowerCase() === language.code.toLowerCase() ||
+    dl.name.toLowerCase() === language.name.toLowerCase()
+  );
+  
+  if (defaultLang) {
+    return defaultLang.iso_code;
+  }
+  
+  // Fallback to first 2-3 characters of name
+  if (language.name && language.name.length >= 2) {
+    return language.name.substring(0, language.name.length <= 3 ? language.name.length : 2).toUpperCase();
+  }
+  
+  // Final fallback
+  return language.code ? language.code.substring(0, 2).toUpperCase() : 'UN';
+};
+
 const LanguageSelector = ({ 
   onLanguageChange, 
   currentLanguage = 'english',
@@ -363,16 +425,20 @@ const LanguageSelector = ({
 }) => {
   const classes = useStyles({ active: currentLanguage !== 'english' });
   const [anchorEl, setAnchorEl] = useState(null);
-  const [languages, setLanguages] = useState([]);
+  const [languages, setLanguages] = useState(DEFAULT_LANGUAGES);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const open = Boolean(anchorEl);
 
-  // Add iso codes to languages (no flags)
-  const addIsoCodes = (langs) => {
+  // Process and normalize languages data
+  const processLanguages = (langs) => {
     return langs.map(lang => ({
       ...lang,
+      // Ensure proper ISO code
+      iso_code: getProperISOCode(lang),
+      // Ensure name exists
+      name: lang.name || lang.code || 'Unknown',
     }));
   };
 
@@ -384,19 +450,27 @@ const LanguageSelector = ({
     try {
       setLoading(true);
       setError(null);
+      
+      console.log('🔄 Loading supported languages...');
 
       // Fetch languages from backend
       const response = await apiService.getSupportedLanguages();
-      // Expecting response.languages to be an array
-      const loadedLanguages = addIsoCodes(response.languages || []);
-      setLanguages(loadedLanguages);
-      if (!response.languages || response.languages.length === 0) {
-        setError('No languages found from backend');
+      console.log('📥 Raw API response:', response);
+      
+      // Process the languages data
+      if (response.languages && Array.isArray(response.languages) && response.languages.length > 0) {
+        const processedLanguages = processLanguages(response.languages);
+        console.log('✅ Processed languages:', processedLanguages);
+        setLanguages(processedLanguages);
+      } else {
+        console.warn('⚠️ No languages from API, using defaults');
+        setLanguages(DEFAULT_LANGUAGES);
+        setError('Using default languages - API response was empty');
       }
     } catch (error) {
-      setLanguages([]);
-      setError('Failed to load languages from backend');
-      console.warn('Failed to load languages from API:', error);
+      console.error('❌ Failed to load languages from API:', error);
+      setLanguages(DEFAULT_LANGUAGES);
+      setError('Using default languages - API failed');
     } finally {
       setLoading(false);
     }
@@ -411,6 +485,7 @@ const LanguageSelector = ({
   };
 
   const handleLanguageSelect = (languageCode, type = 'both') => {
+    console.log('🔄 Language selected:', languageCode, 'type:', type);
     if (onLanguageChange) {
       onLanguageChange(languageCode, type);
     }
@@ -418,13 +493,25 @@ const LanguageSelector = ({
   };
 
   const getCurrentLanguageInfo = (langCode) => {
-    return languages.find(lang => lang.code === langCode) || 
-           { name: 'Unknown', flag: '🌐', code: langCode };
+    const foundLang = languages.find(lang => lang.code === langCode);
+    if (foundLang) {
+      return foundLang;
+    }
+    
+    // Fallback with proper ISO code
+    return { 
+      name: 'Unknown', 
+      code: langCode,
+      iso_code: langCode ? langCode.substring(0, 2).toUpperCase() : 'UN',
+      native_name: langCode || 'Unknown'
+    };
   };
 
   const renderLanguageButton = () => {
+    const currentLang = getCurrentLanguageInfo(currentLanguage);
+    const displayCode = getProperISOCode(currentLang);
+    
     if (compact) {
-      const currentLang = getCurrentLanguageInfo(currentLanguage);
       return (
         <Tooltip title={`Language: ${currentLang.name}`}>
           <IconButton 
@@ -434,9 +521,8 @@ const LanguageSelector = ({
             size="small"
             {...props}
           >
-            {/* Show ISO code instead of flag */}
             <span>
-              {currentLang.iso_code?.toUpperCase() || currentLang.code?.toUpperCase()}
+              {displayCode}
             </span>
           </IconButton>
         </Tooltip>
@@ -508,6 +594,7 @@ const LanguageSelector = ({
           {!loading && languages.map((language) => {
             // Always compare with currentLanguage for selection
             const isSelected = language.code === currentLanguage;
+            const displayCode = getProperISOCode(language);
 
             return (
               <LanguageMenuItem
@@ -517,9 +604,8 @@ const LanguageSelector = ({
                 className={isSelected ? 'active' : ''}
               >
                 <ListItemIcon sx={{ minWidth: 'auto', mr: 1.5 }}>
-                  {/* Show ISO code instead of flag */}
                   <span className={classes.flagEmoji}>
-                    {language.iso_code?.toUpperCase() || language.code?.toUpperCase()}
+                    {displayCode}
                   </span>
                 </ListItemIcon>
                 <ListItemText

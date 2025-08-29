@@ -325,19 +325,17 @@ const useStyles = makeStyles(() => ({
       width: "34px !important",
       height: "34px !important",
       borderRadius: "6px !important",
-      display: "none",
+      display: "flex !important", // Keep visible on mobile
     },
     "@media (max-width: 480px)": {
       width: "32px !important",
       height: "32px !important",
       borderRadius: "4px !important",
-      display: "none",
     },
     "@media (max-width: 375px)": {
       width: "30px !important",
       height: "30px !important",
       borderRadius: "2px !important",
-      display: "none",
     },
   },
   messagesWrapper: {
@@ -554,15 +552,31 @@ const ChatPanel = ({
   const [sessionId, setSessionId] = useState(null);
   const [sessions, setSessions] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
-
   const [language, setLanguage] = useState("english");
+  const [isMobile, setIsMobile] = useState(false);
 
   const messagesEndRef = useRef(null);
   const messagesWrapperRef = useRef(null);
 
+  // Enhanced mobile detection
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const mobile = window.innerWidth <= 600 || 
+                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(mobile);
+    };
+
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
+
   // Calculate dynamic width based on sidebar state
   const calculateWidth = () => {
-    if (sidebarState.isMobile) {
+    if (sidebarState.isMobile || isMobile) {
       return "100vw";
     }
 
@@ -597,10 +611,7 @@ const ChatPanel = ({
       loadLanguagePreferences();
 
       if (character.native_language) {
-        console.log(
-          "🔧 Setting language to character native:",
-          character.native_language
-        );
+        console.log("Setting language to character native:", character.native_language);
         setLanguage(character.native_language);
       }
     }
@@ -609,6 +620,20 @@ const ChatPanel = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Prevent body scroll when mobile panels are open
+  useEffect(() => {
+    if (isMobile && showHistory) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobile, showHistory]);
 
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
@@ -630,9 +655,9 @@ const ChatPanel = ({
       if (preferences.language && !character.native_language) {
         setLanguage(preferences.language);
       }
-      console.log("📋 Loaded language preferences:", preferences);
+      console.log("Loaded language preferences:", preferences);
     } catch (error) {
-      console.warn("⚠️ Could not load language preferences:", error.message);
+      console.warn("Could not load language preferences:", error.message);
     }
   };
 
@@ -642,9 +667,9 @@ const ChatPanel = ({
         language: newLanguage,
         autoDetect: false,
       });
-      console.log("💾 Language preferences saved");
+      console.log("Language preferences saved");
     } catch (error) {
-      console.warn("⚠️ Could not save language preferences:", error.message);
+      console.warn("Could not save language preferences:", error.message);
     }
   };
 
@@ -680,7 +705,7 @@ const ChatPanel = ({
 
       setMessages(formattedMessages);
       setSessionId(sessionIdToLoad);
-      setShowHistory(false);
+      setShowHistory(false); // Close history after selection
       setError(null);
     } catch (error) {
       console.error("Failed to load session:", error);
@@ -696,10 +721,10 @@ const ChatPanel = ({
   };
 
   const handleLanguageChange = async (languageCode) => {
-    console.log("🔄 Language change requested:", languageCode);
+    console.log("Language change requested:", languageCode);
     setLanguage(languageCode);
     await saveLanguagePreferences(languageCode);
-    console.log("✅ Language updated:", languageCode);
+    console.log("Language updated:", languageCode);
   };
 
   const handleSend = async () => {
@@ -718,7 +743,7 @@ const ChatPanel = ({
     setMessages((prev) => [...prev, newUserMessage]);
 
     try {
-      console.log("💬 Sending message with settings:", {
+      console.log("Sending message with settings:", {
         character: character.name,
         language,
         sessionExists: !!sessionId,
@@ -731,7 +756,7 @@ const ChatPanel = ({
         { language }
       );
 
-      console.log("📨 Message sent successfully:", {
+      console.log("Message sent successfully:", {
         sessionId: response.session_id,
         responseLanguage: response.response_language,
         inputLanguage: response.input_language,
@@ -789,7 +814,7 @@ const ChatPanel = ({
 
       await loadUserSessions();
     } catch (error) {
-      console.error("💥 Chat error:", error);
+      console.error("Chat error:", error);
 
       let errorMessage = "Failed to send message. Please try again.";
       if (error.message.includes("language")) {
@@ -812,7 +837,14 @@ const ChatPanel = ({
     onClose();
   };
 
+  // CRITICAL: Only allow history panel to open via explicit user action
+  const handleHistoryToggle = () => {
+    console.log("History toggle triggered by user action");
+    setShowHistory(prev => !prev);
+  };
+
   const handleHistoryClose = () => {
+    console.log("History panel closed");
     setShowHistory(false);
   };
 
@@ -901,7 +933,7 @@ const ChatPanel = ({
 
           <Box className={classes.chatHeaderRight}>
             <IconButton
-              onClick={() => setShowHistory(true)}
+              onClick={handleHistoryToggle} // Explicit user action only
               sx={{ color: "text.secondary" }}
               title="Chat History"
             >
@@ -1000,16 +1032,19 @@ const ChatPanel = ({
         placeholder={`Type in ${language}...`}
       />
 
-      <ChatHistoryPanel
-        open={showHistory}
-        onClose={handleHistoryClose}
-        sessions={sessions}
-        currentSessionId={sessionId}
-        onSessionSelect={loadSession}
-        onNewSession={startNewSession}
-        characterName={character.name}
-        sidebarState={sidebarState} // ✅ ADD THIS LINE
-      />
+      {/* Only render when explicitly opened by user */}
+      {showHistory && (
+        <ChatHistoryPanel
+          open={showHistory}
+          onClose={handleHistoryClose}
+          sessions={sessions}
+          currentSessionId={sessionId}
+          onSessionSelect={loadSession}
+          onNewSession={startNewSession}
+          characterName={character.name}
+          sidebarState={{ ...sidebarState, isMobile }} // Pass mobile state
+        />
+      )}
     </Box>
   );
 };

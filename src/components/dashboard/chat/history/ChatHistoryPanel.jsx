@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -21,40 +21,55 @@ import { makeStyles } from '@mui/styles';
 import { useTheme } from '@mui/material/styles';
 
 const useStyles = makeStyles((theme) => ({
+  // Mobile backdrop for overlay
+  backdrop: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 1400,
+    opacity: 1,
+    visibility: 'visible',
+    transition: 'all 0.3s ease',
+    // Only show on mobile
+    '@media (min-width: 601px)': {
+      display: 'none',
+    },
+  },
+  backdropClosed: {
+    opacity: 0,
+    visibility: 'hidden',
+    pointerEvents: 'none',
+  },
   panelContainer: {
     position: 'fixed',
     top: 0,
     right: 0,
-    // Remove fixed width - will be set dynamically via inline styles
     height: '100vh',
     backgroundColor: theme?.palette?.background?.paper || '#232526',
     borderLeft: `1px solid ${theme?.palette?.divider || '#333'}`,
     zIndex: 1500,
-    transition: 'right 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease', // Added width transition
+    transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     display: 'flex',
     flexDirection: 'column',
     boxShadow: theme?.shadows?.[8] || '0 0 20px rgba(0,0,0,0.5)',
     borderTopLeftRadius: 16,
     borderBottomLeftRadius: 16,
-    // Mobile responsive widths
+    // Desktop width will be set dynamically
+    width: '400px',
+    
+    // Mobile responsive
     '@media (max-width: 600px)': {
-      width: '100vw !important', // Force full width on mobile
-      right: '0 !important',
+      width: '100vw',
       borderRadius: 0,
-    },
-    '@media (max-width: 480px)': {
-      width: '100vw !important',
-    },
-    '@media (max-width: 375px)': {
-      width: '100vw !important',
+      borderLeft: 'none',
     },
   },
   panelContainerClosed: {
-    // Dynamic right position will be set via inline styles
+    transform: 'translateX(100%)', // Slide out to the right
     boxShadow: 'none',
-    '@media (max-width: 600px)': {
-      right: '-100vw !important',
-    },
   },
   panelHeader: {
     display: 'flex',
@@ -96,6 +111,21 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
     overflowY: 'auto',
     padding: '8px 0',
+    // Add custom scrollbar styling
+    '&::-webkit-scrollbar': {
+      width: '8px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: theme?.palette?.background?.default || '#171717',
+      borderRadius: '4px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: theme?.palette?.divider || '#2a2a2e',
+      borderRadius: '4px',
+      '&:hover': {
+        background: theme?.palette?.action?.hover || '#3a3a3e',
+      },
+    },
     '@media (max-width: 1200px)': {
       padding: '7px 0',
     },
@@ -215,22 +245,6 @@ const useStyles = makeStyles((theme) => ({
     '@media (max-width: 375px)': {
       fontSize: '0.5rem',
     },
-  },
-  backdrop: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100vw',
-    height: '100vh',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 1400,
-    opacity: 1,
-    visibility: 'visible',
-    transition: 'all 0.3s ease',
-  },
-  backdropClosed: {
-    opacity: 0,
-    visibility: 'hidden',
   },
   headerTitle: {
     '@media (max-width: 960px)': {
@@ -409,20 +423,57 @@ const useStyles = makeStyles((theme) => ({
 const ChatHistoryPanel = ({ 
   open, 
   onClose, 
-  sessions, 
+  sessions = [], 
   currentSessionId, 
   onSessionSelect, 
   onNewSession,
-  characterName,
-  sidebarState = { isOpen: true, isMobile: false, sidebarWidth: 280, isCollapsed: false } // Added sidebarState prop
+  characterName = 'Character',
+  sidebarState = { isOpen: true, isMobile: false, sidebarWidth: 280, isCollapsed: false }
 }) => {
   const theme = useTheme();
   const classes = useStyles(theme);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Calculate panel width based on sidebar state
+  // Enhanced mobile detection
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const mobile = window.innerWidth <= 600 || 
+                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(mobile);
+    };
+
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
+
+  // Body scroll management for mobile
+  useEffect(() => {
+    if (isMobile && open) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+
+    // Cleanup on unmount or close
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [isMobile, open]);
+
+  // Calculate panel width based on sidebar state (desktop only)
   const calculatePanelWidth = () => {
-    if (sidebarState.isMobile || (typeof window !== 'undefined' && window.innerWidth <= 600)) {
-      return '100vw'; // Full width on mobile
+    if (isMobile || sidebarState.isMobile) {
+      return '100vw';
     }
     
     const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
@@ -466,7 +517,7 @@ const ChatHistoryPanel = ({
     }
   };
 
-  // Fixed formatSessionDate function to handle "YYYY-MM-DD HH:MM:SS IST" format
+  // Date and time formatting functions
   const formatSessionDate = (dateString) => {
     if (!dateString) {
       console.warn('formatSessionDate received empty dateString');
@@ -521,7 +572,6 @@ const ChatHistoryPanel = ({
     }
   };
 
-  // Fixed formatSessionTime function to handle "YYYY-MM-DD HH:MM:SS IST" format
   const formatSessionTime = (dateString) => {
     if (!dateString) {
       console.warn('formatSessionTime received empty dateString');
@@ -568,41 +618,62 @@ const ChatHistoryPanel = ({
     }
   };
 
-  // Calculate dynamic panel width and right position
-  const panelWidth = calculatePanelWidth();
-  const panelStyle = {
-    width: panelWidth,
-    right: open ? 0 : -panelWidth, // Slide out based on actual calculated width
+  // Handle session selection
+  const handleSessionSelect = (sessionId) => {
+    onSessionSelect(sessionId);
+    // Close panel on mobile after selection
+    if (isMobile) {
+      onClose();
+    }
   };
+
+  // Don't render if not open
+  if (!open) {
+    return null;
+  }
+
+  // Calculate panel style
+  const panelStyle = isMobile ? {} : { width: calculatePanelWidth() };
 
   return (
     <>
+      {/* Mobile backdrop */}
+      {isMobile && (
+        <Box
+          className={classes.backdrop}
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Main panel */}
       <Box
-        className={
-          open
-            ? classes.backdrop
-            : `${classes.backdrop} ${classes.backdropClosed}`
-        }
-        onClick={onClose}
-      />
-      <Box
-        className={
-          open
-            ? classes.panelContainer
-            : `${classes.panelContainer} ${classes.panelContainerClosed}`
-        }
-        style={panelStyle} // Apply dynamic width and position
+        className={`${classes.panelContainer} ${!open ? classes.panelContainerClosed : ''}`}
+        style={panelStyle}
       >
         <Box className={classes.panelHeader}>
           <Box>
-            <Typography variant="h6" fontWeight="bold" color={theme.palette.primary.main} className={classes.headerTitle}>
+            <Typography 
+              variant="h6" 
+              fontWeight="bold" 
+              color={theme.palette.primary.main}
+              className={classes.headerTitle}
+            >
               Chat History
             </Typography>
-            <Typography variant="body2" color="text.secondary" className={classes.headerSubtitle}>
+            <Typography 
+              variant="body2" 
+              color="text.secondary"
+              className={classes.headerSubtitle}
+            >
               {characterName}
             </Typography>
           </Box>
-          <IconButton onClick={onClose} size="small" sx={{ color: theme.palette.text.secondary }} className={classes.closeButton}>
+          <IconButton 
+            onClick={onClose} 
+            size="small" 
+            sx={{ color: theme.palette.text.secondary }}
+            className={classes.closeButton}
+          >
             <Close />
           </IconButton>
         </Box>
@@ -611,7 +682,10 @@ const ChatHistoryPanel = ({
           <Button
             variant="contained"
             startIcon={<Add />}
-            onClick={onNewSession}
+            onClick={() => {
+              onNewSession();
+              if (isMobile) onClose(); // Close on mobile after action
+            }}
             fullWidth
             className={classes.newSessionButton}
           >
@@ -624,7 +698,7 @@ const ChatHistoryPanel = ({
             </Typography>
           </Box>
 
-          <Box className={classes.scrollableList + ' history-panel'}>
+          <Box className={classes.scrollableList}>
             {sessions.length === 0 ? (
               <Box className={classes.emptyStateContainer}>
                 <Chat className={classes.emptyStateIcon} />
@@ -640,7 +714,7 @@ const ChatHistoryPanel = ({
                 {sessions.map((session) => (
                   <ListItem
                     key={session.session_id}
-                    onClick={() => onSessionSelect(session.session_id)}
+                    onClick={() => handleSessionSelect(session.session_id)}
                     className={
                       currentSessionId === session.session_id
                         ? `${classes.sessionItem} selected`
