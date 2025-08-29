@@ -32,6 +32,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from "../../../context/AuthContext";
 
 import CategoriesList from './CategoriesList';
+import CreateFeaturePopup from "../../../components/common/CreateFeaturePopup";
 
 const useStyles = makeStyles(() => ({
   drawer: {
@@ -587,6 +588,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const [stylesReady, setStylesReady] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);
 
   useEffect(() => {
     const timer = requestAnimationFrame(() => {
@@ -603,10 +605,10 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
 
   const mainNavItems = [
     { text: "Discover", path: "discover", icon: <Explore className={classes.iconSizing} />, comingSoon: false },
-    { text: "Featured", path: "featured", icon: <Star className={classes.iconSizing} />, comingSoon: true },
-    { text: "Trending", path: "trending", icon: <Whatshot className={classes.iconSizing} />, comingSoon: true },
-    { text: "For You", path: "foryou", icon: <Favorite className={classes.iconSizing} />, comingSoon: true },
-    { text: "Recent", path: "recent", icon: <Schedule className={classes.iconSizing} />, comingSoon: true },
+    // { text: "Featured", path: "featured", icon: <Star className={classes.iconSizing} />, comingSoon: true },
+    // { text: "Trending", path: "trending", icon: <Whatshot className={classes.iconSizing} />, comingSoon: true },
+    // { text: "For You", path: "foryou", icon: <Favorite className={classes.iconSizing} />, comingSoon: true },
+    // { text: "Recent", path: "recent", icon: <Schedule className={classes.iconSizing} />, comingSoon: true },
   ];
 
   const historyItems = [
@@ -624,8 +626,11 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
   };
 
   const handleCreateClick = () => {
-    // Coming soon - no action for now
-    console.log('Create character feature coming soon');
+    setPopupOpen(true);
+  };
+
+  const handlePopupClose = () => {
+    setPopupOpen(false);
   };
 
   const handleCategorySelect = (categoryKey) => {
@@ -794,18 +799,17 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
       startIcon={open ? <Add className={classes.iconSizing} /> : null}
       onClick={handleCreateClick}
       className={`${classes.createButton} ${!open ? classes.createButtonCollapsed : ""}`}
-      disabled
       sx={{
-        opacity: 0.6,
-        cursor: 'not-allowed',
+        opacity: 1,
+        cursor: 'pointer',
         '&:hover': {
           background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important',
-          transform: 'none !important',
-          boxShadow: 'none !important',
+          transform: 'translateY(-1px) !important',
+          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4) !important',
         }
       }}
     >
-      {!open ? <Add className={classes.iconSizing} /> : "Coming Soon"}
+      {!open ? <Add className={classes.iconSizing} /> : "Create"}
     </Button>
   );
 
@@ -834,7 +838,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
           </Box>
 
           {!open && !isMobile ? (
-            <Tooltip title="Coming Soon" placement="right" arrow>
+            <Tooltip title="Create" placement="right" arrow>
               {createButtonContent}
             </Tooltip>
           ) : (
@@ -911,9 +915,9 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
         </Box>
       </Drawer>
 
-
+      <CreateFeaturePopup open={popupOpen} onClose={handlePopupClose} />
     </>
   );
 };
 
-export default Sidebar; 
+export default Sidebar;
