@@ -444,11 +444,11 @@ const Register = () => {
       case 'username':
         // Backend validation: 3-50 characters, alphanumeric + dots, underscores, hyphens
         if (value.length < 3) {
-          setFieldError(fieldName, 'String should have at least 3 characters');
+          setFieldError(fieldName, 'Username should have at least 3 characters');
           return false;
         }
         if (value.length > 50) {
-          setFieldError(fieldName, 'String should have at most 50 characters');
+          setFieldError(fieldName, 'Username should have at most 50 characters');
           return false;
         }
         if (!/^[a-zA-Z0-9._-]+$/.test(value)) {
@@ -725,7 +725,6 @@ const Register = () => {
                     value={username}
                     onChange={(e) => {
                       setUsername(e.target.value);
-                      // Clear error when user starts typing
                       if (fieldErrors.username) {
                         clearFieldError('username');
                       }
@@ -734,7 +733,8 @@ const Register = () => {
                     className={classes.styledTextField}
                     disabled={loading}
                     error={!!fieldErrors.username}
-                    helperText={fieldErrors.username || "3-50 characters, letters, numbers, dots, underscores, hyphens"}
+                    helperText={fieldErrors.username}
+                    placeholder="Unique username (3-50 chars)"
                   />
 
                   <TextField
@@ -744,7 +744,6 @@ const Register = () => {
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value.toLowerCase());
-                      // Clear error when user starts typing
                       if (fieldErrors.email) {
                         clearFieldError('email');
                       }
@@ -753,7 +752,8 @@ const Register = () => {
                     className={classes.styledTextField}
                     disabled={loading}
                     error={!!fieldErrors.email}
-                    helperText={fieldErrors.email || "Valid email format required"}
+                    helperText={fieldErrors.email}
+                    placeholder="you@example.com"
                   />
 
                   <TextField
@@ -763,7 +763,6 @@ const Register = () => {
                     value={mobileNumber}
                     onChange={(e) => {
                       setMobileNumber(e.target.value);
-                      // Clear error when user starts typing
                       if (fieldErrors.mobileNumber) {
                         clearFieldError('mobileNumber');
                       }
@@ -772,7 +771,8 @@ const Register = () => {
                     className={classes.styledTextField}
                     disabled={loading}
                     error={!!fieldErrors.mobileNumber}
-                    helperText={fieldErrors.mobileNumber || "10-digit Indian mobile (6-9 prefix)"}
+                    helperText={fieldErrors.mobileNumber}
+                    placeholder="10-digit Indian number"
                   />
                 </div>
 
@@ -784,11 +784,9 @@ const Register = () => {
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
-                      // Clear error when user starts typing
                       if (fieldErrors.password) {
                         clearFieldError('password');
                       }
-                      // Also clear confirm password error if passwords now match
                       if (fieldErrors.confirmPassword && confirmPassword && e.target.value === confirmPassword) {
                         clearFieldError('confirmPassword');
                       }
@@ -797,7 +795,8 @@ const Register = () => {
                     className={classes.styledTextField}
                     disabled={loading}
                     error={!!fieldErrors.password}
-                    helperText={fieldErrors.password || "Minimum 6 characters, maximum 100"}
+                    helperText={fieldErrors.password}
+                    placeholder="6-100 characters"
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
@@ -821,7 +820,6 @@ const Register = () => {
                     value={confirmPassword}
                     onChange={(e) => {
                       setConfirmPassword(e.target.value);
-                      // Clear error when user starts typing
                       if (fieldErrors.confirmPassword) {
                         clearFieldError('confirmPassword');
                       }
@@ -830,7 +828,8 @@ const Register = () => {
                     className={classes.styledTextField}
                     disabled={loading}
                     error={!!fieldErrors.confirmPassword}
-                    helperText={fieldErrors.confirmPassword || "Must match password"}
+                    helperText={fieldErrors.confirmPassword}
+                    placeholder="Repeat password"
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
