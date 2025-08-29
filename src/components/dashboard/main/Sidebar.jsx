@@ -912,6 +912,38 @@ const Sidebar = ({ open, onToggle, onCharacterCreated }) => {
               </ListItemButton>
             )}
           </Box>
+          {/* Beta version label */}
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              mt: 1,
+              mb: open ? 0.5 : 1,
+              pb: open ? 1 : 0,
+            }}
+          >
+            <Chip
+              label="Bring Back Legend v1.0 (beta)"
+              size="small"
+              sx={{
+                backgroundColor: 'transparent',
+                color: '#6366f1',
+                fontWeight: 500,
+                fontSize: open ? '11px' : '10px',
+                height: open ? '22px' : '18px',
+                borderRadius: '6px',
+                letterSpacing: '0.5px',
+                px: open ? 1.5 : 1,
+                boxShadow: 'none',
+                opacity: 1,
+                width: '100%',
+                justifyContent: 'center',
+                textAlign: 'center',
+              }}
+            />
+          </Box>
         </Box>
       </Drawer>
 
