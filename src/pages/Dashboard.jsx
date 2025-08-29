@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, IconButton, useTheme, useMediaQuery } from "@mui/material";
-import { ChevronRight, ChevronLeft } from "@mui/icons-material";
+import { Box, useTheme, useMediaQuery } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/dashboard/main/Sidebar";
@@ -82,63 +81,6 @@ const useStyles = makeStyles({
   contentAreaChatOpen: {
     '@media (max-width: 900px)': {
       paddingTop: '0 !important',
-    },
-  },
-  menuButton: {
-    position: 'fixed !important',
-    top: '4% !important',
-    transform: 'translateY(-50%) !important',
-    zIndex: '1300 !important',
-    transition: 'all 0.3s ease !important',
-    color: 'white !important',
-    '@media (max-width: 900px)': {
-      display: 'none !important',
-    },
-  },
-  menuButtonOpen: {
-    left: '238px !important',
-    backgroundColor: 'transparent !important',
-    border: 'none !important',
-    borderLeft: '1px solid rgba(42, 42, 42, 0.5) !important',
-    borderTop: '1px solid rgba(42, 42, 42, 0.5) !important',
-    borderBottom: '1px solid rgba(42, 42, 42, 0.5) !important',
-    borderRight: '1px solid rgba(42, 42, 42, 0.5) !important',
-    borderRadius: '0 8px 8px 0 !important',
-    padding: '8px 12px 8px 8px !important',
-    marginLeft: '-1px !important',
-    '&:hover': {
-      backgroundColor: 'rgba(42, 42, 42, 0.3) !important',
-    },
-    '@media (max-width: 1200px)': {
-      left: '260px !important',
-    },
-    '@media (max-width: 960px)': {
-      left: '240px !important',
-    },
-  },
-  menuButtonClosed: {
-    left: '70px !important',
-    top: '20px !important',
-    transform: 'none !important',
-    backgroundColor: 'transparent !important',
-    border: 'none !important',
-    borderLeft: '1px solid rgba(42, 42, 42, 0.5) !important',
-    borderTop: '1px solid rgba(42, 42, 42, 0.5) !important',
-    borderBottom: '1px solid rgba(42, 42, 42, 0.5) !important',
-    borderRight: '1px solid rgba(42, 42, 42, 0.5) !important',
-    borderRadius: '0 8px 8px 0 !important',
-    padding: '8px 12px 8px 8px !important',
-    marginLeft: '-1px !important',
-    '&:hover': {
-      backgroundColor: 'rgba(42, 42, 42, 0.3) !important',
-    },
-    '@media (max-width: 1200px)': {
-      left: '65px !important',
-      top: '18px !important',
-    },
-    '@media (max-width: 960px)': {
-      left: '60px !important',
-      top: '16px !important',
     },
   },
   mobileOverlay: {

@@ -5,7 +5,8 @@ import axios from 'axios';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://characters-zwwb.onrender.com';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://matrix.gigalabs.in';
-const BASE_URL = process.env.REACT_APP_API_URL || 'https://clone-7040.onrender.com';
+// const BASE_URL = process.env.REACT_APP_API_URL || 'https://clone-7040.onrender.com';
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://matrix.gigalabs.in';
 
 class ApiService {
     constructor() {
