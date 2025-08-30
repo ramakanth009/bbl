@@ -530,6 +530,12 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const generateTemporarySessionId = () => {
+  return `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+};
+
+const LOCAL_STORAGE_KEY = 'chat_session_state';
+
 const ChatPanel = ({
   open,
   character,
@@ -545,6 +551,7 @@ const ChatPanel = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sessionId, setSessionId] = useState(null);
+  const [temporarySessionId, setTemporarySessionId] = useState(null); // Add this line
   const [sessions, setSessions] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [language, setLanguage] = useState("english");
@@ -598,35 +605,63 @@ const ChatPanel = ({
         setError(null);
         setShowHistory(false);
       } else {
-        initializeChat();
+        // Check for stored temporary session
+        const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (storedState) {
+          const parsedState = JSON.parse(storedState);
+          if (parsedState.character === character.name) {
+            setMessages(parsedState.messages || []);
+            setTemporarySessionId(parsedState.temporarySessionId);
+            // Update URL with temporary session ID
+            updateUrlWithSessionId(parsedState.temporarySessionId, true);
+          } else {
+            initializeNewTemporarySession();
+          }
+        } else {
+          initializeNewTemporarySession();
+        }
       }
       loadUserSessions();
       loadLanguagePreferences();
 
       if (character.native_language) {
-        console.log("Setting language to character native:", character.native_language);
         setLanguage(character.native_language);
       }
     }
   }, [open, character, initialMessages, initialSessionId]);
 
+  // Save state to localStorage whenever messages change
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // Prevent body scroll when mobile panels are open
-  useEffect(() => {
-    if (isMobile && showHistory) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+    if (character && (temporarySessionId || sessionId)) {
+      const stateToStore = {
+        character: character.name,
+        messages,
+        temporarySessionId: temporarySessionId || sessionId,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stateToStore));
     }
+  }, [messages, character, temporarySessionId, sessionId]);
 
-    // Cleanup on unmount
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isMobile, showHistory]);
+  const initializeNewTemporarySession = () => {
+    const newTempId = generateTemporarySessionId();
+    setTemporarySessionId(newTempId);
+    setMessages([]);
+    setError(null);
+    setSessionId(null);
+    updateUrlWithSessionId(newTempId, true);
+  };
+
+  const updateUrlWithSessionId = (id, isTemporary = false) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('session', id);
+    if (isTemporary) {
+      url.searchParams.set('temp', '1');
+    } else {
+      url.searchParams.delete('temp');
+    }
+    window.history.replaceState({}, '', url.toString());
+  };
 
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
@@ -667,9 +702,7 @@ const ChatPanel = ({
   };
 
   const initializeChat = () => {
-    setMessages([]);
-    setError(null);
-    setSessionId(null);
+    initializeNewTemporarySession();
   };
 
   const loadUserSessions = async () => {
@@ -736,18 +769,21 @@ const ChatPanel = ({
     setMessages((prev) => [...prev, newUserMessage]);
 
     try {
-      console.log("Sending message with settings:", {
-        character: character.name,
-        language,
-        sessionExists: !!sessionId,
-      });
-
       const response = await apiService.sendMessage(
         character.name,
         userMessage,
         !sessionId,
         { language }
       );
+
+      if (response.session_id) {
+        setSessionId(response.session_id);
+        setTemporarySessionId(null); // Clear temporary ID
+        updateUrlWithSessionId(response.session_id, false);
+        
+        // Clean up localStorage once we have a real session
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+      }
 
       console.log("Message sent successfully:", {
         sessionId: response.session_id,
@@ -799,10 +835,6 @@ const ChatPanel = ({
             : {}),
         };
         setMessages((prev) => [...prev, assistantMessage]);
-      }
-
-      if (response.session_id) {
-        setSessionId(response.session_id);
       }
 
       await loadUserSessions();
