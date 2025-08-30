@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { Search as SearchIcon, Clear, TrendingUp } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
+import { useSearchPersistence } from '../../../hooks/usePaginationPersistence';
 import apiService from '../../../services/api';
 
 const useStyles = makeStyles({
@@ -335,9 +336,18 @@ const SearchComponent = ({
   placeholder = "Search characters",
   showSuggestions = true,
   className,
+  section = null, // NEW: Add section prop for isolated search persistence
   ...props 
 }) => {
   const classes = useStyles();
+  
+  // NEW: Use search persistence hook
+  const { 
+    searchQuery: persistedQuery, 
+    setSearchQuery: setPersistedQuery,
+    clearSearch: clearPersistedSearch
+  } = useSearchPersistence(section);
+  
   const [searchValue, setSearchValue] = useState('');
   const [focused, setFocused] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -358,6 +368,17 @@ const SearchComponent = ({
     }
   }, []);
 
+  // NEW: Initialize search value from persisted query
+  useEffect(() => {
+    if (persistedQuery && !searchValue) {
+      setSearchValue(persistedQuery);
+      // Optionally trigger search automatically
+      if (persistedQuery.trim()) {
+        handleSearch(persistedQuery.trim());
+      }
+    }
+  }, [persistedQuery]);
+
   useEffect(() => {
     if (onSearchStateChange) {
       onSearchStateChange({
@@ -368,20 +389,24 @@ const SearchComponent = ({
     }
   }, [searchValue, focused, onSearchStateChange]);
 
-  const handleSearch = async () => {
-    if (!searchValue.trim() || isExecutingSearch) return;
+  const handleSearch = async (queryOverride = null) => {
+    const query = queryOverride || searchValue.trim();
+    if (!query || isExecutingSearch) return;
 
     try {
       setIsExecutingSearch(true);
       setLoading(true);
       
-      const response = await apiService.searchCharacters(searchValue.trim());
+      // NEW: Persist search query to URL
+      setPersistedQuery(query);
+      
+      const response = await apiService.searchCharacters(query);
       
       setSuggestions(response.characters || []);
       if (onSearchResults) {
         onSearchResults({
           characters: response.characters || [],
-          query: searchValue,
+          query: query,
           totalCount: response.total_count || response.characters?.length || 0
         });
       }
@@ -401,12 +426,20 @@ const SearchComponent = ({
     
     if (!newValue) {
       setSuggestions([]);
+      // NEW: Clear persisted search when input is cleared
+      clearPersistedSearch();
+      
       if (onSearchStateChange) {
         onSearchStateChange({
           isSearching: false,
           query: '',
           focused
         });
+      }
+      
+      // Clear search results
+      if (onSearchResults) {
+        onSearchResults({ characters: [], query: '', totalCount: 0 });
       }
     }
   };
@@ -421,8 +454,20 @@ const SearchComponent = ({
     setSuggestions([]);
     setFocused(false);
     setShowResults(false);
+    
+    // NEW: Clear persisted search
+    clearPersistedSearch();
+    
     if (onSearchResults) {
       onSearchResults({ characters: [], query: '', totalCount: 0 });
+    }
+    
+    if (onSearchStateChange) {
+      onSearchStateChange({
+        isSearching: false,
+        query: '',
+        focused: false
+      });
     }
   };
 
@@ -432,17 +477,21 @@ const SearchComponent = ({
   };
 
   const handleSuggestionClick = (character) => {
-    setSearchValue(character.name);
+    const query = character.name;
+    setSearchValue(query);
     setShowResults(false);
     
-    const newRecent = [character.name, ...recentSearches.filter(s => s !== character.name)].slice(0, 5);
+    // NEW: Persist selected search
+    setPersistedQuery(query);
+    
+    const newRecent = [query, ...recentSearches.filter(s => s !== query)].slice(0, 5);
     setRecentSearches(newRecent);
     localStorage.setItem('recentSearches', JSON.stringify(newRecent));
     
     if (onSearchResults) {
       onSearchResults({
         characters: [character],
-        query: character.name,
+        query: query,
         totalCount: 1
       });
     }
@@ -451,6 +500,12 @@ const SearchComponent = ({
   const handleRecentSearchClick = (searchTerm) => {
     setSearchValue(searchTerm);
     setShowResults(false);
+    
+    // NEW: Persist recent search selection
+    setPersistedQuery(searchTerm);
+    
+    // Trigger search with the recent term
+    handleSearch(searchTerm);
   };
 
   const handleKeyPress = (event) => {
@@ -488,7 +543,7 @@ const SearchComponent = ({
           )}
           <IconButton
             size="small"
-            onClick={handleSearch}
+            onClick={() => handleSearch()}
             className={classes.searchButton}
           >
             <SearchIcon fontSize="small" />
