@@ -537,12 +537,7 @@ const ChatPanel = ({
   onBack,
   initialMessages = null,
   initialSessionId = null,
-  sidebarState = {
-    isOpen: true,
-    isMobile: false,
-    sidebarWidth: 280,
-    isCollapsed: false,
-  },
+  sidebarState,
 }) => {
   const classes = useStyles();
   const [messages, setMessages] = useState([]);
@@ -579,22 +574,20 @@ const ChatPanel = ({
     if (sidebarState.isMobile || isMobile) {
       return "100vw";
     }
-
-    const baseViewportWidth = window.innerWidth || 1920;
-    let sidebarWidth = sidebarState.sidebarWidth;
-
-    // Adjust for different screen sizes
-    if (baseViewportWidth <= 1200) {
-      sidebarWidth = sidebarState.isCollapsed ? 65 : 260;
-    } else if (baseViewportWidth <= 960) {
-      sidebarWidth = sidebarState.isCollapsed ? 60 : 240;
-    }
-
+    
+    const sidebarWidth = sidebarState.isCollapsed ? 70 : 280;
     return `calc(100vw - ${sidebarWidth}px)`;
   };
 
-  const dynamicContainerStyle = {
+  const containerStyle = {
     width: open ? calculateWidth() : "0",
+    transform: open ? 'translateX(0)' : 'translateX(100%)',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    position: 'fixed',
+    top: 0,
+    right: 0,
+    height: '100%',
+    zIndex: 1300,
   };
 
   useEffect(() => {
@@ -861,7 +854,7 @@ const ChatPanel = ({
       <Box
         className={`${classes.chatContainer} ${classes.chatContainerOpen}`}
         sx={{ alignItems: "center", justifyContent: "center", display: "flex" }}
-        style={dynamicContainerStyle}
+        style={containerStyle}
       >
         <Typography variant="h6" color="textSecondary">
           No character selected. Please choose a character to start chatting.
@@ -876,7 +869,7 @@ const ChatPanel = ({
   return (
     <Box
       className={`${classes.chatContainer} ${classes.chatContainerOpen}`}
-      style={dynamicContainerStyle}
+      style={containerStyle}
       sx={{
         borderLeft: "1px solid rgba(255,255,255,0.12)",
         "@media (max-width: 960px)": {
