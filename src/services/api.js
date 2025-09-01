@@ -400,12 +400,12 @@ class ApiService {
     }
 
     // Add this method if you want to fetch a single character by ID
-    async getCharacterById(characterId) {
-        const cacheKey = this.createCacheKey('GET', `/characters/${characterId}`);
+    async getCharacterById(character_id) {
+        const cacheKey = this.createCacheKey('GET', `/character/${character_id}`);
         
         return await this.getCachedOrFetch(cacheKey, async () => {
             try {
-                const response = await this.client.get(`/characters/${characterId}`);
+                const response = await this.client.get(`/character/${character_id}`);
                 return response.data;
             } catch (error) {
                 throw this.handleError(error, 'Failed to load character');
@@ -413,19 +413,6 @@ class ApiService {
         }, 30000); // Cache for 30 seconds
     }
 
-    // Get single character by ID (alternative endpoint)
-    async getSingleCharacter(characterId) {
-        const cacheKey = this.createCacheKey('GET', `/character/${characterId}`);
-        
-        return await this.getCachedOrFetch(cacheKey, async () => {
-            try {
-                const response = await this.client.get(`/character/${characterId}`);
-                return response.data;
-            } catch (error) {
-                throw this.handleError(error, 'Failed to load character');
-            }
-        }, 30000); // Cache for 30 seconds
-    }
 
     // ===============================
     // NEW CATEGORIES ENDPOINTS - CACHED
@@ -698,17 +685,16 @@ class ApiService {
         }, 300000); // Cache for 5 minutes
     }
 
+    // Update character-related cache keys
     async updateCharacter(characterId, characterData) {
         try {
-            // Clear character-related caches when updating
             const characterCacheKeys = [
-                this.createCacheKey('GET', `/characters/${characterId}`),
                 this.createCacheKey('GET', `/character/${characterId}`),
                 this.createCacheKey('GET', '/characters')
             ];
             characterCacheKeys.forEach(key => this.clearCache(key));
             
-            const response = await this.client.put(`/characters/${characterId}`, characterData);
+            const response = await this.client.put(`/character/${characterId}`, characterData);
             return response.data;
         } catch (error) {
             throw this.handleError(error, 'Failed to update character');
@@ -717,10 +703,13 @@ class ApiService {
 
     async deleteCharacter(characterId) {
         try {
-            // Clear character-related caches when deleting
-            this.clearCache();
+            const characterCacheKeys = [
+                this.createCacheKey('GET', `/character/${characterId}`),
+                this.createCacheKey('GET', '/characters')
+            ];
+            characterCacheKeys.forEach(key => this.clearCache(key));
             
-            const response = await this.client.delete(`/characters/${characterId}`);
+            const response = await this.client.delete(`/character/${characterId}`);
             return response.data;
         } catch (error) {
             throw this.handleError(error, 'Failed to delete character');

@@ -600,12 +600,22 @@ const ChatPanel = ({
       } else {
         initializeChat();
       }
+      // Load character using getCharacterById with updated endpoint
+      const loadCharacter = async () => {
+        try {
+          const response = await apiService.getCharacterById(character.id);
+          // Update character details if needed
+          if (response && response.native_language) {
+            setLanguage(response.native_language);
+          }
+        } catch (error) {
+          console.error('Failed to load character:', error);
+          setError('Failed to load character details');
+        }
+      };
+      loadCharacter();
       loadUserSessions();
       loadLanguagePreferences();
-
-      if (character.native_language) {
-        setLanguage(character.native_language);
-      }
     }
   }, [open, character, initialMessages, initialSessionId]);
 
