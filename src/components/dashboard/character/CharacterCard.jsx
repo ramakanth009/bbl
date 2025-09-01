@@ -32,15 +32,15 @@ const iconMap = {
 };
 
 const useStyles = makeStyles({
-  // Desktop/Tablet Card Layout
+  // Desktop/Tablet Card Layout - OPTIMIZED FOR SIDEBAR OPEN
   styledCard: {
     background: 'transparent !important',
     border: '1px solid rgba(99, 102, 241, 0.2)',
     borderRadius: '16px',
-    padding: '24px',
+    padding: '16px !important', // REDUCED from 24px
     cursor: 'pointer',
     transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-    minHeight: 280,
+    minHeight: 220, // REDUCED from 280
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -72,13 +72,13 @@ const useStyles = makeStyles({
       },
     },
     '@media (max-width: 1200px)': {
-      padding: '20px',
-      minHeight: 260,
+      padding: '14px !important', // REDUCED from 20px
+      minHeight: 200, // REDUCED from 260
       borderRadius: '14px',
     },
     '@media (max-width: 960px)': {
-      padding: '18px',
-      minHeight: 240,
+      padding: '12px !important', // REDUCED from 18px
+      minHeight: 180, // REDUCED from 240
       borderRadius: '12px',
       '&:hover': {
         transform: 'translateY(-6px) scale(1.015)',
@@ -121,22 +121,23 @@ const useStyles = makeStyles({
 
   characterHeader: {
     display: 'flex',
-    gap: '16px',
-    marginBottom: '16px',
+    gap: '10px !important', // FURTHER REDUCED from 12px
+    marginBottom: '8px !important', // REDUCED from 10px
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    minHeight: 80,
+    minHeight: 65, // FURTHER REDUCED from 70
     position: 'relative',
     zIndex: 1,
+    width: '100% !important', // ENSURE FULL WIDTH
     '@media (max-width: 1200px)': {
-      gap: '14px',
-      marginBottom: '14px',
-      minHeight: 75,
+      gap: '8px !important', // FURTHER REDUCED from 10px
+      marginBottom: '6px !important', // REDUCED from 8px
+      minHeight: 60, // FURTHER REDUCED from 65
     },
     '@media (max-width: 960px)': {
-      gap: '12px',
-      marginBottom: '12px',
-      minHeight: 70,
+      gap: '6px !important', // FURTHER REDUCED from 8px
+      marginBottom: '4px !important', // REDUCED from 6px
+      minHeight: 55, // FURTHER REDUCED from 60
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
@@ -154,9 +155,9 @@ const useStyles = makeStyles({
   },
 
   characterAvatar: {
-    width: 72,
-    height: 72,
-    borderRadius: '50%',
+    width: 64, // REDUCED from 72
+    height: 64, // REDUCED from 72
+    borderRadius: '20%',
     border: '2px solid rgba(99, 102, 241, 0.3)',
     transition: 'all 0.3s ease',
     '& img': {
@@ -164,12 +165,12 @@ const useStyles = makeStyles({
       objectPosition: 'center 20%',
     },
     '@media (max-width: 1200px)': {
-      width: 66,
-      height: 66,
+      width: 58, // REDUCED from 66
+      height: 58, // REDUCED from 66
     },
     '@media (max-width: 960px)': {
-      width: 60,
-      height: 60,
+      width: 52, // REDUCED from 60
+      height: 52, // REDUCED from 60
     },
     '@media (max-width: 600px)': {
       width: '48px !important',
@@ -287,41 +288,50 @@ const useStyles = makeStyles({
   characterInfo: {
     flex: 1,
     minWidth: 0,
+    overflow: 'hidden !important', // PREVENT OVERFLOW
+    width: '100% !important', // ENSURE FULL WIDTH
   },
   characterName: {
-    fontSize: '18px',
+    fontSize: '16px !important', // REDUCED from 18px for better fit
     fontWeight: "bold",
-    marginBottom: '4px',
+    marginBottom: '3px !important', // SLIGHTLY INCREASED for spacing
     background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
-    lineHeight: 1.2,
-    whiteSpace: 'normal',
-    overflowWrap: 'break-word',
-    wordBreak: 'break-word',
+    lineHeight: 1.1, // TIGHT line height for wrapped text
+    whiteSpace: 'normal !important', // ALLOW WRAPPING
+    overflow: 'visible !important', // SHOW ALL TEXT
+    textOverflow: 'initial !important', // REMOVE ELLIPSIS
+    maxWidth: '100% !important', // ENSURE CONTAINER RESPECT
+    display: 'block !important', // ENSURE PROPER DISPLAY
+    wordBreak: 'break-word !important', // BREAK LONG WORDS
+    overflowWrap: 'break-word !important', // WRAP LONG WORDS
+    hyphens: 'auto !important', // ADD HYPHENS FOR LONG WORDS
     '@media (max-width: 1200px)': {
-      fontSize: '17px',
+      fontSize: '15px !important', // REDUCED from 17px
+      lineHeight: 1.0, // EVEN TIGHTER for smaller screens
     },
     '@media (max-width: 960px)': {
-      fontSize: '16px',
+      fontSize: '14px !important', // REDUCED from 16px
+      lineHeight: 1.0,
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
     },
   },
   characterAuthor: {
-    fontSize: '12px',
+    fontSize: '11px !important', // REDUCED from 12px
     color: '#ffffff',
-    marginBottom: '2px',
+    marginBottom: '1px !important', // REDUCED from 2px
     whiteSpace: 'normal',
     overflowWrap: 'break-word',
     wordBreak: 'break-word',
     '@media (max-width: 1200px)': {
-      fontSize: '11px',
+      fontSize: '10px !important', // REDUCED from 11px
     },
     '@media (max-width: 960px)': {
-      fontSize: '10px',
+      fontSize: '9px !important', // REDUCED from 10px
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
@@ -329,17 +339,17 @@ const useStyles = makeStyles({
   },
   categoryContainer: {
     display: 'flex',
-    gap: '8px',
+    gap: '6px !important', // REDUCED from 8px
     alignItems: 'center',
-    marginBottom: '12px',
+    marginBottom: '8px !important', // REDUCED from 12px
     flexWrap: 'wrap',
     '@media (max-width: 1200px)': {
-      gap: '7px',
-      marginBottom: '11px',
+      gap: '5px !important', // REDUCED from 7px
+      marginBottom: '7px !important', // REDUCED from 11px
     },
     '@media (max-width: 960px)': {
-      gap: '6px',
-      marginBottom: '10px',
+      gap: '4px !important', // REDUCED from 6px
+      marginBottom: '6px !important', // REDUCED from 10px
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
@@ -349,70 +359,71 @@ const useStyles = makeStyles({
     background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
     border: '1px solid rgba(99, 102, 241, 0.3)',
     color: '#ffffff',
-    fontSize: '10px',
-    height: '22px',
-    borderRadius: '11px',
+    fontSize: '8px !important', // FURTHER REDUCED from 9px
+    height: '18px !important', // FURTHER REDUCED from 20px
+    borderRadius: '9px !important', // ADJUSTED for new height
     display: 'flex',
     alignItems: 'center',
-    gap: '4px',
+    gap: '2px !important', // REDUCED from 3px
     '& .MuiChip-label': {
-      padding: '0 8px 0 4px',
+      padding: '0 4px 0 2px !important', // FURTHER REDUCED from '0 6px 0 3px'
       fontWeight: 500,
       display: 'flex',
       alignItems: 'center',
-      gap: '4px',
+      gap: '2px !important', // REDUCED from 3px
     },
     '& .MuiChip-icon': {
       color: '#ffffff',
-      marginLeft: '4px',
+      marginLeft: '2px !important', // REDUCED from 3px
       marginRight: '0px',
     },
     '@media (max-width: 1200px)': {
-      fontSize: '9px',
-      height: '20px',
-      borderRadius: '10px',
+      fontSize: '7px !important', // FURTHER REDUCED from 8px
+      height: '16px !important', // FURTHER REDUCED from 18px
+      borderRadius: '8px !important', // ADJUSTED for new height
       '& .MuiChip-label': {
-        padding: '0 7px 0 3px',
-        gap: '3px',
+        padding: '0 3px 0 2px !important', // FURTHER REDUCED
+        gap: '2px !important',
       },
       '& .MuiChip-icon': {
-        marginLeft: '3px',
+        marginLeft: '2px !important',
       },
     },
     '@media (max-width: 960px)': {
-      fontSize: '8px',
-      height: '18px',
-      borderRadius: '9px',
+      fontSize: '6px !important', // FURTHER REDUCED from 7px
+      height: '14px !important', // FURTHER REDUCED from 16px
+      borderRadius: '7px !important', // ADJUSTED for new height
       '& .MuiChip-label': {
-        padding: '0 6px 0 3px',
-        gap: '2px',
+        padding: '0 3px 0 1px !important', // FURTHER REDUCED
+        gap: '1px !important',
       },
     },
   },
   characterDescription: {
-    fontSize: '14px',
+    fontSize: '11px !important', // FURTHER REDUCED from 12px
     color: '#ffffff',
     fontWeight: "400 !important",
-    lineHeight: 1.6,
-    marginBottom: '20px',
-    height: '72px',
+    lineHeight: 1.3, // ADJUSTED for better readability
+    marginBottom: '10px !important', // REDUCED from 12px
+    height: '52px !important', // FURTHER REDUCED from 60px
     overflow: 'hidden',
     display: '-webkit-box',
-    WebkitLineClamp: 3,
+    WebkitLineClamp: 4, // INCREASED from 3 for more text
     WebkitBoxOrient: 'vertical',
     flexGrow: 1,
     position: 'relative',
     zIndex: 1,
+    wordBreak: 'break-word !important', // ENSURE PROPER WORD BREAKING
     '@media (max-width: 1200px)': {
-      fontSize: '13px',
-      marginBottom: '18px',
-      height: '66px',
+      fontSize: '10px !important', // FURTHER REDUCED from 11px
+      marginBottom: '8px !important', // REDUCED from 10px
+      height: '48px !important', // FURTHER REDUCED from 54px
     },
     '@media (max-width: 960px)': {
-      fontSize: '12px',
-      marginBottom: '16px',
-      height: '60px',
-      lineHeight: 1.5,
+      fontSize: '9px !important', // FURTHER REDUCED from 10px
+      marginBottom: '6px !important', // REDUCED from 8px
+      height: '44px !important', // FURTHER REDUCED from 48px
+      lineHeight: 1.25, // ADJUSTED
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
@@ -420,13 +431,13 @@ const useStyles = makeStyles({
   },
   characterStats: {
     display: 'flex',
-    gap: '8px',
+    gap: '6px !important', // REDUCED from 8px
     alignItems: 'center',
     '@media (max-width: 1200px)': {
-      gap: '7px',
+      gap: '5px !important', // REDUCED from 7px
     },
     '@media (max-width: 960px)': {
-      gap: '6px',
+      gap: '4px !important', // REDUCED from 6px
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
@@ -437,9 +448,9 @@ const useStyles = makeStyles({
     background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
     border: 'none',
     color: '#ffffff !important',
-    padding: '14px',
-    borderRadius: '12px',
-    fontSize: '14px',
+    padding: '10px !important', // REDUCED from 14px
+    borderRadius: '8px !important', // REDUCED from 12px
+    fontSize: '12px !important', // REDUCED from 14px
     fontWeight: 600,
     cursor: 'pointer',
     transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -465,14 +476,14 @@ const useStyles = makeStyles({
       },
     },
     '@media (max-width: 1200px)': {
-      padding: '13px',
-      borderRadius: '11px',
-      fontSize: '13px',
+      padding: '9px !important', // REDUCED from 13px
+      borderRadius: '7px !important', // REDUCED from 11px
+      fontSize: '11px !important', // REDUCED from 13px
     },
     '@media (max-width: 960px)': {
-      padding: '12px',
-      borderRadius: '10px',
-      fontSize: '12px',
+      padding: '8px !important', // REDUCED from 12px
+      borderRadius: '6px !important', // REDUCED from 10px
+      fontSize: '10px !important', // REDUCED from 12px
       '&:hover': {
         transform: 'translateY(-1.5px)',
       },
@@ -484,16 +495,16 @@ const useStyles = makeStyles({
   stat: {
     display: 'flex',
     alignItems: 'center',
-    gap: '4px',
-    fontSize: '12px',
+    gap: '3px !important', // REDUCED from 4px
+    fontSize: '10px !important', // REDUCED from 12px
     color: '#ffffff',
     '@media (max-width: 1200px)': {
-      fontSize: '11px',
-      gap: '3px',
+      fontSize: '9px !important', // REDUCED from 11px
+      gap: '2px !important', // REDUCED from 3px
     },
     '@media (max-width: 960px)': {
-      fontSize: '10px',
-      gap: '3px',
+      fontSize: '8px !important', // REDUCED from 10px
+      gap: '2px !important',
     },
   },
 });
@@ -541,7 +552,7 @@ const CharacterCard = ({ character, onStartChat }) => {
     if (!categoryKey || loading) return null;
     
     const displayName = categories[categoryKey] || categoryKey;
-    const icon = iconMap[categoryKey] || <Category sx={{ fontSize: 14 }} />;
+    const icon = iconMap[categoryKey] || <Category sx={{ fontSize: 12 }} />; // REDUCED from 14
     
     return { displayName, icon };
   };
@@ -560,7 +571,7 @@ const CharacterCard = ({ character, onStartChat }) => {
     <Card className={classes.styledCard} elevation={0} onClick={handleStartChat}>
       {/* Desktop/Tablet Layout */}
       <Box className={classes.characterHeader}>
-        <Box display="flex" gap={1.5}>
+        <Box display="flex" gap={1}>
           <Avatar 
             src={character.img} 
             alt={character.name} 

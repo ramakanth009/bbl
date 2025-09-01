@@ -8,8 +8,8 @@ const useStyles = makeStyles({
     background: 'transparent !important',
     border: '2px dashed rgba(99, 102, 241, 0.2)',
     borderRadius: '16px',
-    padding: '32px 24px',
-    minHeight: 280,
+    padding: '16px 12px !important', // REDUCED from '32px 24px'
+    minHeight: 220, // REDUCED to match CharacterCard height
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -31,16 +31,16 @@ const useStyles = makeStyles({
       pointerEvents: 'none',
     },
     '@media (max-width: 1200px)': {
-      padding: '28px 20px',
-      minHeight: 260,
+      padding: '14px 10px !important', // REDUCED from '28px 20px'
+      minHeight: 200, // REDUCED to match CharacterCard
       borderRadius: '14px',
       '&::before': {
         borderRadius: '14px',
       },
     },
     '@media (max-width: 960px)': {
-      padding: '24px 16px',
-      minHeight: 240,
+      padding: '12px 8px !important', // REDUCED from '24px 16px'
+      minHeight: 180, // REDUCED to match CharacterCard
       borderRadius: '12px',
       '&::before': {
         borderRadius: '12px',
@@ -126,19 +126,19 @@ const useStyles = makeStyles({
   },
 
   createIcon: {
-    fontSize: '64px',
+    fontSize: '32px !important', // REDUCED from 64px
     color: '#6b7280',
-    marginBottom: '16px',
+    marginBottom: '8px !important', // REDUCED from 16px
     transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
     position: 'relative',
     zIndex: 1,
     '@media (max-width: 1200px)': {
-      fontSize: '60px',
-      marginBottom: '14px',
+      fontSize: '30px !important', // REDUCED from 60px
+      marginBottom: '6px !important', // REDUCED from 14px
     },
     '@media (max-width: 960px)': {
-      fontSize: '56px',
-      marginBottom: '12px',
+      fontSize: '28px !important', // REDUCED from 56px
+      marginBottom: '4px !important', // REDUCED from 12px
     },
     '@media (max-width: 600px)': {
       fontSize: '24px !important',
@@ -147,41 +147,41 @@ const useStyles = makeStyles({
     },
   },
   createTitle: {
-    fontSize: '20px',
+    fontSize: '14px !important', // REDUCED from 20px
     fontWeight: 700,
-    marginBottom: '8px',
+    marginBottom: '4px !important', // REDUCED from 8px
     color: '#9ca3af',
     position: 'relative',
     zIndex: 1,
     '@media (max-width: 1200px)': {
-      fontSize: '18px',
-      marginBottom: '7px',
+      fontSize: '13px !important', // REDUCED from 18px
+      marginBottom: '3px !important', // REDUCED from 7px
     },
     '@media (max-width: 960px)': {
-      fontSize: '16px',
-      marginBottom: '6px',
+      fontSize: '12px !important', // REDUCED from 16px
+      marginBottom: '2px !important', // REDUCED from 6px
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
     },
   },
   createDescription: {
-    fontSize: '14px',
+    fontSize: '10px !important', // REDUCED from 14px
     color: '#6b7280',
-    marginBottom: '20px',
-    lineHeight: 1.5,
-    maxWidth: '250px',
+    marginBottom: '8px !important', // REDUCED from 20px
+    lineHeight: 1.3, // REDUCED from 1.5
+    maxWidth: '180px !important', // REDUCED from 250px
     position: 'relative',
     zIndex: 1,
     '@media (max-width: 1200px)': {
-      fontSize: '13px',
-      marginBottom: '18px',
-      maxWidth: '230px',
+      fontSize: '9px !important', // REDUCED from 13px
+      marginBottom: '6px !important', // REDUCED from 18px
+      maxWidth: '160px !important', // REDUCED from 230px
     },
     '@media (max-width: 960px)': {
-      fontSize: '12px',
-      marginBottom: '16px',
-      maxWidth: '210px',
+      fontSize: '8px !important', // REDUCED from 12px
+      marginBottom: '4px !important', // REDUCED from 16px
+      maxWidth: '140px !important', // REDUCED from 210px
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
@@ -191,49 +191,55 @@ const useStyles = makeStyles({
     background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(251, 191, 36, 0.1) 100%)',
     border: '1px solid rgba(245, 158, 11, 0.4)',
     color: '#f59e0b',
-    fontSize: '12px',
+    fontSize: '8px !important', // REDUCED from 12px
     fontWeight: 600,
-    padding: '8px 16px',
-    borderRadius: '20px',
+    padding: '4px 8px !important', // REDUCED from '8px 16px'
+    borderRadius: '12px !important', // REDUCED from 20px
     position: 'relative',
     zIndex: 1,
     display: 'flex',
     alignItems: 'center',
-    gap: '6px',
+    gap: '3px !important', // REDUCED from 6px
+    height: '20px !important', // ADDED explicit height
+    '& .MuiChip-label': {
+      padding: '0 !important', // REMOVE default padding
+    },
     '@media (max-width: 1200px)': {
-      fontSize: '11px',
-      padding: '7px 14px',
+      fontSize: '7px !important', // REDUCED from 11px
+      padding: '3px 6px !important', // REDUCED from '7px 14px'
+      height: '18px !important',
     },
     '@media (max-width: 960px)': {
-      fontSize: '10px',
-      padding: '6px 12px',
+      fontSize: '6px !important', // REDUCED from 10px
+      padding: '2px 5px !important', // REDUCED from '6px 12px'
+      height: '16px !important',
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
     },
   },
   iconWrapper: {
-    width: '80px',
-    height: '80px',
+    width: '50px !important', // REDUCED from 80px
+    height: '50px !important', // REDUCED from 80px
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: '20px',
+    marginBottom: '8px !important', // REDUCED from 20px
     transition: 'all 0.4s ease',
     position: 'relative',
     zIndex: 1,
     background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%)',
     border: '2px solid rgba(99, 102, 241, 0.2)',
     '@media (max-width: 1200px)': {
-      width: '75px',
-      height: '75px',
-      marginBottom: '18px',
+      width: '45px !important', // REDUCED from 75px
+      height: '45px !important', // REDUCED from 75px
+      marginBottom: '6px !important', // REDUCED from 18px
     },
     '@media (max-width: 960px)': {
-      width: '70px',
-      height: '70px',
-      marginBottom: '16px',
+      width: '40px !important', // REDUCED from 70px
+      height: '40px !important', // REDUCED from 70px
+      marginBottom: '4px !important', // REDUCED from 16px
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
@@ -258,7 +264,7 @@ const CreateCharacterButton = () => {
       </Typography>
       <Chip
         className={classes.comingSoonChip}
-        icon={<Construction style={{ fontSize: '16px' }} />}
+        icon={<Construction style={{ fontSize: '10px' }} />}
         label="Coming Soon"
       />
 

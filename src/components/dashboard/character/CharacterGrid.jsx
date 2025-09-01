@@ -217,21 +217,25 @@ const useStyles = makeStyles({
       },
     },
   },
-  // CRITICAL FIX: Force grid layout immediately
+  // CRITICAL FIX: Force grid layout immediately - 5 CARDS PER ROW
   characterBoxContainer: {
     display: 'grid !important',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr)) !important',
-    gap: '20px !important',
+    gridTemplateColumns: 'repeat(5, 1fr) !important', // CHANGED from auto-fill to exactly 5 columns
+    gap: '16px !important', // REDUCED gap for tighter fit
     marginBottom: '40px !important',
     minHeight: '200px !important',
     willChange: 'transform !important',
+    '@media (max-width: 1400px)': { // Added breakpoint for larger screens
+      gridTemplateColumns: 'repeat(4, 1fr) !important',
+      gap: '18px !important',
+    },
     '@media (max-width: 1200px)': {
-      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr)) !important',
+      gridTemplateColumns: 'repeat(3, 1fr) !important',
       gap: '18px !important',
       marginBottom: '36px !important',
     },
     '@media (max-width: 960px)': {
-      gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr)) !important',
+      gridTemplateColumns: 'repeat(2, 1fr) !important',
       gap: '16px !important',
       marginBottom: '32px !important',
     },
@@ -770,15 +774,19 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     return (
       <Box sx={{ 
         display: 'grid !important',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr)) !important',
-        gap: '20px !important',
+        gridTemplateColumns: 'repeat(5, 1fr) !important',
+        gap: '16px !important',
         minHeight: '400px !important',
+        '@media (max-width: 1400px)': {
+          gridTemplateColumns: 'repeat(4, 1fr) !important',
+          gap: '18px !important',
+        },
         '@media (max-width: 1200px)': {
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr)) !important',
+          gridTemplateColumns: 'repeat(3, 1fr) !important',
           gap: '18px !important',
         },
         '@media (max-width: 960px)': {
-          gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr)) !important',
+          gridTemplateColumns: 'repeat(2, 1fr) !important',
           gap: '16px !important',
         },
         '@media (max-width: 600px)': {
@@ -786,11 +794,11 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
           gap: '14px !important',
         },
       }}>
-        {Array.from({ length: 6 }).map((_, index) => (
+        {Array.from({ length: 10 }).map((_, index) => (
           <Box
             key={index}
             sx={{
-              height: '280px',
+              height: '220px',
               background: 'rgba(26, 26, 26, 0.3)',
               borderRadius: '16px',
               border: '1px solid rgba(99, 102, 241, 0.1)',
