@@ -147,18 +147,18 @@ const useStyles = makeStyles({
     },
   },
   createTitle: {
-    fontSize: '14px !important', // REDUCED from 20px
+    fontSize: '16px !important', // INCREASED from 14px
     fontWeight: 700,
     marginBottom: '4px !important', // REDUCED from 8px
     color: '#9ca3af',
     position: 'relative',
     zIndex: 1,
     '@media (max-width: 1200px)': {
-      fontSize: '13px !important', // REDUCED from 18px
+      fontSize: '15px !important', // INCREASED from 13px
       marginBottom: '3px !important', // REDUCED from 7px
     },
     '@media (max-width: 960px)': {
-      fontSize: '12px !important', // REDUCED from 16px
+      fontSize: '14px !important', // INCREASED from 12px
       marginBottom: '2px !important', // REDUCED from 6px
     },
     '@media (max-width: 600px)': {
@@ -166,7 +166,7 @@ const useStyles = makeStyles({
     },
   },
   createDescription: {
-    fontSize: '10px !important', // REDUCED from 14px
+    fontSize: '12px !important', // INCREASED from 10px
     color: '#6b7280',
     marginBottom: '8px !important', // REDUCED from 20px
     lineHeight: 1.3, // REDUCED from 1.5
@@ -174,12 +174,12 @@ const useStyles = makeStyles({
     position: 'relative',
     zIndex: 1,
     '@media (max-width: 1200px)': {
-      fontSize: '9px !important', // REDUCED from 13px
+      fontSize: '11px !important', // INCREASED from 9px
       marginBottom: '6px !important', // REDUCED from 18px
       maxWidth: '160px !important', // REDUCED from 230px
     },
     '@media (max-width: 960px)': {
-      fontSize: '8px !important', // REDUCED from 12px
+      fontSize: '10px !important', // INCREASED from 8px
       marginBottom: '4px !important', // REDUCED from 16px
       maxWidth: '140px !important', // REDUCED from 210px
     },
@@ -191,7 +191,7 @@ const useStyles = makeStyles({
     background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(251, 191, 36, 0.1) 100%)',
     border: '1px solid rgba(245, 158, 11, 0.4)',
     color: '#f59e0b',
-    fontSize: '8px !important', // REDUCED from 12px
+    fontSize: '10px !important', // INCREASED from 8px
     fontWeight: 600,
     padding: '4px 8px !important', // REDUCED from '8px 16px'
     borderRadius: '12px !important', // REDUCED from 20px
@@ -205,12 +205,12 @@ const useStyles = makeStyles({
       padding: '0 !important', // REMOVE default padding
     },
     '@media (max-width: 1200px)': {
-      fontSize: '7px !important', // REDUCED from 11px
+      fontSize: '9px !important', // INCREASED from 7px
       padding: '3px 6px !important', // REDUCED from '7px 14px'
       height: '18px !important',
     },
     '@media (max-width: 960px)': {
-      fontSize: '6px !important', // REDUCED from 10px
+      fontSize: '8px !important', // INCREASED from 6px
       padding: '2px 5px !important', // REDUCED from '6px 12px'
       height: '16px !important',
     },
