@@ -220,13 +220,17 @@ const useStyles = makeStyles({
   // CRITICAL FIX: Force grid layout immediately - 5 CARDS PER ROW
   characterBoxContainer: {
     display: 'grid !important',
-    gridTemplateColumns: 'repeat(5, 1fr) !important', // CHANGED from auto-fill to exactly 5 columns
-    gap: '16px !important', // REDUCED gap for tighter fit
+    gridTemplateColumns: 'repeat(6, 1fr) !important', // INCREASED from 5 to 6 columns
+    gap: '16px !important',
     marginBottom: '40px !important',
     minHeight: '200px !important',
     willChange: 'transform !important',
-    '@media (max-width: 1400px)': { // Added breakpoint for larger screens
-      gridTemplateColumns: 'repeat(4, 1fr) !important',
+    '@media (max-width: 1800px)': { // Added breakpoint for extra large screens
+      gridTemplateColumns: 'repeat(5, 1fr) !important',
+      gap: '18px !important',
+    },
+    '@media (max-width: 1400px)': {
+      gridTemplateColumns: 'repeat(4, 1fr) !important', // Minimum 4 cards
       gap: '18px !important',
     },
     '@media (max-width: 1200px)': {

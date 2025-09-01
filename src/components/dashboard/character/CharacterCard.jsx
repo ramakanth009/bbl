@@ -32,7 +32,7 @@ const iconMap = {
 };
 
 const useStyles = makeStyles({
-  // Desktop/Tablet Card Layout - OPTIMIZED FOR SIDEBAR OPEN
+  // Desktop/Tablet Card Layout - OPTIMIZED FOR SIDEBAR
   styledCard: {
     background: 'transparent !important',
     border: '1px solid rgba(99, 102, 241, 0.2)',
@@ -290,6 +290,7 @@ const useStyles = makeStyles({
     minWidth: 0,
     overflow: 'hidden !important', // PREVENT OVERFLOW
     width: '100% !important', // ENSURE FULL WIDTH
+    minHeight: '70px !important', // Added minimum height
   },
   characterName: {
     fontSize: '16px !important', // REDUCED from 18px for better fit
@@ -304,10 +305,9 @@ const useStyles = makeStyles({
     overflow: 'visible !important', // SHOW ALL TEXT
     textOverflow: 'initial !important', // REMOVE ELLIPSIS
     maxWidth: '100% !important', // ENSURE CONTAINER RESPECT
-    display: 'block !important', // ENSURE PROPER DISPLAY
-    wordBreak: 'break-word !important', // BREAK LONG WORDS
-    overflowWrap: 'break-word !important', // WRAP LONG WORDS
-    hyphens: 'auto !important', // ADD HYPHENS FOR LONG WORDS
+    display: 'flex !important', // ENSURE PROPER DISPLAY
+    alignItems: 'center !important', // Center vertically
+    minHeight: '20px !important', // Added minimum height
     '@media (max-width: 1200px)': {
       fontSize: '15px !important', // REDUCED from 17px
       lineHeight: 1.0, // EVEN TIGHTER for smaller screens
@@ -343,6 +343,7 @@ const useStyles = makeStyles({
     alignItems: 'center',
     marginBottom: '8px !important', // REDUCED from 12px
     flexWrap: 'wrap',
+    minHeight: '20px !important', // Added minimum height for chips container
     '@media (max-width: 1200px)': {
       gap: '5px !important', // REDUCED from 7px
       marginBottom: '7px !important', // REDUCED from 11px
@@ -405,7 +406,9 @@ const useStyles = makeStyles({
     fontWeight: "400 !important",
     lineHeight: 1.3, // ADJUSTED for better readability
     marginBottom: '10px !important', // REDUCED from 12px
-    height: '52px !important', // FURTHER REDUCED from 60px
+    height: 'auto !important', // Changed from fixed height
+    maxHeight: '52px !important', // Maximum height limit
+    minHeight: '52px !important', // Ensure consistent height
     overflow: 'hidden',
     display: '-webkit-box',
     WebkitLineClamp: 4, // INCREASED from 3 for more text
@@ -418,11 +421,15 @@ const useStyles = makeStyles({
       fontSize: '10px !important', // FURTHER REDUCED from 11px
       marginBottom: '8px !important', // REDUCED from 10px
       height: '48px !important', // FURTHER REDUCED from 54px
+      maxHeight: '48px !important',
+      minHeight: '48px !important',
     },
     '@media (max-width: 960px)': {
       fontSize: '9px !important', // FURTHER REDUCED from 10px
       marginBottom: '6px !important', // REDUCED from 8px
       height: '44px !important', // FURTHER REDUCED from 48px
+      maxHeight: '44px !important',
+      minHeight: '44px !important',
       lineHeight: 1.25, // ADJUSTED
     },
     '@media (max-width: 600px)': {
@@ -582,7 +589,7 @@ const CharacterCard = ({ character, onStartChat }) => {
               {character.name}
             </Typography>
             <Typography className={classes.characterAuthor}>
-              by @{character.creator || 'LegendsAI'}
+              by @{character.creator || 'gigalabs'}
             </Typography>
             
             <Box className={classes.categoryContainer}>
