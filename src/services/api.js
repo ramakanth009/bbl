@@ -5,8 +5,8 @@ import axios from 'axios';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://characters-zwwb.onrender.com';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://matrix.gigalabs.in';
-// const BASE_URL = process.env.REACT_APP_API_URL || 'https://clone-7040.onrender.com';
-const BASE_URL = process.env.REACT_APP_API_URL || 'https://matrix.gigalabs.in';
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://clone-7040.onrender.com';
+// const BASE_URL = process.env.REACT_APP_API_URL || 'https://matrix.gigalabs.in';
 
 class ApiService {
     constructor() {
@@ -543,6 +543,9 @@ class ApiService {
                 input_language: response.data.input_language,
                 response_language: response.data.response_language,
                 session_id: response.data.session_id,
+                grounding_used: response.data.grounding_info?.grounding_used || false,
+                search_queries: response.data.grounding_info?.search_queries?.length || 0,
+                sources_count: response.data.grounding_info?.sources?.length || 0,
             });
             // Ensure chat_history is always an array and sorted
             if (response.data.chat_history && Array.isArray(response.data.chat_history)) {

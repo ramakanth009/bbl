@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Paper, Avatar } from '@mui/material';
 // import { VolumeUp, Stop } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
+// import GroundingInfo from './GroundingInfo';
 
 const useStyles = makeStyles({
   messageWrapper: {
@@ -281,6 +282,11 @@ const Message = ({ message, character, className }) => {
             <Box>
               {message.content}
             </Box>
+
+            {/* Grounding information for assistant messages */}
+            {/* {message.grounding_info && (
+              <GroundingInfo groundingInfo={message.grounding_info} />
+            )} */}
 
             {/* Voice controls for assistant messages */}
             {/* {hasVoiceData && (

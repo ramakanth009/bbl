@@ -832,6 +832,13 @@ const ChatPanel = ({
                   has_voice: true,
                 }
               : {}),
+            ...(isLastMessage &&
+            isAssistantMessage &&
+            response.grounding_info
+              ? {
+                  grounding_info: response.grounding_info,
+                }
+              : {}),
           };
         });
         setMessages(formattedMessages);
@@ -844,6 +851,11 @@ const ChatPanel = ({
             ? {
                 audio_base64: response.audio_base64,
                 has_voice: true,
+              }
+            : {}),
+          ...(response.grounding_info
+            ? {
+                grounding_info: response.grounding_info,
               }
             : {}),
         };
