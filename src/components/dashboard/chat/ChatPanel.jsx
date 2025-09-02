@@ -33,7 +33,6 @@ const useStyles = makeStyles(() => ({
     zIndex: 2,
   },
   chatContainerOpen: {
-    // Dynamic width based on sidebar state - will be overridden by inline styles
     width: "calc(100vw - 280px)",
     "@media (max-width: 900px)": {
       width: "100vw",
@@ -325,7 +324,7 @@ const useStyles = makeStyles(() => ({
       width: "34px !important",
       height: "34px !important",
       borderRadius: "6px !important",
-      display: "flex !important", // Keep visible on mobile
+      display: "flex !important",
     },
     "@media (max-width: 480px)": {
       width: "32px !important",
@@ -530,6 +529,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+// Chat continuity system utilities
+const generateTemporarySessionId = () => {
+  return `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+};
+
+const LOCAL_STORAGE_KEY = 'chat_session_state';
+
 const ChatPanel = ({
   open,
   character,
@@ -545,6 +551,7 @@ const ChatPanel = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sessionId, setSessionId] = useState(null);
+  const [temporarySessionId, setTemporarySessionId] = useState(null);
   const [sessions, setSessions] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [language, setLanguage] = useState("english");
@@ -552,6 +559,28 @@ const ChatPanel = ({
 
   const messagesEndRef = useRef(null);
   const messagesWrapperRef = useRef(null);
+
+  // Initialize new temporary session
+  const initializeNewTemporarySession = () => {
+    const newTempId = generateTemporarySessionId();
+    setTemporarySessionId(newTempId);
+    setMessages([]);
+    setError(null);
+    setSessionId(null);
+    updateUrlWithSessionId(newTempId, true);
+  };
+
+  // Update URL with session ID
+  const updateUrlWithSessionId = (id, isTemporary = false) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('session', id);
+    if (isTemporary) {
+      url.searchParams.set('temp', '1');
+    } else {
+      url.searchParams.delete('temp');
+    }
+    window.history.replaceState({}, '', url.toString());
+  };
 
   // Enhanced mobile detection
   useEffect(() => {
@@ -590,6 +619,7 @@ const ChatPanel = ({
     zIndex: 1300,
   };
 
+  // Chat initialization and continuity effect
   useEffect(() => {
     if (open && character) {
       if (initialMessages && initialSessionId) {
@@ -598,13 +628,24 @@ const ChatPanel = ({
         setError(null);
         setShowHistory(false);
       } else {
-        initializeChat();
+        const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (storedState) {
+          const parsedState = JSON.parse(storedState);
+          if (parsedState.character === character.name) {
+            setMessages(parsedState.messages || []);
+            setTemporarySessionId(parsedState.temporarySessionId);
+            updateUrlWithSessionId(parsedState.temporarySessionId, true);
+          } else {
+            initializeNewTemporarySession();
+          }
+        } else {
+          initializeNewTemporarySession();
+        }
       }
-      // Load character using getCharacterById with updated endpoint
+      
       const loadCharacter = async () => {
         try {
           const response = await apiService.getCharacterById(character.id);
-          // Update character details if needed
           if (response && response.native_language) {
             setLanguage(response.native_language);
           }
@@ -613,11 +654,29 @@ const ChatPanel = ({
           setError('Failed to load character details');
         }
       };
+      
       loadCharacter();
       loadUserSessions();
       loadLanguagePreferences();
+
+      if (character.native_language) {
+        setLanguage(character.native_language);
+      }
     }
   }, [open, character, initialMessages, initialSessionId]);
+
+  // Save state to localStorage whenever messages change
+  useEffect(() => {
+    if (character && (temporarySessionId || sessionId)) {
+      const stateToStore = {
+        character: character.name,
+        messages,
+        temporarySessionId: temporarySessionId || sessionId,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stateToStore));
+    }
+  }, [messages, character, temporarySessionId, sessionId]);
 
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
@@ -658,9 +717,7 @@ const ChatPanel = ({
   };
 
   const initializeChat = () => {
-    setMessages([]);
-    setError(null);
-    setSessionId(null);
+    initializeNewTemporarySession();
   };
 
   const loadUserSessions = async () => {
@@ -689,8 +746,12 @@ const ChatPanel = ({
 
       setMessages(formattedMessages);
       setSessionId(sessionIdToLoad);
-      setShowHistory(false); // Close history after selection
+      setTemporarySessionId(null);
+      setShowHistory(false);
       setError(null);
+      
+      updateUrlWithSessionId(sessionIdToLoad, false);
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
     } catch (error) {
       console.error("Failed to load session:", error);
       setError("Failed to load conversation history");
@@ -736,6 +797,9 @@ const ChatPanel = ({
 
       if (response.session_id) {
         setSessionId(response.session_id);
+        setTemporarySessionId(null);
+        updateUrlWithSessionId(response.session_id, false);
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
       }
 
       console.log("Message sent successfully:", {
@@ -749,7 +813,6 @@ const ChatPanel = ({
       });
 
       if (response.chat_history && response.chat_history.length > 0) {
-        // Process the full chat history
         const formattedMessages = response.chat_history.map((msg, index) => {
           const isLastMessage = index === response.chat_history.length - 1;
           const isAssistantMessage = msg.role !== "user";
@@ -760,7 +823,6 @@ const ChatPanel = ({
             language:
               msg.language || (msg.role === "user" ? language : language),
             timestamp: msg.timestamp,
-            // Attach voice data to the last assistant message if available
             ...(isLastMessage &&
             isAssistantMessage &&
             response.has_voice &&
@@ -774,12 +836,10 @@ const ChatPanel = ({
         });
         setMessages(formattedMessages);
       } else {
-        // Fallback: add the response as a new message
         const assistantMessage = {
           role: character.name,
           content: response.reply,
           language: response.response_language || language,
-          // Add voice data if available
           ...(response.has_voice && response.audio_base64
             ? {
                 audio_base64: response.audio_base64,
@@ -815,7 +875,6 @@ const ChatPanel = ({
     onClose();
   };
 
-  // CRITICAL: Only allow history panel to open via explicit user action
   const handleHistoryToggle = () => {
     console.log("History toggle triggered by user action");
     setShowHistory(prev => !prev);
@@ -890,9 +949,9 @@ const ChatPanel = ({
                   flexWrap: "wrap",
                 }}
               >
-                {sessionId && (
+                {(sessionId || temporarySessionId) && (
                   <Chip
-                    label={`Session ${sessionId}`}
+                    label={sessionId ? `Session ${sessionId}` : "New Chat"}
                     size="small"
                     className={classes.enhancedChip}
                   />
@@ -911,7 +970,7 @@ const ChatPanel = ({
 
           <Box className={classes.chatHeaderRight}>
             <IconButton
-              onClick={handleHistoryToggle} // Explicit user action only
+              onClick={handleHistoryToggle}
               sx={{ color: "text.secondary" }}
               title="Chat History"
             >
@@ -1010,7 +1069,6 @@ const ChatPanel = ({
         placeholder={`Type in ${language}...`}
       />
 
-      {/* Only render when explicitly opened by user */}
       {showHistory && (
         <ChatHistoryPanel
           open={showHistory}
@@ -1020,7 +1078,7 @@ const ChatPanel = ({
           onSessionSelect={loadSession}
           onNewSession={startNewSession}
           characterName={character.name}
-          sidebarState={{ ...sidebarState, isMobile }} // Pass mobile state
+          sidebarState={{ ...sidebarState, isMobile }}
         />
       )}
     </Box>
