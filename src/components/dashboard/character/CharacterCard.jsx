@@ -121,26 +121,57 @@ const useStyles = makeStyles({
 
   characterHeader: {
     display: 'flex',
-    gap: '10px !important', // FURTHER REDUCED from 12px
+    flexDirection: 'column', // CHANGED: Stack items vertically
+    gap: '8px !important', // REDUCED gap for better spacing
     marginBottom: '8px !important', // REDUCED from 10px
     alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    minHeight: 65, // FURTHER REDUCED from 70
+    minHeight: 85, // INCREASED to accommodate new layout
     position: 'relative',
     zIndex: 1,
     width: '100% !important', // ENSURE FULL WIDTH
     '@media (max-width: 1200px)': {
-      gap: '8px !important', // FURTHER REDUCED from 10px
+      gap: '7px !important',
       marginBottom: '6px !important', // REDUCED from 8px
-      minHeight: 60, // FURTHER REDUCED from 65
+      minHeight: 80, // ADJUSTED for layout
     },
     '@media (max-width: 960px)': {
-      gap: '6px !important', // FURTHER REDUCED from 8px
+      gap: '6px !important',
       marginBottom: '4px !important', // REDUCED from 6px
-      minHeight: 55, // FURTHER REDUCED from 60
+      minHeight: 75, // ADJUSTED for layout
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
+    },
+  },
+
+  // New layout for avatar and text info
+  avatarTextRow: {
+    display: 'flex',
+    gap: '10px !important',
+    alignItems: 'flex-start',
+    width: '100%',
+    '@media (max-width: 1200px)': {
+      gap: '8px !important',
+    },
+    '@media (max-width: 960px)': {
+      gap: '6px !important',
+    },
+  },
+
+  // Category row - new line below avatar
+  categoryRow: {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'flex-start',
+    paddingLeft: '0 !important', // Align to left corner
+    '@media (max-width: 1200px)': {
+      paddingLeft: '0 !important',
+    },
+    '@media (max-width: 960px)': {
+      paddingLeft: '0 !important',
+    },
+    '@media (max-width: 600px)': {
+      paddingLeft: '0 !important',
     },
   },
 
@@ -160,6 +191,7 @@ const useStyles = makeStyles({
     borderRadius: '20%',
     border: '2px solid rgba(99, 102, 241, 0.3)',
     transition: 'all 0.3s ease',
+    flexShrink: 0, // Prevent avatar from shrinking
     '& img': {
       objectFit: 'cover',
       objectPosition: 'center 20%',
@@ -290,7 +322,7 @@ const useStyles = makeStyles({
     minWidth: 0,
     overflow: 'hidden !important', // PREVENT OVERFLOW
     width: '100% !important', // ENSURE FULL WIDTH
-    minHeight: '70px !important', // Added minimum height
+    minHeight: '50px !important', // REDUCED since category moved out
   },
   characterName: {
     fontSize: '16px !important', // REDUCED from 18px for better fit
@@ -323,7 +355,7 @@ const useStyles = makeStyles({
   characterAuthor: {
     fontSize: '11px !important', // REDUCED from 12px
     color: '#ffffff',
-    marginBottom: '1px !important', // REDUCED from 2px
+    marginBottom: '0px !important', // REMOVED margin since category moved out
     whiteSpace: 'normal',
     overflowWrap: 'break-word',
     wordBreak: 'break-word',
@@ -341,16 +373,13 @@ const useStyles = makeStyles({
     display: 'flex',
     gap: '6px !important', // REDUCED from 8px
     alignItems: 'center',
-    marginBottom: '8px !important', // REDUCED from 12px
     flexWrap: 'wrap',
     minHeight: '20px !important', // Added minimum height for chips container
     '@media (max-width: 1200px)': {
       gap: '5px !important', // REDUCED from 7px
-      marginBottom: '7px !important', // REDUCED from 11px
     },
     '@media (max-width: 960px)': {
       gap: '4px !important', // REDUCED from 6px
-      marginBottom: '6px !important', // REDUCED from 10px
     },
     '@media (max-width: 600px)': {
       display: 'none !important',
@@ -578,7 +607,8 @@ const CharacterCard = ({ character, onStartChat }) => {
     <Card className={classes.styledCard} elevation={0} onClick={handleStartChat}>
       {/* Desktop/Tablet Layout */}
       <Box className={classes.characterHeader}>
-        <Box display="flex" gap={1}>
+        {/* Avatar and Text Row */}
+        <Box className={classes.avatarTextRow}>
           <Avatar 
             src={character.img} 
             alt={character.name} 
@@ -591,24 +621,27 @@ const CharacterCard = ({ character, onStartChat }) => {
             <Typography className={classes.characterAuthor}>
               by @{character.creator || 'gigalabs'}
             </Typography>
-            
-            <Box className={classes.categoryContainer}>
-              {categoryInfo && !loading && (
-                <Chip 
-                  icon={categoryInfo.icon}
-                  label={categoryInfo.displayName}
-                  size="small"
-                  className={classes.categoryChip}
-                />
-              )}
-              {loading && character.category && (
-                <Chip 
-                  label="Loading..."
-                  size="small"
-                  className={classes.categoryChip}
-                />
-              )}
-            </Box>
+          </Box>
+        </Box>
+        
+        {/* Category Row - New line below avatar */}
+        <Box className={classes.categoryRow}>
+          <Box className={classes.categoryContainer}>
+            {categoryInfo && !loading && (
+              <Chip 
+                icon={categoryInfo.icon}
+                label={categoryInfo.displayName}
+                size="small"
+                className={classes.categoryChip}
+              />
+            )}
+            {loading && character.category && (
+              <Chip 
+                label="Loading..."
+                size="small"
+                className={classes.categoryChip}
+              />
+            )}
           </Box>
         </Box>
       </Box>
