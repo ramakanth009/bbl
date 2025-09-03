@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Character Grid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            background: transparent; /* Changed to transparent */
+        }
+
+        .stage {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            perspective: 1000px;
+            z-index: 1;
+        }
+
+        .character-image {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--color1, rgba(102, 126, 234, 0.8)), var(--color2, rgba(118, 75, 162, 0.8))); /* Increased opacity */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6),
+                        0 0 40px rgba(102, 126, 234, 0.5); /* Increased glow opacity */
+            border: 2px solid rgba(255, 255, 255, 0.2); /* Added border for better definition */
+            transform-style: preserve-3d;
+            transition: all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.9); /* Increased text opacity */
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+            z-index: 10;
+            -webkit-backdrop-filter: blur(5px); /* Added for better contrast on transparent bg */
+            backdrop-filter: blur(5px);
+        }
+
+        /* Phase 1: All characters start at center, stacked and invisible */
+        .phase-1 .character-image {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.3) rotateY(0deg) rotateX(0deg);
+            opacity: 0;
+            z-index: 10;
+        }
+
+        /* Phase 2: Characters become visible and expand to grid positions */
+        .phase-2 .character-image {
+            transform: translate(-50%, -50%) rotateY(0deg) rotateX(0deg) scale(var(--card-scale, 0.8));
+            opacity: 0.9;
+            z-index: 10;
+        }
+
+        /* Phase 3: Ripple effect - cards pushed outward (final phase) */
+        .phase-3 .character-image {
+            transform: translate(-50%, -50%) rotateY(0deg) rotateX(0deg) scale(var(--card-scale, 0.8));
+            opacity: 0.9;
+            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 10;
+        }
+
+        .energy-wave {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border: 2px solid rgba(102, 126, 234, 0.5); /* Increased opacity */
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .energy-wave.active {
+            animation: energy-pulse 3s ease-out forwards;
+        }
+
+        .ripple-wave {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border: 3px solid rgba(255, 255, 255, 0.8); /* Increased opacity */
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .ripple-wave.active {
+            animation: ripple-expand 2s ease-out forwards;
+        }
+
+        .cosmic-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.9) 0%, transparent 70%); /* Increased opacity */
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Animations */
+        @keyframes energy-pulse {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 0.8;
+            }
+            50% {
+                width: 400px;
+                height: 400px;
+                opacity: 0.4;
+            }
+            100% {
+                width: 800px;
+                height: 800px;
+                opacity: 0;
+            }
+        }
+
+        @keyframes ripple-expand {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 0.8;
+                border-width: 3px;
+            }
+            30% {
+                width: 200px;
+                height: 200px;
+                opacity: 0.6;
+                border-width: 2px;
+            }
+            70% {
+                width: 600px;
+                height: 600px;
+                opacity: 0.3;
+                border-width: 1px;
+            }
+            100% {
+                width: 1000px;
+                height: 1000px;
+                opacity: 0;
+                border-width: 1px;
+            }
+        }
+
+        @keyframes outward-particle {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            10% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+                transform: translate(var(--dx), var(--dy)) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) scale(0.5);
+            }
+        }
+        
+        /* Instructions for transparent background */
+        .instructions {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            max-width: 300px;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="stage phase-1" id="stage">
+        <!-- Characters will be dynamically generated here -->
+        
+        <!-- Energy wave effect -->
+        <div class="energy-wave" id="energyWave"></div>
+        
+        <!-- Ripple wave effect -->
+        <div class="ripple-wave" id="rippleWave"></div>
+    </div>
+    
+    <div class="instructions">
+        <h3>Cosmic Character Grid</h3>
+        <p>Background is now transparent. The animation will automatically play through its phases.</p>
+        <p>Resize the window to see the grid adjust responsively.</p>
+    </div>
+
+    <script>
+        let animationTimeout;
+        let currentCardCount = 0;
+        
+        // Define character colors and names
+        const characterData = [
+            { name: "Aurora", colors: ["rgba(102, 126, 234, 0.8)", "rgba(118, 75, 162, 0.8)"] },
+            { name: "Blaze", colors: ["rgba(255, 100, 100, 0.8)", "rgba(255, 200, 100, 0.8)"] },
+            { name: "Cosmos", colors: ["rgba(100, 150, 255, 0.8)", "rgba(150, 100, 255, 0.8)"] },
+            { name: "Echo", colors: ["rgba(100, 255, 150, 0.8)", "rgba(50, 200, 100, 0.8)"] },
+            { name: "Flux", colors: ["rgba(255, 150, 100, 0.8)", "rgba(255, 100, 200, 0.8)"] },
+            { name: "Glow", colors: ["rgba(200, 100, 255, 0.8)", "rgba(100, 200, 255, 0.8)"] },
+            { name: "Halo", colors: ["rgba(255, 180, 120, 0.8)", "rgba(255, 120, 180, 0.8)"] },
+            { name: "Ion", colors: ["rgba(120, 255, 180, 0.8)", "rgba(180, 120, 255, 0.8)"] },
+            { name: "Jade", colors: ["rgba(255, 120, 120, 0.8)", "rgba(120, 180, 255, 0.8)"] },
+            { name: "Krypton", colors: ["rgba(180, 255, 120, 0.8)", "rgba(255, 180, 120, 0.8)"] },
+            { name: "Luna", colors: ["rgba(120, 120, 255, 0.8)", "rgba(255, 120, 255, 0.8)"] },
+            { name: "Mystic", colors: ["rgba(255, 255, 120, 0.8)", "rgba(120, 255, 255, 0.8)"] },
+            { name: "Nova", colors: ["rgba(180, 120, 180, 0.8)", "rgba(120, 255, 120, 0.8)"] },
+            { name: "Orbit", colors: ["rgba(255, 120, 180, 0.8)", "rgba(180, 180, 255, 0.8)"] },
+            { name: "Prism", colors: ["rgba(120, 180, 120, 0.8)", "rgba(255, 255, 180, 0.8)"] },
+            { name: "Quasar", colors: ["rgba(180, 100, 100, 0.8)", "rgba(100, 180, 100, 0.8)"] },
+            { name: "Radiant", colors: ["rgba(100, 100, 180, 0.8)", "rgba(180, 100, 180, 0.8)"] },
+            { name: "Stellar", colors: ["rgba(100, 180, 180, 0.8)", "rgba(180, 180, 100, 0.8)"] },
+            { name: "Titan", colors: ["rgba(180, 180, 180, 0.8)", "rgba(100, 100, 100, 0.8)"] },
+            { name: "Umbra", colors: ["rgba(234, 182, 118, 0.8)", "rgba(118, 234, 182, 0.8)"] },
+            { name: "Vortex", colors: ["rgba(182, 118, 234, 0.8)", "rgba(234, 118, 182, 0.8)"] },
+            { name: "Wisp", colors: ["rgba(150, 200, 100, 0.8)", "rgba(100, 150, 200, 0.8)"] },
+            { name: "Xenon", colors: ["rgba(200, 100, 150, 0.8)", "rgba(150, 200, 100, 0.8)"] },
+            { name: "Yonder", colors: ["rgba(100, 200, 150, 0.8)", "rgba(200, 150, 100, 0.8)"] },
+            { name: "Zenith", colors: ["rgba(200, 200, 100, 0.8)", "rgba(100, 200, 200, 0.8)"] },
+            { name: "Alpha", colors: ["rgba(210, 120, 150, 0.8)", "rgba(120, 210, 150, 0.8)"] },
+            { name: "Beta", colors: ["rgba(150, 120, 210, 0.8)", "rgba(210, 150, 120, 0.8)"] },
+            { name: "Gamma", colors: ["rgba(120, 150, 210, 0.8)", "rgba(150, 210, 120, 0.8)"] },
+            { name: "Delta", colors: ["rgba(190, 140, 110, 0.8)", "rgba(140, 190, 110, 0.8)"] },
+            { name: "Epsilon", colors: ["rgba(110, 140, 190, 0.8)", "rgba(190, 110, 140, 0.8)"] },
+            { name: "Zeta", colors: ["rgba(140, 110, 190, 0.8)", "rgba(110, 190, 140, 0.8)"] },
+            { name: "Eta", colors: ["rgba(160, 200, 130, 0.8)", "rgba(200, 160, 130, 0.8)"] },
+            { name: "Theta", colors: ["rgba(130, 160, 200, 0.8)", "rgba(160, 130, 200, 0.8)"] },
+            { name: "Iota", colors: ["rgba(200, 130, 160, 0.8)", "rgba(130, 200, 160, 0.8)"] },
+            { name: "Kappa", colors: ["rgba(170, 180, 140, 0.8)", "rgba(180, 170, 140, 0.8)"] },
+            { name: "Lambda", colors: ["rgba(140, 170, 180, 0.8)", "rgba(170, 140, 180, 0.8)"] },
+            { name: "Mu", colors: ["rgba(180, 140, 170, 0.8)", "rgba(140, 180, 170, 0.8)"] },
+            { name: "Nu", colors: ["rgba(220, 160, 140, 0.8)", "rgba(160, 220, 140, 0.8)"] },
+            { name: "Xi", colors: ["rgba(140, 160, 220, 0.8)", "rgba(220, 140, 160, 0.8)"] },
+            { name: "Omicron", colors: ["rgba(160, 140, 220, 0.8)", "rgba(140, 220, 160, 0.8)"] },
+            { name: "Pi", colors: ["rgba(190, 170, 150, 0.8)", "rgba(170, 190, 150, 0.8)"] },
+            { name: "Rho", colors: ["rgba(150, 170, 190, 0.8)", "rgba(190, 150, 170, 0.8)"] },
+            { name: "Sigma", colors: ["rgba(170, 150, 190, 0.8)", "rgba(150, 190, 170, 0.8)"] }
+        ];
+        
+        function getScreenSize() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            // Calculate optimal grid based on screen dimensions
+            let cols, rows, cardSize;
+            
+            if (width >= 1920) {
+                cols = 12; rows = 7; cardSize = 100;
+            } else if (width >= 1600) {
+                cols = 10; rows = 6; cardSize = 95;
+            } else if (width >= 1440) {
+                cols = 9; rows = 6; cardSize = 90;
+            } else if (width >= 1200) {
+                cols = 8; rows = 5; cardSize = 85;
+            } else if (width >= 992) {
+                cols = 7; rows = 5; cardSize = 80;
+            } else if (width >= 768) {
+                cols = 6; rows = 4; cardSize = 75;
+            } else if (width >= 576) {
+                cols = 5; rows = 4; cardSize = 65;
+            } else if (width >= 480) {
+                cols = 4; rows = 3; cardSize = 55;
+            } else {
+                cols = 3; rows = 3; cardSize = 45;
+            }
+            
+            // Adjust for very tall screens
+            if (height > width * 1.3) {
+                rows = Math.min(rows + 2, 8);
+            }
+            
+            const totalCards = cols * rows;
+            
+            return { 
+                size: width >= 1920 ? 'xl' : width >= 1440 ? 'lg' : width >= 992 ? 'md' : 'sm',
+                cards: totalCards,
+                cols: cols,
+                rows: rows,
+                cardSize: cardSize
+            };
+        }
+        
+        function calculateGridPositions(cardCount) {
+            const positions = [];
+            const screenInfo = getScreenSize();
+            
+            // Use actual screen calculations
+            const cols = screenInfo.cols;
+            const rows = screenInfo.rows;
+            const maxCards = cols * rows;
+            const actualCards = Math.min(cardCount, maxCards);
+            
+            // Calculate spacing to fill entire screen
+            const marginX = 3;
+            const marginY = 3;
+            const availableWidth = 100 - (marginX * 2);
+            const availableHeight = 100 - (marginY * 2);
+            const stepX = cols > 1 ? availableWidth / (cols - 1) : 0;
+            const stepY = rows > 1 ? availableHeight / (rows - 1) : 0;
+            
+            // Generate positions to fill grid completely
+            let index = 0;
+            for (let row = 0; row < rows && index < actualCards; row++) {
+                for (let col = 0; col < cols && index < actualCards; col++) {
+                    const x = marginX + (col * stepX);
+                    const y = marginY + (row * stepY);
+                    positions.push({ x, y });
+                    index++;
+                }
+            }
+            
+            return positions;
+        }
+
+        function calculateRipplePositions(cardCount) {
+            const positions = [];
+            const screenInfo = getScreenSize();
+            
+            // Same grid dimensions as normal but slightly adjusted spacing
+            const cols = screenInfo.cols;
+            const rows = screenInfo.rows;
+            const maxCards = cols * rows;
+            const actualCards = Math.min(cardCount, maxCards);
+            
+            // Calculate spacing
+            const marginX = 2.5;
+            const marginY = 2.5;
+            const availableWidth = 100 - (marginX * 2);
+            const availableHeight = 100 - (marginY * 2);
+            const stepX = cols > 1 ? availableWidth / (cols - 1) : 0;
+            const stepY = rows > 1 ? availableHeight / (rows - 1) : 0;
+            
+            // Generate all positions
+            let index = 0;
+            for (let row = 0; row < rows && index < actualCards; row++) {
+                for (let col = 0; col < cols && index < actualCards; col++) {
+                    const x = marginX + (col * stepX);
+                    const y = marginY + (row * stepY);
+                    positions.push({ x, y });
+                    index++;
+                }
+            }
+            
+            return positions;
+        }
+
+        function createCharacterCards() {
+            const stage = document.getElementById('stage');
+            const screenInfo = getScreenSize();
+            const cardCount = screenInfo.cards;
+            currentCardCount = cardCount;
+            
+            // Clear existing cards
+            const existingCards = stage.querySelectorAll('.character-image');
+            existingCards.forEach(card => card.remove());
+            
+            // Get all position sets
+            const initialPositions = calculateGridPositions(cardCount);
+            const ripplePositions = calculateRipplePositions(cardCount);
+            
+            // Create cards up to available character data
+            const availableCharacters = Math.min(cardCount, characterData.length);
+            
+            for (let i = 0; i < availableCharacters; i++) {
+                const character = characterData[i];
+                const card = document.createElement('div');
+                
+                card.className = `character-image character-${i + 1}`;
+                card.textContent = character.name;
+                card.style.setProperty('--color1', character.colors[0]);
+                card.style.setProperty('--color2', character.colors[1]);
+                
+                // Set dynamic card size based on screen
+                card.style.width = screenInfo.cardSize + 'px';
+                card.style.height = screenInfo.cardSize + 'px';
+                card.style.fontSize = Math.max(8, screenInfo.cardSize * 0.12) + 'px';
+                
+                // Set positions for all phases
+                if (initialPositions[i]) {
+                    card.dataset.targetX = initialPositions[i].x;
+                    card.dataset.targetY = initialPositions[i].y;
+                }
+                if (ripplePositions[i]) {
+                    card.dataset.rippleX = ripplePositions[i].x;
+                    card.dataset.rippleY = ripplePositions[i].y;
+                }
+                
+                stage.appendChild(card);
+            }
+            
+            // If we need more cards than available characters, duplicate some
+            if (cardCount > characterData.length) {
+                for (let i = characterData.length; i < cardCount; i++) {
+                    const sourceIndex = i % characterData.length;
+                    const character = characterData[sourceIndex];
+                    const card = document.createElement('div');
+                    
+                    card.className = `character-image character-${i + 1}`;
+                    card.textContent = character.name + (Math.floor(i / characterData.length) > 0 ? ` ${Math.floor(i / characterData.length) + 1}` : '');
+                    card.style.setProperty('--color1', character.colors[0]);
+                    card.style.setProperty('--color2', character.colors[1]);
+                    
+                    // Set dynamic card size
+                    card.style.width = screenInfo.cardSize + 'px';
+                    card.style.height = screenInfo.cardSize + 'px';
+                    card.style.fontSize = Math.max(8, screenInfo.cardSize * 0.12) + 'px';
+                    
+                    // Set positions for all phases
+                    if (initialPositions[i]) {
+                        card.dataset.targetX = initialPositions[i].x;
+                        card.dataset.targetY = initialPositions[i].y;
+                    }
+                    if (ripplePositions[i]) {
+                        card.dataset.rippleX = ripplePositions[i].x;
+                        card.dataset.rippleY = ripplePositions[i].y;
+                    }
+                    
+                    stage.appendChild(card);
+                }
+            }
+        }
+
+        function applyGridPositions() {
+            const cards = document.querySelectorAll('.character-image');
+            cards.forEach(card => {
+                const targetX = card.dataset.targetX;
+                const targetY = card.dataset.targetY;
+                if (targetX && targetY) {
+                    card.style.left = targetX + '%';
+                    card.style.top = targetY + '%';
+                }
+            });
+        }
+
+        function applyRipplePositions() {
+            const cards = document.querySelectorAll('.character-image');
+            cards.forEach(card => {
+                const rippleX = card.dataset.rippleX;
+                const rippleY = card.dataset.rippleY;
+                if (rippleX && rippleY) {
+                    card.style.left = rippleX + '%';
+                    card.style.top = rippleY + '%';
+                }
+            });
+        }
+        
+        function startAnimation() {
+            const stage = document.getElementById('stage');
+            const energyWave = document.getElementById('energyWave');
+            const rippleWave = document.getElementById('rippleWave');
+            
+            // Clear any existing timeouts
+            if (animationTimeout) clearTimeout(animationTimeout);
+            
+            // Reset to phase 1 - all characters at center, invisible
+            stage.className = 'stage phase-1';
+            energyWave.classList.remove('active');
+            rippleWave.classList.remove('active');
+            
+            // Phase 2: Characters expand to initial grid positions (3 seconds)
+            setTimeout(() => {
+                stage.className = 'stage phase-2';
+                energyWave.classList.add('active');
+                applyGridPositions();
+                createOutwardParticlesFromCenter();
+                createExpansionEffect();
+            }, 3000);
+
+            // Phase 3: Ripple effect pushes cards away from center (final phase - 2 seconds after phase 2)
+            setTimeout(() => {
+                stage.className = 'stage phase-3';
+                rippleWave.classList.add('active');
+                applyRipplePositions();
+                createRippleParticles();
+            }, 5000);
+        }
+        
+        function createOutwardParticlesFromCenter() {
+            const total = Math.min(40, currentCardCount);
+            const duration = 2000;
+            for (let i = 0; i < total; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'cosmic-particle';
+                    particle.style.background = `radial-gradient(circle, hsl(${Math.random() * 60 + 220}, 70%, 70%) 0%, transparent 70%)`;
+
+                    particle.style.left = '50%';
+                    particle.style.top = '50%';
+
+                    const angle = (Math.random() * Math.PI * 2);
+                    const distance = Math.random() * 300 + 100;
+                    const targetX = Math.cos(angle) * distance;
+                    const targetY = Math.sin(angle) * distance;
+
+                    particle.style.setProperty('--dx', targetX + 'px');
+                    particle.style.setProperty('--dy', targetY + 'px');
+
+                    particle.style.animation = `outward-particle ${duration / 1000}s ease-out forwards`;
+
+                    document.body.appendChild(particle);
+
+                    setTimeout(() => particle.remove(), duration);
+                }, i * 50);
+            }
+        }
+
+        function createRippleParticles() {
+            const centerX = 50;
+            const centerY = 50;
+            
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.style.cssText = `
+                        position: absolute;
+                        top: ${centerY}%;
+                        left: ${centerX}%;
+                        width: 4px;
+                        height: 4px;
+                        background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, transparent 70%);
+                        border-radius: 50%;
+                        transform: translate(-50%, -50%);
+                        pointer-events: none;
+                    `;
+                    
+                    const angle = (i / 30) * Math.PI * 2;
+                    const distance = 300 + Math.random() * 200;
+                    const endX = centerX + Math.cos(angle) * (distance / 10);
+                    const endY = centerY + Math.sin(angle) * (distance / 10);
+                    
+                    particle.animate([
+                        { 
+                            transform: 'translate(-50%, -50%) scale(0)', 
+                            opacity: 0 
+                        },
+                        { 
+                            transform: 'translate(-50%, -50%) scale(1.2)', 
+                            opacity: 1, 
+                            offset: 0.2 
+                        },
+                        { 
+                            top: endY + '%',
+                            left: endX + '%',
+                            transform: 'translate(-50%, -50%) scale(0.3)', 
+                            opacity: 0 
+                        }
+                    ], {
+                        duration: 1500,
+                        easing: 'ease-out'
+                    });
+                    
+                    document.body.appendChild(particle);
+                    setTimeout(() => particle.remove(), 1500);
+                }, i * 30);
+            }
+        }
+        
+        function createExpansionEffect() {
+            const particleCount = Math.min(25, currentCardCount);
+            for (let i = 0; i < particleCount; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        width: 3px;
+                        height: 3px;
+                        background: radial-gradient(circle, rgba(102, 126, 234, 0.9) 0%, transparent 70%);
+                        border-radius: 50%;
+                        transform: translate(-50%, -50%);
+                        pointer-events: none;
+                    `;
+                    
+                    const angle = (i / particleCount) * Math.PI * 2;
+                    const distance = Math.random() * 400 + 200;
+                    const endX = Math.cos(angle) * distance;
+                    const endY = Math.sin(angle) * distance;
+                    
+                    particle.animate([
+                        { transform: 'translate(-50%, -50%) scale(0)', opacity: 0 },
+                        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: 0.1 },
+                        { transform: `translate(calc(-50% + ${endX}px), calc(-50% + ${endY}px)) scale(0.5)`, opacity: 0 }
+                    ], {
+                        duration: 2000,
+                        easing: 'ease-out'
+                    });
+                    
+                    document.body.appendChild(particle);
+                    
+                    setTimeout(() => particle.remove(), 2000);
+                }, i * 80);
+            }
+        }
+        
+        // Initialize everything when page loads
+        window.addEventListener('load', () => {
+            createCharacterCards();
+            setTimeout(startAnimation, 500);
+        });
+        
+        // Handle window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                createCharacterCards();
+                
+                const stage = document.getElementById('stage');
+                if (stage.classList.contains('phase-3')) {
+                    setTimeout(startAnimation, 100);
+                }
+            }, 250);
+        });
+    </script>
+</body>
+</html>
