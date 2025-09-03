@@ -74,7 +74,7 @@ const useStyles = makeStyles(() => ({
     },
     '@media (max-width: 600px)': {
       '& .MuiOutlinedInput-root': {
-        borderRadius: 6,
+        borderRadius:"20px !important",
         minHeight: 36,
         paddingRight: '36px',
         '& textarea': {

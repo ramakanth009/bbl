@@ -8,10 +8,12 @@ import {
   Chip,
 } from "@mui/material";
 import {
-  Close,
-  Add,
-  History as HistoryIcon,
   ArrowBack,
+  MoreVert,
+  History as HistoryIcon,
+  Add,
+  Close,
+  Language,
 } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
 import apiService from "../../../services/api";
@@ -19,6 +21,7 @@ import MessageList from "../message/MessageList";
 import ChatInput from "./ChatInput";
 import LanguageSelector from "../../common/LanguageSelector";
 import ChatHistoryPanel from "./history/ChatHistoryPanel";
+import { isMobileViewport, getContentWidth, BREAKPOINTS } from "../../../utils/sidebarUtils";
 
 const useStyles = makeStyles(() => ({
   chatContainer: {
@@ -34,7 +37,11 @@ const useStyles = makeStyles(() => ({
   },
   chatContainerOpen: {
     width: "calc(100vw - 280px)",
-    "@media (max-width: 900px)": {
+    // FIXED: Unified tablet range (901-1200px)
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
+      width: "calc(100vw - 260px)",
+    },
+    [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
       width: "100vw",
       left: 0,
     },
@@ -74,25 +81,28 @@ const useStyles = makeStyles(() => ({
       background:
         "linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.15), transparent)",
     },
-    "@media (max-width: 1200px)": {
-      padding: "18px",
-      gap: "10px",
-    },
-    "@media (max-width: 960px)": {
+    // WhatsApp-style mobile header
+    "@media (max-width: 600px)": {
       padding: "16px",
       gap: "8px",
-    },
-    "@media (max-width: 600px)": {
-      padding: "14px",
-      gap: "6px",
+      minHeight: "64px",
+      background: "rgba(26, 26, 26, 0.95)",
+      backdropFilter: "blur(12px)",
+      borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+      "&::before": {
+        display: "none",
+      },
+      "&::after": {
+        display: "none",
+      },
     },
     "@media (max-width: 480px)": {
-      padding: "12px",
-      gap: "4px",
+      padding: "12px 16px",
+      minHeight: "60px",
     },
     "@media (max-width: 375px)": {
-      padding: "10px",
-      gap: "2px",
+      padding: "10px 16px",
+      minHeight: "56px",
     },
   },
   chatHeaderTop: {
@@ -100,20 +110,18 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
     justifyContent: "space-between",
     minHeight: "56px",
-    "@media (max-width: 1200px)": {
-      minHeight: "52px",
-    },
-    "@media (max-width: 960px)": {
-      minHeight: "48px",
-    },
+    // WhatsApp-style mobile layout
     "@media (max-width: 600px)": {
-      minHeight: "44px",
+      minHeight: "48px",
+      gap: "12px",
     },
     "@media (max-width: 480px)": {
-      minHeight: "40px",
+      minHeight: "44px",
+      gap: "8px",
     },
     "@media (max-width: 375px)": {
-      minHeight: "36px",
+      minHeight: "40px",
+      gap: "6px",
     },
   },
   chatHeaderLeft: {
@@ -122,43 +130,39 @@ const useStyles = makeStyles(() => ({
     gap: "12px",
     flex: 1,
     minWidth: 0,
-    "@media (max-width: 1200px)": {
-      gap: "10px",
-    },
-    "@media (max-width: 960px)": {
-      gap: "8px",
-    },
+    // WhatsApp-style mobile spacing
     "@media (max-width: 600px)": {
-      gap: "6px",
+      gap: "12px",
     },
     "@media (max-width: 480px)": {
-      gap: "4px",
+      gap: "10px",
     },
     "@media (max-width: 375px)": {
-      gap: "2px",
+      gap: "8px",
     },
   },
   characterInfo: {
     flex: 1,
     minWidth: 0,
     "& .MuiTypography-h6": {
-      background: "linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)",
       WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
+      WebkitTextFillColor: "#ffffff",
       backgroundClip: "text",
       fontSize: "1.25rem",
       marginBottom: "4px",
-      "@media (max-width: 1200px)": {
-        fontSize: "1.2rem",
-      },
-      "@media (max-width: 960px)": {
-        fontSize: "1.15rem",
-      },
+      // WhatsApp-style mobile typography
       "@media (max-width: 600px)": {
-        fontSize: "1.1rem",
+        fontSize: "1.125rem",
+        fontWeight: "600",
+        marginBottom: "2px",
+        background: "transparent",
+        WebkitBackgroundClip: "unset",
+        WebkitTextFillColor: "unset",
+        backgroundClip: "unset",
+        color: "#ffffff",
       },
       "@media (max-width: 480px)": {
-        fontSize: "1.05rem",
+        fontSize: "1.075rem",
       },
       "@media (max-width: 375px)": {
         fontSize: "1rem",
@@ -178,39 +182,14 @@ const useStyles = makeStyles(() => ({
     display: "block",
     marginTop: "8px",
     padding: "8px 0",
-    "@media (max-width: 1200px)": {
-      fontSize: "0.85rem",
-      marginTop: "7px",
-      padding: "7px 0",
-    },
-    "@media (max-width: 960px)": {
-      fontSize: "0.8rem",
-      lineHeight: 1.5,
-      marginTop: "6px",
-      padding: "6px 0",
-    },
+    // Hide description on mobile for cleaner WhatsApp look
     "@media (max-width: 600px)": {
-      fontSize: "0.75rem",
-      lineHeight: 1.4,
-      marginTop: "5px",
-      padding: "5px 0",
-    },
-    "@media (max-width: 480px)": {
-      fontSize: "0.7rem",
-      lineHeight: 1.3,
-      marginTop: "4px",
-      padding: "4px 0",
-    },
-    "@media (max-width: 375px)": {
-      fontSize: "0.65rem",
-      lineHeight: 1.2,
-      marginTop: "3px",
-      padding: "3px 0",
+      display: "none",
     },
   },
   chatHeaderRight: {
     display: "flex",
-    alignItems: "flex-start",
+    alignItems: "center",
     gap: "8px",
     flexShrink: 0,
     "& .MuiIconButton-root": {
@@ -228,66 +207,47 @@ const useStyles = makeStyles(() => ({
         transform: "translateY(-2px)",
         boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
       },
-      "& .MuiSvgIcon-root": {
-        fontSize: "20px",
-        transition: "all 0.3s ease",
-      },
       "&:active": {
         transform: "translateY(0)",
       },
     },
-    "@media (max-width: 1200px)": {
-      gap: "7px",
-      "& .MuiIconButton-root": {
-        width: "38px",
-        height: "38px",
-        borderRadius: "10px",
-        "& .MuiSvgIcon-root": {
-          fontSize: "19px",
-        },
-      },
-    },
-    "@media (max-width: 960px)": {
-      gap: "6px",
-      "& .MuiIconButton-root": {
-        width: "36px",
-        height: "36px",
-        borderRadius: "8px",
-        "& .MuiSvgIcon-root": {
-          fontSize: "18px",
-        },
-      },
-    },
+    // WhatsApp-style mobile icons
     "@media (max-width: 600px)": {
-      gap: "5px",
+      gap: "4px",
       "& .MuiIconButton-root": {
-        width: "34px",
-        height: "34px",
-        borderRadius: "6px",
+        width: "40px",
+        height: "40px",
+        borderRadius: "50%",
+        background: "transparent",
+        border: "none",
+        color: "#ffffff",
+        "&:hover": {
+          background: "rgba(255, 255, 255, 0.1)",
+          transform: "none",
+          borderColor: "transparent",
+          boxShadow: "none",
+        },
         "& .MuiSvgIcon-root": {
-          fontSize: "17px",
+          fontSize: "22px",
         },
       },
     },
     "@media (max-width: 480px)": {
-      gap: "4px",
+      gap: "2px",
       "& .MuiIconButton-root": {
-        width: "32px",
-        height: "32px",
-        borderRadius: "4px",
+        width: "36px",
+        height: "36px",
         "& .MuiSvgIcon-root": {
-          fontSize: "16px",
+          fontSize: "20px",
         },
       },
     },
     "@media (max-width: 375px)": {
-      gap: "3px",
       "& .MuiIconButton-root": {
-        width: "30px",
-        height: "30px",
-        borderRadius: "2px",
+        width: "32px",
+        height: "32px",
         "& .MuiSvgIcon-root": {
-          fontSize: "15px",
+          fontSize: "18px",
         },
       },
     },
@@ -310,31 +270,28 @@ const useStyles = makeStyles(() => ({
     "&:active": {
       transform: "translateY(0)",
     },
-    "@media (max-width: 1200px)": {
-      width: "38px !important",
-      height: "38px !important",
-      borderRadius: "10px !important",
-    },
-    "@media (max-width: 960px)": {
-      width: "36px !important",
-      height: "36px !important",
-      borderRadius: "8px !important",
-    },
+    // WhatsApp-style back button
     "@media (max-width: 600px)": {
-      width: "34px !important",
-      height: "34px !important",
-      borderRadius: "6px !important",
-      display: "flex !important",
+      width: "40px !important",
+      height: "40px !important",
+      borderRadius: "50% !important",
+      background: "transparent !important",
+      border: "none !important",
+      color: "#ffffff !important",
+      "&:hover": {
+        background: "rgba(255, 255, 255, 0.1) !important",
+        transform: "none !important",
+        borderColor: "transparent !important",
+        boxShadow: "none !important",
+      },
     },
     "@media (max-width: 480px)": {
-      width: "32px !important",
-      height: "32px !important",
-      borderRadius: "4px !important",
+      width: "36px !important",
+      height: "36px !important",
     },
     "@media (max-width: 375px)": {
-      width: "30px !important",
-      height: "30px !important",
-      borderRadius: "2px !important",
+      width: "32px !important",
+      height: "32px !important",
     },
   },
   messagesWrapper: {
@@ -343,20 +300,14 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     flexDirection: "column",
     padding: "0 12px",
-    "@media (max-width: 1200px)": {
-      padding: "0 10px",
-    },
-    "@media (max-width: 960px)": {
+    "@media (max-width: 600px)": {
       padding: "0 8px",
     },
-    "@media (max-width: 600px)": {
+    "@media (max-width: 480px)": {
       padding: "0 6px",
     },
-    "@media (max-width: 480px)": {
-      padding: "0 4px",
-    },
     "@media (max-width: 375px)": {
-      padding: "0 2px",
+      padding: "0 4px",
     },
   },
   messagesContent: {
@@ -379,25 +330,9 @@ const useStyles = makeStyles(() => ({
       borderColor: "rgba(99, 102, 241, 0.6)",
       transform: "translateY(-1px)",
     },
-    "@media (max-width: 1200px)": {
-      fontSize: "0.65rem",
-      height: 18,
-    },
-    "@media (max-width: 960px)": {
-      fontSize: "0.6rem",
-      height: 16,
-    },
+    // Hide chips on mobile for cleaner look
     "@media (max-width: 600px)": {
-      fontSize: "0.55rem",
-      height: 14,
-    },
-    "@media (max-width: 480px)": {
-      fontSize: "0.5rem",
-      height: 12,
-    },
-    "@media (max-width: 375px)": {
-      fontSize: "0.45rem",
-      height: 10,
+      display: "none",
     },
   },
   nativeChip: {
@@ -408,25 +343,9 @@ const useStyles = makeStyles(() => ({
     "& .MuiChip-label": {
       color: "#81c784",
     },
-    "@media (max-width: 1200px)": {
-      fontSize: "0.65rem",
-      height: 18,
-    },
-    "@media (max-width: 960px)": {
-      fontSize: "0.6rem",
-      height: 16,
-    },
+    // Hide chips on mobile for cleaner look
     "@media (max-width: 600px)": {
-      fontSize: "0.55rem",
-      height: 14,
-    },
-    "@media (max-width: 480px)": {
-      fontSize: "0.5rem",
-      height: 12,
-    },
-    "@media (max-width: 375px)": {
-      fontSize: "0.45rem",
-      height: 10,
+      display: "none",
     },
   },
   languageStatus: {
@@ -440,25 +359,9 @@ const useStyles = makeStyles(() => ({
         transform: "translateY(-1px)",
       },
     },
-    "@media (max-width: 1200px)": {
-      gap: "7px",
-      marginTop: "7px",
-    },
-    "@media (max-width: 960px)": {
-      gap: "6px",
-      marginTop: "6px",
-    },
+    // Hide language status on mobile
     "@media (max-width: 600px)": {
-      gap: "5px",
-      marginTop: "5px",
-    },
-    "@media (max-width: 480px)": {
-      gap: "4px",
-      marginTop: "4px",
-    },
-    "@media (max-width: 375px)": {
-      gap: "3px",
-      marginTop: "3px",
+      display: "none",
     },
   },
   errorAlert: {
@@ -472,31 +375,23 @@ const useStyles = makeStyles(() => ({
     "& .MuiAlert-icon": {
       color: "#ef4444",
     },
-    "@media (max-width: 1200px)": {
-      borderRadius: "10px",
-      marginBottom: "14px",
-    },
-    "@media (max-width: 960px)": {
+    "@media (max-width: 600px)": {
       borderRadius: "8px",
       marginBottom: "12px",
-    },
-    "@media (max-width: 600px)": {
-      borderRadius: "6px",
-      marginBottom: "10px",
       "& .MuiAlert-message": {
         fontSize: "0.875rem",
       },
     },
     "@media (max-width: 480px)": {
-      borderRadius: "4px",
-      marginBottom: "8px",
+      borderRadius: "6px",
+      marginBottom: "10px",
       "& .MuiAlert-message": {
         fontSize: "0.825rem",
       },
     },
     "@media (max-width: 375px)": {
-      borderRadius: "2px",
-      marginBottom: "6px",
+      borderRadius: "4px",
+      marginBottom: "8px",
       "& .MuiAlert-message": {
         fontSize: "0.8rem",
       },
@@ -506,25 +401,46 @@ const useStyles = makeStyles(() => ({
     width: 40,
     height: 40,
     borderRadius: 1,
-    "@media (max-width: 1200px)": {
-      width: 38,
-      height: 38,
+    // WhatsApp-style avatar
+    "@media (max-width: 600px)": {
+      width: 40,
+      height: 40,
+      borderRadius: "50%",
     },
-    "@media (max-width: 960px)": {
+    "@media (max-width: 480px)": {
       width: 36,
       height: 36,
     },
-    "@media (max-width: 600px)": {
-      width: 34,
-      height: 34,
-    },
-    "@media (max-width: 480px)": {
+    "@media (max-width: 375px)": {
       width: 32,
       height: 32,
     },
-    "@media (max-width: 375px)": {
-      width: 30,
-      height: 30,
+  },
+  // Mobile status indicator (online/offline style)
+  mobileStatusIndicator: {
+    "@media (max-width: 600px)": {
+      display: "block",
+      fontSize: "0.75rem",
+      color: "rgba(255, 255, 255, 0.7)",
+      marginTop: "1px",
+    },
+    "@media (min-width: 601px)": {
+      display: "none",
+    },
+  },
+  // Mobile menu button (three dots)
+  mobileMenuButton: {
+    "@media (max-width: 600px)": {
+      display: "flex !important",
+    },
+    "@media (min-width: 601px)": {
+      display: "none !important",
+    },
+  },
+  // Desktop-only buttons
+  desktopOnlyButton: {
+    "@media (max-width: 600px)": {
+      display: "none !important",
     },
   },
 }));
@@ -556,6 +472,7 @@ const ChatPanel = ({
   const [showHistory, setShowHistory] = useState(false);
   const [language, setLanguage] = useState("english");
   const [isMobile, setIsMobile] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const messagesEndRef = useRef(null);
   const messagesWrapperRef = useRef(null);
@@ -582,11 +499,10 @@ const ChatPanel = ({
     window.history.replaceState({}, '', url.toString());
   };
 
-  // Enhanced mobile detection
+  // Enhanced mobile detection using centralized utility
   useEffect(() => {
     const checkIfMobile = () => {
-      const mobile = window.innerWidth <= 600 || 
-                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const mobile = isMobileViewport(window.innerWidth);
       setIsMobile(mobile);
     };
 
@@ -598,26 +514,60 @@ const ChatPanel = ({
     };
   }, []);
 
-  // Calculate dynamic width based on sidebar state
+  // FIXED: Calculate dynamic width using centralized utility
   const calculateWidth = () => {
-    if (sidebarState.isMobile || isMobile) {
-      return "100vw";
+    // Use centralized width calculation from sidebarUtils
+    if (sidebarState?.getCalculatedChatWidth) {
+      return sidebarState.getCalculatedChatWidth();
     }
     
-    const sidebarWidth = sidebarState.isCollapsed ? 70 : 280;
-    return `calc(100vw - ${sidebarWidth}px)`;
+    // Fallback to centralized utility if sidebarState helper not available
+    const viewportWidth = sidebarState?.viewportWidth || window.innerWidth;
+    const isMobileView = sidebarState?.isMobile || isMobile;
+    const isOpen = sidebarState?.isOpen || false;
+    
+    return getContentWidth(viewportWidth, isOpen, isMobileView);
   };
 
-  const containerStyle = {
-    width: open ? calculateWidth() : "0",
-    transform: open ? 'translateX(0)' : 'translateX(100%)',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    position: 'fixed',
-    top: 0,
-    right: 0,
-    height: '100%',
-    zIndex: 1300,
+  // Enhanced container style calculation
+  const getContainerStyle = () => {
+    const baseStyle = {
+      transform: open ? 'translateX(0)' : 'translateX(100%)',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      position: 'fixed',
+      top: 0,
+      right: 0,
+      height: '100%',
+      zIndex: 1300,
+    };
+
+    if (!open) {
+      return {
+        ...baseStyle,
+        width: "0",
+      };
+    }
+
+    return {
+      ...baseStyle,
+      width: calculateWidth(),
+    };
   };
+
+  // Debug helper - remove in production
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[ChatPanel] Sidebar State Debug:', {
+        isMobile: sidebarState?.isMobile,
+        isOpen: sidebarState?.isOpen,
+        isCollapsed: sidebarState?.isCollapsed,
+        viewportWidth: sidebarState?.viewportWidth,
+        sidebarWidth: sidebarState?.sidebarWidth,
+        actualWidth: sidebarState?.actualWidth,
+        calculatedWidth: calculateWidth()
+      });
+    }
+  }, [sidebarState]);
 
   // Chat initialization and continuity effect
   useEffect(() => {
@@ -890,11 +840,16 @@ const ChatPanel = ({
   const handleHistoryToggle = () => {
     console.log("History toggle triggered by user action");
     setShowHistory(prev => !prev);
+    setShowMobileMenu(false);
   };
 
   const handleHistoryClose = () => {
     console.log("History panel closed");
     setShowHistory(false);
+  };
+
+  const handleMobileMenuToggle = () => {
+    setShowMobileMenu(prev => !prev);
   };
 
   if (!open) {
@@ -910,7 +865,7 @@ const ChatPanel = ({
       <Box
         className={`${classes.chatContainer} ${classes.chatContainerOpen}`}
         sx={{ alignItems: "center", justifyContent: "center", display: "flex" }}
-        style={containerStyle}
+        style={getContainerStyle()}
       >
         <Typography variant="h6" color="textSecondary">
           No character selected. Please choose a character to start chatting.
@@ -925,11 +880,12 @@ const ChatPanel = ({
   return (
     <Box
       className={`${classes.chatContainer} ${classes.chatContainerOpen}`}
-      style={containerStyle}
+      style={getContainerStyle()}
       sx={{
         borderLeft: "1px solid rgba(255,255,255,0.12)",
-        "@media (max-width: 960px)": {
+        [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
           left: 0,
+          borderLeft: "none",
         },
       }}
     >
@@ -940,7 +896,10 @@ const ChatPanel = ({
               className={classes.backButton}
               onClick={handleBackClick}
               title="Back to Characters"
-              sx={{ color: "rgba(255,255,255,0.7)" }}
+              sx={{ 
+                color: "rgba(255,255,255,0.7)",
+                display: { xs: 'flex', sm: 'flex', md: 'none' } // Hide on desktop
+              }}
             >
               <ArrowBack />
             </IconButton>
@@ -953,6 +912,12 @@ const ChatPanel = ({
               <Typography variant="h6" fontWeight="bold" noWrap>
                 {character.name}
               </Typography>
+              
+              {/* Mobile status indicator - WhatsApp style */}
+              <Typography className={classes.mobileStatusIndicator}>
+                by gigalabs
+              </Typography>
+              
               <Box
                 sx={{
                   display: "flex",
@@ -981,10 +946,12 @@ const ChatPanel = ({
           </Box>
 
           <Box className={classes.chatHeaderRight}>
+            {/* Desktop buttons - hidden on mobile */}
             <IconButton
               onClick={handleHistoryToggle}
               sx={{ color: "text.secondary" }}
               title="Chat History"
+              className={classes.desktopOnlyButton}
             >
               <HistoryIcon />
             </IconButton>
@@ -995,54 +962,165 @@ const ChatPanel = ({
               compact={true}
               onLanguageChange={handleLanguageChange}
               title="Language Settings"
+              className={classes.desktopOnlyButton}
             />
 
-            <IconButton
-              onClick={startNewSession}
-              sx={{ color: "text.secondary" }}
-              title="New Conversation"
+            
+            <IconButton 
+              onClick={onClose} 
+              sx={{ 
+                color: "text.secondary",
+                display: { xs: 'none', sm: 'none', md: 'flex' } // Show only on desktop
+              }}
+              className={classes.desktopOnlyButton}
             >
-              <Add />
+              <Close />
             </IconButton>
 
-            <IconButton onClick={onClose} sx={{ color: "text.secondary" }}>
-              <Close />
+            {/* Mobile menu button - WhatsApp style three dots */}
+            <IconButton
+              onClick={handleMobileMenuToggle}
+              sx={{ color: "text.secondary" }}
+              title="More options"
+              className={classes.mobileMenuButton}
+            >
+              <MoreVert />
             </IconButton>
           </Box>
         </Box>
 
-        {character.description && (
-          <Box sx={{ width: "100%", mt: 1 }}>
-            <Typography className={classes.characterDescription}>
-              {character.description}
-            </Typography>
-          </Box>
-        )}
+        {/* Desktop-only sections - completely hidden on mobile */}
+        <Box sx={{ "@media (max-width: 600px)": { display: "none !important" } }}>
+          {character.description && (
+            <Box sx={{ width: "100%", mt: 1 }}>
+              <Typography className={classes.characterDescription}>
+                {character.description}
+              </Typography>
+            </Box>
+          )}
 
-        {language !== "english" && (
-          <Box className={classes.languageStatus}>
-            <Chip
-              label={`Language: ${language}`}
-              size="small"
-              className={classes.enhancedChip}
-            />
-            {character.native_language &&
-              language === character.native_language && (
-                <Chip
-                  label="Native Mode"
-                  size="small"
-                  sx={{
-                    backgroundColor: "rgba(255,193,7,0.15)",
-                    borderColor: "rgba(255,193,7,0.3)",
-                    "& .MuiChip-label": {
-                      color: "#ffd54f",
-                    },
-                  }}
-                />
-              )}
-          </Box>
-        )}
+          {language !== "english" && (
+            <Box className={classes.languageStatus}>
+              <Chip
+                label={`Language: ${language}`}
+                size="small"
+                className={classes.enhancedChip}
+              />
+              {character.native_language &&
+                language === character.native_language && (
+                  <Chip
+                    label="Native Mode"
+                    size="small"
+                    sx={{
+                      backgroundColor: "rgba(255,193,7,0.15)",
+                      borderColor: "rgba(255,193,7,0.3)",
+                      "& .MuiChip-label": {
+                        color: "#ffd54f",
+                      },
+                    }}
+                  />
+                )}
+            </Box>
+          )}
+        </Box>
       </Box>
+
+      {/* Mobile dropdown menu - WhatsApp style */}
+      {showMobileMenu && isMobile && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: "64px",
+            right: "16px",
+            background: "rgba(42, 42, 42, 0.95)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderRadius: "8px",
+            minWidth: "200px",
+            zIndex: 1000,
+            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.4)",
+          }}
+        >
+          <Box sx={{ p: 1 }}>
+            <IconButton
+              onClick={handleHistoryToggle}
+              sx={{
+                width: "100%",
+                justifyContent: "flex-start",
+                gap: 2,
+                p: 1.5,
+                borderRadius: "6px",
+                color: "#ffffff",
+                "&:hover": {
+                  background: "rgba(255, 255, 255, 0.1)",
+                },
+              }}
+            >
+              <Language fontSize="small" />
+              <Typography variant="body2">Language ({language})</Typography>
+            </IconButton>
+            
+            <IconButton
+              onClick={() => {
+                startNewSession();
+                setShowMobileMenu(false);
+              }}
+              sx={{
+                width: "100%",
+                justifyContent: "flex-start",
+                gap: 2,
+                p: 1.5,
+                borderRadius: "6px",
+                color: "#ffffff",
+                "&:hover": {
+                  background: "rgba(255, 255, 255, 0.1)",
+                },
+              }}
+            >
+              <Add fontSize="small" />
+              <Typography variant="body2">New Chat</Typography>
+            </IconButton>
+            
+            <Box sx={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)", mt: 1, pt: 1 }}>
+              <IconButton
+                onClick={() => {
+                  onClose();
+                  setShowMobileMenu(false);
+                }}
+                sx={{
+                  width: "100%",
+                  justifyContent: "flex-start",
+                  gap: 2,
+                  p: 1.5,
+                  borderRadius: "6px",
+                  color: "#ef4444",
+                  "&:hover": {
+                    background: "rgba(239, 68, 68, 0.1)",
+                  },
+                }}
+              >
+                <Close fontSize="small" />
+                <Typography variant="body2">Close Chat</Typography>
+              </IconButton>
+            </Box>
+          </Box>
+        </Box>
+      )}
+
+      {/* Overlay to close mobile menu when clicking outside */}
+      {showMobileMenu && isMobile && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 999,
+          }}
+          onClick={() => setShowMobileMenu(false)}
+        />
+      )}
 
       {error && (
         <Box sx={{ p: 2 }}>
@@ -1067,20 +1145,107 @@ const ChatPanel = ({
             messages={messages}
             loading={loading}
             character={character}
-            showLanguageLabels={language !== "english"}
+            showLanguageLabels={language !== "english" && !isMobile}
           />
           <div ref={messagesEndRef} className={classes.messagesEnd} />
         </Box>
       </Box>
 
-      <ChatInput
-        value={inputValue}
-        onChange={setInputValue}
-        onSend={handleSend}
-        loading={loading}
-        placeholder={`Type in ${language}...`}
-      />
-
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 2, 
+        p: 2, 
+                backdropFilter: 'blur(8px)'
+      }}>
+        <Box sx={{ flexGrow: 1 }}>
+          <ChatInput
+            value={inputValue}
+            onChange={setInputValue}
+            onSend={handleSend}
+            loading={loading}
+            placeholder={isMobile ? `Message ${character.name}...` : `Type in ${language}...`}
+          />
+        </Box>
+        <Box
+          onClick={startNewSession}
+          title="New Conversation"
+          sx={{
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: 'fit-content',
+            mx: 'auto',
+            mb: 2,
+            cursor: 'pointer',
+            '&:hover .plus-icon': {
+              transform: 'scale(1.1)'
+            }
+          }}
+        >
+          <Box
+            className="speech-bubble"
+            sx={{
+              position: 'relative',
+              background: theme => theme.palette.primary.main,
+              color: 'white',
+              padding: '6px 12px',
+              borderRadius: '12px',
+              fontSize: '0.75rem',
+              fontWeight: 500,
+              whiteSpace: 'nowrap',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              marginBottom: '8px',
+              '&:after': {
+                content: '""',
+                position: 'absolute',
+                bottom: '-5px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 0,
+                height: 0,
+                borderLeft: '6px solid transparent',
+                borderRight: '6px solid transparent',
+                borderTop: `6px solid ${theme => theme.palette.primary.main}`,
+              },
+              animation: 'bounce 2s infinite',
+              transform: 'translateY(0)'
+            }}
+          >
+            New Chat
+          </Box>
+          <IconButton
+            className="plus-icon"
+            sx={{
+              backgroundColor: 'primary.main',
+              color: 'white',
+              width: 40,
+              height: 40,
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                backgroundColor: 'primary.dark',
+                transform: 'scale(1.1)'
+              }
+            }}
+          >
+            <Add />
+          </IconButton>
+          <style jsx global>{`
+            @keyframes bounce {
+              0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+              }
+              40% {
+                transform: translateY(-5px);
+              }
+              60% {
+                transform: translateY(-3px);
+              }
+            }
+          `}</style>
+        </Box>
+      </Box>
       {showHistory && (
         <ChatHistoryPanel
           open={showHistory}

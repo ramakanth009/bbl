@@ -5,6 +5,7 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/dashboard/main/Sidebar";
 import TopBar from "../components/dashboard/main/TopBar";
 import StarField from "../components/common/StarField";
+import { createSidebarState, isMobileViewport, getSidebarWidth } from "../utils/sidebarUtils";
 
 const useStyles = makeStyles({
   dashboardContainer: {
@@ -101,11 +102,46 @@ const useStyles = makeStyles({
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(
+    typeof window !== 'undefined' ? window.innerWidth : 1920
+  );
+  
   const classes = useStyles();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = isMobileViewport(viewportWidth);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Enhanced viewport width tracking
+  useEffect(() => {
+    const updateViewport = () => {
+      const width = window.innerWidth;
+      setViewportWidth(width);
+    };
+
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
+    
+    return () => {
+      window.removeEventListener('resize', updateViewport);
+    };
+  }, []);
+
+  // Save and restore desktop sidebar state
+  useEffect(() => {
+    if (!isMobile) {
+      const savedState = localStorage.getItem('sidebar_desktop_open');
+      if (savedState !== null) {
+        setSidebarOpen(JSON.parse(savedState));
+      }
+    }
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (!isMobile) {
+      localStorage.setItem('sidebar_desktop_open', JSON.stringify(sidebarOpen));
+    }
+  }, [sidebarOpen, isMobile]);
 
   // Check if chat is open based on the URL
   const isChatOpen = location.pathname.includes('/chat/');
@@ -157,32 +193,40 @@ const Dashboard = () => {
     console.log('Search toggle');
   };
 
-  // Calculate sidebar state for child components
-  const sidebarState = {
-    isOpen: isMobile ? mobileSidebarOpen : sidebarOpen,
+  // Use centralized sidebar width calculation
+  const currentSidebarWidth = getSidebarWidth(viewportWidth, isMobile ? mobileSidebarOpen : sidebarOpen, isMobile);
+
+  // Use centralized sidebar state creation
+  const sidebarState = createSidebarState({
+    sidebarOpen,
+    mobileSidebarOpen,
+    viewportWidth,
+    isMobile
+  });
+
+  // Debug logging for development
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Dashboard] Sidebar State Updated:', {
+        isOpen: sidebarState.isOpen,
+        isMobile: sidebarState.isMobile,
+        viewportWidth: sidebarState.viewportWidth,
+        sidebarWidth: sidebarState.sidebarWidth,
+        actualWidth: sidebarState.actualWidth,
+        isCollapsed: sidebarState.isCollapsed
+      });
+    }
+  }, [
+    sidebarOpen,
+    mobileSidebarOpen,
     isMobile,
-    sidebarWidth: isMobile ? (mobileSidebarOpen ? 280 : 0) : (sidebarOpen ? 280 : 70),
-    isCollapsed: !isMobile && !sidebarOpen
-  };
+    viewportWidth
+  ]);
 
   return (
     <>
       <StarField />
       
-      {/* Desktop toggle button - Hidden on mobile */}
-      {/* REMOVE THIS OUTSIDE TOGGLE BUTTON */}
-      {/* 
-      {!isMobile && (
-        <IconButton
-          className={`${classes.menuButton} ${sidebarOpen ? classes.menuButtonOpen : classes.menuButtonClosed}`}
-          onClick={toggleSidebar}
-          aria-label="toggle sidebar"
-        >
-          {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
-        </IconButton>
-      )}
-      */}
-
       {/* Mobile TopBar - Hidden when chat is open */}
       {isMobile && !isChatOpen && (
         <TopBar
@@ -208,6 +252,7 @@ const Dashboard = () => {
             open={isMobile ? mobileSidebarOpen : sidebarOpen}
             onToggle={toggleSidebar}
             isMobile={isMobile}
+            sidebarState={sidebarState} // Pass enhanced state to Sidebar
           />
         )}
 

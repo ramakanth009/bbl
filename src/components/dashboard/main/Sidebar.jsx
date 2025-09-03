@@ -26,11 +26,12 @@ import {
   Logout,
   Category,
   ChevronRight,
-  ChevronLeft, // Add this import for the collapse button
+  ChevronLeft,
 } from "@mui/icons-material";
 import { makeStyles } from '@mui/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from "../../../context/AuthContext";
+import { isMobileViewport, SIDEBAR_WIDTHS, BREAKPOINTS } from "../../../utils/sidebarUtils";
 
 import CategoriesList from './CategoriesList';
 import CreateFeaturePopup from "../../../components/common/CreateFeaturePopup";
@@ -38,7 +39,7 @@ import CreateFeaturePopup from "../../../components/common/CreateFeaturePopup";
 const useStyles = makeStyles(() => ({
   drawer: {
     '& .MuiDrawer-paper': {
-      width: '280px !important',
+      width: `${SIDEBAR_WIDTHS.EXPANDED.DESKTOP}px !important`,
       height: '100vh !important',
       backgroundColor: 'rgba(26, 26, 26, 0.7) !important',
       borderRight: '1px solid rgba(42, 42, 42, 0.5) !important',
@@ -51,20 +52,18 @@ const useStyles = makeStyles(() => ({
       top: '0 !important',
       zIndex: '1200 !important',
       transition: 'all 0.3s ease !important',
-      '@media (max-width: 1200px)': {
-        width: '260px !important',
-        padding: '18px !important',
-      },
-      '@media (max-width: 960px)': {
-        width: '240px !important',
+      // FIXED: Unified tablet range (901-1200px)
+      [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
+        width: `${SIDEBAR_WIDTHS.EXPANDED.TABLET}px !important`,
         padding: '16px !important',
       },
-      '@media (max-width: 900px)': {
-        width: '280px !important',
+      // FIXED: Mobile only (≤900px)
+      [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
+        width: `${SIDEBAR_WIDTHS.EXPANDED.MOBILE}px !important`,
         zIndex: '1300 !important',
       },
       '@media (max-width: 600px)': {
-        width: '280px !important',
+        width: `${SIDEBAR_WIDTHS.EXPANDED.MOBILE}px !important`,
         padding: '14px !important',
       },
       '@media (max-width: 480px)': {
@@ -79,21 +78,19 @@ const useStyles = makeStyles(() => ({
   },
   drawerCollapsed: {
     '& .MuiDrawer-paper': {
-      width: '70px !important',
+      width: `${SIDEBAR_WIDTHS.COLLAPSED.DESKTOP}px !important`,
       padding: '20px 10px !important',
       display: 'flex !important',
       flexDirection: 'column !important',
       alignItems: 'center !important',
-      '@media (max-width: 1200px)': {
-        width: '65px !important',
-        padding: '18px 8px !important',
-      },
-      '@media (max-width: 960px)': {
-        width: '60px !important',
+      // FIXED: Unified tablet range (901-1200px)
+      [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
+        width: `${SIDEBAR_WIDTHS.COLLAPSED.TABLET}px !important`,
         padding: '16px 6px !important',
       },
-      '@media (max-width: 900px)': {
-        width: '280px !important',
+      // FIXED: Mobile only (≤900px)
+      [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
+        width: `${SIDEBAR_WIDTHS.EXPANDED.MOBILE}px !important`,
         padding: '20px !important',
         alignItems: 'stretch !important',
       },
@@ -108,7 +105,7 @@ const useStyles = makeStyles(() => ({
   },
   contentWrapperCollapsed: {
     alignItems: 'center !important',
-    '@media (max-width: 900px)': {
+    [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
       alignItems: 'stretch !important',
     },
   },
@@ -118,11 +115,8 @@ const useStyles = makeStyles(() => ({
     gap: '12px !important',
     marginBottom: '20px !important',
     justifyContent: 'flex-start !important',
-    '@media (max-width: 1200px)': {
-      gap: '10px !important',
-      marginBottom: '18px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       gap: '8px !important',
       marginBottom: '16px !important',
     },
@@ -141,7 +135,7 @@ const useStyles = makeStyles(() => ({
   },
   logoWrapperCollapsed: {
     justifyContent: 'center !important',
-    '@media (max-width: 900px)': {
+    [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
       justifyContent: 'flex-start !important',
     },
   },
@@ -155,12 +149,8 @@ const useStyles = makeStyles(() => ({
     justifyContent: "center !important",
     color: "white !important",
     fontSize: '14px !important',
-    '@media (max-width: 1200px)': {
-      width: '26px !important',
-      height: '26px !important',
-      fontSize: '13px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       width: '24px !important',
       height: '24px !important',
       fontSize: '12px !important',
@@ -185,10 +175,8 @@ const useStyles = makeStyles(() => ({
     fontSize: '16px !important',
     fontWeight: '600 !important',
     color: '#ffffff !important',
-    '@media (max-width: 1200px)': {
-      fontSize: '15px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       fontSize: '14px !important',
     },
     '@media (max-width: 600px)': {
@@ -201,7 +189,6 @@ const useStyles = makeStyles(() => ({
       fontSize: '11px !important',
     },
   },
-  // Add expand button styles
   expandButton: {
     width: '40px !important',
     height: '40px !important',
@@ -221,19 +208,14 @@ const useStyles = makeStyles(() => ({
       color: '#6366f1 !important',
       borderColor: 'rgba(99, 102, 241, 0.3) !important',
     },
-    '@media (max-width: 1200px)': {
-      width: '36px !important',
-      height: '36px !important',
-      minWidth: '36px !important',
-      marginBottom: '14px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       width: '32px !important',
       height: '32px !important',
       minWidth: '32px !important',
       marginBottom: '12px !important',
     },
-    '@media (max-width: 900px)': {
+    [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
       display: 'none !important', // Hide on mobile since sidebar behavior is different
     },
   },
@@ -253,13 +235,8 @@ const useStyles = makeStyles(() => ({
       transform: 'translateY(-1px) !important',
       boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4) !important',
     },
-    '@media (max-width: 1200px)': {
-      padding: '9px 14px !important',
-      fontSize: '13px !important',
-      marginBottom: '26px !important',
-      borderRadius: '7px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       padding: '8px 12px !important',
       fontSize: '12px !important',
       marginBottom: '22px !important',
@@ -295,19 +272,14 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center !important',
     justifyContent: 'center !important',
     margin: '0 auto 20px auto !important',
-    '@media (max-width: 1200px)': {
-      minWidth: '36px !important',
-      width: '36px !important',
-      height: '36px !important',
-      margin: '0 auto 18px auto !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       minWidth: '32px !important',
       width: '32px !important',
       height: '32px !important',
       margin: '0 auto 16px auto !important',
     },
-    '@media (max-width: 900px)': {
+    [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
       width: "100% !important",
       height: 'auto !important',
       padding: '10px 16px !important',
@@ -316,10 +288,8 @@ const useStyles = makeStyles(() => ({
   },
   navSectionWrapper: {
     marginBottom: '24px !important',
-    '@media (max-width: 1200px)': {
-      marginBottom: '20px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       marginBottom: '18px !important',
     },
     '@media (max-width: 600px)': {
@@ -334,7 +304,7 @@ const useStyles = makeStyles(() => ({
   },
   navSectionWrapperCollapsed: {
     marginBottom: '16px !important',
-    '@media (max-width: 900px)': {
+    [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
       marginBottom: '24px !important',
     },
   },
@@ -345,11 +315,8 @@ const useStyles = makeStyles(() => ({
     textTransform: 'uppercase !important',
     letterSpacing: '0.5px !important',
     marginBottom: '8px !important',
-    '@media (max-width: 1200px)': {
-      fontSize: '10px !important',
-      marginBottom: '7px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       fontSize: '9px !important',
       marginBottom: '6px !important',
     },
@@ -383,12 +350,8 @@ const useStyles = makeStyles(() => ({
         color: '#6366f1 !important',
       },
     },
-    '@media (max-width: 1200px)': {
-      padding: '7px 10px !important',
-      fontSize: '12px !important',
-      borderRadius: '5px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       padding: '6px 8px !important',
       fontSize: '11px !important',
       borderRadius: '4px !important',
@@ -414,15 +377,12 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center !important',
     alignItems: 'center !important',
     minHeight: '40px !important',
-    '@media (max-width: 1200px)': {
-      padding: '7px 3px !important',
-      minHeight: '36px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       padding: '6px 2px !important',
       minHeight: '32px !important',
     },
-    '@media (max-width: 900px)': {
+    [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
       padding: '8px 12px !important',
       justifyContent: 'flex-start !important',
       minHeight: 'auto !important',
@@ -437,7 +397,7 @@ const useStyles = makeStyles(() => ({
   },
   scrollableContentCollapsed: {
     display: 'none !important',
-    '@media (max-width: 900px)': {
+    [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
       display: 'block !important',
     },
   },
@@ -446,7 +406,7 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center !important',
     alignItems: 'center !important',
     marginBottom: '16px !important',
-    '@media (max-width: 900px)': {
+    [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
       display: 'none !important',
     },
   },
@@ -463,12 +423,8 @@ const useStyles = makeStyles(() => ({
     "&:hover": {
       backgroundColor: '#252525 !important',
     },
-    '@media (max-width: 1200px)': {
-      padding: '7px 3px !important',
-      minWidth: '36px !important',
-      minHeight: '36px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       padding: '6px 2px !important',
       minWidth: '32px !important',
       minHeight: '32px !important',
@@ -484,14 +440,8 @@ const useStyles = makeStyles(() => ({
     '& .MuiChip-label': {
       padding: '0 6px !important',
     },
-    '@media (max-width: 1200px)': {
-      height: '14px !important',
-      fontSize: '9px !important',
-      '& .MuiChip-label': {
-        padding: '0 5px !important',
-      },
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       height: '12px !important',
       fontSize: '8px !important',
       '& .MuiChip-label': {
@@ -524,10 +474,8 @@ const useStyles = makeStyles(() => ({
     paddingTop: '5px !important',
     borderTop: '1px solid #333 !important',
     marginTop: 'auto !important',
-    '@media (max-width: 1200px)': {
-      paddingTop: '10px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       paddingTop: '8px !important',
     },
     '@media (max-width: 600px)': {
@@ -542,10 +490,8 @@ const useStyles = makeStyles(() => ({
   },
   iconSizing: {
     fontSize: '16px !important',
-    '@media (max-width: 1200px)': {
-      fontSize: '15px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       fontSize: '14px !important',
     },
     '@media (max-width: 600px)': {
@@ -562,10 +508,8 @@ const useStyles = makeStyles(() => ({
     fontSize: "13px !important",
     fontWeight: '400 !important',
     color: 'inherit !important',
-    '@media (max-width: 1200px)': {
-      fontSize: '12px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       fontSize: '11px !important',
     },
     '@media (max-width: 600px)': {
@@ -582,11 +526,8 @@ const useStyles = makeStyles(() => ({
     color: "#888 !important", 
     minWidth: '26px !important', 
     marginRight: '10px !important',
-    '@media (max-width: 1200px)': {
-      minWidth: '24px !important',
-      marginRight: '9px !important',
-    },
-    '@media (max-width: 960px)': {
+    // FIXED: Unified tablet range
+    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
       minWidth: '22px !important',
       marginRight: '8px !important',
     },
@@ -609,7 +550,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex !important',
     alignItems: 'center !important',
     justifyContent: 'center !important',
-    '@media (max-width: 900px)': {
+    [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
       minWidth: '26px !important',
       marginRight: '10px !important',
     },
@@ -622,7 +563,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const isMobileView = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobileView = isMobileViewport(window.innerWidth);
 
   const [stylesReady, setStylesReady] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
@@ -770,7 +711,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
         overflow: 'hidden !important',
         zIndex: 1200,
         transition: 'all 0.3s ease',
-        '@media (max-width: 900px)': {
+        [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
           width: '280px !important',
           padding: '20px !important',
           transform: open ? 'translateX(0)' : 'translateX(-100%)',
