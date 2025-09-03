@@ -447,7 +447,7 @@ const useStyles = makeStyles(() => ({
 
 // Chat continuity system utilities
 const generateTemporarySessionId = () => {
-  return `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 };
 
 const LOCAL_STORAGE_KEY = 'chat_session_state';
@@ -492,9 +492,9 @@ const ChatPanel = ({
     const url = new URL(window.location.href);
     url.searchParams.set('session', id);
     if (isTemporary) {
-      url.searchParams.set('temp', '1');
+      url.searchParams.set('ssn', '1');
     } else {
-      url.searchParams.delete('temp');
+      url.searchParams.delete('ssn');
     }
     window.history.replaceState({}, '', url.toString());
   };
