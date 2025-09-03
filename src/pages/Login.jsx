@@ -24,6 +24,7 @@ import { useAuth } from '../context/AuthContext';
 import GoogleLogo from '../assets/google-logo.svg';
 
 const StarField = React.lazy(() => import('../components/common/StarField'));
+const CardAnimation = React.lazy(() => import('../components/common/CardAnimation'));
 
 const useStyles = makeStyles(() => ({
   pageContainer: {
@@ -45,14 +46,20 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     maxWidth: 440,
     padding: '36px 36px 32px 36px',
-    background: 'none !important',
-    backgroundColor: 'transparent !important',
-    border: 'none !important',
+    background: 'rgba(255, 255, 255, 0.08) !important',
+    backgroundColor: 'rgba(255, 255, 255, 0.08) !important',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    border: '1px solid rgba(255, 255, 255, 0.2) !important',
     borderRadius: 28,
-    boxShadow: 'none !important',
-    transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
+    boxShadow: '0 25px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important',
+    transition: 'all 2s cubic-bezier(0.16, 1, 0.3, 1)',
     position: 'relative',
     overflow: 'hidden',
+    opacity: 0,
+    transform: 'scale(0)',
+    transformOrigin: 'center center',
+    clipPath: 'circle(0% at center)',
     '@media (max-width: 1200px)': {
       maxWidth: 400,
       padding: '32px 32px 28px 32px',
@@ -249,7 +256,7 @@ const useStyles = makeStyles(() => ({
       content: '""',
       flex: 1,
       height: 1,
-      background: 'linear-gradient(90deg, #222 0%, #444 100%)',
+      background: '#ccc',
     },
     '@media (max-height: 700px)': {
       margin: '12px 0',
@@ -257,7 +264,7 @@ const useStyles = makeStyles(() => ({
   },
   dividerText: {
     padding: '0 16px',
-    color: '#888',
+    color: '#fff',
     fontSize: '0.85rem',
     fontWeight: 500,
     letterSpacing: '0.03em',
@@ -329,6 +336,49 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  authCardVisible: {
+    opacity: '1 !important',
+    transform: 'scale(1) !important',
+    clipPath: 'circle(100% at center) !important',
+    animation: 'rippleReveal 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+  },
+  '@keyframes rippleReveal': {
+    '0%': {
+      clipPath: 'circle(0% at center)',
+      transform: 'scale(0)',
+      opacity: 0,
+    },
+    '15%': {
+      clipPath: 'circle(5% at center)',
+      transform: 'scale(0.1)',
+      opacity: 0.1,
+    },
+    '35%': {
+      clipPath: 'circle(25% at center)',
+      transform: 'scale(0.4)',
+      opacity: 0.4,
+    },
+    '55%': {
+      clipPath: 'circle(50% at center)',
+      transform: 'scale(0.7)',
+      opacity: 0.7,
+    },
+    '75%': {
+      clipPath: 'circle(75% at center)',
+      transform: 'scale(0.9)',
+      opacity: 0.85,
+    },
+    '90%': {
+      clipPath: 'circle(90% at center)',
+      transform: 'scale(0.98)',
+      opacity: 0.95,
+    },
+    '100%': {
+      clipPath: 'circle(100% at center)',
+      transform: 'scale(1)',
+      opacity: 1,
+    },
+  },
 }));
 
 const Login = () => {
@@ -341,6 +391,7 @@ const Login = () => {
   const [searchParams] = useSearchParams();
   const [googleLoading, setGoogleLoading] = useState(false);
   const [oauthStatusLoading, setOauthStatusLoading] = useState(true);
+  const [cardVisible, setCardVisible] = useState(false);
   const { login, loginWithGoogle, isAuthenticated, oauthStatus, checkOAuthStatus } = useAuth();
   const navigate = useNavigate();
 
@@ -366,6 +417,19 @@ const Login = () => {
       navigate('/dashboard', { replace: true });
     }
   }, [isAuthenticated, navigate]);
+
+  // Listen for card animation ripple event to reveal login card
+  useEffect(() => {
+    const handleRippleEvent = () => {
+      setCardVisible(true);
+    };
+
+    window.addEventListener('cardAnimationRipple', handleRippleEvent);
+    
+    return () => {
+      window.removeEventListener('cardAnimationRipple', handleRippleEvent);
+    };
+  }, []);
 
   // Check OAuth status on component mount with better error handling
   useEffect(() => {
@@ -478,9 +542,16 @@ const Login = () => {
         <StarField />
       </React.Suspense>
       
+      <React.Suspense fallback={<div />}>
+        <CardAnimation />
+      </React.Suspense>
+      
       <Container maxWidth="sm" className={classes.pageContainer}>
         <Fade in timeout={800}>
-          <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
+          <Card 
+            className={`${classes.authCard} ${cardVisible ? classes.authCardVisible : ''}`} 
+            style={{ position: 'relative', overflow: 'hidden' }}
+          >
             <Zoom in timeout={1000}>
               <Box>
                 <Box className={classes.logoContainer}>
