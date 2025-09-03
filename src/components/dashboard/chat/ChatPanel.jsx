@@ -946,23 +946,136 @@ const ChatPanel = ({
 
           <Box className={classes.chatHeaderRight}>
             {/* Desktop buttons - hidden on mobile */}
-            <IconButton
+            <Box
               onClick={handleHistoryToggle}
-              sx={{ color: "text.secondary" }}
               title="Chat History"
               className={classes.desktopOnlyButton}
+              sx={{
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                cursor: 'pointer',
+                '&:hover .history-icon': {
+                  transform: 'scale(1.1)'
+                }
+              }}
             >
-              <HistoryIcon />
-            </IconButton>
+              
+              <IconButton
+                className="history-icon"
+                sx={{
+                  color: "text.secondary",
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "12px",
+                  background:
+                    "linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(42, 42, 42, 0.8))",
+                  border: "1px solid rgba(99, 102, 241, 0.2)",
+                  transition: "all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                  "&:hover": {
+                    background:
+                      "linear-gradient(145deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1))",
+                    borderColor: "rgba(99, 102, 241, 0.6)",
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
+                  },
+                  "&:active": {
+                    transform: "translateY(0)",
+                  },
+                }}
+              >
+                
+                <HistoryIcon />
+              </IconButton>
+              <Box
+                className="speech-bubble"
+                sx={{
+                  position: 'relative',
+                  background: theme => theme.palette.primary.main,
+                  color: 'white',
+                  padding: '6px 12px',
+                  borderRadius: '12px',
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  marginBottom: '8px',
+                  '&:after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: '-5px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: 0,
+                    height: 0,
+                    borderLeft: '6px solid transparent',
+                    borderRight: '6px solid transparent',
+                    borderTop: `6px solid ${theme => theme.palette.primary.main}`,
+                  },
+                  animation: 'bounce 2s infinite',
+                  transform: 'translateY(0)'
+                }}
+              >
+                History
+              </Box>
+            </Box>
 
-            <LanguageSelector
-              currentLanguage={language}
-              mode="single"
-              compact={true}
-              onLanguageChange={handleLanguageChange}
+            <Box
               title="Language Settings"
               className={classes.desktopOnlyButton}
-            />
+              sx={{
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                '&:hover .language-selector': {
+                  transform: 'scale(1.05)'
+                }
+              }}
+            >
+              
+              <Box className="language-selector">
+                <LanguageSelector
+                  currentLanguage={language}
+                  mode="single"
+                  compact={true}
+                  onLanguageChange={handleLanguageChange}
+                  title="Language Settings"
+                />
+              </Box>
+              <Box
+                className="speech-bubble"
+                sx={{
+                  position: 'relative',
+                  background: theme => theme.palette.primary.main,
+                  color: 'white',
+                  padding: '6px 12px',
+                  borderRadius: '12px',
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  marginBottom: '8px',
+                  '&:after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: '-5px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: 0,
+                    height: 0,
+                    borderLeft: '6px solid transparent',
+                    borderRight: '6px solid transparent',
+                    borderTop: `6px solid ${theme => theme.palette.primary.main}`,
+                  },
+                  animation: 'bounce 2s infinite',
+                  transform: 'translateY(0)'
+                }}
+              >
+                Language
+              </Box>
+            </Box>
 
             
             <IconButton 
