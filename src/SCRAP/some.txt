@@ -1,1 +1,9 @@
-there is major bug in here insted of character_id end point the current end point in the api.js is  characterId We need to resolve this issue and make sure when start button is clicked the respective character ID is getting triggered and make sure The URL also changes based on the route ID We also need to resolve chat continuity issue based on this conducted thorough investigation and give me a list files which need to be changed
+We want the Login and Register pages to share the same background so that the background does not reload or change when navigating between them. Instead of swapping entire pages, the card itself should smoothly transform from the login card into the register card (with a similar animation/effect as the login card).
+Key requirements:
+1. Shared Background – Both login and register should use a single background layer that stays fixed and consistent.
+2. Card Transformation – When clicking "Create One" (or similar button), the card should transition into the register card rather than loading a new page. The transformation animation should mirror the login card effect.
+3. URL Update – Even though the background doesn’t change, the browser URL must update to /login or /register accordingly. This means we should manage state-based card switching while syncing the route change.
+4. Centralized Implementation – Decide whether to keep everything in one file (with conditional rendering for login/register card inside a shared layout) or split into separate components (login card and register card) while keeping a single wrapper for the background. The background logic should be centralized so it’s not duplicated.
+The final solution should ensure smooth transitions, clean routing, and reusability, with the card transformation effect applied consistently.
+
+note: study the exising files and the login pages background is the final background 
