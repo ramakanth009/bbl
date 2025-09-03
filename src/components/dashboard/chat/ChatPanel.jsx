@@ -884,7 +884,6 @@ const ChatPanel = ({
       sx={{
         borderLeft: "1px solid rgba(255,255,255,0.12)",
         [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
-          left: 0,
           borderLeft: "none",
         },
       }}
