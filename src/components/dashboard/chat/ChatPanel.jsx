@@ -914,7 +914,7 @@ const ChatPanel = ({
               
               {/* Mobile status indicator - WhatsApp style */}
               <Typography className={classes.mobileStatusIndicator}>
-                by gigalabs
+                by gigaversity
               </Typography>
               
               <Box

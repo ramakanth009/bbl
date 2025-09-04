@@ -910,7 +910,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
             size="small"
           />
         </Box>
-        
+         
         <Box className={classes.emptyState}>
           <Typography className={classes.emptyStateTitle}>
             {isSearching ? 'No search results found' : 'No characters found'}

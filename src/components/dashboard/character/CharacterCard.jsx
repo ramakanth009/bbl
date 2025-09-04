@@ -9,7 +9,7 @@ import {
   EmojiEvents, 
   Psychology, 
   Lightbulb,
-  Groups,
+  Groups, 
   Category,
   ExpandMore,
   ExpandLess
@@ -619,7 +619,7 @@ const CharacterCard = ({ character, onStartChat }) => {
               {character.name}
             </Typography>
             <Typography className={classes.characterAuthor}>
-              by @{character.creator || 'gigalabs'}
+              by @{character.creator || 'gigaversity'}
             </Typography>
           </Box>
         </Box>
