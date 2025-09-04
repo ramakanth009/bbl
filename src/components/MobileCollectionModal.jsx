@@ -12,7 +12,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { Phone, Close } from '@mui/icons-material';
+import { Phone } from '@mui/icons-material';
 
 const useStyles = makeStyles({
   backdrop: {
@@ -181,18 +181,6 @@ const useStyles = makeStyles({
       boxShadow: 'none !important',
     },
   },
-  closeButton: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    zIndex: 10,
-    color: '#ef4444', // Tailwind red-500
-    background: 'rgba(239,68,68,0.08)', // subtle red background
-    '&:hover': {
-      color: '#fff',
-      background: 'rgba(239,68,68,0.25)',
-    },
-  },
   loadingWrapper: {
     display: 'flex',
     alignItems: 'center',
@@ -242,7 +230,6 @@ function validateIndianMobile(input) {
 const MobileCollectionModal = ({
   open,
   onSubmit,
-  onSkip,
   loading,
   error,
 }) => {
@@ -295,17 +282,6 @@ const MobileCollectionModal = ({
         disableAutoFocus
       >
         <DialogContent className={classes.dialogContent}>
-          {/* X Close Button */}
-          <IconButton
-            aria-label="close"
-            className={classes.closeButton}
-            onClick={onSkip}
-            disabled={loading}
-            size="large"
-          >
-            <Close />
-          </IconButton>
-
           {/* Icon */}
           <Box className={classes.iconWrapper}>
             <Phone />
@@ -352,13 +328,12 @@ const MobileCollectionModal = ({
               {loading ? (
                 <Box className={classes.loadingWrapper}>
                   <CircularProgress size={16} color="inherit" />
-                  Submitting...
+                  Redirecting...
                 </Box>
               ) : (
-                'Add Mobile Number'
+                'Continue to Dashboard'
               )}
             </Button>
-            {/* REMOVE: Skip Button */}
           </Box>
 
           {/* Note */}
