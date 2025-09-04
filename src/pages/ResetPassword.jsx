@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -8,20 +8,21 @@ import {
   Typography,
   Alert,
   Container,
-  IconButton,
-  InputAdornment,
   Fade,
   Zoom,
   CircularProgress,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
 import {
+  ArrowBack,
+  WorkspacePremium,
   Visibility,
   VisibilityOff,
-  WorkspacePremium,
+  CheckCircle,
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
-import { useAuth } from '../context/AuthContext';
-import GoogleLogo from '../assets/google-logo.svg';
+import apiService from '../services/api';
 
 const StarField = React.lazy(() => import('../components/common/StarField'));
 const CardAnimation = React.lazy(() => import('../components/common/CardAnimation'));
@@ -185,7 +186,7 @@ const useStyles = makeStyles(() => ({
       },
     },
   },
-  loginButton: {
+  submitButton: {
     width: '100%',
     padding: '12px',
     borderRadius: 12,
@@ -213,11 +214,11 @@ const useStyles = makeStyles(() => ({
       marginBottom: '16px !important',
     },
   },
-  googleButton: {
+  backButton: {
     width: '100%',
     padding: '11px !important',
     borderRadius: 12,
-    border: '0.2px solid #dadce0 !important',
+    border: '1.5px solid #fff !important',
     color: '#ffffff !important',
     textTransform: 'none',
     marginBottom: '16px',
@@ -232,42 +233,13 @@ const useStyles = makeStyles(() => ({
     backgroundColor: 'transparent',
     '&:hover': {
       backgroundColor: 'rgba(255,255,255,0.05)',
-      color: '#1a73e8',
       boxShadow: '0 2px 4px rgba(60,64,67,.13)',
-    },
-    '&:active': {
-      background: '#ececec',
-    },
-    '&:focus': {
-      outline: '2px solid #4285F4',
-      outlineOffset: '2px',
     },
     '@media (max-height: 700px)': {
       padding: '9px !important',
       fontSize: '0.85rem',
       marginBottom: '12px',
     },
-  },
-  divider: {
-    display: 'flex',
-    alignItems: 'center',
-    margin: '16px 0',
-    '&::before, &::after': {
-      content: '""',
-      flex: 1,
-      height: 1,
-      background: '#ccc',
-    },
-    '@media (max-height: 700px)': {
-      margin: '12px 0',
-    },
-  },
-  dividerText: {
-    padding: '0 16px',
-    color: '#fff',
-    fontSize: '0.85rem',
-    fontWeight: 500,
-    letterSpacing: '0.03em',
   },
   styledLink: {
     color: '#fff',
@@ -321,26 +293,18 @@ const useStyles = makeStyles(() => ({
       fontSize: '24px !important',
     },
   },
-  oauthUnavailable: {
-    opacity: 0.5,
-    cursor: 'not-allowed !important',
-    pointerEvents: 'none',
-  },
-  oauthStatusMessage: {
-    fontSize: '0.75rem',
-    color: '#999',
-    textAlign: 'center',
-    marginBottom: '12px',
-    minHeight: '18px', // Reserve space to prevent layout shift
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   authCardVisible: {
     opacity: '1 !important',
     transform: 'scale(1) !important',
     clipPath: 'circle(100% at center) !important',
     animation: 'rippleReveal 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+  },
+  tokenInfo: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+    padding: '12px',
+    marginBottom: '16px',
   },
   '@keyframes rippleReveal': {
     '0%': {
@@ -381,44 +345,24 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Login = () => {
+const ResetPassword = () => {
   const classes = useStyles();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const [searchParams] = useSearchParams();
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [oauthStatusLoading, setOauthStatusLoading] = useState(true);
+  const [token, setToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [tokenValid, setTokenValid] = useState(false);
+  const [tokenInfo, setTokenInfo] = useState(null);
   const [cardVisible, setCardVisible] = useState(false);
-  const { login, loginWithGoogle, isAuthenticated, oauthStatus, checkOAuthStatus } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Handle OAuth errors passed via URL params
-    const error = searchParams.get('error');
-    const message = searchParams.get('message');
-    
-    if (error) {
-      const errorMessages = {
-        'oauth_not_configured': 'Google sign-in is temporarily unavailable. Please try regular login.',
-        'authentication_failed': 'Google authentication failed. Please try again.',
-        'user_info_failed': 'Failed to get user information from Google.',
-        'access_denied': 'Google access was denied. Please try again.'
-      };
-      
-      setError(errorMessages[error] || message || 'Authentication failed');
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
-
-  // Listen for card animation ripple event to reveal login card
+  // Listen for card animation ripple event to reveal card
   useEffect(() => {
     const handleRippleEvent = () => {
       setCardVisible(true);
@@ -431,110 +375,98 @@ const Login = () => {
     };
   }, []);
 
-  // Check OAuth status on component mount with better error handling
+  // Get token from URL parameters and verify it
   useEffect(() => {
-    const fetchOAuthStatus = async () => {
-      setOauthStatusLoading(true);
-      try {
-        await checkOAuthStatus();
-      } catch (error) {
-        console.warn('OAuth status check failed:', error);
-        // Don't show error to user, just disable OAuth silently
-      } finally {
-        setOauthStatusLoading(false);
-      }
-    };
+    const tokenFromUrl = searchParams.get('token');
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl);
+      verifyToken(tokenFromUrl);
+    } else {
+      setError('No reset token provided. Please check your email for the correct reset link.');
+    }
+  }, [searchParams]);
 
-    fetchOAuthStatus();
-  }, [checkOAuthStatus]);
+  const verifyToken = async (tokenToVerify) => {
+    setVerifying(true);
+    setError('');
+    
+    try {
+      const result = await apiService.verifyResetToken(tokenToVerify);
+      setTokenValid(true);
+      setTokenInfo(result);
+    } catch (err) {
+      setError(err.message || 'Invalid or expired reset token. Please request a new password reset.');
+      setTokenValid(false);
+    } finally {
+      setVerifying(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    if (!newPassword.trim()) {
+      setError('Please enter a new password');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
-      const result = await login(username, password);
+      const result = await apiService.resetPassword(token, newPassword);
+      setSuccess(result.message || 'Password has been reset successfully! You can now login with your new password.');
       
-      if (result.success) {
-        // Navigation is handled by the useEffect above
-      } else {
-        setError(result.error);
-      }
+      // Redirect to login after 3 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      setError(err.message || 'Failed to reset password. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = async () => {
-    // Check OAuth availability with more detailed logic
-    if (oauthStatusLoading) {
-      setError('Please wait while we check Google sign-in availability.');
-      return;
-    }
-
-    if (!oauthStatus?.oauth_configured || !oauthStatus?.google_available) {
-      setError('Google OAuth is not available. Please use regular login or contact support.');
-      return;
-    }
-
-    try {
-      setGoogleLoading(true);
-      setError('');
-      
-      loginWithGoogle();
-    } catch (error) {
-      console.error('Google login failed:', error);
-      setError('Failed to initiate Google login. Please try again.');
-      setGoogleLoading(false);
-    }
+  const handleBackToLogin = () => {
+    navigate('/login');
   };
 
-  // Determine OAuth availability with better logic
-  const getOAuthAvailability = () => {
-    if (oauthStatusLoading) {
-      return {
-        available: false,
-        message: 'Checking availability...',
-        showButton: true
-      };
-    }
-
-    if (!oauthStatus) {
-      return {
-        available: false,
-        message: 'Unable to check Google Sign-In status',
-        showButton: false
-      };
-    }
-
-    if (!oauthStatus.oauth_configured) {
-      return {
-        available: false,
-        message: 'Google Sign-In not configured',
-        showButton: false
-      };
-    }
-
-    if (!oauthStatus.google_available) {
-      return {
-        available: false,
-        message: 'Google Sign-In temporarily unavailable',
-        showButton: false
-      };
-    }
-
-    return {
-      available: true,
-      message: '',
-      showButton: true
-    };
+  const handleRequestNewReset = () => {
+    navigate('/forgot-password');
   };
 
-  const oauthAvailability = getOAuthAvailability();
+  if (verifying) {
+    return (
+      <>
+        <React.Suspense fallback={<div />}>
+          <StarField />
+        </React.Suspense>
+        
+        <Container maxWidth="sm" className={classes.pageContainer}>
+          <Card className={classes.authCard} style={{ opacity: 1, transform: 'scale(1)', clipPath: 'circle(100% at center)' }}>
+            <Box display="flex" flexDirection="column" alignItems="center" py={4}>
+              <CircularProgress sx={{ color: '#fff', mb: 2 }} />
+              <Typography variant="h6" sx={{ color: '#fff', textAlign: 'center' }}>
+                Verifying reset token...
+              </Typography>
+            </Box>
+          </Card>
+        </Container>
+      </>
+    );
+  }
 
   return (
     <>
@@ -586,7 +518,7 @@ const Login = () => {
                     letterSpacing: '0.01em',
                   }}
                 >
-                  Welcome back
+                  Set New Password
                 </Typography>
                 
                 <Typography 
@@ -595,10 +527,23 @@ const Login = () => {
                   sx={{ 
                     color: '#fff',
                     mb: 4,
+                    opacity: 0.9,
                   }}
                 >
-                  Sign in to continue your legendary conversations
+                  Enter your new password below
                 </Typography>
+
+                {/* Token Info Display */}
+                {tokenValid && tokenInfo && (
+                  <Box className={classes.tokenInfo}>
+                    <Typography variant="body2" sx={{ color: '#fff', mb: 1 }}>
+                      <strong>Account:</strong> {tokenInfo.user?.email}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#fff', fontSize: '0.8rem', opacity: 0.8 }}>
+                      Token expires in {tokenInfo.expires_in_minutes} minutes
+                    </Typography>
+                  </Box>
+                )}
 
                 {error && (
                   <Fade in>
@@ -618,124 +563,120 @@ const Login = () => {
                   </Fade>
                 )}
 
-                {/* Google OAuth Section with Better Handling */}
-                {oauthAvailability.showButton && (
-                  <Button
-                    className={`${classes.googleButton} ${!oauthAvailability.available ? classes.oauthUnavailable : ''}`}
-                    onClick={handleGoogleLogin}
-                    disabled={googleLoading || !oauthAvailability.available || oauthStatusLoading}
-                    disableElevation
-                    startIcon={
-                      googleLoading ? (
-                        <CircularProgress size={20} sx={{ color: '#fff' }} />
-                      ) : oauthStatusLoading ? (
-                        <CircularProgress size={20} sx={{ color: '#fff' }} />
-                      ) : (
-                        <img 
-                          src={GoogleLogo} 
-                          alt="Google" 
-                          style={{ 
-                            width: 22, 
-                            height: 22, 
-                            display: 'block',
-                            opacity: oauthAvailability.available ? 1 : 0.5 
-                          }} 
-                        />
-                      )
-                    }
-                  >
-                    {googleLoading ? 'Connecting...' : oauthStatusLoading ? 'Loading...' : 'Continue with Google'}
-                  </Button>
+                {success && (
+                  <Fade in>
+                    <Alert 
+                      severity="success" 
+                      sx={{ 
+                        mb: 3,
+                        backgroundColor: 'transparent',
+                        border: '1.5px solid #4caf50',
+                        color: '#4caf50',
+                        borderRadius: 2,
+                        fontWeight: 500,
+                      }}
+                      icon={<CheckCircle sx={{ color: '#4caf50' }} />}
+                    >
+                      {success}
+                    </Alert>
+                  </Fade>
                 )}
 
-                {/* OAuth Status Message */}
-                <Box className={classes.oauthStatusMessage}>
-                  {oauthAvailability.message && (
-                    <Typography variant="caption">
-                      {oauthAvailability.message}
-                    </Typography>
-                  )}
-                </Box>
+                {tokenValid ? (
+                  <Box component="form" onSubmit={handleSubmit}>
+                    <TextField
+                      fullWidth
+                      label="New Password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      margin="normal"
+                      autoFocus
+                      className={classes.styledTextField}
+                      disabled={loading}
+                      helperText="Password must be at least 6 characters long"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                              edge="end"
+                              sx={{ color: '#fff' }}
+                              disabled={loading}
+                            >
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
 
-                <Box className={classes.divider}>
-                  <Typography className={classes.dividerText}>OR</Typography>
-                </Box>
+                    <TextField
+                      fullWidth
+                      label="Confirm New Password"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      margin="normal"
+                      className={classes.styledTextField}
+                      disabled={loading}
+                      helperText="Re-enter your new password to confirm"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              edge="end"
+                              sx={{ color: '#fff' }}
+                              disabled={loading}
+                            >
+                              {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
 
-                <Box component="form" onSubmit={handleSubmit}>
-                  <TextField
-                    fullWidth
-                    label="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    margin="normal"
-                    autoFocus
-                    className={classes.styledTextField}
-                    disabled={loading}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    margin="normal"
-                    className={classes.styledTextField}
-                    disabled={loading}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowPassword(!showPassword)}
-                            edge="end"
-                            sx={{ color: '#fff' }}
-                            disabled={loading}
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-
-                  <Button
-                    type="submit"
-                    disabled={loading || googleLoading}
-                    className={classes.loginButton}
-                    startIcon={loading ? <CircularProgress size={20} sx={{ color: '#111' }} /> : null}
-                  >
-                    {loading ? 'Signing in...' : 'Sign In'}
-                  </Button>
-
-                  <Box textAlign="center" sx={{ mb: 2 }}>
-                    <Link to="/forgot-password" className={classes.styledLink}>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          color: '#fff',
-                          fontSize: '0.85rem',
-                          opacity: 0.9,
-                          '&:hover': {
-                            opacity: 1,
-                          }
-                        }}
-                      >
-                        Forgot your password?
-                      </Typography>
-                    </Link>
-                  </Box>
-
-                  <Box textAlign="center">
-                    <Typography 
-                      variant="body2" 
-                      sx={{ color: '#fff' }}
+                    <Button
+                      type="submit"
+                      disabled={loading || !tokenValid}
+                      className={classes.submitButton}
+                      startIcon={loading ? <CircularProgress size={20} sx={{ color: '#111' }} /> : null}
                     >
-                      Don't have an account?{' '}
-                      <Link to="/register" className={classes.styledLink}>
-                        Create one
-                      </Link>
-                    </Typography>
+                      {loading ? 'Resetting Password...' : 'Reset Password'}
+                    </Button>
                   </Box>
+                ) : (
+                  <Box>
+                    <Button
+                      onClick={handleRequestNewReset}
+                      className={classes.submitButton}
+                      disabled={verifying}
+                    >
+                      Request New Reset Link
+                    </Button>
+                  </Box>
+                )}
+
+                <Button
+                  onClick={handleBackToLogin}
+                  className={classes.backButton}
+                  disabled={loading}
+                  startIcon={<ArrowBack />}
+                >
+                  Back to Sign In
+                </Button>
+
+                <Box textAlign="center">
+                  <Typography 
+                    variant="body2" 
+                    sx={{ color: '#fff', opacity: 0.8 }}
+                  >
+                    Remember your password?{' '}
+                    <Link to="/login" className={classes.styledLink}>
+                      Sign In
+                    </Link>
+                  </Typography>
                 </Box>
               </Box>
             </Zoom>
@@ -746,4 +687,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ResetPassword;

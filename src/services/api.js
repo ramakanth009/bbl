@@ -240,6 +240,97 @@ class ApiService {
     }
 
     // ===============================
+    // PASSWORD RESET ENDPOINTS
+    // ===============================
+
+    // Initiate password reset process
+    async forgotPassword(email) {
+        try {
+            console.log('🔄 Initiating password reset for:', email);
+            const response = await this.client.post('/forgot-password', {
+                email: email.trim()
+            });
+            console.log('✅ Password reset email sent successfully');
+            return response.data;
+        } catch (error) {
+            console.error('❌ Failed to send password reset email:', {
+                status: error.response?.status,
+                message: error.response?.data?.detail || error.message,
+            });
+            throw this.handleError(error, 'Failed to send password reset email');
+        }
+    }
+
+    // Verify reset token validity
+    async verifyResetToken(token) {
+        try {
+            console.log('🔄 Verifying reset token...');
+            const response = await this.client.post('/verify-reset-token', {
+                token: token.trim()
+            });
+            console.log('✅ Reset token verified successfully');
+            return response.data;
+        } catch (error) {
+            console.error('❌ Failed to verify reset token:', {
+                status: error.response?.status,
+                message: error.response?.data?.error || error.message,
+            });
+            throw this.handleError(error, 'Failed to verify reset token');
+        }
+    }
+
+    // Complete password reset with new password
+    async resetPassword(token, newPassword) {
+        try {
+            console.log('🔄 Resetting password...');
+            const response = await this.client.post('/reset-password', {
+                token: token.trim(),
+                new_password: newPassword
+            });
+            console.log('✅ Password reset completed successfully');
+            return response.data;
+        } catch (error) {
+            console.error('❌ Failed to reset password:', {
+                status: error.response?.status,
+                message: error.response?.data?.error || error.response?.data?.detail || error.message,
+            });
+            throw this.handleError(error, 'Failed to reset password');
+        }
+    }
+
+    // Check Mailtrap email service status (requires authentication)
+    async checkMailtrapStatus() {
+        try {
+            console.log('🔄 Checking Mailtrap status...');
+            const response = await this.client.get('/mailtrap-status');
+            console.log('✅ Mailtrap status retrieved');
+            return response.data;
+        } catch (error) {
+            console.error('❌ Failed to check Mailtrap status:', {
+                status: error.response?.status,
+                message: error.response?.data?.detail || error.message,
+            });
+            throw this.handleError(error, 'Failed to check email service status');
+        }
+    }
+
+    // Send test email (requires authentication)
+    async sendTestEmail(testEmail) {
+        try {
+            console.log('🔄 Sending test email to:', testEmail);
+            const response = await this.client.post(`/send-test-email?test_email=${encodeURIComponent(testEmail)}`);
+            console.log('✅ Test email sent successfully');
+            return response.data;
+        } catch (error) {
+            console.error('❌ Failed to send test email:', {
+                status: error.response?.status,
+                message: error.response?.data?.message || error.message,
+            });
+            throw this.handleError(error, 'Failed to send test email');
+        }
+    }
+
+    // ===============================
     // NEW USER PROFILE ENDPOINTS - CACHED
     // ===============================
 
