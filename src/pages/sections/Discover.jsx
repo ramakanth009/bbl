@@ -7,6 +7,7 @@ import CharacterGrid from '../../components/dashboard/character/CharacterGrid';
 import ChatPanel from '../../components/dashboard/chat/ChatPanel';
 import { useNavigate, useParams, useOutletContext, useLocation } from 'react-router-dom';
 import apiService from '../../services/api';
+import { createCharacterPath, parseCharacterFromUrl, validateSlugMatch, createCharacterNavigationState } from '../../utils/slugUtils';
 
 const useStyles = makeStyles({
   discoverContainer: {
@@ -58,7 +59,7 @@ const Discover = () => {
   const [characters, setCharacters] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const { characterId: chatCharacterId } = useParams();
+  const { characterId: chatCharacterId, characterName: chatCharacterName } = useParams();
   const refreshIntervalRef = useRef(null);
   
   // Get sidebar state from Dashboard context
@@ -203,10 +204,11 @@ const Discover = () => {
         setIsChatOpen(true);
       });
       
-      // Navigate with character data in state for immediate access
-      navigate(`/dashboard/discover/chat/${character.id}`, { 
+      // Navigate with character data in state for immediate access using new URL structure
+      const characterPath = createCharacterPath('/dashboard/discover/chat', character.id, character.name);
+      navigate(characterPath, { 
         replace: false,
-        state: { character } // This ensures instant access to character data
+        state: createCharacterNavigationState(character) // This ensures instant access to character data
       });
       
       console.log('✨ Chat opened successfully for:', character.name);

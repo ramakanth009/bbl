@@ -17,6 +17,7 @@ import {
 import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
 import { useCategories } from '../../../context/CategoriesContext';
+import { createRobustSlug } from '../../../utils/slugUtils';
 
 // Same icon mapping as sidebar
 const iconMap = {
@@ -557,7 +558,12 @@ const CharacterCard = ({ character, onStartChat }) => {
   const handleStartChat = (e) => {
     e.stopPropagation();
     if (onStartChat) {
-      onStartChat(character);
+      // Create character object with slug for navigation
+      const characterWithSlug = {
+        ...character,
+        slug: createRobustSlug(character.name)
+      };
+      onStartChat(characterWithSlug);
     }
   };
 
@@ -565,7 +571,12 @@ const CharacterCard = ({ character, onStartChat }) => {
     // Only open chat if clicking outside the arrow area
     if (!e.target.closest('[data-accordion-arrow]')) {
       if (onStartChat) {
-        onStartChat(character);
+        // Create character object with slug for navigation
+        const characterWithSlug = {
+          ...character,
+          slug: createRobustSlug(character.name)
+        };
+        onStartChat(characterWithSlug);
       }
     }
   };
@@ -579,7 +590,12 @@ const CharacterCard = ({ character, onStartChat }) => {
   const handleAccordionButtonClick = (e) => {
     e.stopPropagation();
     if (onStartChat) {
-      onStartChat(character);
+      // Create character object with slug for navigation
+      const characterWithSlug = {
+        ...character,
+        slug: createRobustSlug(character.name)
+      };
+      onStartChat(characterWithSlug);
     }
   };
 

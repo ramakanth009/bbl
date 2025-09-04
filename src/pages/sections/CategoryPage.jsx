@@ -9,6 +9,7 @@ import CreateCharacterButton from '../../components/dashboard/character/creation
 import ChatPanel from '../../components/dashboard/chat/ChatPanel';
 import TopBar from '../../components/dashboard/main/TopBar';
 import apiService from '../../services/api';
+import { createCharacterPath, parseCharacterFromUrl, validateSlugMatch, createCharacterNavigationState } from '../../utils/slugUtils';
 
 const useStyles = makeStyles({
   categoryContainer: {
@@ -336,7 +337,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
   const classes = useStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const { categoryKey, characterId } = useParams();
+  const { categoryKey, characterId, characterName } = useParams();
   const navigate = useNavigate();
   
   const [characters, setCharacters] = useState([]);
@@ -449,9 +450,11 @@ const CategoryPage = ({ onSidebarToggle }) => {
         setIsChatOpen(true);
       });
       
-      // Now navigate - states are guaranteed to be set
-      navigate(`/dashboard/categories/${categoryKey}/chat/${character.id}`, { 
-        replace: false 
+      // Now navigate - states are guaranteed to be set using new URL structure
+      const characterPath = createCharacterPath(`/dashboard/categories/${categoryKey}/chat`, character.id, character.name);
+      navigate(characterPath, { 
+        replace: false,
+        state: createCharacterNavigationState(character)
       });
       
       // If there's an existing session, load it

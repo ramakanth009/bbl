@@ -96,9 +96,9 @@ function AppContent() {
               {/* Nested routes for dashboard sections */}
               <Route index element={<Navigate to="discover" replace />} />
               <Route path="discover" element={<Discover />} />
-              <Route path="discover/chat/:characterId" element={<Discover />} />
+              <Route path="discover/chat/:characterId/:characterName" element={<Discover />} />
               <Route path="featured" element={<Featured />} />
-              <Route path="featured/chat/:characterId" element={<Featured />} />
+              <Route path="featured/chat/:characterId/:characterName" element={<Featured />} />
               <Route path="trending" element={<Trending />} />
               <Route path="foryou" element={<Foryou />} />
               <Route path="recent" element={<Recent />} />
@@ -107,7 +107,7 @@ function AppContent() {
               
               {/* Category Routes */}
               <Route path="categories/:categoryKey" element={<CategoryPage />} />
-              <Route path="categories/:categoryKey/chat/:characterId" element={<CategoryPage />} />
+              <Route path="categories/:categoryKey/chat/:characterId/:characterName" element={<CategoryPage />} />
             </Route>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>

@@ -1278,7 +1278,7 @@ const ChatPanel = ({
         alignItems: 'center', 
         gap: 2, 
         p: 2, 
-                backdropFilter: 'blur(8px)'
+                // backdropFilter: 'blur(8px)'
       }}>
         <Box sx={{ flexGrow: 1 }}>
           <ChatInput
