@@ -53,7 +53,7 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     flexDirection: "column",
     padding: "20px",
-    gap: "12px",
+    gap: "2px",
     borderBottom: "1px solid rgba(99, 102, 241, 0.15)",
     background:
       "linear-gradient(to bottom, rgba(26, 26, 26, 0.7), rgba(18, 18, 18, 0.6))",
@@ -180,8 +180,7 @@ const useStyles = makeStyles(() => ({
     maxWidth: "100%",
     overflow: "visible",
     display: "block",
-    marginTop: "8px",
-    padding: "8px 0",
+    padding: "4px 0",
     // Hide description on mobile for cleaner WhatsApp look
     "@media (max-width: 600px)": {
       display: "none",
@@ -189,7 +188,8 @@ const useStyles = makeStyles(() => ({
   },
   chatHeaderRight: {
     display: "flex",
-    alignItems: "center",
+    alignItems: "flex-start",
+    justifyContent:"space-evenly",
     gap: "8px",
     flexShrink: 0,
     "& .MuiIconButton-root": {
@@ -476,6 +476,7 @@ const ChatPanel = ({
 
   const messagesEndRef = useRef(null);
   const messagesWrapperRef = useRef(null);
+  const messageListRef = useRef(null);
 
   // Initialize new temporary session
   const initializeNewTemporarySession = () => {
@@ -630,7 +631,10 @@ const ChatPanel = ({
 
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
-      if (messagesEndRef.current) {
+      // First try to use MessageList's scroll method
+      if (messageListRef.current?.scrollToBottom) {
+        messageListRef.current.scrollToBottom();
+      } else if (messagesEndRef.current) {
         messagesEndRef.current.scrollIntoView({
           behavior: "smooth",
           block: "end",
@@ -641,6 +645,11 @@ const ChatPanel = ({
       }
     });
   };
+
+  // Auto-scroll to bottom when messages change or loading state changes
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, loading]);
 
   const loadLanguagePreferences = async () => {
     try {
@@ -916,7 +925,7 @@ const ChatPanel = ({
               <Typography className={classes.mobileStatusIndicator}>
                 by gigaversity
               </Typography>
-              
+            
               <Box
                 sx={{
                   display: "flex",
@@ -927,7 +936,7 @@ const ChatPanel = ({
               >
                 {(sessionId || temporarySessionId) && (
                   <Chip
-                    label={sessionId ? `Session ${sessionId}` : "New Chat"}
+                    label={sessionId ? `Session ${sessionId}` : "New Session"}
                     size="small"
                     className={classes.enhancedChip}
                   />
@@ -1104,8 +1113,8 @@ const ChatPanel = ({
         {/* Desktop-only sections - completely hidden on mobile */}
         <Box sx={{ "@media (max-width: 600px)": { display: "none !important" } }}>
           {character.description && (
-            <Box sx={{ width: "100%", mt: 1 }}>
-              <Typography className={classes.characterDescription}>
+            <Box sx={{ width: "100%"}}>
+              <Typography component="span" className={classes.characterDescription}>
                 {character.description}
               </Typography>
             </Box>
@@ -1254,6 +1263,7 @@ const ChatPanel = ({
       <Box className={classes.messagesWrapper} ref={messagesWrapperRef}>
         <Box className={classes.messagesContent}>
           <MessageList
+            ref={messageListRef}
             messages={messages}
             loading={loading}
             character={character}

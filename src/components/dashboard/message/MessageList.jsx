@@ -1,7 +1,8 @@
-import React, { forwardRef } from 'react';
-import { Box, Typography, CircularProgress, Fade } from '@mui/material';
+import React, { forwardRef, useImperativeHandle, useRef, useEffect } from 'react';
+import { Box, Fade, Avatar } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import Message from './Message';
+import loadingGif from '../../../assets/Reactor.gif';
 
 const useStyles = makeStyles({
   messagesContainer: {
@@ -32,9 +33,55 @@ const useStyles = makeStyles({
       gap: '8px',
     },
   },
+  // New loading wrapper that mimics the message structure
+  loadingWrapper: {
+    display: 'flex',
+    marginBottom: '16px',
+    width: '100%',
+    justifyContent: 'flex-start',
+    '@media (max-width: 1200px)': {
+      marginBottom: '14.4px',
+    },
+    '@media (max-width: 960px)': {
+      marginBottom: '12.8px',
+    },
+    '@media (max-width: 600px)': {
+      marginBottom: '8px',
+    },
+    '@media (max-width: 480px)': {
+      marginBottom: '6px',
+    },
+    '@media (max-width: 375px)': {
+      marginBottom: '4px',
+    },
+  },
+  loadingWithAvatar: {
+    display: 'flex',
+    alignItems: 'flex-end',
+    gap: '8px',
+    maxWidth: '100%',
+    '@media (max-width: 600px)': {
+      gap: '4px',
+    },
+  },
+  characterAvatar: {
+    width: '32px',
+    height: '32px',
+    borderRadius: '50%',
+    flexShrink: 0,
+    '@media (max-width: 600px)': {
+      width: '28px',
+      height: '28px',
+    },
+    '@media (max-width: 480px)': {
+      width: '24px',
+      height: '24px',
+    },
+  },
   loadingContainer: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: '8px',
     '@media (max-width: 600px)': {
       gap: '6.4px',
@@ -46,40 +93,21 @@ const useStyles = makeStyles({
       gap: '3.2px',
     },
   },
-  loadingText: {
+  loadingGif: {
+    width: '24px',
+    height: '24px',
+    objectFit: 'contain',
     '@media (max-width: 600px)': {
-      fontSize: '0.8rem !important',
+      width: '20px',
+      height: '20px',
     },
     '@media (max-width: 480px)': {
-      fontSize: '0.75rem !important',
+      width: '18px',
+      height: '18px',
     },
     '@media (max-width: 375px)': {
-      fontSize: '0.7rem !important',
-    },
-  },
-  // FIXED: More generous width for loading bubble
-  loadingMessageContent: {
-    maxWidth: '70% !important', // Increased from 40% to 70%
-    minWidth: '120px',
-    '@media (max-width: 1200px)': {
-      maxWidth: '75% !important', // Increased from 45% to 75%
-      minWidth: '110px',
-    },
-    '@media (max-width: 960px)': {
-      maxWidth: '80% !important', // Increased from 50% to 80%
-      minWidth: '100px',
-    },
-    '@media (max-width: 600px)': {
-      maxWidth: '85% !important', // Increased from 55% to 85%
-      minWidth: '90px',
-    },
-    '@media (max-width: 480px)': {
-      maxWidth: '90% !important', // Increased from 60% to 90%
-      minWidth: '80px',
-    },
-    '@media (max-width: 375px)': {
-      maxWidth: '95% !important', // Increased from 65% to 95%
-      minWidth: '70px',
+      width: '16px',
+      height: '16px',
     },
   },
 });
@@ -220,9 +248,44 @@ function processMessageContent(content) {
 
 const MessageList = forwardRef(({ messages, loading, character }, ref) => {
   const classes = useStyles();
+  const containerRef = useRef(null);
+  const messagesEndRef = useRef(null);
+
+  // Expose scroll methods to parent component
+  useImperativeHandle(ref, () => ({
+    scrollToBottom: () => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+        });
+      } else if (containerRef.current) {
+        containerRef.current.scrollTop = containerRef.current.scrollHeight;
+      }
+    },
+    scrollToTop: () => {
+      if (containerRef.current) {
+        containerRef.current.scrollTop = 0;
+      }
+    }
+  }), []);
+
+  // Auto-scroll when messages or loading state changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+        });
+      }
+    }, 100); // Small delay to ensure DOM is updated
+
+    return () => clearTimeout(timer);
+  }, [messages, loading]);
   
   return (
-    <Box className={`${classes.messagesContainer} chat-messages`} ref={ref}>
+    <Box className={`${classes.messagesContainer} chat-messages`} ref={containerRef}>
       {messages.map((message, index) => (
         <Fade in timeout={400} key={index}>
           <div>
@@ -246,37 +309,30 @@ const MessageList = forwardRef(({ messages, loading, character }, ref) => {
         </Fade>
       ))}
       
-      {loading && (
-        <Message 
-          message={{
-            role: 'assistant',
-            content: (
+      {/* NEW: Loading animation outside the bubble, next to avatar */}
+      {loading && character && (
+        <Fade in timeout={400}>
+          <Box className={classes.loadingWrapper}>
+            <Box className={classes.loadingWithAvatar}>
+              <Avatar
+                src={character.img}
+                alt={character.name}
+                className={classes.characterAvatar}
+              />
               <Box className={classes.loadingContainer}>
-                <CircularProgress size={16} sx={{
-                  '@media (max-width: 600px)': {
-                    width: 14,
-                    height: 14,
-                  },
-                  '@media (max-width: 480px)': {
-                    width: 12,
-                    height: 12,
-                  },
-                  '@media (max-width: 375px)': {
-                    width: 10,
-                    height: 10,
-                  },
-                }} />
-                <Typography variant="body2" className={classes.loadingText}>
-                  Thinking...
-                </Typography>
+                <img 
+                  src={loadingGif} 
+                  alt="Loading..." 
+                  className={classes.loadingGif}
+                />
               </Box>
-            )
-          }} 
-          character={character}
-          // Add custom className prop to Message component
-          className={classes.loadingMessageContent}
-        />
+            </Box>
+          </Box>
+        </Fade>
       )}
+      
+      {/* Invisible element to mark the end of messages for scrolling */}
+      <div ref={messagesEndRef} style={{ height: '1px', width: '100%' }} />
     </Box>
   );
 });
