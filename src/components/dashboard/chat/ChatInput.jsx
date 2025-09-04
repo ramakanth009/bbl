@@ -5,25 +5,25 @@ import { Send } from '@mui/icons-material';
 
 const useStyles = makeStyles(() => ({
   container: {
-    padding: '16px 20px',
+    // padding: '16px 20px',
     // borderTop: '1px solid rgba(99, 102, 241, 0.2)',
     // background: 'linear-gradient(145deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.8) 100%)',
     backdropFilter: 'blur(10px)',
-    '@media (max-width: 1200px)': {
-      padding: '14px 18px',
-    },
-    '@media (max-width: 960px)': {
-      padding: '12px 16px',
-    },
-    '@media (max-width: 600px)': {
-      padding: '10px 14px',
-    },
-    '@media (max-width: 480px)': {
-      padding: '8px 12px',
-    },
-    '@media (max-width: 375px)': {
-      padding: '6px 10px',
-    },
+    // '@media (max-width: 1200px)': {
+    //   padding: '14px 18px',
+    // },
+    // '@media (max-width: 960px)': {
+    //   padding: '12px 16px',
+    // },
+    // '@media (max-width: 600px)': {
+    //   padding: '10px 14px',
+    // },
+    // '@media (max-width: 480px)': {
+    //   padding: '8px 12px',
+    // },
+    // '@media (max-width: 375px)': {
+    //   padding: '6px 10px',
+    // },
   },
   wrapper: {
     position: 'relative',

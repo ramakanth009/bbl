@@ -19,6 +19,7 @@ import { makeStyles } from "@mui/styles";
 import apiService from "../../../services/api";
 import MessageList from "../message/MessageList";
 import ChatInput from "./ChatInput";
+import QuestionChips from "./QuestionChips";
 import LanguageSelector from "../../common/LanguageSelector";
 import ChatHistoryPanel from "./history/ChatHistoryPanel";
 import { isMobileViewport, getContentWidth, BREAKPOINTS } from "../../../utils/sidebarUtils";
@@ -1275,37 +1276,54 @@ const ChatPanel = ({
 
       <Box sx={{ 
         display: 'flex', 
-        alignItems: 'center', 
-        gap: 2, 
+        flexDirection: 'column',
+        gap: 1, 
         p: 2, 
                 // backdropFilter: 'blur(8px)'
       }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <ChatInput
-            value={inputValue}
-            onChange={setInputValue}
-            onSend={handleSend}
-            loading={loading}
-            placeholder={isMobile ? `Message ${character.name}...` : `Type in ${language}...`}
-          />
-        </Box>
-        <Box
-          onClick={startNewSession}
-          title="New Conversation"
-          sx={{
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: 'fit-content',
-            mx: 'auto',
-            mb: 2,
-            cursor: 'pointer',
-            '&:hover .plus-icon': {
-              transform: 'scale(1.1)'
-            }
+        {/* Question Chips - positioned above input */}
+        <QuestionChips
+          character={character}
+          onQuestionSelect={(question) => {
+            setInputValue(question);
+            // Auto-focus the input after selecting a question
+            setTimeout(() => {
+              const inputElement = document.querySelector('textarea[placeholder*="Type"], textarea[placeholder*="Message"]');
+              if (inputElement) {
+                inputElement.focus();
+              }
+            }, 100);
           }}
-        >
+          loading={loading}
+          disabled={loading}
+          maxQuestions={5}
+          showCategoryLabel={!isMobile}
+        />
+        
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ flexGrow: 1 }}>
+            <ChatInput
+              value={inputValue}
+              onChange={setInputValue}
+              onSend={handleSend}
+              loading={loading}
+              placeholder={isMobile ? `Message ${character.name}...` : `Type in ${language}...`}
+            />
+          </Box>
+          
+          <Box
+            onClick={startNewSession}
+            title="New Conversation"
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              cursor: 'pointer',
+              '&:hover .plus-icon': {
+                transform: 'scale(1.1)'
+              }
+            }}
+          >
           <Box
             className="speech-bubble"
             sx={{
@@ -1337,35 +1355,36 @@ const ChatPanel = ({
           >
             New Chat
           </Box>
-          <IconButton
-            className="plus-icon"
-            sx={{
-              backgroundColor: 'primary.main',
-              color: 'white',
-              width: 40,
-              height: 40,
-              transition: 'all 0.3s ease',
-              '&:hover': {
-                backgroundColor: 'primary.dark',
-                transform: 'scale(1.1)'
+            <IconButton
+              className="plus-icon"
+              sx={{
+                backgroundColor: 'primary.main',
+                color: 'white',
+                width: 40,
+                height: 40,
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  backgroundColor: 'primary.dark',
+                  transform: 'scale(1.1)'
+                }
+              }}
+            >
+              <Add />
+            </IconButton>
+            <style jsx global>{`
+              @keyframes bounce {
+                0%, 20%, 50%, 80%, 100% {
+                  transform: translateY(0);
+                }
+                40% {
+                  transform: translateY(-5px);
+                }
+                60% {
+                  transform: translateY(-3px);
+                }
               }
-            }}
-          >
-            <Add />
-          </IconButton>
-          <style jsx global>{`
-            @keyframes bounce {
-              0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-              }
-              40% {
-                transform: translateY(-5px);
-              }
-              60% {
-                transform: translateY(-3px);
-              }
-            }
-          `}</style>
+            `}</style>
+          </Box>
         </Box>
       </Box>
       {showHistory && (
