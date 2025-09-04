@@ -5,7 +5,7 @@ import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { flushSync } from 'react-dom';
 import Header from '../../components/dashboard/main/Header';
 import CharacterCard from '../../components/dashboard/character/CharacterCard';
-import CreateCharacterButton from '../../components/dashboard/character/CreateCharacterButton';
+import CreateCharacterButton from '../../components/dashboard/character/creation/CreateCharacterButton';
 import ChatPanel from '../../components/dashboard/chat/ChatPanel';
 import TopBar from '../../components/dashboard/main/TopBar';
 import apiService from '../../services/api';

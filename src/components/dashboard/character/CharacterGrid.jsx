@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import CharacterCard from './CharacterCard';
-import CreateCharacterButton from './CreateCharacterButton';
+import CreateCharacterButton from './creation/CreateCharacterButton';
 import ChatHistoryGrid from '../chat/history/ChatHistoryGrid';
 import SearchComponent from '../search/SearchComponent';
 import { usePaginationPersistence } from '../../../hooks/usePaginationPersistence';
