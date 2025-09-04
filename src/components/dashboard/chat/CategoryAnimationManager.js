@@ -25,9 +25,8 @@ const CATEGORY_ANIMATIONS = {
   ],
   innovators_visionaries: [
     () => import('../../../assets/animations/innovators/astronut1.gif'),
-    () => import('../../../assets/animations/innovators/astronut2.gif'),
-    () => import('../../../assets/animations/innovators/programming.gif'),
-    () => import('../../../assets/animations/innovators/programming.gif'),
+    // () => import('../../../assets/animations/innovators/astronut2.gif'),
+    // () => import('../../../assets/animations/innovators/programming.gif'),
   ],
   spiritual_social: [
     // () => import('../../../assets/animations/spiritual/lotus.gif'),
