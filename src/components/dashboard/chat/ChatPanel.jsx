@@ -1111,7 +1111,7 @@ const ChatPanel = ({
             </Box>
           )}
 
-          {language !== "english" && (
+          {/* {language !== "english" && (
             <Box className={classes.languageStatus}>
               <Chip
                 label={`Language: ${language}`}
@@ -1133,7 +1133,7 @@ const ChatPanel = ({
                   />
                 )}
             </Box>
-          )}
+          )} */}
         </Box>
       </Box>
 

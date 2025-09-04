@@ -34,7 +34,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { isMobileViewport, SIDEBAR_WIDTHS, BREAKPOINTS } from "../../../utils/sidebarUtils";
 
 import CategoriesList from './CategoriesList';
-import CreateFeaturePopup from "../../../components/common/CreateFeaturePopup";
+import CreateFeaturePopup from "../character/creation/CreateFeaturePopup";
 
 const useStyles = makeStyles(() => ({
   drawer: {
