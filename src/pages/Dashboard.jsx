@@ -23,17 +23,11 @@ const useStyles = makeStyles({
     },
   },
   mainContent: {
-    padding: '20px !important',
+    // padding: '20px !important',
     flex: 1,
     display: "flex",
     transition: 'margin-left 0.3s ease !important',
-    '@media (max-width: 1200px)': {
-      padding: '18px !important',
-    },
-    '@media (max-width: 960px)': {
-      padding: '16px !important',
-    },
-    '@media (max-width: 900px)': {
+       '@media (max-width: 900px)': {
       marginLeft: '0 !important',
       padding: '0 !important',
     },
