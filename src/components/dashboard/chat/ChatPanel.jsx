@@ -171,7 +171,7 @@ const useStyles = makeStyles(() => ({
       },
     },
   },
-  characterDescription: {
+  characterTags: {
     fontSize: "0.875rem",
     lineHeight: 1.6,
     color: "#d1d5db",
@@ -183,7 +183,7 @@ const useStyles = makeStyles(() => ({
     overflow: "visible",
     display: "block",
     padding: "4px 0",
-    // Hide description on mobile for cleaner WhatsApp look
+    // Hide tags on mobile for cleaner WhatsApp look
     "@media (max-width: 600px)": {
       display: "none",
     },
@@ -1125,37 +1125,24 @@ const ChatPanel = ({
 
         {/* Desktop-only sections - completely hidden on mobile */}
         <Box sx={{ "@media (max-width: 600px)": { display: "none !important" } }}>
-          {character.description && (
+          {character.tags && (
             <Box sx={{ width: "100%"}}>
-              <Typography component="span" className={classes.characterDescription}>
-                {character.description}
+              <Typography component="span" className={classes.characterTags}>
+                {character.tags}
               </Typography>
             </Box>
           )}
-
-          {/* {language !== "english" && (
-            <Box className={classes.languageStatus}>
-              <Chip
-                label={`Language: ${language}`}
-                size="small"
-                className={classes.enhancedChip}
-              />
-              {character.native_language &&
-                language === character.native_language && (
-                  <Chip
-                    label="Native Mode"
-                    size="small"
-                    sx={{
-                      backgroundColor: "rgba(255,193,7,0.15)",
-                      borderColor: "rgba(255,193,7,0.3)",
-                      "& .MuiChip-label": {
-                        color: "#ffd54f",
-                      },
-                    }}
-                  />
-                )}
-            </Box>
-          )} */}
+          {/* Language Status Section */}
+          <Box className={classes.languageStatus}>
+            {character.native_language &&
+              character.native_language !== "english" && (
+                <Chip
+                  label={`Native: ${character.native_language}`}
+                  size="small"
+                  className={classes.nativeChip}
+                />
+              )}
+          </Box>
         </Box>
       </Box>
 
