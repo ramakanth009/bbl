@@ -24,8 +24,6 @@ import { useAuth } from '../context/AuthContext';
 import GoogleLogo from '../assets/google-logo.svg';
 
 const StarField = React.lazy(() => import('../components/common/StarField'));
-const CardAnimation = React.lazy(() => import('../components/common/CardAnimation'));
-
 const useStyles = makeStyles(() => ({
   pageContainer: {
     minHeight: '100vh',
@@ -46,20 +44,14 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     maxWidth: 440,
     padding: '36px 36px 32px 36px',
-    background: 'rgba(255, 255, 255, 0.08) !important',
-    backgroundColor: 'rgba(255, 255, 255, 0.08) !important',
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    border: '1px solid rgba(255, 255, 255, 0.2) !important',
+    background: 'none !important',
+    backgroundColor: 'transparent !important',
+    border: 'none !important',
     borderRadius: 28,
-    boxShadow: '0 25px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important',
-    transition: 'all 2s cubic-bezier(0.16, 1, 0.3, 1)',
+    boxShadow: 'none !important',
+    transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
     position: 'relative',
     overflow: 'hidden',
-    opacity: 0,
-    transform: 'scale(0)',
-    transformOrigin: 'center center',
-    clipPath: 'circle(0% at center)',
     '@media (max-width: 1200px)': {
       maxWidth: 400,
       padding: '32px 32px 28px 32px',
@@ -256,7 +248,7 @@ const useStyles = makeStyles(() => ({
       content: '""',
       flex: 1,
       height: 1,
-      background: '#ccc',
+      background: 'linear-gradient(90deg, #222 0%, #444 100%)',
     },
     '@media (max-height: 700px)': {
       margin: '12px 0',
@@ -264,7 +256,7 @@ const useStyles = makeStyles(() => ({
   },
   dividerText: {
     padding: '0 16px',
-    color: '#fff',
+    color: '#888',
     fontSize: '0.85rem',
     fontWeight: 500,
     letterSpacing: '0.03em',
@@ -336,49 +328,6 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  authCardVisible: {
-    opacity: '1 !important',
-    transform: 'scale(1) !important',
-    clipPath: 'circle(100% at center) !important',
-    animation: 'rippleReveal 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-  },
-  '@keyframes rippleReveal': {
-    '0%': {
-      clipPath: 'circle(0% at center)',
-      transform: 'scale(0)',
-      opacity: 0,
-    },
-    '15%': {
-      clipPath: 'circle(5% at center)',
-      transform: 'scale(0.1)',
-      opacity: 0.1,
-    },
-    '35%': {
-      clipPath: 'circle(25% at center)',
-      transform: 'scale(0.4)',
-      opacity: 0.4,
-    },
-    '55%': {
-      clipPath: 'circle(50% at center)',
-      transform: 'scale(0.7)',
-      opacity: 0.7,
-    },
-    '75%': {
-      clipPath: 'circle(75% at center)',
-      transform: 'scale(0.9)',
-      opacity: 0.85,
-    },
-    '90%': {
-      clipPath: 'circle(90% at center)',
-      transform: 'scale(0.98)',
-      opacity: 0.95,
-    },
-    '100%': {
-      clipPath: 'circle(100% at center)',
-      transform: 'scale(1)',
-      opacity: 1,
-    },
-  },
 }));
 
 const Login = () => {
@@ -391,7 +340,6 @@ const Login = () => {
   const [searchParams] = useSearchParams();
   const [googleLoading, setGoogleLoading] = useState(false);
   const [oauthStatusLoading, setOauthStatusLoading] = useState(true);
-  const [cardVisible, setCardVisible] = useState(false);
   const { login, loginWithGoogle, isAuthenticated, oauthStatus, checkOAuthStatus } = useAuth();
   const navigate = useNavigate();
 
@@ -399,7 +347,7 @@ const Login = () => {
     // Handle OAuth errors passed via URL params
     const error = searchParams.get('error');
     const message = searchParams.get('message');
-    
+
     if (error) {
       const errorMessages = {
         'oauth_not_configured': 'Google sign-in is temporarily unavailable. Please try regular login.',
@@ -407,7 +355,7 @@ const Login = () => {
         'user_info_failed': 'Failed to get user information from Google.',
         'access_denied': 'Google access was denied. Please try again.'
       };
-      
+
       setError(errorMessages[error] || message || 'Authentication failed');
     }
   }, [searchParams]);
@@ -417,142 +365,120 @@ const Login = () => {
       navigate('/dashboard', { replace: true });
     }
   }, [isAuthenticated, navigate]);
+// Check OAuth status on component mount with better error handling
+useEffect(() => {
+  const fetchOAuthStatus = async () => {
+    setOauthStatusLoading(true);
+    try {
+      await checkOAuthStatus();
+    } catch (error) {
+      console.warn('OAuth status check failed:', error);
+      // Don't show error to user, just disable OAuth silently
+    } finally {
+      setOauthStatusLoading(false);
+    }
+  };
 
-  // Listen for card animation ripple event to reveal login card
-  useEffect(() => {
-    const handleRippleEvent = () => {
-      setCardVisible(true);
-    };
+  fetchOAuthStatus();
+}, [checkOAuthStatus]);
 
-    window.addEventListener('cardAnimationRipple', handleRippleEvent);
-    
-    return () => {
-      window.removeEventListener('cardAnimationRipple', handleRippleEvent);
-    };
-  }, []);
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  // Check OAuth status on component mount with better error handling
-  useEffect(() => {
-    const fetchOAuthStatus = async () => {
-      setOauthStatusLoading(true);
-      try {
-        await checkOAuthStatus();
-      } catch (error) {
-        console.warn('OAuth status check failed:', error);
-        // Don't show error to user, just disable OAuth silently
-      } finally {
-        setOauthStatusLoading(false);
-      }
-    };
+  setLoading(true);
+  setError('');
 
-    fetchOAuthStatus();
-  }, [checkOAuthStatus]);
+  try {
+    const result = await login(username, password);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    setLoading(true);
+    if (result.success) {
+      // Navigation is handled by the useEffect above
+    } else {
+      setError(result.error);
+    }
+  } catch (err) {
+    setError('An unexpected error occurred. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleGoogleLogin = async () => {
+  // Check OAuth availability with more detailed logic
+  if (oauthStatusLoading) {
+    setError('Please wait while we check Google sign-in availability.');
+    return;
+  }
+
+  if (!oauthStatus?.oauth_configured || !oauthStatus?.google_available) {
+    setError('Google OAuth is not available. Please use regular login or contact support.');
+    return;
+  }
+
+  try {
+    setGoogleLoading(true);
     setError('');
 
-    try {
-      const result = await login(username, password);
-      
-      if (result.success) {
-        // Navigation is handled by the useEffect above
-      } else {
-        setError(result.error);
-      }
-    } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    loginWithGoogle();
+  } catch (error) {
+    console.error('Google login failed:', error);
+    setError('Failed to initiate Google login. Please try again.');
+    setGoogleLoading(false);
+  }
+};
 
-  const handleGoogleLogin = async () => {
-    // Check OAuth availability with more detailed logic
-    if (oauthStatusLoading) {
-      setError('Please wait while we check Google sign-in availability.');
-      return;
-    }
-
-    if (!oauthStatus?.oauth_configured || !oauthStatus?.google_available) {
-      setError('Google OAuth is not available. Please use regular login or contact support.');
-      return;
-    }
-
-    try {
-      setGoogleLoading(true);
-      setError('');
-      
-      loginWithGoogle();
-    } catch (error) {
-      console.error('Google login failed:', error);
-      setError('Failed to initiate Google login. Please try again.');
-      setGoogleLoading(false);
-    }
-  };
-
-  // Determine OAuth availability with better logic
-  const getOAuthAvailability = () => {
-    if (oauthStatusLoading) {
-      return {
-        available: false,
-        message: 'Checking availability...',
-        showButton: true
-      };
-    }
-
-    if (!oauthStatus) {
-      return {
-        available: false,
-        message: 'Unable to check Google Sign-In status',
-        showButton: false
-      };
-    }
-
-    if (!oauthStatus.oauth_configured) {
-      return {
-        available: false,
-        message: 'Google Sign-In not configured',
-        showButton: false
-      };
-    }
-
-    if (!oauthStatus.google_available) {
-      return {
-        available: false,
-        message: 'Google Sign-In temporarily unavailable',
-        showButton: false
-      };
-    }
-
+// Determine OAuth availability with better logic
+const getOAuthAvailability = () => {
+  if (oauthStatusLoading) {
     return {
-      available: true,
-      message: '',
+      available: false,
+      message: 'Checking availability...',
       showButton: true
     };
+  }
+
+  if (!oauthStatus) {
+    return {
+      available: false,
+      message: 'Unable to check Google Sign-In status',
+      showButton: false
+    };
+  }
+
+  if (!oauthStatus.oauth_configured) {
+    return {
+      available: false,
+      message: 'Google Sign-In not configured',
+      showButton: false
+    };
+  }
+
+  if (!oauthStatus.google_available) {
+    return {
+      available: false,
+      message: 'Google Sign-In temporarily unavailable',
+      showButton: false
+    };
+  }
+
+  return {
+    available: true,
+    message: '',
+    showButton: true
   };
+};
 
-  const oauthAvailability = getOAuthAvailability();
+const oauthAvailability = getOAuthAvailability();
 
-  return (
-    <>
-      <React.Suspense fallback={<div />}>
-        <StarField />
-      </React.Suspense>
-      
-      <React.Suspense fallback={<div />}>
-        <CardAnimation />
-      </React.Suspense>
-      
-      <Container maxWidth="sm" className={classes.pageContainer}>
+return (
+  <>
+    <React.Suspense fallback={<div />}>
+      <StarField />
+    </React.Suspense>
+    <Container maxWidth="sm" className={classes.pageContainer}>
         <Fade in timeout={800}>
-          <Card 
-            className={`${classes.authCard} ${cardVisible ? classes.authCardVisible : ''}`} 
-            style={{ position: 'relative', overflow: 'hidden' }}
-          >
-            <Zoom in timeout={1000}>
+          <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
+          <Zoom in timeout={1000}>
               <Box>
                 <Box className={classes.logoContainer}>
                   <Box className={classes.logoIcon}>
@@ -588,7 +514,7 @@ const Login = () => {
                 >
                   Welcome back
                 </Typography>
-                
+
                 <Typography 
                   variant="body1" 
                   align="center" 
@@ -707,24 +633,6 @@ const Login = () => {
                     {loading ? 'Signing in...' : 'Sign In'}
                   </Button>
 
-                  <Box textAlign="center" sx={{ mb: 2 }}>
-                    <Link to="/forgot-password" className={classes.styledLink}>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          color: '#fff',
-                          fontSize: '0.85rem',
-                          opacity: 0.9,
-                          '&:hover': {
-                            opacity: 1,
-                          }
-                        }}
-                      >
-                        Forgot your password?
-                      </Typography>
-                    </Link>
-                  </Box>
-
                   <Box textAlign="center">
                     <Typography 
                       variant="body2" 
@@ -745,5 +653,4 @@ const Login = () => {
     </>
   );
 };
-
 export default Login;
