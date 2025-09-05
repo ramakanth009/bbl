@@ -15,6 +15,7 @@ import {
   Close,
   Language,
 } from "@mui/icons-material";
+import ShareButton from "../../common/ShareButton";
 import { makeStyles } from "@mui/styles";
 import apiService from "../../../services/api";
 import MessageList from "../message/MessageList";
@@ -955,6 +956,14 @@ const ChatPanel = ({
           </Box>
 
           <Box className={classes.chatHeaderRight}>
+            {/* Share Button - Desktop */}
+            <ShareButton 
+              character={character} 
+              section="discover" 
+              size="medium"
+              variant="icon"
+            />
+            
             {/* Desktop buttons - hidden on mobile */}
             <Box
               onClick={handleHistoryToggle}

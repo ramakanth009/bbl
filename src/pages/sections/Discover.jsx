@@ -5,6 +5,7 @@ import { flushSync } from 'react-dom';
 import Header from '../../components/dashboard/main/Header';
 import CharacterGrid from '../../components/dashboard/character/CharacterGrid';
 import ChatPanel from '../../components/dashboard/chat/ChatPanel';
+import MetaTagProvider from '../../components/common/MetaTagProvider';
 import { useNavigate, useParams, useOutletContext, useLocation } from 'react-router-dom';
 import apiService from '../../services/api';
 import { createCharacterPath, parseCharacterFromUrl, validateSlugMatch, createCharacterNavigationState } from '../../utils/slugUtils';
@@ -241,34 +242,39 @@ const Discover = () => {
   }, [selectedCharacter, isChatOpen, chatCharacterId, characters.length, location.state]);
 
   return (
-    <Box className={classes.discoverContainer}>
-      <Box
-        className={
-          isChatOpen
-            ? `${classes.contentArea} ${classes.contentAreaHidden}`
-            : classes.contentArea
-        }
-      >
-        {/* Desktop Header - Hidden on mobile */}
-        <Box className={classes.desktopHeader}>
-          <Header />
+    <>
+      {/* Meta Tag Provider for dynamic meta tags */}
+      <MetaTagProvider character={selectedCharacter} section="discover" />
+      
+      <Box className={classes.discoverContainer}>
+        <Box
+          className={
+            isChatOpen
+              ? `${classes.contentArea} ${classes.contentAreaHidden}`
+              : classes.contentArea
+          }
+        >
+          {/* Desktop Header - Hidden on mobile */}
+          <Box className={classes.desktopHeader}>
+            <Header />
+          </Box>
+          
+          <CharacterGrid 
+            onCharacterClick={handleCharacterClick}
+            activeSection="Discover"
+            characters={characters}
+          />
         </Box>
         
-        <CharacterGrid 
-          onCharacterClick={handleCharacterClick}
-          activeSection="Discover"
-          characters={characters}
+        <ChatPanel
+          open={isChatOpen}
+          character={selectedCharacter}
+          onClose={handleChatClose}
+          onBack={handleChatClose}
+          sidebarState={sidebarState}
         />
       </Box>
-      
-      <ChatPanel
-        open={isChatOpen}
-        character={selectedCharacter}
-        onClose={handleChatClose}
-        onBack={handleChatClose}
-        sidebarState={sidebarState}
-      />
-    </Box>
+    </>
   );
 };
 

@@ -8,6 +8,7 @@ import CharacterCard from '../../components/dashboard/character/CharacterCard';
 import CreateCharacterButton from '../../components/dashboard/character/creation/CreateCharacterButton';
 import ChatPanel from '../../components/dashboard/chat/ChatPanel';
 import TopBar from '../../components/dashboard/main/TopBar';
+import MetaTagProvider from '../../components/common/MetaTagProvider';
 import apiService from '../../services/api';
 import { createCharacterPath, parseCharacterFromUrl, validateSlugMatch, createCharacterNavigationState } from '../../utils/slugUtils';
 
@@ -582,69 +583,80 @@ const CategoryPage = ({ onSidebarToggle }) => {
   }
 
   return (
-    <Box className={classes.categoryContainer}>
-      {/* Mobile TopBar */}
-      {isMobile && (
-        <TopBar
-          activeSection={`categories/${categoryKey}`}
-          onSectionChange={handleSectionChange}
-          onMenuToggle={handleMenuToggle}
-          onSearchToggle={handleSearchToggle}
-        />
-      )}
-
-      <Box className={`${classes.contentArea} ${isChatOpen ? classes.contentAreaHidden : ''}`}>
-        {/* Desktop Header */}
-        <Box className={classes.desktopHeader}>
-          <Header />
-        </Box>
+    <>
+      {/* Meta Tag Provider for dynamic meta tags */}
+      <MetaTagProvider character={selectedCharacter} section={categoryKey} />
+      
+      <Box className={classes.categoryContainer}>
+        {/* Mobile TopBar */}
+        {isMobile && (
+          <TopBar
+            activeSection={`categories/${categoryKey}`}
+            onSectionChange={handleSectionChange}
+            onMenuToggle={handleMenuToggle}
+            onSearchToggle={handleSearchToggle}
+          />
+        )}
         
-        <Box className={classes.section}>
-          <Box className={classes.sectionHeader}>
-            <Box className={classes.sectionHeaderContent}>
-              <Typography className={classes.sectionTitle}>
-                {categoryName || 'Category Characters'}
-                <Chip 
-                  label={`${formatCount(characters.length)} ${getCountLabel(characters.length)}`} 
-                  size="small"
-                  className={classes.characterCount}
-                />
-              </Typography>
-              <Typography className={classes.sectionSubtitle}>
-                Explore characters from the {categoryName?.toLowerCase()} category
-              </Typography>
-            </Box>
+        <Box
+          className={
+            isChatOpen
+              ? `${classes.contentArea} ${classes.contentAreaHidden}`
+              : classes.contentArea
+          }
+        >
+          {/* Desktop Header - Hidden on mobile */}
+          <Box className={classes.desktopHeader}>
+            <Header />
           </Box>
           
-          {/* Mobile-only enhanced count */}
-          <Box className={classes.mobileCharacterCount}>
-            <Chip 
-              label={`${formatCount(characters.length)} ${getCountLabel(characters.length)}`} 
-              size="small"
-            />
-          </Box>
+          <Box className={classes.section}>
+            <Box className={classes.sectionHeader}>
+              <Box className={classes.sectionHeaderContent}>
+                <Typography className={classes.sectionTitle}>
+                  {categoryName || 'Category Characters'}
+                  <Chip 
+                    label={`${formatCount(characters.length)} ${getCountLabel(characters.length)}`} 
+                    size="small"
+                    className={classes.characterCount}
+                  />
+                </Typography>
+                <Typography className={classes.sectionSubtitle}>
+                  Explore characters from the {categoryName?.toLowerCase()} category
+                </Typography>
+              </Box>
+            </Box>
           
-          {characters.length === 0 ? (
-            <Box className={classes.emptyState}>
-              <Typography className={classes.emptyStateTitle}>
-                No characters found
-              </Typography>
-              <Typography>
-                No characters are available in this category yet.
-              </Typography>
+            {/* Mobile-only enhanced count */}
+            <Box className={classes.mobileCharacterCount}>
+              <Chip 
+                label={`${formatCount(characters.length)} ${getCountLabel(characters.length)}`} 
+                size="small"
+              />
             </Box>
-          ) : (
-            <Box className={classes.characterBoxContainer}>
-              <CreateCharacterButton onCharacterCreated={handleCharacterCreated} />
-              {characters.map((character) => (
-                <CharacterCard 
-                  key={character.id} 
-                  character={character}
-                  onStartChat={handleStartChat}
-                />
-              ))}
-            </Box>
-          )}
+            
+            {characters.length === 0 ? (
+              <Box className={classes.emptyState}>
+                <Typography className={classes.emptyStateTitle}>
+                  No characters found
+                </Typography>
+                <Typography>
+                  No characters are available in this category yet.
+                </Typography>
+              </Box>
+            ) : (
+              <Box className={classes.characterBoxContainer}>
+                <CreateCharacterButton onCharacterCreated={handleCharacterCreated} />
+                {characters.map((character) => (
+                  <CharacterCard 
+                    key={character.id} 
+                    character={character}
+                    onStartChat={handleStartChat}
+                  />
+                ))}
+              </Box>
+            )}
+          </Box>
         </Box>
       </Box>
 
@@ -658,7 +670,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
           sidebarState={sidebarState}
         />
       )}
-    </Box>
+    </>
   );
 };
 
