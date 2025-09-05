@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { WorkspacePremium } from '@mui/icons-material';
+import Logo from "../../../assets/Gigaspace_logo-removebg-preview.png"
 
 // Styles using makeStyles
 const useStyles = makeStyles({
@@ -32,69 +32,87 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: '8px',
-    gap: '16px',
     '@media (max-width: 1200px)': {
-      gap: '14px',
       marginBottom: '7px',
     },
     '@media (max-width: 960px)': {
-      gap: '12px',
       marginBottom: '6px',
     },
     '@media (max-width: 600px)': {
-      gap: '10px',
       marginBottom: '5px',
     },
     '@media (max-width: 480px)': {
-      gap: '8px',
       marginBottom: '4px',
     },
     '@media (max-width: 375px)': {
-      gap: '6px',
       marginBottom: '3px',
     },
   },
-  logoIcon: {
-    fontSize: '40px',
-    filter: 'drop-shadow(0 1px 4px #bbb)',
+  logoImage: {
+    height: '80px',
+    width: 'auto',
+    maxWidth: '300px',
+    objectFit: 'contain',
+    filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))',
     '@media (max-width: 1200px)': {
-      fontSize: '36px',
+      height: '72px',
+      maxWidth: '270px',
     },
     '@media (max-width: 960px)': {
-      fontSize: '32px',
+      height: '64px',
+      maxWidth: '240px',
     },
     '@media (max-width: 600px)': {
-      fontSize: '28px',
+      height: '56px',
+      maxWidth: '210px',
     },
     '@media (max-width: 480px)': {
-      fontSize: '24px',
+      height: '48px',
+      maxWidth: '180px',
     },
     '@media (max-width: 375px)': {
-      fontSize: '20px',
+      height: '40px',
+      maxWidth: '150px',
     },
   },
-  titleText: {
-    color: '#fff',
-    fontSize: '2.1rem',
-    letterSpacing: '0.01em',
-    background: 'linear-gradient(90deg, #fff 0%, #bbb 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    fontWeight: 'bold',
+  logoPlaceholder: {
+    height: '80px',
+    width: '300px',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    border: '2px dashed rgba(255, 255, 255, 0.3)',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: '14px',
+    fontWeight: '500',
+    textAlign: 'center',
+    filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))',
     '@media (max-width: 1200px)': {
-      fontSize: '1.9rem',
+      height: '72px',
+      width: '270px',
+      fontSize: '13px',
     },
     '@media (max-width: 960px)': {
-      fontSize: '1.7rem',
+      height: '64px',
+      width: '240px',
+      fontSize: '12px',
     },
     '@media (max-width: 600px)': {
-      fontSize: '1.5rem',
+      height: '56px',
+      width: '210px',
+      fontSize: '11px',
     },
     '@media (max-width: 480px)': {
-      fontSize: '1.3rem',
+      height: '48px',
+      width: '180px',
+      fontSize: '10px',
     },
     '@media (max-width: 375px)': {
-      fontSize: '1.1rem',
+      height: '40px',
+      width: '150px',
+      fontSize: '9px',
     },
   },
   subtitleText: {
@@ -125,25 +143,31 @@ const useStyles = makeStyles({
   },
 });
 
-const Header = () => {
+const Header = ({ logoSrc }) => {
   const classes = useStyles();
+  
   return (
     <Box className={classes.headerContainer}>
       <Box className={classes.logoContainer}>
-        <WorkspacePremium 
-          htmlColor="#fff"
-          className={classes.logoIcon}
-        />
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-          align="center"
-          gutterBottom
-          className={classes.titleText}
-        >
-          Bring Back Legends
-        </Typography>
+        {logoSrc ? (
+          <img
+            src={logoSrc}
+            alt="Bring Back Legends Logo"
+            className={classes.logoImage}
+            onError={(e) => {
+              // Fallback to placeholder if image fails to load
+              e.target.style.display = 'none';
+              e.target.nextElementSibling.style.display = 'flex';
+            }}
+          />
+        ) : null}
+        
+        {/* Placeholder div - shows when no logoSrc or image fails to load */}
+        
+          <img src={Logo} alt="Logo" />
+          
       </Box>
+      
       <Typography
         variant="body1"
         align="center"

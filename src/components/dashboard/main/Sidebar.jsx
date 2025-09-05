@@ -851,7 +851,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
             </Box>
             {open && (
               <Typography className={classes.logoText}>
-                Bring Back Legend
+                Gigaspace
               </Typography>
             )}
           </Box>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Paper,
   InputBase,
@@ -355,6 +355,7 @@ const SearchComponent = ({
   const [recentSearches, setRecentSearches] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [isExecutingSearch, setIsExecutingSearch] = useState(false);
+  const searchTimeoutRef = useRef(null);
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -420,13 +421,38 @@ const SearchComponent = ({
     }
   };
 
+  // Debounced search function
+  const debouncedSearch = useCallback((query) => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      if (query.length >= 3) {
+        handleSearch(query);
+      } else if (onSearchResults) {
+        // Clear results if query is less than 3 characters
+        onSearchResults({ characters: [], query, totalCount: 0 });
+      }
+    }, 300); // 300ms debounce delay
+  }, [onSearchResults]);
+
+  useEffect(() => {
+    // Cleanup timeout on component unmount
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleInputChange = (event) => {
     const newValue = event.target.value;
     setSearchValue(newValue);
     
     if (!newValue) {
       setSuggestions([]);
-      // NEW: Clear persisted search when input is cleared
+      // Clear persisted search when input is cleared
       clearPersistedSearch();
       
       if (onSearchStateChange) {
@@ -441,6 +467,9 @@ const SearchComponent = ({
       if (onSearchResults) {
         onSearchResults({ characters: [], query: '', totalCount: 0 });
       }
+    } else if (newValue.length >= 3) {
+      // Only trigger search if we have at least 3 characters
+      debouncedSearch(newValue);
     }
   };
 
@@ -510,6 +539,10 @@ const SearchComponent = ({
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
+      // If user presses Enter, cancel any pending debounced search and execute immediately
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
       handleSearch();
     }
   };
@@ -527,7 +560,7 @@ const SearchComponent = ({
             onChange={handleInputChange}
             onFocus={handleFocus}
             onKeyPress={handleKeyPress}
-            inputProps={{ 'aria-label': 'search characters' }}
+            inputProps={{ 'aria-label': 'search' }}
           />
           {loading && (
             <CircularProgress size={16} className={classes.loadingIcon} />
