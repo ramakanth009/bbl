@@ -437,29 +437,29 @@ const useStyles = makeStyles({
     lineHeight: 1.3, // ADJUSTED for better readability
     marginBottom: '10px !important', // REDUCED from 12px
     height: 'auto !important', // Changed from fixed height
-    maxHeight: '52px !important', // Maximum height limit
-    minHeight: '52px !important', // Ensure consistent height
+    maxHeight: '50px !important', // Adjusted for 3 lines (13px * 3)
+    minHeight: '45px !important', // Minimum 3 lines height
     overflow: 'hidden',
     display: '-webkit-box',
-    WebkitLineClamp: 4, // INCREASED from 3 for more text
+    WebkitLineClamp: 3, // LIMITED to 3 lines with ellipsis
     WebkitBoxOrient: 'vertical',
     flexGrow: 1,
     position: 'relative',
     zIndex: 1,
     wordBreak: 'break-word !important', // ENSURE PROPER WORD BREAKING
+    textOverflow: 'ellipsis',
+    paddingBottom: '2px !important', // Small padding to ensure minimum height is respected
     '@media (max-width: 1200px)': {
       fontSize: '10px !important', // FURTHER REDUCED from 11px
       marginBottom: '8px !important', // REDUCED from 10px
-      height: '48px !important', // FURTHER REDUCED from 54px
-      maxHeight: '48px !important',
-      minHeight: '48px !important',
+      maxHeight: '36px !important', // Adjusted for 3 lines (12px * 3)
+      minHeight: '36px !important', // Minimum 3 lines height
     },
     '@media (max-width: 960px)': {
       fontSize: '9px !important', // FURTHER REDUCED from 10px
       marginBottom: '6px !important', // REDUCED from 8px
-      height: '44px !important', // FURTHER REDUCED from 48px
-      maxHeight: '44px !important',
-      minHeight: '44px !important',
+      maxHeight: '33px !important', // Adjusted for 3 lines (11px * 3)
+      minHeight: '33px !important', // Minimum 3 lines height
       lineHeight: 1.25, // ADJUSTED
     },
     '@media (max-width: 600px)': {
