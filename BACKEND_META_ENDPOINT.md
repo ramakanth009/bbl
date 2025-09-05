@@ -3,11 +3,16 @@
 ## Problem
 Social media platforms (WhatsApp, Facebook, Twitter, etc.) crawl server-side HTML to extract meta tags for rich previews. Our current React SPA only updates meta tags client-side after JavaScript loads, so crawlers only see default meta tags.
 
-## Solution: Server-Side Meta Tag Injection
+**CRITICAL ISSUE:** Current API endpoints require authentication tokens, but social media crawlers cannot authenticate.
 
-### Required Backend Endpoint
+## Solution: Public Endpoints + Server-Side Meta Tag Injection
 
-**Endpoint:** `GET /character/{character_id}/meta`
+### Required Public Backend Endpoints (NO AUTHENTICATION)
+
+**Endpoint 1:** `GET /public/character/{character_id}/meta`
+**Endpoint 2:** `GET /public/character/{character_id}`
+
+These endpoints must be **publicly accessible** without authentication tokens.
 
 **Response Format:**
 ```json
@@ -33,11 +38,11 @@ Social media platforms (WhatsApp, Facebook, Twitter, etc.) crawl server-side HTM
 }
 ```
 
-### Alternative: HTML Route for Direct Sharing
+### Critical: Public HTML Route for Social Media Crawlers
 
-**Endpoint:** `GET /share/character/{character_id}/{character_name?}`
+**Endpoint:** `GET /share/character/{character_id}/{character_name?}` (PUBLIC - NO AUTH)
 
-This should return full HTML with proper meta tags:
+This endpoint must be **publicly accessible** and return full HTML with proper meta tags:
 
 ```html
 <!DOCTYPE html>
@@ -77,21 +82,26 @@ This should return full HTML with proper meta tags:
 </html>
 ```
 
+**IMPORTANT:** This endpoint must NOT require authentication tokens as social media crawlers cannot authenticate.
+
 ### Implementation Steps
 
-1. **Backend Implementation:**
-   - Add `/character/{character_id}/meta` endpoint
-   - Add `/share/character/{character_id}/{character_name?}` HTML route
-   - Ensure proper CORS headers for meta endpoint
+1. **Backend Implementation (URGENT):**
+   - Add **PUBLIC** `/public/character/{character_id}/meta` endpoint (NO AUTH)
+   - Add **PUBLIC** `/public/character/{character_id}` endpoint (NO AUTH)
+   - Add **PUBLIC** `/share/character/{character_id}/{character_name?}` HTML route (NO AUTH)
+   - Ensure proper CORS headers for all public endpoints
 
-2. **Frontend Updates:**
-   - Update share URLs to use `/share/character/...` format
-   - Keep existing MetaTagService for client-side updates
-   - Add fallback handling for missing backend endpoints
+2. **Frontend Updates (COMPLETED):**
+   - ✅ Updated API service to try public endpoints first
+   - ✅ Added fallback handling for authentication errors
+   - ✅ Share URLs updated to use `/share/character/...` format
+   - ✅ MetaTagService handles both authenticated and public data
 
 3. **URL Structure:**
-   - **Share URLs:** `https://yourdomain.com/share/character/123/albert-einstein`
+   - **Share URLs:** `https://clone-7040.onrender.com/share/character/123/albert-einstein`
    - **App URLs:** `https://yourdomain.com/dashboard/discover/chat/123/albert-einstein`
+   - **Public API:** `https://clone-7040.onrender.com/public/character/123/meta`
 
 ### Testing
 
