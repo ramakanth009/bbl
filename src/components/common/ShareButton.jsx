@@ -37,13 +37,8 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
     const generateShareUrl = (character) => {
         if (!character) return window.location.href;
         
-        const baseUrl = window.location.origin;
-        const characterId = character.id;
-        const characterName = character.name ? character.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'character';
-        
-        // Use share-friendly URL format for better social media crawling
-        // This should redirect to the actual app URL but provides proper meta tags for crawlers
-        return `${baseUrl}/share/character/${characterId}/${characterName}`;
+        // Use the new public GigaSpace endpoint for sharing
+        return metaTagService.generatePublicShareUrl(character);
     };
 
     const handleClick = (event) => {
@@ -65,9 +60,17 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
         }
 
         try {
-            // Use the new sharing-optimized method with public endpoint
-            const metaTags = await metaTagService.generateCharacterMetaForSharing(character, section);
-            const shareUrls = metaTagService.generateShareUrls(metaTags);
+            // Generate share URLs using the new public endpoint methods
+            const shareUrls = {
+                copy: generateShareUrl(character),
+                facebook: metaTagService.generateFacebookShareUrl(character),
+                twitter: metaTagService.generateTwitterShareUrl(character),
+                linkedin: metaTagService.generateLinkedInShareUrl(character),
+                whatsapp: metaTagService.generateWhatsAppShareUrl(character),
+                telegram: metaTagService.generateTelegramShareUrl(character),
+                reddit: metaTagService.generateRedditShareUrl(character),
+                email: metaTagService.generateEmailShareUrl(character)
+            };
 
             switch (platform) {
                 case 'copy':

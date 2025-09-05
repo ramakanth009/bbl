@@ -25,7 +25,6 @@ import Foryou from './pages/sections/ForYou';
 import History from './pages/sections/History';
 import SessionChat from './pages/sections/SessionChat';
 import CategoryPage from './pages/sections/CategoryPage';
-import ShareRedirect from './components/share/ShareRedirect';
 
 function DashboardWithMobileModal() {
   const { profileStatus, updateMobile, refreshProfileStatus } = useAuth();
@@ -88,9 +87,6 @@ function AppContent() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/auth/callback" element={<AuthCallback />} /> {/* NEW */}
-            
-            {/* Share Routes - Public access for social media crawlers */}
-            <Route path="/share/character/:characterId/:characterName?" element={<ShareRedirect />} />
             <Route 
               path="/dashboard"
               element={

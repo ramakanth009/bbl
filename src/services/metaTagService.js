@@ -20,10 +20,9 @@ class MetaTagService {
      * Generate meta tags for a character (async version that fetches from API)
      * @param {string|Object} characterIdOrObject - Character ID or character object
      * @param {string} section - Section name (discover, categories, etc.)
-     * @param {boolean} usePublicEndpoint - Whether to use public endpoint for sharing
      * @returns {Promise<Object>} Meta tag data
      */
-    async generateCharacterMetaAsync(characterIdOrObject, section = 'discover', usePublicEndpoint = false) {
+    async generateCharacterMetaAsync(characterIdOrObject, section = 'discover') {
         try {
             let character;
             
@@ -31,14 +30,8 @@ class MetaTagService {
             if (typeof characterIdOrObject === 'object' && characterIdOrObject !== null) {
                 character = characterIdOrObject;
             } else {
-                // Choose endpoint based on use case
-                if (usePublicEndpoint) {
-                    // Use public endpoint for sharing functionality
-                    character = await apiService.getCharacterForSharing(characterIdOrObject);
-                } else {
-                    // Use authenticated endpoint for internal use
-                    character = await apiService.getCharacterMetaData(characterIdOrObject);
-                }
+                // Fetch character data from API
+                character = await apiService.getCharacterMetaData(characterIdOrObject);
             }
 
             if (!character) {
@@ -50,16 +43,6 @@ class MetaTagService {
             console.error('Failed to generate character meta tags:', error);
             return this.getDefaultMeta();
         }
-    }
-
-    /**
-     * Generate meta tags specifically for sharing (uses public endpoint)
-     * @param {string|Object} characterIdOrObject - Character ID or character object
-     * @param {string} section - Section name (discover, categories, etc.)
-     * @returns {Promise<Object>} Meta tag data optimized for sharing
-     */
-    async generateCharacterMetaForSharing(characterIdOrObject, section = 'discover') {
-        return this.generateCharacterMetaAsync(characterIdOrObject, section, true);
     }
 
     /**
@@ -146,9 +129,9 @@ class MetaTagService {
      * @returns {string} Image URL
      */
     getCharacterImage(character) {
-        // Priority order for character images (updated for public endpoint)
+        // Priority order for character images
         const imageFields = [
-            'img',           // Public endpoint field (highest priority)
+            'img', // New public endpoint field (highest priority)
             'image_url',
             'avatar_url', 
             'profile_image',
@@ -228,6 +211,20 @@ class MetaTagService {
     }
 
     /**
+     * Generate public share URL using the new GigaSpace endpoint
+     * @param {Object} character - Character object
+     * @returns {string} Public share URL
+     */
+    generatePublicShareUrl(character) {
+        if (!character || !character.id) {
+            return window.location.href;
+        }
+        
+        // Use the new public endpoint for sharing
+        return `https://space.gigaspace.org/getcharacter/${character.id}`;
+    }
+
+    /**
      * Generate share URLs for different social media platforms
      * @param {Object} metaTags - Meta tags object
      * @returns {Object} Share URLs for different platforms
@@ -247,6 +244,82 @@ class MetaTagService {
             email: `mailto:?subject=${encodedTitle}&body=${encodedDescription}%0A%0A${encodedUrl}`,
             copy: metaTags.url
         };
+    }
+
+    /**
+     * Generate Facebook share URL using public endpoint
+     * @param {Object} character - Character object
+     * @returns {string} Facebook share URL
+     */
+    generateFacebookShareUrl(character) {
+        const publicUrl = this.generatePublicShareUrl(character);
+        return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(publicUrl)}`;
+    }
+
+    /**
+     * Generate Twitter share URL using public endpoint
+     * @param {Object} character - Character object
+     * @returns {string} Twitter share URL
+     */
+    generateTwitterShareUrl(character) {
+        const publicUrl = this.generatePublicShareUrl(character);
+        const title = `Chat with ${character.name || 'this character'} on GigaSpace`;
+        return `https://twitter.com/intent/tweet?url=${encodeURIComponent(publicUrl)}&text=${encodeURIComponent(title)}&hashtags=GigaSpace,AIChat`;
+    }
+
+    /**
+     * Generate LinkedIn share URL using public endpoint
+     * @param {Object} character - Character object
+     * @returns {string} LinkedIn share URL
+     */
+    generateLinkedInShareUrl(character) {
+        const publicUrl = this.generatePublicShareUrl(character);
+        return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(publicUrl)}`;
+    }
+
+    /**
+     * Generate WhatsApp share URL using public endpoint
+     * @param {Object} character - Character object
+     * @returns {string} WhatsApp share URL
+     */
+    generateWhatsAppShareUrl(character) {
+        const publicUrl = this.generatePublicShareUrl(character);
+        const title = `Chat with ${character.name || 'this character'} on GigaSpace`;
+        return `https://wa.me/?text=${encodeURIComponent(title)}%20${encodeURIComponent(publicUrl)}`;
+    }
+
+    /**
+     * Generate Telegram share URL using public endpoint
+     * @param {Object} character - Character object
+     * @returns {string} Telegram share URL
+     */
+    generateTelegramShareUrl(character) {
+        const publicUrl = this.generatePublicShareUrl(character);
+        const title = `Chat with ${character.name || 'this character'} on GigaSpace`;
+        return `https://t.me/share/url?url=${encodeURIComponent(publicUrl)}&text=${encodeURIComponent(title)}`;
+    }
+
+    /**
+     * Generate Reddit share URL using public endpoint
+     * @param {Object} character - Character object
+     * @returns {string} Reddit share URL
+     */
+    generateRedditShareUrl(character) {
+        const publicUrl = this.generatePublicShareUrl(character);
+        const title = `Chat with ${character.name || 'this character'} on GigaSpace`;
+        return `https://reddit.com/submit?url=${encodeURIComponent(publicUrl)}&title=${encodeURIComponent(title)}`;
+    }
+
+    /**
+     * Generate Email share URL using public endpoint
+     * @param {Object} character - Character object
+     * @returns {string} Email share URL
+     */
+    generateEmailShareUrl(character) {
+        const publicUrl = this.generatePublicShareUrl(character);
+        const title = `Chat with ${character.name || 'this character'} on GigaSpace`;
+        const description = character.description || 'Experience AI-powered conversations with legendary characters.';
+        return `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(description)}%0A%0A${encodeURIComponent(publicUrl)}`;
     }
 
     /**
