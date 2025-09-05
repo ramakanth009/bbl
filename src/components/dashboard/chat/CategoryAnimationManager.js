@@ -9,17 +9,17 @@ import React, { useState, useEffect, useCallback } from 'react';
 // Category-to-GIF mapping configuration
 const CATEGORY_ANIMATIONS = {
   entertainment_arts: [
-    // () => import('../../../assets/animations/entertainment/music_note.gif'),
+    () => import('../../../assets/animations/entertainment/astronut1.gif'),
     // () => import('../../../assets/animations/entertainment/theater_mask.gif'),
     // () => import('../../../assets/animations/entertainment/art_brush.gif'),
   ],
   leaders_historical: [
-    // () => import('../../../assets/animations/leaders/crown.gif'),
+    () => import('../../../assets/animations/leaders/Reactor.gif'),
     // () => import('../../../assets/animations/leaders/scroll.gif'),
     // () => import('../../../assets/animations/leaders/castle.gif'),
   ],
   sports_champions: [
-    // () => import('../../../assets/animations/sports/trophy.gif'),
+    () => import('../../../assets/animations/sports/wicket.gif'),
     // () => import('../../../assets/animations/sports/medal.gif'),
     // () => import('../../../assets/animations/sports/flame.gif'),
   ],
@@ -29,12 +29,12 @@ const CATEGORY_ANIMATIONS = {
     // () => import('../../../assets/animations/innovators/programming.gif'),
   ],
   spiritual_social: [
-    // () => import('../../../assets/animations/spiritual/lotus.gif'),
+    () => import('../../../assets/animations/spiritual/books.gif'),
     // () => import('../../../assets/animations/spiritual/meditation.gif'),
     // () => import('../../../assets/animations/spiritual/dove.gif'),
   ],
   fictional_anime: [
-    // () => import('../../../assets/animations/fictional/magic_wand.gif'),
+    () => import('../../../assets/animations/fictional/Gibli-Tribute.gif'),
     // () => import('../../../assets/animations/fictional/star.gif'),
     // () => import('../../../assets/animations/fictional/sword.gif'),
   ],
