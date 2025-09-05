@@ -478,6 +478,29 @@ const SearchComponent = ({
     setShowResults(true);
   };
 
+  const handleBlur = () => {
+    // Reset search when cursor leaves the input
+    setSearchValue('');
+    setSuggestions([]);
+    setFocused(false);
+    setShowResults(false);
+    
+    // Clear persisted search
+    clearPersistedSearch();
+    
+    if (onSearchResults) {
+      onSearchResults({ characters: [], query: '', totalCount: 0 });
+    }
+    
+    if (onSearchStateChange) {
+      onSearchStateChange({
+        isSearching: false,
+        query: '',
+        focused: false
+      });
+    }
+  };
+
   const handleClear = () => {
     setSearchValue('');
     setSuggestions([]);
@@ -559,6 +582,7 @@ const SearchComponent = ({
             value={searchValue}
             onChange={handleInputChange}
             onFocus={handleFocus}
+            onBlur={handleBlur}
             onKeyPress={handleKeyPress}
             inputProps={{ 'aria-label': 'search' }}
           />
