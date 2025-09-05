@@ -508,11 +508,11 @@ class ApiService {
 
     // Get meta tag data for a character (for social media sharing)
     async getCharacterMetaData(character_id) {
-        const cacheKey = this.createCacheKey('GET', `/character/${character_id}/meta`);
+        const cacheKey = this.createCacheKey('GET', `/getcharacter/${character_id}`);
         
         return await this.getCachedOrFetch(cacheKey, async () => {
             try {
-                const response = await this.client.get(`/character/${character_id}/meta`);
+                const response = await this.client.get(`/getcharacter/${character_id}`);
                 return response.data;
             } catch (error) {
                 // Fallback to regular character data if meta endpoint doesn't exist
