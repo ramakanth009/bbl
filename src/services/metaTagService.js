@@ -20,9 +20,10 @@ class MetaTagService {
      * Generate meta tags for a character (async version that fetches from API)
      * @param {string|Object} characterIdOrObject - Character ID or character object
      * @param {string} section - Section name (discover, categories, etc.)
+     * @param {boolean} usePublicEndpoint - Whether to use public endpoint for sharing
      * @returns {Promise<Object>} Meta tag data
      */
-    async generateCharacterMetaAsync(characterIdOrObject, section = 'discover') {
+    async generateCharacterMetaAsync(characterIdOrObject, section = 'discover', usePublicEndpoint = false) {
         try {
             let character;
             
@@ -30,8 +31,14 @@ class MetaTagService {
             if (typeof characterIdOrObject === 'object' && characterIdOrObject !== null) {
                 character = characterIdOrObject;
             } else {
-                // Fetch character data from API
-                character = await apiService.getCharacterMetaData(characterIdOrObject);
+                // Choose endpoint based on use case
+                if (usePublicEndpoint) {
+                    // Use public endpoint for sharing functionality
+                    character = await apiService.getCharacterForSharing(characterIdOrObject);
+                } else {
+                    // Use authenticated endpoint for internal use
+                    character = await apiService.getCharacterMetaData(characterIdOrObject);
+                }
             }
 
             if (!character) {
@@ -43,6 +50,16 @@ class MetaTagService {
             console.error('Failed to generate character meta tags:', error);
             return this.getDefaultMeta();
         }
+    }
+
+    /**
+     * Generate meta tags specifically for sharing (uses public endpoint)
+     * @param {string|Object} characterIdOrObject - Character ID or character object
+     * @param {string} section - Section name (discover, categories, etc.)
+     * @returns {Promise<Object>} Meta tag data optimized for sharing
+     */
+    async generateCharacterMetaForSharing(characterIdOrObject, section = 'discover') {
+        return this.generateCharacterMetaAsync(characterIdOrObject, section, true);
     }
 
     /**
@@ -129,8 +146,9 @@ class MetaTagService {
      * @returns {string} Image URL
      */
     getCharacterImage(character) {
-        // Priority order for character images
+        // Priority order for character images (updated for public endpoint)
         const imageFields = [
+            'img',           // Public endpoint field (highest priority)
             'image_url',
             'avatar_url', 
             'profile_image',

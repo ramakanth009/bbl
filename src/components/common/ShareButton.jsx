@@ -65,18 +65,9 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
         }
 
         try {
-            // Generate meta tags and share URLs
-            const metaTags = metaTagService.generateCharacterMeta(character, section);
-            const shareUrls = {
-                copy: generateShareUrl(character),
-                facebook: metaTagService.generateFacebookShareUrl(metaTags),
-                twitter: metaTagService.generateTwitterShareUrl(metaTags),
-                linkedin: metaTagService.generateLinkedInShareUrl(metaTags),
-                whatsapp: metaTagService.generateWhatsAppShareUrl(metaTags),
-                telegram: metaTagService.generateTelegramShareUrl(metaTags),
-                reddit: metaTagService.generateRedditShareUrl(metaTags),
-                email: metaTagService.generateEmailShareUrl(metaTags)
-            };
+            // Use the new sharing-optimized method with public endpoint
+            const metaTags = await metaTagService.generateCharacterMetaForSharing(character, section);
+            const shareUrls = metaTagService.generateShareUrls(metaTags);
 
             switch (platform) {
                 case 'copy':

@@ -508,15 +508,38 @@ class ApiService {
 
     // Get meta tag data for a character (for social media sharing)
     async getCharacterMetaData(character_id) {
-        const cacheKey = this.createCacheKey('GET', `/getcharacter/${character_id}`);
+        const cacheKey = this.createCacheKey('GET', `/character/${character_id}/meta`);
         
         return await this.getCachedOrFetch(cacheKey, async () => {
             try {
-                const response = await this.client.get(`/getcharacter/${character_id}`);
+                const response = await this.client.get(`/character/${character_id}/meta`);
                 return response.data;
             } catch (error) {
                 // Fallback to regular character data if meta endpoint doesn't exist
                 console.warn('Meta endpoint not available, falling back to character data');
+                return await this.getCharacterById(character_id);
+            }
+        }, 300000); // Cache for 5 minutes
+    }
+
+    // Get character data from public endpoint (for sharing functionality)
+    async getCharacterForSharing(character_id) {
+        const cacheKey = this.createCacheKey('GET', `public/character/${character_id}`);
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                // Use the public endpoint for sharing
+                const response = await fetch(`https://space.gigaspace.org/getcharacter/${character_id}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.warn('Public endpoint not available, falling back to authenticated endpoint');
+                // Fallback to authenticated endpoint
                 return await this.getCharacterById(character_id);
             }
         }, 300000); // Cache for 5 minutes
