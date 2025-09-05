@@ -510,47 +510,12 @@ class ApiService {
         
         return await this.getCachedOrFetch(cacheKey, async () => {
             try {
-                // First try the public meta endpoint (no auth required)
-                const response = await this.client.get(`/public/character/${character_id}/meta`);
+                const response = await this.client.get(`/character/${character_id}/meta`);
                 return response.data;
             } catch (error) {
-                console.warn('Public meta endpoint not available, trying regular character endpoint');
-                try {
-                    // Fallback to regular character data if meta endpoint doesn't exist
-                    return await this.getCharacterById(character_id);
-                } catch (authError) {
-                    console.error('Both meta and character endpoints failed:', authError);
-                    // Return minimal character data for sharing
-                    return {
-                        id: character_id,
-                        name: 'Character',
-                        description: 'Chat with this character on Bring Back Legends',
-                        image_url: '/android-chrome-512x512.png'
-                    };
-                }
-            }
-        }, 300000); // Cache for 5 minutes
-    }
-
-    // Get public character data (no authentication required)
-    async getPublicCharacterData(character_id) {
-        const cacheKey = this.createCacheKey('GET', `/public/character/${character_id}`);
-        
-        return await this.getCachedOrFetch(cacheKey, async () => {
-            try {
-                // Create a temporary client without auth headers for public endpoints
-                const publicClient = axios.create({
-                    baseURL: this.client.defaults.baseURL,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                
-                const response = await publicClient.get(`/public/character/${character_id}`);
-                return response.data;
-            } catch (error) {
-                console.error('Public character endpoint failed:', error);
-                throw this.handleError(error, 'Failed to load public character data');
+                // Fallback to regular character data if meta endpoint doesn't exist
+                console.warn('Meta endpoint not available, falling back to character data');
+                return await this.getCharacterById(character_id);
             }
         }, 300000); // Cache for 5 minutes
     }
