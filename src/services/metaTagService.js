@@ -3,27 +3,57 @@
  * Handles generation of meta tags for social media sharing and SEO
  */
 
+import apiService from './api';
+
 class MetaTagService {
     constructor() {
         this.defaultMeta = {
-            title: 'Bring Back Legends - Chat with Historical Characters',
-            description: 'Experience conversations with legendary historical figures and fictional characters. Bring back legends to life through AI-powered conversations.',
-            image: '/android-chrome-512x512.png', // Default app icon
-            url: window.location.origin,
+            title: 'Bring Back Legends - Chat with Historical & Fictional Characters',
+            description: 'Experience conversations with legendary historical figures and fictional characters through AI-powered chat. Discover their stories, wisdom, and personalities.',
+            image: '/android-chrome-512x512.png',
             siteName: 'Bring Back Legends',
-            type: 'website'
+            url: window.location.origin
         };
     }
 
     /**
-     * Generate meta tags for a character page
-     * @param {Object} character - Character object with id, name, description, image, etc.
-     * @param {string} section - Section name (discover, featured, trending, etc.)
-     * @returns {Object} Meta tag object for the character
+     * Generate meta tags for a character (async version that fetches from API)
+     * @param {string|Object} characterIdOrObject - Character ID or character object
+     * @param {string} section - Section name (discover, categories, etc.)
+     * @returns {Promise<Object>} Meta tag data
+     */
+    async generateCharacterMetaAsync(characterIdOrObject, section = 'discover') {
+        try {
+            let character;
+            
+            // If it's already a character object, use it
+            if (typeof characterIdOrObject === 'object' && characterIdOrObject !== null) {
+                character = characterIdOrObject;
+            } else {
+                // Fetch character data from API
+                character = await apiService.getCharacterMetaData(characterIdOrObject);
+            }
+
+            if (!character) {
+                return this.getDefaultMeta();
+            }
+
+            return this.generateCharacterMeta(character, section);
+        } catch (error) {
+            console.error('Failed to generate character meta tags:', error);
+            return this.getDefaultMeta();
+        }
+    }
+
+    /**
+     * Generate meta tags for a character (sync version for existing character objects)
+     * @param {Object} character - Character object
+     * @param {string} section - Section name (discover, categories, etc.)
+     * @returns {Object} Meta tag data
      */
     generateCharacterMeta(character, section = 'discover') {
         if (!character) {
-            return this.defaultMeta;
+            return this.getDefaultMeta();
         }
 
         const characterName = character.name || 'Unknown Character';
@@ -309,4 +339,8 @@ class MetaTagService {
     }
 }
 
-export default new MetaTagService();
+// Create and export singleton instance
+const metaTagService = new MetaTagService();
+
+export default metaTagService;
+export { metaTagService };

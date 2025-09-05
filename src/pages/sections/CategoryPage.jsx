@@ -585,7 +585,11 @@ const CategoryPage = ({ onSidebarToggle }) => {
   return (
     <>
       {/* Meta Tag Provider for dynamic meta tags */}
-      <MetaTagProvider character={selectedCharacter} section={categoryKey} />
+      <MetaTagProvider 
+        character={selectedCharacter} 
+        characterId={selectedCharacter?.id}
+        section={categoryKey} 
+      />
       
       <Box className={classes.categoryContainer}>
         {/* Mobile TopBar */}

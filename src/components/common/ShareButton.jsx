@@ -34,6 +34,18 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
     
     const open = Boolean(anchorEl);
 
+    const generateShareUrl = (character) => {
+        if (!character) return window.location.href;
+        
+        const baseUrl = window.location.origin;
+        const characterId = character.id;
+        const characterName = character.name ? character.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'character';
+        
+        // Use share-friendly URL format for better social media crawling
+        // This should redirect to the actual app URL but provides proper meta tags for crawlers
+        return `${baseUrl}/share/character/${characterId}/${characterName}`;
+    };
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -55,7 +67,16 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
         try {
             // Generate meta tags and share URLs
             const metaTags = metaTagService.generateCharacterMeta(character, section);
-            const shareUrls = metaTagService.generateShareUrls(metaTags);
+            const shareUrls = {
+                copy: generateShareUrl(character),
+                facebook: metaTagService.generateFacebookShareUrl(metaTags),
+                twitter: metaTagService.generateTwitterShareUrl(metaTags),
+                linkedin: metaTagService.generateLinkedInShareUrl(metaTags),
+                whatsapp: metaTagService.generateWhatsAppShareUrl(metaTags),
+                telegram: metaTagService.generateTelegramShareUrl(metaTags),
+                reddit: metaTagService.generateRedditShareUrl(metaTags),
+                email: metaTagService.generateEmailShareUrl(metaTags)
+            };
 
             switch (platform) {
                 case 'copy':

@@ -504,6 +504,21 @@ class ApiService {
         }, 30000); // Cache for 30 seconds
     }
 
+    // Get meta tag data for a character (for social media sharing)
+    async getCharacterMetaData(character_id) {
+        const cacheKey = this.createCacheKey('GET', `/character/${character_id}/meta`);
+        
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                const response = await this.client.get(`/character/${character_id}/meta`);
+                return response.data;
+            } catch (error) {
+                // Fallback to regular character data if meta endpoint doesn't exist
+                console.warn('Meta endpoint not available, falling back to character data');
+                return await this.getCharacterById(character_id);
+            }
+        }, 300000); // Cache for 5 minutes
+    }
 
     // ===============================
     // NEW CATEGORIES ENDPOINTS - CACHED

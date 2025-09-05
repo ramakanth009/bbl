@@ -244,7 +244,11 @@ const Discover = () => {
   return (
     <>
       {/* Meta Tag Provider for dynamic meta tags */}
-      <MetaTagProvider character={selectedCharacter} section="discover" />
+      <MetaTagProvider 
+        character={selectedCharacter} 
+        characterId={chatCharacterId}
+        section="discover" 
+      />
       
       <Box className={classes.discoverContainer}>
         <Box
