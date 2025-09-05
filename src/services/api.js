@@ -617,7 +617,7 @@ class ApiService {
         }
     }
 
-    async sendMessage(characterName, userInput, newSession = false, languageSettings = {}) {
+    async sendMessage(characterName, userInput, newSession = false, languageSettings = {}, abortSignal = null) {
         try {
             console.log('🚀 Sending message with language settings:', {
                 characterName,
@@ -644,6 +644,8 @@ class ApiService {
                     'Accept-Language': targetLanguage,
                     'Content-Language': languageSettings.input_language || 'english',
                 },
+                // Add abort signal if provided
+                ...(abortSignal && { signal: abortSignal }),
             };
             const response = await this.client.post('/chat', requestData, config);
             console.log('📥 Chat response received:', {

@@ -479,6 +479,11 @@ const ChatPanel = ({
   const messagesEndRef = useRef(null);
   const messagesWrapperRef = useRef(null);
   const messageListRef = useRef(null);
+  
+  // Request tracking and cancellation
+  const abortControllerRef = useRef(null);
+  const currentCharacterRef = useRef(null);
+  const requestIdRef = useRef(0);
 
   // Initialize new temporary session
   const initializeNewTemporarySession = () => {
@@ -572,7 +577,45 @@ const ChatPanel = ({
     }
   }, [sidebarState]);
 
-  // Chat initialization and continuity effect
+  // Enhanced cleanup function
+  const cleanupCurrentRequest = () => {
+    if (abortControllerRef.current) {
+      console.log('[ChatPanel] Cancelling ongoing request');
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setLoading(false);
+  };
+
+  // Character change detection and cleanup
+  useEffect(() => {
+    if (character) {
+      // Check if character changed
+      if (currentCharacterRef.current && currentCharacterRef.current.id !== character.id) {
+        console.log('[ChatPanel] Character changed, cleaning up previous requests');
+        cleanupCurrentRequest();
+        setError(null);
+      }
+      currentCharacterRef.current = character;
+    }
+    
+    return () => {
+      cleanupCurrentRequest();
+    };
+  }, [character]);
+
+  // Cleanup on component unmount or close
+  useEffect(() => {
+    if (!open) {
+      cleanupCurrentRequest();
+    }
+    
+    return () => {
+      cleanupCurrentRequest();
+    };
+  }, [open]);
+
+  // Chat initialization and effect
   useEffect(() => {
     if (open && character) {
       if (initialMessages && initialSessionId) {
@@ -737,6 +780,19 @@ const ChatPanel = ({
     const message = messageText || inputValue.trim();
     if (!message || loading || !character) return;
 
+    // Cancel any ongoing request before starting a new one
+    cleanupCurrentRequest();
+
+    // Create new abort controller for this request
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+    
+    // Generate unique request ID
+    const requestId = ++requestIdRef.current;
+    const requestCharacterId = character.id;
+    
+    console.log(`[ChatPanel] Starting request ${requestId} for character ${character.name} (${requestCharacterId})`);
+
     const userMessage = message;
     if (!messageText) {
       setInputValue(""); // Only clear input if message came from input field
@@ -756,8 +812,23 @@ const ChatPanel = ({
         character.name,
         userMessage,
         !sessionId,
-        { language }
+        { language },
+        abortController.signal // Pass abort signal to API
       );
+
+      // Validate that this response is for the current character
+      if (!currentCharacterRef.current || currentCharacterRef.current.id !== requestCharacterId) {
+        console.log(`[ChatPanel] Discarding stale response for request ${requestId} - character changed`);
+        return;
+      }
+
+      // Check if request was aborted
+      if (abortController.signal.aborted) {
+        console.log(`[ChatPanel] Request ${requestId} was aborted`);
+        return;
+      }
+
+      console.log(`[ChatPanel] Request ${requestId} completed successfully`);
 
       if (response.session_id) {
         setSessionId(response.session_id);
@@ -767,6 +838,7 @@ const ChatPanel = ({
       }
 
       console.log("Message sent successfully:", {
+        requestId,
         sessionId: response.session_id,
         responseLanguage: response.response_language,
         inputLanguage: response.input_language,
@@ -828,7 +900,19 @@ const ChatPanel = ({
 
       await loadUserSessions();
     } catch (error) {
-      console.error("Chat error:", error);
+      // Don't show error if request was aborted (user switched characters)
+      if (error.name === 'AbortError' || abortController.signal.aborted) {
+        console.log(`[ChatPanel] Request ${requestId} was aborted by user action`);
+        return;
+      }
+
+      // Validate that this error is for the current character
+      if (!currentCharacterRef.current || currentCharacterRef.current.id !== requestCharacterId) {
+        console.log(`[ChatPanel] Discarding stale error for request ${requestId} - character changed`);
+        return;
+      }
+
+      console.error(`[ChatPanel] Request ${requestId} failed:`, error);
 
       let errorMessage = "Failed to send message. Please try again.";
       if (error.message.includes("language")) {
@@ -843,7 +927,11 @@ const ChatPanel = ({
       setError(errorMessage);
       setMessages((prev) => prev.slice(0, -1));
     } finally {
-      setLoading(false);
+      // Only clear loading if this is still the current request
+      if (abortControllerRef.current === abortController) {
+        setLoading(false);
+        abortControllerRef.current = null;
+      }
     }
   };
 
