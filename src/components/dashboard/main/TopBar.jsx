@@ -278,7 +278,7 @@ const TopBar = ({ activeSection, onSectionChange, onMenuToggle, onSearchToggle }
             <LocationOn sx={{ fontSize: 14 }} />
           </Box>
           <Typography className={classes.logoText}>
-            Bring Back Legends
+            GigaSpace
           </Typography>
         </Box>
 

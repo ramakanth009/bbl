@@ -733,11 +733,14 @@ const ChatPanel = ({
     console.log("Language updated:", languageCode);
   };
 
-  const handleSend = async () => {
-    if (!inputValue.trim() || loading || !character) return;
+  const handleSend = async (messageText = null) => {
+    const message = messageText || inputValue.trim();
+    if (!message || loading || !character) return;
 
-    const userMessage = inputValue.trim();
-    setInputValue("");
+    const userMessage = message;
+    if (!messageText) {
+      setInputValue(""); // Only clear input if message came from input field
+    }
     setLoading(true);
     setError(null);
 
@@ -925,7 +928,7 @@ const ChatPanel = ({
               
               {/* Mobile status indicator - WhatsApp style */}
               <Typography className={classes.mobileStatusIndicator}>
-                by gigaversity
+                by GigaSpace
               </Typography>
             
               <Box
@@ -1293,15 +1296,8 @@ const ChatPanel = ({
         {/* Question Chips - positioned above input */}
         <QuestionChips
           character={character}
-          onQuestionSelect={(question) => {
-            setInputValue(question);
-            // Auto-focus the input after selecting a question
-            setTimeout(() => {
-              const inputElement = document.querySelector('textarea[placeholder*="Type"], textarea[placeholder*="Message"]');
-              if (inputElement) {
-                inputElement.focus();
-              }
-            }, 100);
+          onQuestionSend={(question) => {
+            handleSend(question);
           }}
           loading={loading}
           disabled={loading}

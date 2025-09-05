@@ -97,6 +97,7 @@ const useStyles = makeStyles((theme) => ({
 const QuestionChips = ({ 
   character, 
   onQuestionSelect, 
+  onQuestionSend, // New prop for direct sending
   loading = false,
   disabled = false,
   maxQuestions = 5,
@@ -108,6 +109,7 @@ const QuestionChips = ({
   const [category, setCategory] = useState('default');
   const [isLoading, setIsLoading] = useState(true);
   const [fadeIn, setFadeIn] = useState(false);
+  const [sentQuestions, setSentQuestions] = useState(new Set()); // Track sent questions locally
 
   // Load questions based on character category
   const loadQuestions = useCallback(async () => {
@@ -163,16 +165,28 @@ const QuestionChips = ({
     loadQuestions();
   }, [loadQuestions]);
 
-  // Handle question selection
+  // Reset sent questions when character changes
+  useEffect(() => {
+    setSentQuestions(new Set());
+  }, [character?.id, character?.name]);
+
+  // Handle question selection - now sends directly
   const handleQuestionClick = useCallback((question) => {
     if (disabled || loading) return;
     
-    console.log(`🎯 Question selected: ${question}`);
+    console.log(`🎯 Question selected for direct sending: ${question}`);
     
-    if (onQuestionSelect) {
+    // Mark question as sent locally
+    setSentQuestions(prev => new Set([...prev, question]));
+    
+    // Send the question directly if onQuestionSend is provided
+    if (onQuestionSend) {
+      onQuestionSend(question);
+    } else if (onQuestionSelect) {
+      // Fallback to old behavior if onQuestionSend is not provided
       onQuestionSelect(question);
     }
-  }, [onQuestionSelect, disabled, loading]);
+  }, [onQuestionSend, onQuestionSelect, disabled, loading]);
 
   // Format category name for display
   const formatCategoryName = (categoryKey) => {
@@ -182,8 +196,11 @@ const QuestionChips = ({
       .join(' & ');
   };
 
-  // Don't render if no character or questions
-  if (!character || (!isLoading && questions.length === 0)) {
+  // Filter out sent questions
+  const availableQuestions = questions.filter(question => !sentQuestions.has(question));
+
+  // Don't render if no character or no available questions
+  if (!character || (!isLoading && availableQuestions.length === 0)) {
     return null;
   }
 
@@ -212,9 +229,9 @@ const QuestionChips = ({
       <Box className={classes.fadeContainer}>
         <Box className={classes.quickActionsContainer}>
           <Box className={classes.quickActionsWrapper}>
-            {questions.map((question, index) => (
+            {availableQuestions.map((question, index) => (
               <Fade
-                key={`${category}-${index}`}
+                key={`${category}-${question}-${index}`}
                 in={fadeIn}
                 timeout={300}
                 style={{

@@ -635,7 +635,7 @@ const CharacterCard = ({ character, onStartChat }) => {
               {character.name}
             </Typography>
             <Typography className={classes.characterAuthor}>
-              by @{character.creator || 'gigaversity'}
+              by @{character.creator || 'GigaSpace'}
             </Typography>
           </Box>
         </Box>

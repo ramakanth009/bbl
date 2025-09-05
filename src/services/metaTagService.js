@@ -1,5 +1,5 @@
 /**
- * MetaTagService - Dynamic Meta Tag Management for BBL Character Sharing
+ * MetaTagService - Dynamic Meta Tag Management for GigaSpace Character Sharing
  * Handles generation of meta tags for social media sharing and SEO
  */
 
@@ -8,10 +8,10 @@ import apiService from './api';
 class MetaTagService {
     constructor() {
         this.defaultMeta = {
-            title: 'Bring Back Legends - Chat with Historical & Fictional Characters',
+            title: 'GigaSpace - Chat with Historical & Fictional Characters',
             description: 'Experience conversations with legendary historical figures and fictional characters through AI-powered chat. Discover their stories, wisdom, and personalities.',
             image: '/android-chrome-512x512.png',
-            siteName: 'Bring Back Legends',
+            siteName: 'GigaSpace',
             url: window.location.origin
         };
     }
@@ -62,7 +62,7 @@ class MetaTagService {
         const characterUrl = this.generateCharacterUrl(character, section);
 
         return {
-            title: `Chat with ${characterName} | Bring Back Legends`,
+            title: `Chat with ${characterName} | GigaSpace`,
             description: characterDescription,
             image: characterImage,
             url: characterUrl,
@@ -86,7 +86,7 @@ class MetaTagService {
             
             // Additional meta tags
             keywords: this.generateKeywords(character),
-            author: 'Bring Back Legends',
+            author: 'GigaSpace',
             robots: 'index, follow',
             
             // Character specific data
@@ -107,20 +107,20 @@ class MetaTagService {
         // Try to use character's bio or description if available
         if (character.bio && character.bio.length > 10) {
             const bio = character.bio.substring(0, 150);
-            return `Experience conversations with ${name}. ${bio}${bio.length === 150 ? '...' : ''} Start chatting now on Bring Back Legends.`;
+            return `Experience conversations with ${name}. ${bio}${bio.length === 150 ? '...' : ''} Start chatting now on GigaSpace.`;
         }
         
         if (character.description && character.description.length > 10) {
             const desc = character.description.substring(0, 150);
-            return `Chat with ${name}. ${desc}${desc.length === 150 ? '...' : ''} Powered by Bring Back Legends.`;
+            return `Chat with ${name}. ${desc}${desc.length === 150 ? '...' : ''} Powered by GigaSpace.`;
         }
         
         // Fallback descriptions based on character type or category
         if (character.category) {
-            return `Experience conversations with ${name}, a legendary ${character.category} character. Engage in meaningful dialogue and explore their world through AI-powered conversations on Bring Back Legends.`;
+            return `Experience conversations with ${name}, a legendary ${character.category} character. Engage in meaningful dialogue and explore their world through AI-powered conversations on GigaSpace.`;
         }
         
-        return `Chat with ${name} and experience engaging conversations with this legendary character. Discover their story and personality through AI-powered dialogue on Bring Back Legends.`;
+        return `Chat with ${name} and experience engaging conversations with this legendary character. Discover their story and personality through AI-powered dialogue on GigaSpace.`;
     }
 
     /**
@@ -176,7 +176,7 @@ class MetaTagService {
      * @returns {string} Comma-separated keywords
      */
     generateKeywords(character) {
-        const keywords = ['AI chat', 'character conversation', 'Bring Back Legends'];
+        const keywords = ['AI chat', 'character conversation', 'GigaSpace'];
         
         if (character.name) {
             keywords.push(character.name);

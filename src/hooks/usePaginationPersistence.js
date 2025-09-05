@@ -11,7 +11,7 @@ import { useSearchParams, useLocation } from 'react-router-dom';
  * @param {string} section - Optional section identifier for isolated pagination
  * @returns {Object} Pagination state and handlers
  */
-export const usePaginationPersistence = (defaultPage = 1, defaultPageSize = 20, section = null) => {
+export const usePaginationPersistence = (defaultPage = 1, defaultPageSize = 24, section = null) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   
@@ -31,7 +31,7 @@ export const usePaginationPersistence = (defaultPage = 1, defaultPageSize = 20, 
     const urlPageSize = searchParams.get(pageSizeParam);
     const pageSize = urlPageSize ? parseInt(urlPageSize, 10) : defaultPageSize;
     // Validate page size
-    const validSizes = [10, 20, 50, 100];
+    const validSizes = [24, 50, 80, 100];
     return validSizes.includes(pageSize) ? pageSize : defaultPageSize;
   }, [searchParams, pageSizeParam, defaultPageSize]);
   

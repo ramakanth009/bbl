@@ -345,7 +345,7 @@ const ForgotPassword = () => {
                       letterSpacing: '0.02em',
                     }}
                   >
-                    Bring Back Legend
+                    GigaSpace
                   </Typography>
                 </Box>
 

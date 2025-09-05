@@ -851,7 +851,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
             </Box>
             {open && (
               <Typography className={classes.logoText}>
-                Gigaspace
+                GigaSpace
               </Typography>
             )}
           </Box>
@@ -945,7 +945,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
             }}
           >
             <Chip
-              label="Bring Back Legend v1.0 (beta)"
+              label="GigaSpace v1.0 (beta)"
               size="small"
               sx={{
                 backgroundColor: 'transparent',

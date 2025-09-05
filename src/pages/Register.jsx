@@ -635,7 +635,7 @@ const Register = () => {
                     color: "transparent",
                   }}
                 >
-                  Bring Back Legends
+                  GigaSpace
                 </Typography>
               </div>
             </Zoom>

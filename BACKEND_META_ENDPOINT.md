@@ -19,8 +19,8 @@ Social media platforms (WhatsApp, Facebook, Twitter, etc.) crawl server-side HTM
   "category": "Historical Figures",
   "bio": "Full character biography...",
   "meta_tags": {
-    "title": "Chat with Albert Einstein | Bring Back Legends",
-    "description": "Experience conversations with Albert Einstein. Theoretical physicist known for the theory of relativity... Start chatting now on Bring Back Legends.",
+    "title": "Chat with Albert Einstein | GigaSpace",
+    "description": "Experience conversations with Albert Einstein. Theoretical physicist known for the theory of relativity... Start chatting now on GigaSpace.",
     "og_title": "Chat with Albert Einstein",
     "og_description": "Experience conversations with Albert Einstein. Theoretical physicist known for...",
     "og_image": "https://example.com/einstein.jpg",
@@ -47,7 +47,7 @@ This should return full HTML with proper meta tags:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Basic Meta Tags -->
-    <title>Chat with Albert Einstein | Bring Back Legends</title>
+    <title>Chat with Albert Einstein | GigaSpace</title>
     <meta name="description" content="Experience conversations with Albert Einstein. Theoretical physicist known for the theory of relativity...">
     
     <!-- Open Graph Meta Tags -->
@@ -56,7 +56,7 @@ This should return full HTML with proper meta tags:
     <meta property="og:image" content="https://example.com/einstein.jpg">
     <meta property="og:url" content="https://yourdomain.com/dashboard/discover/chat/123/albert-einstein">
     <meta property="og:type" content="profile">
-    <meta property="og:site_name" content="Bring Back Legends">
+    <meta property="og:site_name" content="GigaSpace">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">

@@ -1,8 +1,8 @@
-# BBL Share Feature Implementation Guide
+# GigaSpace Share Feature Implementation Guide
 
 ## Overview
 
-This guide documents the complete implementation of the dynamic meta tag and social media sharing feature for the BBL (Bring Back Legends) application. The feature enables automatic generation of dynamic meta tags for character pages, making them shareable across social media platforms with rich previews.
+This guide documents the complete implementation of the dynamic meta tag and social media sharing feature for the GigaSpace (GigaSpace) application. The feature enables automatic generation of dynamic meta tags for character pages, making them shareable across social media platforms with rich previews.
 
 ## Features Implemented
 
@@ -50,7 +50,7 @@ Examples:
 
 ```html
 <!-- Basic Meta Tags -->
-<title>Chat with {Character Name} | Bring Back Legends</title>
+<title>Chat with {Character Name} | GigaSpace</title>
 <meta name="description" content="Experience conversations with {Character Name}. {Character Bio/Description}..." />
 <meta name="keywords" content="{Character Name}, AI chat, character conversation, {Category}, ..." />
 
@@ -60,7 +60,7 @@ Examples:
 <meta property="og:image" content="{Character Image URL}" />
 <meta property="og:url" content="{Character Page URL}" />
 <meta property="og:type" content="profile" />
-<meta property="og:site_name" content="Bring Back Legends" />
+<meta property="og:site_name" content="GigaSpace" />
 
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="summary_large_image" />
@@ -308,7 +308,7 @@ Consider adding a dedicated API endpoint for meta tag data:
 ```javascript
 // GET /api/characters/{id}/meta
 {
-  "title": "Chat with Albert Einstein | Bring Back Legends",
+  "title": "Chat with Albert Einstein | GigaSpace",
   "description": "Experience conversations with Albert Einstein...",
   "image": "https://example.com/einstein.jpg",
   "url": "https://yourapp.com/dashboard/discover/chat/123/albert-einstein",
@@ -323,6 +323,6 @@ This would enable:
 
 ## Conclusion
 
-The BBL share feature implementation provides a robust foundation for social media sharing with dynamic meta tags. The modular architecture allows for easy extension and customization while maintaining performance and user experience standards.
+The GigaSpace share feature implementation provides a robust foundation for social media sharing with dynamic meta tags. The modular architecture allows for easy extension and customization while maintaining performance and user experience standards.
 
 For questions or issues, refer to the component documentation or check the browser console for debug information.

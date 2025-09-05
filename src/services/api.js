@@ -8,7 +8,7 @@ import axios from 'axios';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://clone-7040.onrender.com';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://matrix.gigalabs.in';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://matrix.gigalabs.in';
-const BASE_URL = process.env.REACT_APP_API_URL || 'https://space.gigaspace.org';
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://space.GigaSpace.org';
 
 class ApiService {
     constructor() {
@@ -399,7 +399,7 @@ class ApiService {
     }
 
     // Updated paginated characters method with caching
-    async getCharactersPaginated(page = 1, perPage = 20, section = null) {
+    async getCharactersPaginated(page = 1, perPage = 24, section = null) {
         const cacheKey = this.createCacheKey('GET', '/characters', { page, perPage, section });
         
         return await this.getCachedOrFetch(cacheKey, async () => {
@@ -733,7 +733,7 @@ class ApiService {
         }
     }
 
-    async getSessionsPaginated(page = 1, perPage = 20) {
+    async getSessionsPaginated(page = 1, perPage = 24) {
         try {
             const response = await this.client.get('/get_sessions', {
                 params: {

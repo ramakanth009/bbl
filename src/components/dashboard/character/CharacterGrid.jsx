@@ -568,7 +568,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     handlePageSizeChange,
     resetPagination,
     isInitialized
-  } = usePaginationPersistence(1, 20, activeSection?.toLowerCase());
+  } = usePaginationPersistence(1, 24, activeSection?.toLowerCase());
 
   const [characters, setCharacters] = useState([]);
   const [originalCharacters, setOriginalCharacters] = useState([]);
@@ -745,7 +745,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
           const tempCharacter = {
             name: sessionWithMessages.character,
             id: `temp_${sessionWithMessages.character}`,
-            creator: 'Gigaversity',
+            creator: 'GigaSpace',
             category: 'general',
             messages: '0k',
             likes: '0k',

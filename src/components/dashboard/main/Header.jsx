@@ -152,7 +152,7 @@ const Header = ({ logoSrc }) => {
         {logoSrc ? (
           <img
             src={logoSrc}
-            alt="Bring Back Legends Logo"
+            alt="GigaSpace Logo"
             className={classes.logoImage}
             onError={(e) => {
               // Fallback to placeholder if image fails to load
