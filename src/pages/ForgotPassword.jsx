@@ -21,7 +21,6 @@ import { makeStyles } from '@mui/styles';
 import apiService from '../services/api';
 
 const StarField = React.lazy(() => import('../components/common/StarField'));
-const CardAnimation = React.lazy(() => import('../components/common/CardAnimation'));
 
 const useStyles = makeStyles(() => ({
   pageContainer: {
@@ -43,20 +42,14 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     maxWidth: 440,
     padding: '36px 36px 32px 36px',
-    background: 'rgba(255, 255, 255, 0.08) !important',
-    backgroundColor: 'rgba(255, 255, 255, 0.08) !important',
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    border: '1px solid rgba(255, 255, 255, 0.2) !important',
+    background: 'none !important',
+    backgroundColor: 'transparent !important',
+    border: 'none !important',
     borderRadius: 28,
-    boxShadow: '0 25px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important',
-    transition: 'all 2s cubic-bezier(0.16, 1, 0.3, 1)',
+    boxShadow: 'none !important',
+    transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
     position: 'relative',
     overflow: 'hidden',
-    opacity: 0,
-    transform: 'scale(0)',
-    transformOrigin: 'center center',
-    clipPath: 'circle(0% at center)',
     '@media (max-width: 1200px)': {
       maxWidth: 400,
       padding: '32px 32px 28px 32px',
@@ -289,49 +282,6 @@ const useStyles = makeStyles(() => ({
       fontSize: '24px !important',
     },
   },
-  authCardVisible: {
-    opacity: '1 !important',
-    transform: 'scale(1) !important',
-    clipPath: 'circle(100% at center) !important',
-    animation: 'rippleReveal 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-  },
-  '@keyframes rippleReveal': {
-    '0%': {
-      clipPath: 'circle(0% at center)',
-      transform: 'scale(0)',
-      opacity: 0,
-    },
-    '15%': {
-      clipPath: 'circle(5% at center)',
-      transform: 'scale(0.1)',
-      opacity: 0.1,
-    },
-    '35%': {
-      clipPath: 'circle(25% at center)',
-      transform: 'scale(0.4)',
-      opacity: 0.4,
-    },
-    '55%': {
-      clipPath: 'circle(50% at center)',
-      transform: 'scale(0.7)',
-      opacity: 0.7,
-    },
-    '75%': {
-      clipPath: 'circle(75% at center)',
-      transform: 'scale(0.9)',
-      opacity: 0.85,
-    },
-    '90%': {
-      clipPath: 'circle(90% at center)',
-      transform: 'scale(0.98)',
-      opacity: 0.95,
-    },
-    '100%': {
-      clipPath: 'circle(100% at center)',
-      transform: 'scale(1)',
-      opacity: 1,
-    },
-  },
 }));
 
 const ForgotPassword = () => {
@@ -340,21 +290,8 @@ const ForgotPassword = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [cardVisible, setCardVisible] = useState(false);
   const navigate = useNavigate();
 
-  // Listen for card animation ripple event to reveal card
-  React.useEffect(() => {
-    const handleRippleEvent = () => {
-      setCardVisible(true);
-    };
-
-    window.addEventListener('cardAnimationRipple', handleRippleEvent);
-    
-    return () => {
-      window.removeEventListener('cardAnimationRipple', handleRippleEvent);
-    };
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -389,17 +326,9 @@ const ForgotPassword = () => {
         <StarField />
       </React.Suspense>
       
-      <React.Suspense fallback={<div />}>
-        <CardAnimation />
-      </React.Suspense>
-      
       <Container maxWidth="sm" className={classes.pageContainer}>
         <Fade in timeout={800}>
-          <Card 
-            className={`${classes.authCard} ${cardVisible ? classes.authCardVisible : ''}`} 
-            style={{ position: 'relative', overflow: 'hidden' }}
-          >
-            <Zoom in timeout={1000}>
+          <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
               <Box>
                 <Box className={classes.logoContainer}>
                   <Box className={classes.logoIcon}>
@@ -530,7 +459,6 @@ const ForgotPassword = () => {
                   </Box>
                 </Box>
               </Box>
-            </Zoom>
           </Card>
         </Fade>
       </Container>

@@ -633,7 +633,15 @@ return (
                     {loading ? 'Signing in...' : 'Sign In'}
                   </Button>
 
-                  <Box textAlign="center">
+                  <Box textAlign="center" sx={{ mb: 2 }}>
+                    <Typography 
+                      variant="body2" 
+                      sx={{ color: '#fff', mb: 1 }}
+                    >
+                      <Link to="/forgot-password" className={classes.styledLink}>
+                        Forgot your password?
+                      </Link>
+                    </Typography>
                     <Typography 
                       variant="body2" 
                       sx={{ color: '#fff' }}
