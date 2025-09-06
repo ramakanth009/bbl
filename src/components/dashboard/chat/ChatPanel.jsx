@@ -42,9 +42,10 @@ const useStyles = makeStyles(() => ({
     overscrollBehavior: 'contain',
     // Mobile viewport height fixes
     "@media (max-width: 600px)": {
-      height: "100dvh", // Use dynamic viewport height
+      height: "calc(var(--app-visual-vh, 1vh) * 100)", // Visual viewport height
       minHeight: "-webkit-fill-available",
       position: "fixed", // Better mobile positioning
+      left: 0,
       overflow: 'visible', // Avoid clipping fixed children like header
     },
   },
@@ -320,24 +321,23 @@ const useStyles = makeStyles(() => ({
     padding: "0 12px",
     "@media (max-width: 600px)": {
       padding: "0 8px",
-      // Add top padding for fixed header
-      paddingTop: "calc(80px + env(safe-area-inset-top, 0px))", // Space for fixed header
-      // Add bottom padding for mobile keyboard space
-      paddingBottom: "env(keyboard-inset-height, 0px)",
-      // Ensure messages don't get hidden behind input
-      marginBottom: "120px", // Space for input area + keyboard
+      // Space for fixed header
+      paddingTop: "calc(80px + env(safe-area-inset-top, 0px))",
+      // Ensure messages don't get hidden behind input: use measured input bar height
+      paddingBottom: "calc(var(--input-bar-height, 120px) + env(safe-area-inset-bottom, 0px))",
+      marginBottom: 0,
     },
     "@media (max-width: 480px)": {
       padding: "0 6px",
-      paddingTop: "76px", // Space for fixed header
-      paddingBottom: "env(keyboard-inset-height, 0px)",
-      marginBottom: "110px",
+      paddingTop: "76px",
+      paddingBottom: "calc(var(--input-bar-height, 110px) + env(safe-area-inset-bottom, 0px))",
+      marginBottom: 0,
     },
     "@media (max-width: 375px)": {
       padding: "0 4px",
-      paddingTop: "72px", // Space for fixed header
-      paddingBottom: "env(keyboard-inset-height, 0px)",
-      marginBottom: "100px",
+      paddingTop: "72px",
+      paddingBottom: "calc(var(--input-bar-height, 100px) + env(safe-area-inset-bottom, 0px))",
+      marginBottom: 0,
     },
   },
   messagesContent: {
@@ -512,6 +512,7 @@ const ChatPanel = ({
   const messagesEndRef = useRef(null);
   const messagesWrapperRef = useRef(null);
   const messageListRef = useRef(null);
+  const inputContainerRef = useRef(null);
   
   // Request tracking and cancellation
   const abortControllerRef = useRef(null);
@@ -559,8 +560,17 @@ const ChatPanel = ({
   useEffect(() => {
     if (!isMobile) return;
 
+    // Set CSS var for visual viewport height to avoid 100vh issues on mobile
+    const setVisualVh = () => {
+      const vv = window.visualViewport;
+      const height = vv ? vv.height : window.innerHeight;
+      const unit = height / 100;
+      document.documentElement.style.setProperty('--app-visual-vh', `${unit}px`);
+    };
+
     const handleViewportChange = () => {
-      // Force a reflow to handle viewport changes on mobile
+      setVisualVh();
+      // Scroll to bottom so input stays visible above keyboard
       if (messagesWrapperRef.current) {
         messagesWrapperRef.current.scrollTop = messagesWrapperRef.current.scrollHeight;
       }
@@ -573,8 +583,10 @@ const ChatPanel = ({
     };
 
     // Listen for visual viewport changes (keyboard show/hide)
+    setVisualVh();
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', handleVisualViewportChange);
+      window.visualViewport.addEventListener('scroll', handleVisualViewportChange);
     }
 
     // Fallback for older browsers
@@ -583,8 +595,35 @@ const ChatPanel = ({
     return () => {
       if (window.visualViewport) {
         window.visualViewport.removeEventListener('resize', handleVisualViewportChange);
+        window.visualViewport.removeEventListener('scroll', handleVisualViewportChange);
       }
       window.removeEventListener('resize', handleViewportChange);
+    };
+  }, [isMobile]);
+
+  // Observe input container height to set padding for messages list dynamically
+  useEffect(() => {
+    if (!isMobile) return;
+    const el = inputContainerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+
+    const updateInputBarHeight = () => {
+      const h = el.offsetHeight || 120;
+      document.documentElement.style.setProperty('--input-bar-height', `${h}px`);
+    };
+
+    const ro = new ResizeObserver(() => {
+      updateInputBarHeight();
+      // keep view pinned to bottom when height changes (keyboard open/close)
+      if (messagesWrapperRef.current) {
+        messagesWrapperRef.current.scrollTop = messagesWrapperRef.current.scrollHeight;
+      }
+    });
+    ro.observe(el);
+    updateInputBarHeight();
+
+    return () => {
+      ro.disconnect();
     };
   }, [isMobile]);
 
@@ -1651,7 +1690,7 @@ const ChatPanel = ({
         </Box>
       </Box>
 
-      <Box sx={{ 
+      <Box ref={inputContainerRef} sx={{ 
         display: 'flex', 
         flexDirection: 'column',
         gap: 1, 
