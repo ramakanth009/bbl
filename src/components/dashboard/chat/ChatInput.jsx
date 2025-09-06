@@ -187,7 +187,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ChatInput = ({ value, onChange, onSend, loading, placeholder = "Message..." }) => {
+const ChatInput = ({ value, onChange, onSend, loading, disabled = false, placeholder = "Message..." }) => {
   const classes = useStyles();
   const inputRef = useRef(null);
 
@@ -200,8 +200,8 @@ const ChatInput = ({ value, onChange, onSend, loading, placeholder = "Message...
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      // Only send if there's content and not loading
-      if (value.trim() && !loading && onSend) {
+      // Only send if there's content, not loading, and not disabled
+      if (value.trim() && !loading && !disabled && onSend) {
         onSend();
       }
     }
@@ -218,17 +218,17 @@ const ChatInput = ({ value, onChange, onSend, loading, placeholder = "Message...
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          disabled={loading}
+          disabled={loading || disabled}
           inputRef={inputRef}
         />
         <IconButton
           className={`${classes.sendButton} ${value.trim() ? 'visible' : ''}`}
           onClick={() => {
-            if (value.trim() && !loading && onSend) {
+            if (value.trim() && !loading && !disabled && onSend) {
               onSend();
             }
           }}
-          disabled={!value.trim() || loading}
+          disabled={!value.trim() || loading || disabled}
         >
           <Send />
         </IconButton>

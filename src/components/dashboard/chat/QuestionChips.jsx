@@ -8,10 +8,9 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
-    marginBottom: '12px',
     padding: '0 4px',
     '@media (max-width: 600px)': {
-      marginBottom: '8px',
+      marginBottom: '1px',
       padding: '0 2px',
     },
   },
