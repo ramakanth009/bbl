@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { 
   Box, 
   Typography, 
@@ -559,6 +560,7 @@ const useStyles = makeStyles({
 
 const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const classes = useStyles();
+  const location = useLocation();
   
   // NEW: Use pagination persistence hook
   const {
@@ -588,6 +590,9 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   // CRITICAL FIX: Add style readiness state
   const [stylesReady, setStylesReady] = useState(false);
 
+  // NEW: Add reset trigger for search component
+  const [searchResetTrigger, setSearchResetTrigger] = useState(0);
+
   // CRITICAL FIX: Ensure styles are ready before rendering
   useEffect(() => {
     const timer = requestAnimationFrame(() => {
@@ -595,6 +600,21 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
     });
     return () => cancelAnimationFrame(timer);
   }, []);
+
+  // NEW: Reset search when navigating to Discover section
+  useEffect(() => {
+    if (activeSection === 'Discover') {
+      setSearchResetTrigger(prev => prev + 1);
+    }
+  }, [activeSection]);
+
+  // NEW: Also listen for reset flag sent via navigation state (e.g., clicking Discover while already on Discover)
+  useEffect(() => {
+    if (location?.state?.resetSearch) {
+      setSearchResetTrigger(prev => prev + 1);
+    }
+    // We intentionally don't clear history state here; timestamp changes on each click
+  }, [location?.state?.resetSearch]);
 
   useEffect(() => {
     loadData();
@@ -899,6 +919,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
               onSearchStateChange={handleSearchStateChange}
               placeholder="Search characters..."
               showSuggestions={true}
+              section="characterGrid"
+              resetTrigger={searchResetTrigger}
             />
           </Box>
         </Box>
@@ -913,15 +935,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
          
         <Box className={classes.emptyState}>
           <Typography className={classes.emptyStateTitle}>
-            {isSearching ? 'No search results found' : 'No characters found'}
-          </Typography>
-          <Typography variant="body2">
-            {isSearching 
-              ? `No characters found for "${searchQuery}". Try a different search term.`
-              : activeSection === 'Recent' 
-                ? 'Start chatting with characters to see them here!'
-                : 'Please check back later or try a different section.'
-            }
+            {isSearching ? 'No search results found' : 'Character Are Loading...'}
           </Typography>
         </Box>
       </Box>
@@ -953,6 +967,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
             onSearchStateChange={handleSearchStateChange}
             placeholder="Search characters..."
             showSuggestions={true}
+            section="characterGrid"
+            resetTrigger={searchResetTrigger}
           />
         </Box>
       </Box>

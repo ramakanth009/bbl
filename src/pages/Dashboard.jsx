@@ -177,7 +177,11 @@ const Dashboard = () => {
   };
 
   const handleSectionChange = (section) => {
-    navigate(`/dashboard/${section}`);
+    if (section === 'discover') {
+      navigate(`/dashboard/${section}`, { state: { resetSearch: Date.now() } });
+    } else {
+      navigate(`/dashboard/${section}`);
+    }
     if (isMobile) {
       setMobileSidebarOpen(false);
     }

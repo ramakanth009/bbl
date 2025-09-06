@@ -337,6 +337,7 @@ const SearchComponent = ({
   showSuggestions = true,
   className,
   section = null, // NEW: Add section prop for isolated search persistence
+  resetTrigger = null, // NEW: Add reset trigger prop
   ...props 
 }) => {
   const classes = useStyles();
@@ -378,6 +379,13 @@ const SearchComponent = ({
       }
     }
   }, [persistedQuery]);
+
+  // NEW: Reset search when resetTrigger changes
+  useEffect(() => {
+    if (resetTrigger) {
+      handleClear();
+    }
+  }, [resetTrigger]);
 
   useEffect(() => {
     if (onSearchStateChange) {

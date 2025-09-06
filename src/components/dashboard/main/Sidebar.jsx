@@ -595,7 +595,14 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
 
   const handleNavClick = (path, comingSoon) => {
     if (!comingSoon) {
-      navigate(`/dashboard/${path}`);
+      // When navigating to Discover, include a reset flag in state so search boxes can clear
+      if (path === 'discover') {
+        navigate(`/dashboard/${path}`,
+          { state: { resetSearch: Date.now() } }
+        );
+      } else {
+        navigate(`/dashboard/${path}`);
+      }
       // Close sidebar on mobile after navigation
       if (isMobileView && onToggle) {
         onToggle();
