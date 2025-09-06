@@ -207,7 +207,9 @@ const Discover = () => {
       
       // Navigate with character data in state for immediate access using new URL structure
       const characterPath = createCharacterPath('/dashboard/discover/chat', character.id, character.name);
-      navigate(characterPath, { 
+      // Preserve current query params (e.g., discover_page) while navigating to chat
+      const query = location.search || '';
+      navigate(`${characterPath}${query}`, { 
         replace: false,
         state: createCharacterNavigationState(character) // This ensures instant access to character data
       });
@@ -227,7 +229,9 @@ const Discover = () => {
     console.log('❌ Closing chat panel in Discover');
     setIsChatOpen(false);
     setTimeout(() => setSelectedCharacter(null), 300);
-    navigate('/dashboard/discover');
+    // Preserve current query params (e.g., discover_page) when returning to list
+    const query = location.search || '';
+    navigate(`/dashboard/discover${query}`);
   };
 
   // Add debugging effect to monitor state changes

@@ -13,6 +13,10 @@ import {
   MenuItem,
   InputLabel
 } from '@mui/material';
+import { useTheme, useMediaQuery } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { makeStyles } from '@mui/styles';
 import CharacterCard from './CharacterCard';
 import CreateCharacterButton from './creation/CreateCharacterButton';
@@ -524,14 +528,6 @@ const useStyles = makeStyles({
       },
     },
     '@media (max-width: 600px)': {
-      '& .MuiPaginationItem-root': {
-        minWidth: '32px !important',
-        height: '32px !important',
-        borderRadius: '6px !important',
-        fontSize: '0.8rem !important',
-      },
-    },
-    '@media (max-width: 480px)': {
       '& .MuiPagination-ul': {
         gap: '2px !important',
       },
@@ -556,11 +552,70 @@ const useStyles = makeStyles({
       },
     },
   },
+  // New: compact mobile pager styles
+  mobilePager: {
+    display: 'none !important',
+    '@media (max-width: 600px)': {
+      display: 'flex !important',
+      alignItems: 'center !important',
+      justifyContent: 'space-between !important',
+      gap: '12px !important',
+      width: '100% !important',
+      padding: '10px 12px !important',
+      background: 'rgba(26, 26, 26, 0.8) !important',
+      border: '1px solid rgba(99, 102, 241, 0.2) !important',
+      borderRadius: '12px !important',
+      backdropFilter: 'blur(10px) !important',
+    },
+  },
+  mobilePagerButton: {
+    color: '#9ca3af !important',
+    border: '1px solid rgba(99, 102, 241, 0.2) !important',
+    borderRadius: '10px !important',
+    background: 'rgba(26, 26, 26, 0.6) !important',
+    '&:hover': {
+      background: 'rgba(42, 42, 42, 0.9) !important',
+      color: '#ffffff !important',
+    },
+  },
+  mobilePagerLabel: {
+    color: '#d1d5db !important',
+    fontWeight: '600 !important',
+    fontSize: '0.9rem !important',
+    flex: '1 !important',
+    textAlign: 'center !important',
+  },
+  mobilePagerCombined: {
+    display: 'none !important',
+    '@media (max-width: 600px)': {
+      display: 'flex !important',
+      alignItems: 'center !important',
+      justifyContent: 'space-between !important',
+      gap: '8px !important',
+      width: '100% !important',
+      padding: '8px 10px !important',
+      background: 'rgba(26, 26, 26, 0.8) !important',
+      border: '1px solid rgba(99, 102, 241, 0.2) !important',
+      borderRadius: '12px !important',
+      backdropFilter: 'blur(10px) !important',
+      flexWrap: 'nowrap !important',
+    },
+  },
+  mobilePagerPagination: {
+    flex: '1 1 auto !important',
+    overflow: 'hidden !important',
+    '& .MuiPagination-ul': {
+      justifyContent: 'center !important',
+      flexWrap: 'nowrap !important',
+    },
+  },
 });
 
 const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const classes = useStyles();
   const location = useLocation();
+  const theme = useTheme();
+  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
   
   // NEW: Use pagination persistence hook
   const {
@@ -935,7 +990,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
          
         <Box className={classes.emptyState}>
           <Typography className={classes.emptyStateTitle}>
-            {isSearching ? 'No search results found' : 'Character Are Loading...'}
+            {isSearching ? 'No search results found' : 'Loading Character...'}
           </Typography>
         </Box>
       </Box>
@@ -1002,38 +1057,77 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
 
           {!isSearching && totalPages > 1 && (
             <Box className={classes.paginationContainer}>
-              <Box className={classes.paginationInfo}>
-                <Typography variant="body2">
-                  Showing {Math.min(((currentPage - 1) * pageSize) + 1, totalCount)}-{Math.min(currentPage * pageSize, totalCount)} of {formatCount(totalCount)} characters
-                </Typography>
-                
-                <FormControl size="small" className={classes.pageSizeSelect}>
-                  <InputLabel>Per page</InputLabel>
-                  <Select
-                    value={pageSize}
-                    onChange={handlePageSizeChange}
-                    label="Per page"
-                  >
-                    <MenuItem value={10}>10</MenuItem>
-                    <MenuItem value={20}>20</MenuItem>
-                    <MenuItem value={50}>50</MenuItem>
-                    <MenuItem value={100}>100</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
+              {!isMobileView && (
+                <Box className={classes.paginationInfo}>
+                  <Typography variant="body2">
+                    Showing {Math.min(((currentPage - 1) * pageSize) + 1, totalCount)}-{Math.min(currentPage * pageSize, totalCount)} of {formatCount(totalCount)} characters
+                  </Typography>
+                </Box>
+              )}
 
-              <Stack spacing={2}>
-                <Pagination
-                  count={totalPages}
-                  page={currentPage}
-                  onChange={handlePageChange}
-                  color="primary"
-                  showFirstButton
-                  showLastButton
-                  size="large"
-                  className={classes.enhancedPagination}
-                />
-              </Stack>
+              {!isMobileView && (
+                <FormControl size="small" className={classes.pageSizeSelect}>
+                    <InputLabel>Per page</InputLabel>
+                    <Select
+                      value={pageSize}
+                      onChange={handlePageSizeChange}
+                      label="Per page"
+                    >
+                      <MenuItem value={10}>10</MenuItem>
+                      <MenuItem value={20}>20</MenuItem>
+                      <MenuItem value={50}>50</MenuItem>
+                      <MenuItem value={100}>100</MenuItem>
+                    </Select>
+                </FormControl>
+              )}
+
+              {isMobileView ? (
+                <Box className={classes.mobilePagerCombined}>
+                  <IconButton
+                    className={classes.mobilePagerButton}
+                    size="small"
+                    onClick={(e) => handlePageChange(e, Math.max(1, currentPage - 1))}
+                    disabled={currentPage <= 1}
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeftIcon fontSize="small" />
+                  </IconButton>
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    size="small"
+                    color="primary"
+                    showFirstButton={false}
+                    showLastButton={false}
+                    siblingCount={1}
+                    boundaryCount={1}
+                    className={`${classes.enhancedPagination} ${classes.mobilePagerPagination}`}
+                  />
+                  <IconButton
+                    className={classes.mobilePagerButton}
+                    size="small"
+                    onClick={(e) => handlePageChange(e, Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage >= totalPages}
+                    aria-label="Next page"
+                  >
+                    <ChevronRightIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              ) : (
+                <Stack spacing={2}>
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    color="primary"
+                    showFirstButton
+                    showLastButton
+                    size="large"
+                    className={classes.enhancedPagination}
+                  />
+                </Stack>
+              )}
             </Box>
           )}
         </>
