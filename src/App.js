@@ -2,6 +2,7 @@
 // import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { theme } from './styles/theme';
@@ -83,68 +84,70 @@ function DashboardWithMobileModal() {
 function AppContent() {
   return (
     <StyledEngineProvider injectFirst>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Auth Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            
-            {/* Blog Routes - Public, no authentication required */}
-            <Route path="/blog" element={<BlogLayout />}>
-              <Route index element={<BlogHome />} />
-              <Route path="category/:categorySlug" element={<BlogCategory />} />
-              <Route path="post/:slug" element={<BlogPost />} />
-            </Route>
-            
-            {/* Dashboard Routes - Protected */}
-            <Route 
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <CategoriesProvider>
-                    <DashboardWithMobileModal />
-                  </CategoriesProvider>
-                </ProtectedRoute>
-              } 
-            >
-              {/* Nested routes for dashboard sections */}
-              <Route index element={<Navigate to="discover" replace />} />
-              <Route path="discover" element={<Discover />} />
-              <Route path="discover/chat/:characterId/:characterName" element={<Discover />} />
-              <Route path="featured" element={<Featured />} />
-              <Route path="featured/chat/:characterId/:characterName" element={<Featured />} />
-              <Route path="trending" element={<Trending />} />
-              <Route path="foryou" element={<Foryou />} />
-              <Route path="recent" element={<Recent />} />
-              <Route path="history" element={<History />} />
-              <Route path="history/session/:sessionId" element={<SessionChat />} />
-              
-              {/* Category Routes */}
-              <Route path="categories/:categoryKey" element={<CategoryPage />} />
-              <Route path="categories/:categoryKey/chat/:characterId/:characterName" element={<CategoryPage />} />
-            </Route>
-            
-            {/* Default redirect */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </ThemeProvider>
-    </StyledEngineProvider>
+      <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AuthProvider>
+            <BrowserRouter>
+              <Routes>
+                {/* Auth Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+                
+                {/* Blog Routes - Public, no authentication required */}
+                <Route path="/blog" element={<BlogLayout />}>
+                  <Route index element={<BlogHome />} />
+                  <Route path="category/:categorySlug" element={<BlogCategory />} />
+                  <Route path="post/:slug" element={<BlogPost />} />
+                </Route>
+                
+                {/* Dashboard Routes - Protected */}
+                <Route 
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <CategoriesProvider>
+                        <DashboardWithMobileModal />
+                      </CategoriesProvider>
+                    </ProtectedRoute>
+                  } 
+                >
+                  {/* Nested routes for dashboard sections */}
+                  <Route index element={<Navigate to="discover" replace />} />
+                  <Route path="discover" element={<Discover />} />
+                  <Route path="discover/chat/:characterId/:characterName" element={<Discover />} />
+                  <Route path="featured" element={<Featured />} />
+                  <Route path="featured/chat/:characterId/:characterName" element={<Featured />} />
+                  <Route path="trending" element={<Trending />} />
+                  <Route path="foryou" element={<Foryou />} />
+                  <Route path="recent" element={<Recent />} />
+                  <Route path="history" element={<History />} />
+                  <Route path="history/session/:sessionId" element={<SessionChat />} />
+                  
+                  {/* Category Routes */}
+                  <Route path="categories/:categoryKey" element={<CategoryPage />} />
+                  <Route path="categories/:categoryKey/chat/:characterId/:characterName" element={<CategoryPage />} />
+                </Route>
+                
+                {/* Default redirect */}
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </BrowserRouter>
+          </AuthProvider>
+        </ThemeProvider>
+      </StyledEngineProvider>
   );
 }
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </HelmetProvider>
   );
 }
 
