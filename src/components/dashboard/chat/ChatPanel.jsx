@@ -36,6 +36,12 @@ const useStyles = makeStyles(() => ({
     top: 0,
     height: "100vh",
     zIndex: 2,
+    // Mobile viewport height fixes
+    "@media (max-width: 600px)": {
+      height: "100dvh", // Use dynamic viewport height
+      minHeight: "-webkit-fill-available",
+      position: "fixed", // Better mobile positioning
+    },
   },
   chatContainerOpen: {
     width: "calc(100vw - 280px)",
@@ -304,12 +310,20 @@ const useStyles = makeStyles(() => ({
     padding: "0 12px",
     "@media (max-width: 600px)": {
       padding: "0 8px",
+      // Add bottom padding for mobile keyboard space
+      paddingBottom: "env(keyboard-inset-height, 0px)",
+      // Ensure messages don't get hidden behind input
+      marginBottom: "120px", // Space for input area + keyboard
     },
     "@media (max-width: 480px)": {
       padding: "0 6px",
+      paddingBottom: "env(keyboard-inset-height, 0px)",
+      marginBottom: "110px",
     },
     "@media (max-width: 375px)": {
       padding: "0 4px",
+      paddingBottom: "env(keyboard-inset-height, 0px)",
+      marginBottom: "100px",
     },
   },
   messagesContent: {
@@ -521,6 +535,39 @@ const ChatPanel = ({
       window.removeEventListener('resize', checkIfMobile);
     };
   }, []);
+
+  // Mobile keyboard handling
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const handleViewportChange = () => {
+      // Force a reflow to handle viewport changes on mobile
+      if (messagesWrapperRef.current) {
+        messagesWrapperRef.current.scrollTop = messagesWrapperRef.current.scrollHeight;
+      }
+    };
+
+    const handleVisualViewportChange = () => {
+      if (window.visualViewport) {
+        handleViewportChange();
+      }
+    };
+
+    // Listen for visual viewport changes (keyboard show/hide)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleVisualViewportChange);
+    }
+
+    // Fallback for older browsers
+    window.addEventListener('resize', handleViewportChange);
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleVisualViewportChange);
+      }
+      window.removeEventListener('resize', handleViewportChange);
+    };
+  }, [isMobile]);
 
   // FIXED: Calculate dynamic width using centralized utility
   const calculateWidth = () => {
@@ -1427,23 +1474,59 @@ const ChatPanel = ({
         display: 'flex', 
         flexDirection: 'column',
         gap: 1, 
-        p: 2, 
-                // backdropFilter: 'blur(8px)'
+        p: 2,
+        // Mobile-specific input area styling
+        "@media (max-width: 600px)": {
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: "rgba(26, 26, 26, 0.98)",
+          backdropFilter: "blur(12px)",
+          borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+          padding: "12px 16px",
+          paddingBottom: "max(12px, env(safe-area-inset-bottom))",
+          zIndex: 1000,
+        },
+        "@media (max-width: 480px)": {
+          padding: "10px 12px",
+          paddingBottom: "max(10px, env(safe-area-inset-bottom))",
+        },
+        "@media (max-width: 375px)": {
+          padding: "8px 10px",
+          paddingBottom: "max(8px, env(safe-area-inset-bottom))",
+        },
       }}>
-        {/* Question Chips - positioned above input */}
-        <QuestionChips
-          character={character}
-          onQuestionSend={(question) => {
-            handleSend(question);
-          }}
-          loading={loading}
-          disabled={loading}
-          maxQuestions={5}
-          showCategoryLabel={!isMobile}
-        />
+        {/* Question Chips - positioned above input, hidden on mobile when keyboard might be up */}
+        {!isMobile && (
+          <QuestionChips
+            character={character}
+            onQuestionSend={(question) => {
+              handleSend(question);
+            }}
+            loading={loading}
+            disabled={loading}
+            maxQuestions={5}
+            showCategoryLabel={!isMobile}
+          />
+        )}
         
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 2,
+          "@media (max-width: 600px)": {
+            gap: 1,
+          },
+        }}>
+          <Box sx={{ 
+            flexGrow: 1,
+            "@media (max-width: 600px)": {
+              // Ensure input takes most space on mobile
+              flex: 1,
+              minWidth: 0,
+            },
+          }}>
             <ChatInput
               value={inputValue}
               onChange={setInputValue}
@@ -1463,7 +1546,18 @@ const ChatPanel = ({
               cursor: 'pointer',
               '&:hover .plus-icon': {
                 transform: 'scale(1.1)'
-              }
+              },
+              "@media (max-width: 600px)": {
+                // Hide speech bubble on mobile for cleaner look
+                '& .speech-bubble': {
+                  display: 'none',
+                },
+                // Smaller new chat button on mobile
+                '& .plus-icon': {
+                  width: '36px !important',
+                  height: '36px !important',
+                },
+              },
             }}
           >
           <Box

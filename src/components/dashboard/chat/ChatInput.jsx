@@ -74,31 +74,41 @@ const useStyles = makeStyles(() => ({
     },
     '@media (max-width: 600px)': {
       '& .MuiOutlinedInput-root': {
-        borderRadius:"20px !important",
-        minHeight: 36,
-        paddingRight: '36px',
+        borderRadius: "20px !important",
+        minHeight: 44, // Increased for better mobile touch target
+        paddingRight: '40px',
+        backgroundColor: 'rgba(42, 42, 42, 0.95)',
+        border: '1px solid rgba(99, 102, 241, 0.3)',
         '& textarea': {
-          fontSize: '0.9rem',
+          fontSize: '16px', // Prevent zoom on iOS
+          lineHeight: '1.4',
+          padding: '12px 16px',
+        },
+        '&.Mui-focused': {
+          borderColor: '#6366f1',
+          backgroundColor: 'rgba(42, 42, 42, 1)',
         },
       },
     },
     '@media (max-width: 480px)': {
       '& .MuiOutlinedInput-root': {
-        borderRadius: 4,
-        minHeight: 32,
-        paddingRight: '32px',
+        borderRadius: "18px !important",
+        minHeight: 42,
+        paddingRight: '38px',
         '& textarea': {
-          fontSize: '0.85rem',
+          fontSize: '16px', // Prevent zoom on iOS
+          padding: '10px 14px',
         },
       },
     },
     '@media (max-width: 375px)': {
       '& .MuiOutlinedInput-root': {
-        borderRadius: 2,
-        minHeight: 28,
-        paddingRight: '28px',
+        borderRadius: "16px !important",
+        minHeight: 40,
+        paddingRight: '36px',
         '& textarea': {
-          fontSize: '0.8rem',
+          fontSize: '16px', // Prevent zoom on iOS
+          padding: '8px 12px',
         },
       },
     },
@@ -148,30 +158,30 @@ const useStyles = makeStyles(() => ({
       },
     },
     '@media (max-width: 600px)': {
-      right: '5px',
-      width: '26px',
-      height: '26px',
-      minWidth: '26px',
+      right: '6px',
+      width: '32px',
+      height: '32px',
+      minWidth: '32px',
       '& .MuiSvgIcon-root': {
-        fontSize: '15px',
+        fontSize: '18px',
       },
     },
     '@media (max-width: 480px)': {
-      right: '4px',
-      width: '24px',
-      height: '24px',
-      minWidth: '24px',
+      right: '5px',
+      width: '30px',
+      height: '30px',
+      minWidth: '30px',
       '& .MuiSvgIcon-root': {
-        fontSize: '14px',
+        fontSize: '16px',
       },
     },
     '@media (max-width: 375px)': {
-      right: '3px',
-      width: '22px',
-      height: '22px',
-      minWidth: '22px',
+      right: '4px',
+      width: '28px',
+      height: '28px',
+      minWidth: '28px',
       '& .MuiSvgIcon-root': {
-        fontSize: '13px',
+        fontSize: '14px',
       },
     },
   },
