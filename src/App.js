@@ -26,6 +26,12 @@ import History from './pages/sections/History';
 import SessionChat from './pages/sections/SessionChat';
 import CategoryPage from './pages/sections/CategoryPage';
 
+// Blog Pages
+import BlogLayout from './pages/blog/Bloglayout';
+import BlogHome from './pages/blog/BlogHome';
+import BlogPost from './pages/blog/BlogPost';
+import BlogCategory from './pages/blog/BlogCategory';
+
 function DashboardWithMobileModal() {
   const { profileStatus, updateMobile, refreshProfileStatus } = useAuth();
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -82,11 +88,21 @@ function AppContent() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/auth/callback" element={<AuthCallback />} /> {/* NEW */}
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            
+            {/* Blog Routes - Public, no authentication required */}
+            <Route path="/blog" element={<BlogLayout />}>
+              <Route index element={<BlogHome />} />
+              <Route path="category/:categorySlug" element={<BlogCategory />} />
+              <Route path="post/:slug" element={<BlogPost />} />
+            </Route>
+            
+            {/* Dashboard Routes - Protected */}
             <Route 
               path="/dashboard"
               element={
@@ -113,6 +129,8 @@ function AppContent() {
               <Route path="categories/:categoryKey" element={<CategoryPage />} />
               <Route path="categories/:categoryKey/chat/:characterId/:characterName" element={<CategoryPage />} />
             </Route>
+            
+            {/* Default redirect */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </BrowserRouter>
