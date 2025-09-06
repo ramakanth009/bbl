@@ -778,7 +778,29 @@ const ChatPanel = ({
 
   const handleSend = async (messageText = null) => {
     const message = messageText || inputValue.trim();
-    if (!message || loading || !character) return;
+    
+    // Enhanced validation
+    if (!message) {
+      console.warn('[ChatPanel] No message to send');
+      return;
+    }
+    
+    if (loading) {
+      console.warn('[ChatPanel] Already sending a message');
+      return;
+    }
+    
+    if (!character) {
+      console.error('[ChatPanel] No character selected');
+      setError('No character selected. Please select a character to chat with.');
+      return;
+    }
+    
+    if (!character.id || !character.name) {
+      console.error('[ChatPanel] Invalid character data:', character);
+      setError('Invalid character data. Please try selecting the character again.');
+      return;
+    }
 
     // Cancel any ongoing request before starting a new one
     cleanupCurrentRequest();
@@ -915,13 +937,49 @@ const ChatPanel = ({
       console.error(`[ChatPanel] Request ${requestId} failed:`, error);
 
       let errorMessage = "Failed to send message. Please try again.";
-      if (error.message.includes("language")) {
-        errorMessage = `Language error: ${error.message}. Try changing the language settings.`;
-      } else if (error.message.includes("Character not found")) {
-        errorMessage =
-          "Character not found. Please select a different character.";
+      
+      // Enhanced error handling
+      if (error.message) {
+        if (error.message.includes("language")) {
+          errorMessage = `Language error: ${error.message}. Try changing the language settings.`;
+        } else if (error.message.includes("Character not found")) {
+          errorMessage = "Character not found. Please select a different character.";
+        } else if (error.message.includes("Network error")) {
+          errorMessage = "Network connection failed. Please check your internet connection and try again.";
+        } else if (error.message.includes("Too many requests")) {
+          errorMessage = "Too many requests. Please wait a moment before trying again.";
+        } else if (error.message.includes("Server error")) {
+          errorMessage = "Server is temporarily unavailable. Please try again in a few moments.";
+        } else {
+          errorMessage = error.message;
+        }
       } else if (error.response?.data?.error) {
         errorMessage = error.response.data.error;
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.response?.status) {
+        switch (error.response.status) {
+          case 400:
+            errorMessage = "Invalid request. Please check your input and try again.";
+            break;
+          case 401:
+            errorMessage = "Authentication failed. Please log in again.";
+            break;
+          case 403:
+            errorMessage = "Access denied. You don't have permission to perform this action.";
+            break;
+          case 404:
+            errorMessage = "Character or service not found. Please try selecting a different character.";
+            break;
+          case 429:
+            errorMessage = "Too many requests. Please wait a moment before trying again.";
+            break;
+          case 500:
+            errorMessage = "Server error. Please try again in a few moments.";
+            break;
+          default:
+            errorMessage = `Request failed with status ${error.response.status}. Please try again.`;
+        }
       }
 
       setError(errorMessage);

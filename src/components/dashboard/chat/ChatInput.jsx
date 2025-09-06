@@ -190,7 +190,10 @@ const ChatInput = ({ value, onChange, onSend, loading, placeholder = "Message...
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      onSend();
+      // Only send if there's content and not loading
+      if (value.trim() && !loading && onSend) {
+        onSend();
+      }
     }
   };
 
@@ -210,7 +213,11 @@ const ChatInput = ({ value, onChange, onSend, loading, placeholder = "Message...
         />
         <IconButton
           className={`${classes.sendButton} ${value.trim() ? 'visible' : ''}`}
-          onClick={onSend}
+          onClick={() => {
+            if (value.trim() && !loading && onSend) {
+              onSend();
+            }
+          }}
           disabled={!value.trim() || loading}
         >
           <Send />
