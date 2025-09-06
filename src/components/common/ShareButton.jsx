@@ -41,9 +41,8 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
         const characterId = character.id;
         const characterName = character.name ? character.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'character';
         
-        // Use share-friendly URL format for better social media crawling
-        // This should redirect to the actual app URL but provides proper meta tags for crawlers
-        return `${baseUrl}/share/character/${characterId}/${characterName}`;
+        // Updated to use the correct URL format for sharing
+        return `${baseUrl}/dashboard/discover/chat/${characterId}/${characterName}`;
     };
 
     const handleClick = (event) => {
