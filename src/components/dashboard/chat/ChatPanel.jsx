@@ -89,12 +89,17 @@ const useStyles = makeStyles(() => ({
       background:
         "linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.15), transparent)",
     },
-    // WhatsApp-style mobile header
+    // WhatsApp-style mobile header - FIXED to stay at top
     "@media (max-width: 600px)": {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1100,
       padding: "16px",
       gap: "8px",
       minHeight: "64px",
-      background: "rgba(26, 26, 26, 0.95)",
+      background: "rgba(26, 26, 26, 0.98)",
       backdropFilter: "blur(12px)",
       borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
       "&::before": {
@@ -310,6 +315,8 @@ const useStyles = makeStyles(() => ({
     padding: "0 12px",
     "@media (max-width: 600px)": {
       padding: "0 8px",
+      // Add top padding for fixed header
+      paddingTop: "80px", // Space for fixed header
       // Add bottom padding for mobile keyboard space
       paddingBottom: "env(keyboard-inset-height, 0px)",
       // Ensure messages don't get hidden behind input
@@ -317,11 +324,13 @@ const useStyles = makeStyles(() => ({
     },
     "@media (max-width: 480px)": {
       padding: "0 6px",
+      paddingTop: "76px", // Space for fixed header
       paddingBottom: "env(keyboard-inset-height, 0px)",
       marginBottom: "110px",
     },
     "@media (max-width: 375px)": {
       padding: "0 4px",
+      paddingTop: "72px", // Space for fixed header
       paddingBottom: "env(keyboard-inset-height, 0px)",
       marginBottom: "100px",
     },
