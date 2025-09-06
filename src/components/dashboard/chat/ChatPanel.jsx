@@ -98,7 +98,7 @@ const useStyles = makeStyles(() => ({
     // WhatsApp-style mobile header - FIXED to stay at top
     "@media (max-width: 600px)": {
       position: "fixed",
-      top: "env(safe-area-inset-top, 0px)",
+      top: "calc(env(safe-area-inset-top, 0px) + var(--app-visual-offset-top, 0px))",
       left: 0,
       right: 0,
       zIndex: 1100,
@@ -319,10 +319,12 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     flexDirection: "column",
     padding: "0 12px",
+    overscrollBehaviorY: 'contain',
+    WebkitOverflowScrolling: 'touch',
     "@media (max-width: 600px)": {
       padding: "0 8px",
       // Space for fixed header
-      paddingTop: "calc(80px + env(safe-area-inset-top, 0px))",
+      paddingTop: "calc(80px + env(safe-area-inset-top, 0px) + var(--app-visual-offset-top, 0px))",
       // Ensure messages don't get hidden behind input: use measured input bar height
       paddingBottom: "calc(var(--input-bar-height, 120px) + env(safe-area-inset-bottom, 0px))",
       marginBottom: 0,
@@ -504,6 +506,7 @@ const ChatPanel = ({
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   
   // Message limit functionality
   const MESSAGE_LIMIT = 15;
@@ -513,6 +516,7 @@ const ChatPanel = ({
   const messagesWrapperRef = useRef(null);
   const messageListRef = useRef(null);
   const inputContainerRef = useRef(null);
+  const bodyScrollYRef = useRef(0);
   
   // Request tracking and cancellation
   const abortControllerRef = useRef(null);
@@ -566,11 +570,24 @@ const ChatPanel = ({
       const height = vv ? vv.height : window.innerHeight;
       const unit = height / 100;
       document.documentElement.style.setProperty('--app-visual-vh', `${unit}px`);
+      const offsetTop = vv ? vv.offsetTop : 0;
+      const offsetBottom = vv ? Math.max(0, (window.innerHeight - (vv.height + vv.offsetTop))) : 0;
+      document.documentElement.style.setProperty('--app-visual-offset-top', `${offsetTop}px`);
+      document.documentElement.style.setProperty('--app-visual-offset-bottom', `${offsetBottom}px`);
     };
 
     const handleViewportChange = () => {
       setVisualVh();
-      // Scroll to bottom so input stays visible above keyboard
+      // Detect keyboard by height delta
+      const vv = window.visualViewport;
+      const heightDelta = vv ? (window.innerHeight - vv.height - (vv.offsetTop || 0)) : 0;
+      const keyboardLikelyOpen = heightDelta > 120; // threshold in px
+      setIsKeyboardOpen((prev) => keyboardLikelyOpen);
+      // Keep input visible
+      if (keyboardLikelyOpen) {
+        inputContainerRef.current?.scrollIntoView({ block: 'end' });
+      }
+      // Pin messages to bottom so latest stays visible
       if (messagesWrapperRef.current) {
         messagesWrapperRef.current.scrollTop = messagesWrapperRef.current.scrollHeight;
       }
@@ -729,13 +746,51 @@ const ChatPanel = ({
   useEffect(() => {
     if (isMobile) {
       const originalOverflow = document.body.style.overflow;
+      const originalPosition = document.body.style.position;
+      const originalTop = document.body.style.top;
+      const originalWidth = document.body.style.width;
+      const originalHeight = document.body.style.height;
+      const originalHtmlOverscroll = document.documentElement.style.overscrollBehaviorY;
+      const preventTouchMove = (e) => {
+        // Prevent background/body scrolling on mobile while chat is open
+        if (open) {
+          e.preventDefault();
+        }
+      };
       if (open) {
+        // Store current scroll position and freeze body
+        bodyScrollYRef.current = window.scrollY || window.pageYOffset || 0;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${bodyScrollYRef.current}px`;
+        document.body.style.width = '100%';
+        document.body.style.height = 'calc(var(--app-visual-vh, 1vh) * 100)';
         document.body.style.overflow = 'hidden';
+        document.documentElement.style.overscrollBehaviorY = 'none';
+        document.addEventListener('touchmove', preventTouchMove, { passive: false });
       } else {
+        // Restore body scroll
         document.body.style.overflow = originalOverflow || '';
+        document.body.style.position = originalPosition || '';
+        document.body.style.top = originalTop || '';
+        document.body.style.width = originalWidth || '';
+        document.body.style.height = originalHeight || '';
+        document.documentElement.style.overscrollBehaviorY = originalHtmlOverscroll || '';
+        document.removeEventListener('touchmove', preventTouchMove);
+        if (bodyScrollYRef.current) {
+          window.scrollTo(0, bodyScrollYRef.current);
+        }
       }
       return () => {
         document.body.style.overflow = originalOverflow || '';
+        document.body.style.position = originalPosition || '';
+        document.body.style.top = originalTop || '';
+        document.body.style.width = originalWidth || '';
+        document.body.style.height = originalHeight || '';
+        document.documentElement.style.overscrollBehaviorY = originalHtmlOverscroll || '';
+        document.removeEventListener('touchmove', preventTouchMove);
+        if (bodyScrollYRef.current) {
+          window.scrollTo(0, bodyScrollYRef.current);
+        }
       };
     }
   }, [open, isMobile]);
@@ -815,6 +870,20 @@ const ChatPanel = ({
       }
     });
   };
+
+  // React to keyboard open/close
+  useEffect(() => {
+    if (!isMobile) return;
+    if (isKeyboardOpen) {
+      document.documentElement.classList.add('keyboard-open');
+      // Force view to bottom to keep input visible
+      scrollToBottom();
+    } else {
+      document.documentElement.classList.remove('keyboard-open');
+      // Slight delay to allow viewport to expand then stabilize scroll
+      setTimeout(scrollToBottom, 50);
+    }
+  }, [isKeyboardOpen, isMobile]);
 
   // Auto-scroll to bottom when messages change or loading state changes
   useEffect(() => {

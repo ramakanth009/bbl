@@ -990,7 +990,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
          
         <Box className={classes.emptyState}>
           <Typography className={classes.emptyStateTitle}>
-            {isSearching ? 'No search results found' : 'Loading Character...'}
+            {isSearching ? 'No search results found' : 'Loading Characters...'}
           </Typography>
         </Box>
       </Box>

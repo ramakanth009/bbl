@@ -187,7 +187,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ChatInput = ({ value, onChange, onSend, loading, disabled = false, placeholder = "Message..." }) => {
+const ChatInput = ({ value, onChange, onSend, loading, disabled = false, placeholder = "Message...", onFocus, onBlur }) => {
   const classes = useStyles();
   const inputRef = useRef(null);
 
@@ -220,6 +220,17 @@ const ChatInput = ({ value, onChange, onSend, loading, disabled = false, placeho
           onKeyDown={handleKeyDown}
           disabled={loading || disabled}
           inputRef={inputRef}
+          onFocus={(e) => {
+            // notify parent and ensure caret is visible
+            onFocus && onFocus(e);
+            // slight delay to wait for keyboard animation then scroll
+            setTimeout(() => {
+              try { inputRef.current?.scrollIntoView({ block: 'nearest' }); } catch {}
+            }, 50);
+          }}
+          onBlur={(e) => {
+            onBlur && onBlur(e);
+          }}
         />
         <IconButton
           className={`${classes.sendButton} ${value.trim() ? 'visible' : ''}`}
