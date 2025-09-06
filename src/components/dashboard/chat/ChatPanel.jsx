@@ -934,7 +934,7 @@ const ChatPanel = ({
       }
     }
   };
-
+ 
   const handleBackClick = () => {
     onClose();
   };

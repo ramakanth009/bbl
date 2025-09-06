@@ -37,8 +37,13 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
     const generateShareUrl = (character) => {
         if (!character) return window.location.href;
         
-        // Use the new public GigaSpace endpoint for sharing
-        return metaTagService.generatePublicShareUrl(character);
+        const baseUrl = window.location.origin;
+        const characterId = character.id;
+        const characterName = character.name ? character.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'character';
+        
+        // Use share-friendly URL format for better social media crawling
+        // This should redirect to the actual app URL but provides proper meta tags for crawlers
+        return `${baseUrl}/share/character/${characterId}/${characterName}`;
     };
 
     const handleClick = (event) => {
@@ -60,16 +65,17 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
         }
 
         try {
-            // Generate share URLs using the new public endpoint methods
+            // Generate meta tags and share URLs
+            const metaTags = metaTagService.generateCharacterMeta(character, section);
             const shareUrls = {
                 copy: generateShareUrl(character),
-                facebook: metaTagService.generateFacebookShareUrl(character),
-                twitter: metaTagService.generateTwitterShareUrl(character),
-                linkedin: metaTagService.generateLinkedInShareUrl(character),
-                whatsapp: metaTagService.generateWhatsAppShareUrl(character),
-                telegram: metaTagService.generateTelegramShareUrl(character),
-                reddit: metaTagService.generateRedditShareUrl(character),
-                email: metaTagService.generateEmailShareUrl(character)
+                facebook: metaTagService.generateFacebookShareUrl(metaTags),
+                twitter: metaTagService.generateTwitterShareUrl(metaTags),
+                linkedin: metaTagService.generateLinkedInShareUrl(metaTags),
+                whatsapp: metaTagService.generateWhatsAppShareUrl(metaTags),
+                telegram: metaTagService.generateTelegramShareUrl(metaTags),
+                reddit: metaTagService.generateRedditShareUrl(metaTags),
+                email: metaTagService.generateEmailShareUrl(metaTags)
             };
 
             switch (platform) {

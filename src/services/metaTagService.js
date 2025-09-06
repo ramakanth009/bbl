@@ -131,7 +131,6 @@ class MetaTagService {
     getCharacterImage(character) {
         // Priority order for character images
         const imageFields = [
-            'img', // New public endpoint field (highest priority)
             'image_url',
             'avatar_url', 
             'profile_image',
@@ -211,20 +210,6 @@ class MetaTagService {
     }
 
     /**
-     * Generate public share URL using the new GigaSpace endpoint
-     * @param {Object} character - Character object
-     * @returns {string} Public share URL
-     */
-    generatePublicShareUrl(character) {
-        if (!character || !character.id) {
-            return window.location.href;
-        }
-        
-        // Use the new public endpoint for sharing
-        return `https://space.gigaspace.org/getcharacter/${character.id}`;
-    }
-
-    /**
      * Generate share URLs for different social media platforms
      * @param {Object} metaTags - Meta tags object
      * @returns {Object} Share URLs for different platforms
@@ -247,79 +232,79 @@ class MetaTagService {
     }
 
     /**
-     * Generate Facebook share URL using public endpoint
-     * @param {Object} character - Character object
+     * Generate Facebook share URL using meta tags
+     * @param {Object} metaTags - Meta tags object
      * @returns {string} Facebook share URL
      */
-    generateFacebookShareUrl(character) {
-        const publicUrl = this.generatePublicShareUrl(character);
-        return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(publicUrl)}`;
+    generateFacebookShareUrl(metaTags) {
+        const encodedUrl = encodeURIComponent(metaTags.url);
+        return `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
     }
 
     /**
-     * Generate Twitter share URL using public endpoint
-     * @param {Object} character - Character object
+     * Generate Twitter share URL using meta tags
+     * @param {Object} metaTags - Meta tags object
      * @returns {string} Twitter share URL
      */
-    generateTwitterShareUrl(character) {
-        const publicUrl = this.generatePublicShareUrl(character);
-        const title = `Chat with ${character.name || 'this character'} on GigaSpace`;
-        return `https://twitter.com/intent/tweet?url=${encodeURIComponent(publicUrl)}&text=${encodeURIComponent(title)}&hashtags=GigaSpace,AIChat`;
+    generateTwitterShareUrl(metaTags) {
+        const encodedUrl = encodeURIComponent(metaTags.url);
+        const encodedTitle = encodeURIComponent(metaTags.title);
+        return `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}&hashtags=BringBackLegends,AIChat`;
     }
 
     /**
-     * Generate LinkedIn share URL using public endpoint
-     * @param {Object} character - Character object
+     * Generate LinkedIn share URL using meta tags
+     * @param {Object} metaTags - Meta tags object
      * @returns {string} LinkedIn share URL
      */
-    generateLinkedInShareUrl(character) {
-        const publicUrl = this.generatePublicShareUrl(character);
-        return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(publicUrl)}`;
+    generateLinkedInShareUrl(metaTags) {
+        const encodedUrl = encodeURIComponent(metaTags.url);
+        return `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
     }
 
     /**
-     * Generate WhatsApp share URL using public endpoint
-     * @param {Object} character - Character object
+     * Generate WhatsApp share URL using meta tags
+     * @param {Object} metaTags - Meta tags object
      * @returns {string} WhatsApp share URL
      */
-    generateWhatsAppShareUrl(character) {
-        const publicUrl = this.generatePublicShareUrl(character);
-        const title = `Chat with ${character.name || 'this character'} on GigaSpace`;
-        return `https://wa.me/?text=${encodeURIComponent(title)}%20${encodeURIComponent(publicUrl)}`;
+    generateWhatsAppShareUrl(metaTags) {
+        const encodedUrl = encodeURIComponent(metaTags.url);
+        const encodedTitle = encodeURIComponent(metaTags.title);
+        return `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
     }
 
     /**
-     * Generate Telegram share URL using public endpoint
-     * @param {Object} character - Character object
+     * Generate Telegram share URL using meta tags
+     * @param {Object} metaTags - Meta tags object
      * @returns {string} Telegram share URL
      */
-    generateTelegramShareUrl(character) {
-        const publicUrl = this.generatePublicShareUrl(character);
-        const title = `Chat with ${character.name || 'this character'} on GigaSpace`;
-        return `https://t.me/share/url?url=${encodeURIComponent(publicUrl)}&text=${encodeURIComponent(title)}`;
+    generateTelegramShareUrl(metaTags) {
+        const encodedUrl = encodeURIComponent(metaTags.url);
+        const encodedTitle = encodeURIComponent(metaTags.title);
+        return `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`;
     }
 
     /**
-     * Generate Reddit share URL using public endpoint
-     * @param {Object} character - Character object
+     * Generate Reddit share URL using meta tags
+     * @param {Object} metaTags - Meta tags object
      * @returns {string} Reddit share URL
      */
-    generateRedditShareUrl(character) {
-        const publicUrl = this.generatePublicShareUrl(character);
-        const title = `Chat with ${character.name || 'this character'} on GigaSpace`;
-        return `https://reddit.com/submit?url=${encodeURIComponent(publicUrl)}&title=${encodeURIComponent(title)}`;
+    generateRedditShareUrl(metaTags) {
+        const encodedUrl = encodeURIComponent(metaTags.url);
+        const encodedTitle = encodeURIComponent(metaTags.title);
+        return `https://reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`;
     }
 
     /**
-     * Generate Email share URL using public endpoint
-     * @param {Object} character - Character object
+     * Generate Email share URL using meta tags
+     * @param {Object} metaTags - Meta tags object
      * @returns {string} Email share URL
      */
-    generateEmailShareUrl(character) {
-        const publicUrl = this.generatePublicShareUrl(character);
-        const title = `Chat with ${character.name || 'this character'} on GigaSpace`;
-        const description = character.description || 'Experience AI-powered conversations with legendary characters.';
-        return `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(description)}%0A%0A${encodeURIComponent(publicUrl)}`;
+    generateEmailShareUrl(metaTags) {
+        const encodedUrl = encodeURIComponent(metaTags.url);
+        const encodedTitle = encodeURIComponent(metaTags.title);
+        const encodedDescription = encodeURIComponent(metaTags.description);
+        return `mailto:?subject=${encodedTitle}&body=${encodedDescription}%0A%0A${encodedUrl}`;
     }
 
     /**
