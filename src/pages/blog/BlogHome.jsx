@@ -3,7 +3,6 @@ import {
   Container, 
   Typography, 
   Box, 
-  Grid, 
   Card, 
   CardContent, 
   CardMedia,
@@ -16,9 +15,9 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { AccessTime, Person, TrendingUp } from '@mui/icons-material';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   hero: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
     color: '#ffffff',
     padding: '80px 0',
     textAlign: 'center',
@@ -50,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: '50px !important',
   },
   blogCard: {
-    backgroundColor: '#1a1a2e !important',
-    border: '1px solid rgba(255,255,255,0.1) !important',
+    backgroundColor: '#1f1f23 !important',
+    border: '1px solid #2a2a2e !important',
     borderRadius: '16px !important',
     overflow: 'hidden',
     transition: 'all 0.3s ease !important',
@@ -60,8 +59,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     '&:hover': {
       transform: 'translateY(-8px)',
-      boxShadow: '0 20px 40px rgba(102, 126, 234, 0.3) !important',
-      borderColor: 'rgba(102, 126, 234, 0.5) !important',
+      boxShadow: '0 20px 40px rgba(0,0,0,0.3) !important',
+      borderColor: '#6366f1 !important',
     }
   },
   blogCardMedia: {
@@ -83,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: '1.4 !important',
   },
   blogExcerpt: {
-    color: '#9ca3af !important',
+    color: '#a0a0a0 !important',
     lineHeight: '1.6 !important',
     marginBottom: '16px !important',
     flexGrow: 1,
@@ -94,28 +93,29 @@ const useStyles = makeStyles((theme) => ({
     gap: '16px',
     marginTop: 'auto',
     paddingTop: '16px',
-    borderTop: '1px solid rgba(255,255,255,0.1)',
+    borderTop: '1px solid #2a2a2e',
   },
   metaItem: {
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
-    color: '#9ca3af',
+    color: '#a0a0a0',
     fontSize: '0.875rem',
   },
   categoryChip: {
-    backgroundColor: 'rgba(102, 126, 234, 0.2) !important',
-    color: '#667eea !important',
+    backgroundColor: 'transparent !important',
+    color: '#6366f1 !important',
+    border: '1px solid #6366f1 !important',
     fontWeight: '500 !important',
     fontSize: '0.75rem !important',
   },
   featuredSection: {
-    backgroundColor: 'rgba(26, 26, 46, 0.5)',
+    backgroundColor: '#171717',
     padding: '60px 0',
   },
   featuredCard: {
-    backgroundColor: '#1a1a2e !important',
-    border: '2px solid #667eea !important',
+    backgroundColor: '#1f1f23 !important',
+    border: '2px solid #6366f1 !important',
     borderRadius: '20px !important',
     overflow: 'hidden',
     position: 'relative',
@@ -126,34 +126,34 @@ const useStyles = makeStyles((theme) => ({
       left: 0,
       right: 0,
       height: '4px',
-      background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+      background: 'linear-gradient(90deg, #6366f1 0%, #4f46e5 100%)',
     }
   },
   featuredBadge: {
     position: 'absolute',
     top: '16px',
     right: '16px',
-    backgroundColor: '#667eea !important',
+    backgroundColor: '#6366f1 !important',
     color: '#ffffff !important',
     fontWeight: '600 !important',
     zIndex: 1,
   },
   ctaSection: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
     color: '#ffffff',
     padding: '80px 0',
     textAlign: 'center',
   },
   ctaButton: {
     backgroundColor: '#ffffff !important',
-    color: '#667eea !important',
+    color: '#6366f1 !important',
     fontWeight: '600 !important',
     padding: '12px 30px !important',
     fontSize: '1.1rem !important',
     borderRadius: '30px !important',
     textTransform: 'none !important',
     '&:hover': {
-      backgroundColor: '#f8f9fa !important',
+      backgroundColor: 'rgba(255,255,255,0.9) !important',
       transform: 'translateY(-2px)',
       boxShadow: '0 8px 25px rgba(0,0,0,0.2) !important',
     }
@@ -261,15 +261,14 @@ export default function BlogHome() {
             variant="contained" 
             size="large"
             sx={{ 
-              backgroundColor: 'rgba(255,255,255,0.2)', 
-              backdropFilter: 'blur(10px)',
-              color: '#ffffff',
+              backgroundColor: '#ffffff', 
+              color: '#6366f1', 
               fontWeight: 600,
               padding: '12px 30px',
               borderRadius: '30px',
               textTransform: 'none',
               '&:hover': {
-                backgroundColor: 'rgba(255,255,255,0.3)',
+                backgroundColor: 'rgba(255,255,255,0.9)',
                 transform: 'translateY(-2px)',
               }
             }}
@@ -291,15 +290,15 @@ export default function BlogHome() {
               className={classes.featuredBadge}
               icon={<TrendingUp />}
             />
-            <Grid container>
-              <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+              <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                 <CardMedia
                   className={classes.blogCardMedia}
                   image={featuredPost.image}
                   title={featuredPost.title}
                 />
-              </Grid>
-              <Grid item xs={12} md={6}>
+              </Box>
+              <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                 <CardContent className={classes.blogCardContent}>
                   <Chip 
                     label={featuredPost.category} 
@@ -328,7 +327,7 @@ export default function BlogHome() {
                     variant="contained"
                     sx={{
                       marginTop: '20px',
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
                       textTransform: 'none',
                       fontWeight: 600,
                     }}
@@ -336,8 +335,8 @@ export default function BlogHome() {
                     Read Full Article
                   </Button>
                 </CardContent>
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           </Card>
         </Container>
       </Box>
@@ -348,9 +347,9 @@ export default function BlogHome() {
           <Typography variant="h2" className={classes.sectionTitle}>
             Latest Articles
           </Typography>
-          <Grid container spacing={4}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '32px' }}>
             {recentPosts.map((post) => (
-              <Grid item xs={12} sm={6} md={4} key={post.id}>
+              <Box key={post.id} sx={{ flex: '1 1 300px', minWidth: '280px', maxWidth: '380px' }}>
                 <Card className={classes.blogCard}>
                   <CardMedia
                     className={classes.blogCardMedia}
@@ -386,19 +385,19 @@ export default function BlogHome() {
                     </Box>
                   </CardContent>
                 </Card>
-              </Grid>
+              </Box>
             ))}
-          </Grid>
+          </Box>
         </Container>
       </Box>
 
       {/* Categories Section */}
-      <Box className={classes.section} sx={{ backgroundColor: 'rgba(26, 26, 46, 0.3)' }}>
+      <Box className={classes.section} sx={{ backgroundColor: '#171717' }}>
         <Container maxWidth="lg">
           <Typography variant="h2" className={classes.sectionTitle}>
             Explore by Category
           </Typography>
-          <Grid container spacing={4}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '24px' }}>
             {[
               {
                 title: "AI Technology",
@@ -425,7 +424,7 @@ export default function BlogHome() {
                 count: "12 articles"
               }
             ].map((category) => (
-              <Grid item xs={12} sm={6} md={3} key={category.slug}>
+              <Box key={category.slug} sx={{ flex: '1 1 220px', minWidth: '220px', maxWidth: '320px' }}>
                 <Card className={classes.blogCard}>
                   <CardContent className={classes.blogCardContent}>
                     <Typography variant="h5" className={classes.blogTitle}>
@@ -435,7 +434,7 @@ export default function BlogHome() {
                       {category.description}
                     </Typography>
                     <Box sx={{ marginTop: 'auto', paddingTop: '16px' }}>
-                      <Typography variant="caption" sx={{ color: '#9ca3af', marginBottom: '12px', display: 'block' }}>
+                      <Typography variant="caption" sx={{ color: '#a0a0a0', marginBottom: '12px', display: 'block' }}>
                         {category.count}
                       </Typography>
                       <Button
@@ -444,12 +443,12 @@ export default function BlogHome() {
                         variant="outlined"
                         size="small"
                         sx={{
-                          borderColor: '#667eea',
-                          color: '#667eea',
+                          borderColor: '#6366f1',
+                          color: '#6366f1',
                           textTransform: 'none',
                           '&:hover': {
-                            borderColor: '#764ba2',
-                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderColor: '#4f46e5',
+                            backgroundColor: 'rgba(99,102,241,0.1)',
                           }
                         }}
                       >
@@ -458,9 +457,9 @@ export default function BlogHome() {
                     </Box>
                   </CardContent>
                 </Card>
-              </Grid>
+              </Box>
             ))}
-          </Grid>
+          </Box>
         </Container>
       </Box>
 

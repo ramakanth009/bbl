@@ -4,6 +4,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import { ThemeProvider as StylesThemeProvider } from '@mui/styles';
+
 import { CssBaseline } from '@mui/material';
 import { theme } from './styles/theme';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -85,6 +87,7 @@ function AppContent() {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
+        <StylesThemeProvider theme={theme}>
           <CssBaseline />
           <AuthProvider>
             <BrowserRouter>
@@ -136,17 +139,16 @@ function AppContent() {
               </Routes>
             </BrowserRouter>
           </AuthProvider>
-        </ThemeProvider>
-      </StyledEngineProvider>
+        </StylesThemeProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 }
 
 function App() {
   return (
     <HelmetProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
+      <AppContent />
     </HelmetProvider>
   );
 }

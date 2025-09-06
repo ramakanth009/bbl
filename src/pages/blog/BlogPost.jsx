@@ -8,26 +8,26 @@ import {
   Avatar,
   Divider,
   Button,
-  Grid,
   Card,
   CardContent,
   CardMedia
 } from '@mui/material';
+
 import { makeStyles } from '@mui/styles';
 import { Helmet } from 'react-helmet-async';
 import { AccessTime, Person, ArrowBack, Share } from '@mui/icons-material';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   article: {
     paddingTop: '40px',
     paddingBottom: '80px',
   },
   backButton: {
     marginBottom: '30px',
-    color: '#667eea !important',
+    color: '#6366f1 !important',
     textTransform: 'none !important',
     '&:hover': {
-      backgroundColor: 'rgba(102, 126, 234, 0.1) !important',
+      backgroundColor: 'rgba(99,102,241,0.1) !important',
     }
   },
   articleHeader: {
@@ -35,8 +35,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
   },
   categoryChip: {
-    backgroundColor: 'rgba(102, 126, 234, 0.2) !important',
-    color: '#667eea !important',
+    backgroundColor: 'transparent !important',
+    color: '#6366f1 !important',
+    border: '1px solid #6366f1 !important',
     fontWeight: '500 !important',
     marginBottom: '20px !important',
   },
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
   },
   articleSubtitle: {
     fontSize: '1.3rem !important',
-    color: '#9ca3af !important',
+    color: '#a0a0a0 !important',
     marginBottom: '30px !important',
     lineHeight: '1.6 !important',
   },
@@ -68,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    color: '#9ca3af',
+    color: '#a0a0a0',
   },
   featuredImage: {
     width: '100%',
@@ -108,16 +109,16 @@ const useStyles = makeStyles((theme) => ({
       }
     },
     '& blockquote': {
-      borderLeft: '4px solid #667eea',
+      borderLeft: '4px solid #6366f1',
       paddingLeft: '20px',
       margin: '30px 0',
       fontStyle: 'italic',
-      backgroundColor: 'rgba(102, 126, 234, 0.1)',
+      backgroundColor: 'rgba(99,102,241,0.1)',
       padding: '20px',
       borderRadius: '8px',
     },
     '& code': {
-      backgroundColor: 'rgba(102, 126, 234, 0.2)',
+      backgroundColor: 'rgba(99,102,241,0.2)',
       padding: '2px 6px',
       borderRadius: '4px',
       fontSize: '0.9em',
@@ -126,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
   shareSection: {
     marginTop: '60px',
     padding: '30px',
-    backgroundColor: 'rgba(26, 26, 46, 0.5)',
+    backgroundColor: '#1f1f23',
     borderRadius: '16px',
     textAlign: 'center',
   },
@@ -140,14 +141,14 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: '30px !important',
   },
   relatedCard: {
-    backgroundColor: '#1a1a2e !important',
-    border: '1px solid rgba(255,255,255,0.1) !important',
+    backgroundColor: '#1f1f23 !important',
+    border: '1px solid #2a2a2e !important',
     borderRadius: '12px !important',
     overflow: 'hidden',
     transition: 'all 0.3s ease !important',
     '&:hover': {
       transform: 'translateY(-4px)',
-      boxShadow: '0 12px 24px rgba(102, 126, 234, 0.2) !important',
+      boxShadow: '0 12px 24px rgba(0,0,0,0.2) !important',
     }
   },
   relatedCardContent: {
@@ -163,7 +164,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    color: '#9ca3af',
+    color: '#a0a0a0',
     fontSize: '0.875rem',
   }
 }));
@@ -429,7 +430,7 @@ export default function BlogPost() {
               <AccessTime />
               <Typography>{post.readTime}</Typography>
             </Box>
-            <Typography color="#9ca3af">{post.date}</Typography>
+            <Typography color="textSecondary">{post.date}</Typography>
           </Box>
         </Box>
 
@@ -452,7 +453,7 @@ export default function BlogPost() {
             startIcon={<Share />}
             variant="contained"
             sx={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
               textTransform: 'none',
               fontWeight: 600,
               marginTop: '16px'
@@ -478,9 +479,9 @@ export default function BlogPost() {
           <Typography variant="h2" className={classes.sectionTitle}>
             Related Articles
           </Typography>
-          <Grid container spacing={3}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
             {relatedPosts.map((relatedPost, index) => (
-              <Grid item xs={12} md={4} key={index}>
+              <Box key={index} sx={{ flex: '1 1 260px', minWidth: '260px', maxWidth: '360px' }}>
                 <Card className={classes.relatedCard}>
                   <CardMedia
                     component="img"
@@ -505,9 +506,9 @@ export default function BlogPost() {
                     </Box>
                   </CardContent>
                 </Card>
-              </Grid>
+              </Box>
             ))}
-          </Grid>
+          </Box>
         </Box>
       </Container>
     </>

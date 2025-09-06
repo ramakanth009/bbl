@@ -4,7 +4,6 @@ import {
   Container, 
   Typography, 
   Box, 
-  Grid,
   Card,
   CardContent,
   CardMedia,
@@ -16,33 +15,33 @@ import { makeStyles } from '@mui/styles';
 import { Helmet } from 'react-helmet-async';
 import { AccessTime, Person, ArrowBack, NavigateNext } from '@mui/icons-material';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   categoryPage: {
     paddingTop: '40px',
     paddingBottom: '80px',
   },
   backButton: {
     marginBottom: '20px',
-    color: '#667eea !important',
+    color: '#6366f1 !important',
     textTransform: 'none !important',
     '&:hover': {
-      backgroundColor: 'rgba(102, 126, 234, 0.1) !important',
+      backgroundColor: 'rgba(99,102,241,0.1) !important',
     }
   },
   breadcrumbs: {
     marginBottom: '30px',
     '& .MuiBreadcrumbs-separator': {
-      color: '#9ca3af',
+      color: '#a0a0a0',
     },
     '& a': {
-      color: '#667eea',
+      color: '#6366f1',
       textDecoration: 'none',
       '&:hover': {
         textDecoration: 'underline',
       }
     },
     '& .MuiTypography-root': {
-      color: '#9ca3af',
+      color: '#a0a0a0',
     }
   },
   categoryHeader: {
@@ -60,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
   },
   categoryDescription: {
     fontSize: '1.3rem !important',
-    color: '#9ca3af !important',
+    color: '#a0a0a0 !important',
     lineHeight: '1.6 !important',
     maxWidth: '600px',
     margin: '0 auto',
@@ -77,19 +76,19 @@ const useStyles = makeStyles((theme) => ({
     '& .number': {
       fontSize: '2rem',
       fontWeight: '700',
-      color: '#667eea',
+      color: '#6366f1',
       display: 'block',
     },
     '& .label': {
       fontSize: '0.9rem',
-      color: '#9ca3af',
+      color: '#a0a0a0',
       textTransform: 'uppercase',
       letterSpacing: '0.5px',
     }
   },
   blogCard: {
-    backgroundColor: '#1a1a2e !important',
-    border: '1px solid rgba(255,255,255,0.1) !important',
+    backgroundColor: '#1f1f23 !important',
+    border: '1px solid #2a2a2e !important',
     borderRadius: '16px !important',
     overflow: 'hidden',
     transition: 'all 0.3s ease !important',
@@ -98,8 +97,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     '&:hover': {
       transform: 'translateY(-8px)',
-      boxShadow: '0 20px 40px rgba(102, 126, 234, 0.3) !important',
-      borderColor: 'rgba(102, 126, 234, 0.5) !important',
+      boxShadow: '0 20px 40px rgba(0,0,0,0.3) !important',
+      borderColor: '#6366f1 !important',
     }
   },
   blogCardMedia: {
@@ -121,7 +120,7 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: '1.4 !important',
   },
   blogExcerpt: {
-    color: '#9ca3af !important',
+    color: '#a0a0a0 !important',
     lineHeight: '1.6 !important',
     marginBottom: '16px !important',
     flexGrow: 1,
@@ -132,18 +131,19 @@ const useStyles = makeStyles((theme) => ({
     gap: '16px',
     marginTop: 'auto',
     paddingTop: '16px',
-    borderTop: '1px solid rgba(255,255,255,0.1)',
+    borderTop: '1px solid #2a2a2e',
   },
   metaItem: {
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
-    color: '#9ca3af',
+    color: '#a0a0a0',
     fontSize: '0.875rem',
   },
   categoryChip: {
-    backgroundColor: 'rgba(102, 126, 234, 0.2) !important',
-    color: '#667eea !important',
+    backgroundColor: 'transparent !important',
+    color: '#6366f1 !important',
+    border: '1px solid #6366f1 !important',
     fontWeight: '500 !important',
     fontSize: '0.75rem !important',
     marginBottom: '12px !important',
@@ -160,7 +160,7 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: '16px',
     },
     '& p': {
-      color: '#9ca3af',
+      color: '#a0a0a0',
       marginBottom: '30px',
     }
   }
@@ -406,7 +406,7 @@ export default function BlogCategory() {
               to="/blog"
               variant="contained"
               sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
                 textTransform: 'none',
                 fontWeight: 600,
               }}
@@ -416,9 +416,9 @@ export default function BlogCategory() {
           </Box>
         ) : (
           <>
-            <Grid container spacing={4}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '24px' }}>
               {displayedPosts.map((post) => (
-                <Grid item xs={12} sm={6} md={4} key={post.id}>
+                <Box key={post.id} sx={{ flex: '1 1 280px', minWidth: '280px', maxWidth: '380px' }}>
                   <Card className={classes.blogCard}>
                     <CardMedia
                       className={classes.blogCardMedia}
@@ -454,9 +454,9 @@ export default function BlogCategory() {
                       </Box>
                     </CardContent>
                   </Card>
-                </Grid>
+                </Box>
               ))}
-            </Grid>
+            </Box>
 
             {hasMorePosts && (
               <Box className={classes.loadMoreButton}>
@@ -465,14 +465,14 @@ export default function BlogCategory() {
                   variant="outlined"
                   size="large"
                   sx={{
-                    borderColor: '#667eea',
-                    color: '#667eea',
+                    borderColor: '#6366f1',
+                    color: '#6366f1',
                     textTransform: 'none',
                     fontWeight: 600,
                     padding: '12px 30px',
                     '&:hover': {
-                      borderColor: '#764ba2',
-                      backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                      borderColor: '#4f46e5',
+                      backgroundColor: 'rgba(99,102,241,0.1)',
                     }
                   }}
                 >

@@ -6,17 +6,15 @@ import {
   Typography, 
   Container, 
   Box, 
-  Button,
-  useTheme,
-  useMediaQuery
+  Button
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   appBar: {
-    backgroundColor: '#1a1a2e !important',
+    backgroundColor: '#1f1f23 !important',
     boxShadow: '0 2px 10px rgba(0,0,0,0.3) !important',
   },
   toolbar: {
@@ -26,16 +24,10 @@ const useStyles = makeStyles((theme) => ({
   logo: {
     fontWeight: '700 !important',
     fontSize: '1.5rem !important',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important',
-    WebkitBackgroundClip: 'text !important',
-    WebkitTextFillColor: 'transparent !important',
-    backgroundClip: 'text !important',
+    color: '#6366f1 !important',
     textDecoration: 'none !important',
     '&:hover': {
-      background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important',
-      WebkitBackgroundClip: 'text !important',
-      WebkitTextFillColor: 'transparent !important',
-      backgroundClip: 'text !important',
+      opacity: 0.9,
     }
   },
   navButtons: {
@@ -48,33 +40,33 @@ const useStyles = makeStyles((theme) => ({
     textTransform: 'none !important',
     fontWeight: '500 !important',
     '&:hover': {
-      backgroundColor: 'rgba(255,255,255,0.1) !important',
+      backgroundColor: 'rgba(255,255,255,0.08) !important',
     }
   },
   ctaButton: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important',
+    backgroundColor: '#6366f1 !important',
     color: '#ffffff !important',
     textTransform: 'none !important',
     fontWeight: '600 !important',
     padding: '8px 20px !important',
     borderRadius: '25px !important',
     '&:hover': {
-      background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important',
+      backgroundColor: '#4f46e5 !important',
       transform: 'translateY(-2px)',
-      boxShadow: '0 4px 20px rgba(102, 126, 234, 0.4) !important',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.4) !important',
     }
   },
   main: {
     minHeight: 'calc(100vh - 64px)',
-    backgroundColor: '#0f0f23',
+    backgroundColor: '#0c0c0c',
     paddingTop: '64px',
   },
   footer: {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#1f1f23',
     color: '#ffffff',
     padding: '40px 0',
     marginTop: '80px',
-    borderTop: '1px solid rgba(255,255,255,0.1)',
+    borderTop: '1px solid #2a2a2e',
   },
   footerContent: {
     display: 'grid',
@@ -90,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: '600',
     },
     '& p, & a': {
-      color: '#9ca3af',
+      color: '#a0a0a0',
       textDecoration: 'none',
       lineHeight: '1.6',
       '&:hover': {
@@ -107,17 +99,15 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   footerBottom: {
-    borderTop: '1px solid rgba(255,255,255,0.1)',
+    borderTop: '1px solid #2a2a2e',
     paddingTop: '20px',
     textAlign: 'center',
-    color: '#9ca3af',
+    color: '#a0a0a0',
   }
 }));
 
 export default function BlogLayout() {
   const classes = useStyles();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
 
   return (
