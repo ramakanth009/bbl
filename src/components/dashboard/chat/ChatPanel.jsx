@@ -14,6 +14,9 @@ import {
   Add,
   Close,
   Language,
+  Check,
+  ExpandMore,
+  ExpandLess,
 } from "@mui/icons-material";
 import ShareButton from "../../common/ShareButton";
 import { makeStyles } from "@mui/styles";
@@ -500,6 +503,7 @@ const ChatPanel = ({
   const [language, setLanguage] = useState("english");
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
 
   const messagesEndRef = useRef(null);
   const messagesWrapperRef = useRef(null);
@@ -852,10 +856,17 @@ const ChatPanel = ({
   };
 
   const handleLanguageChange = async (languageCode) => {
-    console.log("Language change requested:", languageCode);
-    setLanguage(languageCode);
-    await saveLanguagePreferences(languageCode);
-    console.log("Language updated:", languageCode);
+    console.log("[ChatPanel] Language change requested:", languageCode);
+    console.log("[ChatPanel] Current language before change:", language);
+    console.log("[ChatPanel] Is mobile:", isMobile);
+    
+    try {
+      setLanguage(languageCode);
+      await saveLanguagePreferences(languageCode);
+      console.log("[ChatPanel] Language successfully updated to:", languageCode);
+    } catch (error) {
+      console.error("[ChatPanel] Language change failed:", error);
+    }
   };
 
   const handleSend = async (messageText = null) => {
@@ -1092,6 +1103,10 @@ const ChatPanel = ({
 
   const handleMobileMenuToggle = () => {
     setShowMobileMenu(prev => !prev);
+    // Close language dropdown when mobile menu closes
+    if (showMobileMenu) {
+      setShowLanguageDropdown(false);
+    }
   };
 
   if (!open) {
@@ -1405,9 +1420,86 @@ const ChatPanel = ({
                 },
               }}
             >
-              <Language fontSize="small" />
-              <Typography variant="body2">Language ({language})</Typography>
+              <HistoryIcon fontSize="small" />
+              <Typography variant="body2">Chat History</Typography>
             </IconButton>
+            
+            {/* Language accordion dropdown */}
+            <IconButton
+              onClick={() => {
+                console.log("[Mobile] Language dropdown toggle clicked");
+                setShowLanguageDropdown(!showLanguageDropdown);
+              }}
+              sx={{
+                width: "100%",
+                justifyContent: "flex-start",
+                gap: 2,
+                p: 1.5,
+                borderRadius: "6px",
+                color: "#ffffff",
+                backgroundColor: showLanguageDropdown ? "rgba(99, 102, 241, 0.1)" : "transparent",
+                "&:hover": {
+                  background: showLanguageDropdown ? "rgba(99, 102, 241, 0.2)" : "rgba(255, 255, 255, 0.1)",
+                },
+              }}
+            >
+              <Language fontSize="small" />
+              <Typography variant="body2" sx={{ textTransform: "capitalize" }}>
+                Language ({language})
+              </Typography>
+              <Box sx={{ ml: "auto" }}>
+                {showLanguageDropdown ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+              </Box>
+            </IconButton>
+            
+            {/* Language options - accordion style */}
+            {showLanguageDropdown && (
+              <Box sx={{ 
+                ml: 2, 
+                borderLeft: "2px solid rgba(99, 102, 241, 0.3)",
+                pl: 1,
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+                borderRadius: "0 6px 6px 0"
+              }}>
+                {["english", "hindi", "tamil", "telugu", "kannada", "malayalam"].map((lang) => (
+                  <IconButton
+                    key={lang}
+                    onClick={async () => {
+                      console.log("[Mobile] Language button clicked:", lang);
+                      try {
+                        await handleLanguageChange(lang);
+                        console.log("[Mobile] Language change completed, closing menus");
+                        setShowLanguageDropdown(false);
+                        setShowMobileMenu(false);
+                      } catch (error) {
+                        console.error("[Mobile] Language change error:", error);
+                      }
+                    }}
+                    sx={{
+                      width: "100%",
+                      justifyContent: "flex-start",
+                      gap: 2,
+                      p: 1,
+                      borderRadius: "4px",
+                      color: language === lang ? "#6366f1" : "#ffffff",
+                      backgroundColor: language === lang ? "rgba(99, 102, 241, 0.15)" : "transparent",
+                      "&:hover": {
+                        background: language === lang ? "rgba(99, 102, 241, 0.25)" : "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ textTransform: "capitalize", fontSize: "0.8rem" }}>
+                      {lang}
+                    </Typography>
+                    {language === lang && (
+                      <Box sx={{ ml: "auto" }}>
+                        <Check fontSize="small" />
+                      </Box>
+                    )}
+                  </IconButton>
+                ))}
+              </Box>
+            )}
             
             <IconButton
               onClick={() => {
@@ -1528,19 +1620,17 @@ const ChatPanel = ({
           paddingBottom: "max(8px, env(safe-area-inset-bottom))",
         },
       }}>
-        {/* Question Chips - positioned above input, hidden on mobile when keyboard might be up */}
-        {!isMobile && (
-          <QuestionChips
-            character={character}
-            onQuestionSend={(question) => {
-              handleSend(question);
-            }}
-            loading={loading}
-            disabled={loading}
-            maxQuestions={5}
-            showCategoryLabel={!isMobile}
-          />
-        )}
+        {/* Question Chips - positioned above input */}
+        <QuestionChips
+          character={character}
+          onQuestionSend={(question) => {
+            handleSend(question);
+          }}
+          loading={loading}
+          disabled={loading}
+          maxQuestions={isMobile ? 3 : 5}
+          showCategoryLabel={!isMobile}
+        />
         
         <Box sx={{ 
           display: 'flex', 
@@ -1564,6 +1654,7 @@ const ChatPanel = ({
               onSend={handleSend}
               loading={loading}
               placeholder={isMobile ? `Message ${character.name}...` : `Type in ${language}...`}
+              key={`chat-input-${language}`} // Force re-render when language changes
             />
           </Box>
           
