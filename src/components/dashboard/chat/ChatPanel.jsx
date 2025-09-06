@@ -765,6 +765,10 @@ const ChatPanel = ({
   };
 
   const startNewSession = () => {
+    // Cancel any ongoing request before starting new session
+    cleanupCurrentRequest();
+    console.log('[ChatPanel] Starting new session - cleaned up previous requests');
+    
     initializeChat();
     setShowHistory(false);
   };
