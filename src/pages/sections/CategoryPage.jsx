@@ -527,8 +527,8 @@ const CategoryPage = ({ onSidebarToggle }) => {
   if (loading) {
     return (
       <Box className={classes.categoryContainer}>
-        {/* Mobile TopBar */}
-        {isMobile && (
+        {/* Mobile TopBar - Hide when chat is open */}
+        {isMobile && !isChatOpen && (
           <TopBar
             activeSection={`categories/${categoryKey}`}
             onSectionChange={handleSectionChange}
@@ -552,8 +552,8 @@ const CategoryPage = ({ onSidebarToggle }) => {
   if (error) {
     return (
       <Box className={classes.categoryContainer}>
-        {/* Mobile TopBar */}
-        {isMobile && (
+        {/* Mobile TopBar - Hide when chat is open */}
+        {isMobile && !isChatOpen && (
           <TopBar
             activeSection={`categories/${categoryKey}`}
             onSectionChange={handleSectionChange}
@@ -592,8 +592,8 @@ const CategoryPage = ({ onSidebarToggle }) => {
       />
       
       <Box className={classes.categoryContainer}>
-        {/* Mobile TopBar */}
-        {isMobile && (
+        {/* Mobile TopBar - Hide when chat is open */}
+        {isMobile && !isChatOpen && (
           <TopBar
             activeSection={`categories/${categoryKey}`}
             onSectionChange={handleSectionChange}
