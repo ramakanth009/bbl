@@ -172,7 +172,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   logoText: {
-    fontSize: '16px !important',
+    fontSize: '24px !important',
     fontWeight: '600 !important',
     color: '#ffffff !important',
     // FIXED: Unified tablet range
