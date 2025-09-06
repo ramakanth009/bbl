@@ -36,11 +36,13 @@ const useStyles = makeStyles(() => ({
     top: 0,
     height: "100vh",
     zIndex: 2,
+    overscrollBehavior: 'contain',
     // Mobile viewport height fixes
     "@media (max-width: 600px)": {
       height: "100dvh", // Use dynamic viewport height
       minHeight: "-webkit-fill-available",
       position: "fixed", // Better mobile positioning
+      overflow: 'visible', // Avoid clipping fixed children like header
     },
   },
   chatContainerOpen: {
@@ -92,7 +94,7 @@ const useStyles = makeStyles(() => ({
     // WhatsApp-style mobile header - FIXED to stay at top
     "@media (max-width: 600px)": {
       position: "fixed",
-      top: 0,
+      top: "env(safe-area-inset-top, 0px)",
       left: 0,
       right: 0,
       zIndex: 1100,
@@ -316,7 +318,7 @@ const useStyles = makeStyles(() => ({
     "@media (max-width: 600px)": {
       padding: "0 8px",
       // Add top padding for fixed header
-      paddingTop: "80px", // Space for fixed header
+      paddingTop: "calc(80px + env(safe-area-inset-top, 0px))", // Space for fixed header
       // Add bottom padding for mobile keyboard space
       paddingBottom: "env(keyboard-inset-height, 0px)",
       // Ensure messages don't get hidden behind input
@@ -596,7 +598,11 @@ const ChatPanel = ({
   // Enhanced container style calculation
   const getContainerStyle = () => {
     const baseStyle = {
-      transform: open ? 'translateX(0)' : 'translateX(100%)',
+      // IMPORTANT: Do not keep a transform on the open state because it creates
+      // a containing block for position: fixed descendants (like the header),
+      // causing them to scroll with the panel on mobile. Keep transform only
+      // when closed to slide out.
+      transform: open ? 'none' : 'translateX(100%)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       position: 'fixed',
       top: 0,
@@ -670,6 +676,22 @@ const ChatPanel = ({
       cleanupCurrentRequest();
     };
   }, [open]);
+
+  // Lock body scroll when chat is open on mobile to prevent the page from
+  // scrolling and pushing the header off-screen when the keyboard opens
+  useEffect(() => {
+    if (isMobile) {
+      const originalOverflow = document.body.style.overflow;
+      if (open) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = originalOverflow || '';
+      }
+      return () => {
+        document.body.style.overflow = originalOverflow || '';
+      };
+    }
+  }, [open, isMobile]);
 
   // Chat initialization and effect
   useEffect(() => {
