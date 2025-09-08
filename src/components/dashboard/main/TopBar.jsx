@@ -22,7 +22,8 @@ import {
   Menu as MenuIcon,
   Search,
   LocationOn,
-  Logout
+  Logout,
+  ChatBubbleOutline
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useCategories } from '../../../context/CategoriesContext';
@@ -193,21 +194,26 @@ const TopBar = ({ activeSection, onSectionChange, onMenuToggle, onSearchToggle }
     //   comingSoon: true 
     // },
     { 
-      label: 'History', 
+      label: 'Chat History', 
       value: 'history', 
-      icon: <History sx={{ fontSize: 16 }} />,
+      icon: <ChatBubbleOutline sx={{ fontSize: 16 }} />,
       comingSoon: false 
     },
   ];
 
-  // Add popular categories to tabs
-  const categoryTabs = Object.keys(categories).slice(0, 4).map(categoryKey => ({
+  // Add all categories to tabs
+  const categoryTabs = Object.keys(categories).map(categoryKey => ({
     label: categories[categoryKey],
     value: `category-${categoryKey}`,
     comingSoon: false
   }));
 
-  const allTabs = [...mainTabs, ...categoryTabs];
+  // Reorder tabs to show Chat History after categories
+  const allTabs = [
+    ...mainTabs.filter(tab => tab.value !== 'history'), // All main tabs except history
+    ...categoryTabs, // All categories
+    ...mainTabs.filter(tab => tab.value === 'history') // Chat History at the end
+  ];
 
   const handleTabChange = (event, newValue) => {
     if (newValue.startsWith('category-')) {
