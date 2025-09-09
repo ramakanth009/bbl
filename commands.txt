@@ -1,3 +1,23 @@
 node setup.js
 node generate-static.js
 node cleanup.js
+
+
+How to use
+
+Setup only:
+npm run static:setup
+or node generate-static.js --setup
+
+Generate static pages:
+npm run static:generate
+or node generate-static.js --generate
+
+Do both:
+npm run static:all
+or node generate-static.js --setup --generate
+
+Default (no flags):
+node generate-static.js
+Runs minimal setup then generation
+Notes

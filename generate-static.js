@@ -353,6 +353,123 @@ async function cleanup() {
   console.log('✅ Cleanup complete');
 }
 
+// Setup utilities (merged from setup.js)
+async function setupEnvironment(options = { full: true }) {
+  const { full } = options;
+
+  console.log('🚀 GigaSpace Static Generator Setup\n');
+
+  // Check Node.js version
+  const nodeVersion = process.version;
+  const majorVersion = parseInt(nodeVersion.split('.')[0].substring(1));
+  console.log(`📋 Node.js version: ${nodeVersion}`);
+  if (majorVersion >= 18) {
+    console.log('✅ Node.js 18+ detected - built-in fetch available');
+  } else {
+    console.log('⚠️  Node.js < 18 detected - using https fallback');
+  }
+
+  // Create build directory structure if it doesn't exist
+  console.log('📁 Setting up directory structure...');
+  const directories = [
+    './build',
+    './build/dashboard',
+    './build/dashboard/discover',
+    './build/dashboard/discover/chat'
+  ];
+  for (const dir of directories) {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`✅ Created ${dir}`);
+    }
+  }
+
+  // Create a basic index.html template if it doesn't exist
+  if (!fs.existsSync('./build/index.html')) {
+    console.log('📄 Creating basic HTML template...');
+    const basicHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GigaSpace - AI Character Chat</title>
+    <meta name="description" content="Experience conversations with AI characters">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="GigaSpace">
+    <link rel="icon" href="/favicon.ico">
+    
+    <!-- Placeholder tags that will be replaced per character page -->
+    <meta property="og:title" content="GigaSpace">
+    <meta property="og:description" content="Experience conversations with AI characters">
+    <meta property="og:image" content="${CONFIG.DEFAULT_IMAGE}">
+    <meta property="og:url" content="${CONFIG.SITE_BASE}">
+</head>
+<body>
+    <div id="root">
+        <div class="character-chat-container">
+            <h1>Welcome to GigaSpace</h1>
+            <p>Experience conversations with AI characters</p>
+        </div>
+    </div>
+    <script>
+        console.log('GigaSpace Character Chat loaded');
+    </script>
+</body>
+</html>`;
+    fs.writeFileSync('./build/index.html', basicHTML);
+    console.log('✅ Created basic HTML template');
+  }
+
+  // System memory info
+  try {
+    const os = require('os');
+    const totalMemory = Math.round(os.totalmem() / 1024 / 1024 / 1024);
+    const freeMemory = Math.round(os.freemem() / 1024 / 1024 / 1024);
+    console.log(`\n💾 System Memory: ${freeMemory}GB free / ${totalMemory}GB total`);
+    if (freeMemory < 1) {
+      console.log('⚠️  Low memory detected - consider reducing BATCH_SIZE/CHUNK_SIZE in config');
+    }
+  } catch (_) {
+    // optional
+  }
+
+  if (full) {
+    // Test API connection (non-fatal)
+    console.log('\n🔗 Testing API connection...');
+    try {
+      const https = require('https');
+      const testUrl = `${CONFIG.API_BASE}/getcharacter/1`;
+      const response = await new Promise((resolve, reject) => {
+        const req = https.request(testUrl, { method: 'GET' }, (res) => {
+          let body = '';
+          res.on('data', chunk => body += chunk);
+          res.on('end', () => resolve({ statusCode: res.statusCode, body }));
+        });
+        req.on('error', reject);
+        req.setTimeout(10000, () => { req.destroy(); reject(new Error('Request timeout')); });
+        req.end();
+      });
+      if (response.statusCode === 200) {
+        const data = JSON.parse(response.body);
+        console.log('✅ API connection successful');
+        if (data && data.name && data.id) {
+          console.log(`📡 Test character: ${data.name} (ID: ${data.id})`);
+        }
+      } else {
+        console.log(`⚠️  API returned status: ${response.statusCode}`);
+      }
+    } catch (error) {
+      console.log(`❌ API connection failed: ${error.message}`);
+      console.log('⚠️  The generator will still work with fallback data');
+    }
+
+    console.log('\n🎯 Setup Complete! Next steps:');
+    console.log('1. (Optional) Adjust CONFIG in generate-static.js');
+    console.log('2. Run generation: node generate-static.js --generate');
+    console.log('3. Check results in build/ and generation-summary.json');
+  }
+}
+
 // Main generation function
 async function generateStatic() {
   console.log('🚀 TURBO STATIC GENERATOR STARTING...');
@@ -441,15 +558,33 @@ async function generateStatic() {
 
 // Run if called directly
 if (require.main === module) {
-  generateStatic()
-    .then(() => {
+  (async () => {
+    try {
+      const args = process.argv.slice(2);
+      const wantsSetup = args.includes('--setup');
+      const wantsGenerate = args.includes('--generate');
+
+      if (wantsSetup && !wantsGenerate) {
+        await setupEnvironment({ full: true });
+      } else if (!wantsSetup && wantsGenerate) {
+        // Minimal ensure base exists before generation
+        await setupEnvironment({ full: false });
+        await generateStatic();
+      } else if (wantsSetup && wantsGenerate) {
+        await setupEnvironment({ full: true });
+        await generateStatic();
+      } else {
+        // Default: minimal setup then generate
+        await setupEnvironment({ full: false });
+        await generateStatic();
+      }
       process.exit(0);
-    })
-    .catch(error => {
+    } catch (error) {
       stopProgressDisplay();
       console.error('\n❌ GENERATION FAILED:', error.message);
       process.exit(1);
-    });
+    }
+  })();
 }
 
-module.exports = { generateStatic };
+module.exports = { generateStatic, setupEnvironment };
