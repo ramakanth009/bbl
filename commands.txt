@@ -1,0 +1,3 @@
+node setup.js
+node generate-static.js
+node cleanup.js
