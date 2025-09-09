@@ -5,12 +5,12 @@ const { promisify } = require('util');
 // Ultra-fast configuration
 const CONFIG = {
   API_BASE: 'https://space.gigaspace.org',
-  SITE_BASE: 'https://gigalabs.in',
+  SITE_BASE: 'https://gigaspace.org',
   BATCH_SIZE: 100, // Concurrent batch size
   SECTION: 'discover',
   CACHE_TTL: 1000 * 60 * 10, // 10 minutes cache
   TARGET_COUNT: null, // Auto-detected
-  DEFAULT_IMAGE: 'https://gigalabs.in/android-chrome-512x512.png',
+  DEFAULT_IMAGE: 'https://gigaspace.org/android-chrome-512x512.png',
   DEFAULT_DESCRIPTION: 'Experience conversations with AI characters on GigaSpace - the ultimate platform for interactive AI chat experiences.',
   CREATE_CATEGORY_PAGES: true,
   MAX_CONCURRENT: 50, // Maximum concurrent operations

@@ -508,10 +508,6 @@ const ChatPanel = ({
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   
-  // Message limit functionality
-  const MESSAGE_LIMIT = 15;
-  const [conversationLimitReached, setConversationLimitReached] = useState(false);
-
   const messagesEndRef = useRef(null);
   const messagesWrapperRef = useRef(null);
   const messageListRef = useRef(null);
@@ -889,15 +885,6 @@ const ChatPanel = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages, loading]);
-  
-  // Check conversation limit when messages change
-  useEffect(() => {
-    if (messages.length >= MESSAGE_LIMIT) {
-      setConversationLimitReached(true);
-    } else {
-      setConversationLimitReached(false);
-    }
-  }, [messages]);
 
   const loadLanguagePreferences = async () => {
     try {
@@ -974,7 +961,6 @@ const ChatPanel = ({
     
     initializeChat();
     setShowHistory(false);
-    setConversationLimitReached(false); // Reset limit when starting new session
   };
 
   const handleLanguageChange = async (languageCode) => {
@@ -1014,13 +1000,6 @@ const ChatPanel = ({
     if (!character.id || !character.name) {
       console.error('[ChatPanel] Invalid character data:', character);
       setError('Invalid character data. Please try selecting the character again.');
-      return;
-    }
-    
-    // Check message limit
-    if (messages.length >= MESSAGE_LIMIT) {
-      console.warn('[ChatPanel] Message limit reached');
-      setConversationLimitReached(true);
       return;
     }
 
@@ -1709,43 +1688,6 @@ const ChatPanel = ({
         </Box>
       )}
       
-      {/* Conversation limit warning */}
-      {conversationLimitReached && (
-        <Box sx={{ p: 2 }}>
-          <Alert
-            severity="warning"
-            sx={{
-              background: 'rgba(251, 191, 36, 0.1)',
-              border: '1px solid rgba(251, 191, 36, 0.2)',
-              color: '#fbbf24',
-              '& .MuiAlert-icon': {
-                color: '#fbbf24'
-              }
-            }}
-            action={
-              <IconButton
-                onClick={startNewSession}
-                sx={{
-                  color: '#fbbf24',
-                  backgroundColor: 'rgba(251, 191, 36, 0.2)',
-                  borderRadius: '8px',
-                  padding: '4px 12px',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  '&:hover': {
-                    backgroundColor: 'rgba(251, 191, 36, 0.3)'
-                  }
-                }}
-              >
-                Start new conversation
-              </IconButton>
-            }
-          >
-            This conversation reached its maximum length.
-          </Alert>
-        </Box>
-      )}
-
       <Box className={classes.messagesWrapper} ref={messagesWrapperRef}>
         <Box className={classes.messagesContent}>
           <MessageList
@@ -1819,9 +1761,8 @@ const ChatPanel = ({
               onChange={setInputValue}
               onSend={handleSend}
               loading={loading}
-              disabled={conversationLimitReached}
-              placeholder={conversationLimitReached ? "Start a new conversation to continue..." : (isMobile ? `Message ${character.name}...` : `Type in ${language}...`)}
-              key={`chat-input-${language}`} // Force re-render when language changes
+              placeholder={isMobile ? `Message ${character.name}...` : `Type in ${language}...`}
+               key={`chat-input-${language}`} // Force re-render when language changes
             />
           </Box>
           
