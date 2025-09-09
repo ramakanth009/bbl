@@ -5,7 +5,6 @@ import { flushSync } from 'react-dom';
 import Header from '../../components/dashboard/main/Header';
 import CharacterGrid from '../../components/dashboard/character/CharacterGrid';
 import ChatPanel from '../../components/dashboard/chat/ChatPanel';
-import MetaTagProvider from '../../components/common/MetaTagProvider';
 import { useNavigate, useParams, useOutletContext, useLocation } from 'react-router-dom';
 import apiService from '../../services/api';
 import { createCharacterPath, parseCharacterFromUrl, validateSlugMatch, createCharacterNavigationState } from '../../utils/slugUtils';
@@ -247,13 +246,6 @@ const Discover = () => {
 
   return (
     <>
-      {/* Meta Tag Provider for dynamic meta tags */}
-      <MetaTagProvider 
-        character={selectedCharacter} 
-        characterId={chatCharacterId}
-        section="discover" 
-      />
-      
       <Box className={classes.discoverContainer}>
         <Box
           className={

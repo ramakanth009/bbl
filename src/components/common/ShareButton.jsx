@@ -22,7 +22,6 @@ import {
     Email as EmailIcon,
     ContentCopy as CopyIcon
 } from '@mui/icons-material';
-import metaTagService from '../../services/metaTagService';
 
 /**
  * ShareButton - Social Media Sharing Component
@@ -45,6 +44,24 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
         return `${baseUrl}/dashboard/discover/chat/${characterId}/${characterName}`;
     };
 
+    const generateShareUrls = (character) => {
+        const shareUrl = generateShareUrl(character);
+        const encodedUrl = encodeURIComponent(shareUrl);
+        const encodedTitle = encodeURIComponent(`Chat with ${character.name || 'Character'} | GigaSpace`);
+        const encodedDescription = encodeURIComponent(`Experience conversations with ${character.name || 'this character'} through AI-powered chat on GigaSpace.`);
+        
+        return {
+            copy: shareUrl,
+            facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+            twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}&hashtags=BringBackLegends,AIChat`,
+            linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+            whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
+            telegram: `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`,
+            reddit: `https://reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`,
+            email: `mailto:?subject=${encodedTitle}&body=${encodedDescription}%0A%0A${encodedUrl}`
+        };
+    };
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -64,18 +81,8 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
         }
 
         try {
-            // Generate meta tags and share URLs
-            const metaTags = metaTagService.generateCharacterMeta(character, section);
-            const shareUrls = {
-                copy: generateShareUrl(character),
-                facebook: metaTagService.generateFacebookShareUrl(metaTags),
-                twitter: metaTagService.generateTwitterShareUrl(metaTags),
-                linkedin: metaTagService.generateLinkedInShareUrl(metaTags),
-                whatsapp: metaTagService.generateWhatsAppShareUrl(metaTags),
-                telegram: metaTagService.generateTelegramShareUrl(metaTags),
-                reddit: metaTagService.generateRedditShareUrl(metaTags),
-                email: metaTagService.generateEmailShareUrl(metaTags)
-            };
+            // Generate share URLs
+            const shareUrls = generateShareUrls(character);
 
             switch (platform) {
                 case 'copy':

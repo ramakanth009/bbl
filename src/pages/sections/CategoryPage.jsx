@@ -8,7 +8,6 @@ import CharacterCard from '../../components/dashboard/character/CharacterCard';
 import CreateCharacterButton from '../../components/dashboard/character/creation/CreateCharacterButton';
 import ChatPanel from '../../components/dashboard/chat/ChatPanel';
 import TopBar from '../../components/dashboard/main/TopBar';
-import MetaTagProvider from '../../components/common/MetaTagProvider';
 import apiService from '../../services/api';
 import { createCharacterPath, parseCharacterFromUrl, validateSlugMatch, createCharacterNavigationState } from '../../utils/slugUtils';
 
@@ -584,13 +583,6 @@ const CategoryPage = ({ onSidebarToggle }) => {
 
   return (
     <>
-      {/* Meta Tag Provider for dynamic meta tags */}
-      <MetaTagProvider 
-        character={selectedCharacter} 
-        characterId={selectedCharacter?.id}
-        section={categoryKey} 
-      />
-      
       <Box className={classes.categoryContainer}>
         {/* Mobile TopBar - Hide when chat is open */}
         {isMobile && !isChatOpen && (
