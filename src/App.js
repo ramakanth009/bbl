@@ -29,11 +29,7 @@ import History from './pages/sections/History';
 import SessionChat from './pages/sections/SessionChat';
 import CategoryPage from './pages/sections/CategoryPage';
 
-// Blog Pages
-import BlogLayout from './pages/blog/Bloglayout';
-import BlogHome from './pages/blog/BlogHome';
-import BlogPost from './pages/blog/BlogPost';
-import BlogCategory from './pages/blog/BlogCategory';
+
 
 function DashboardWithMobileModal() {
   const { profileStatus, updateMobile, refreshProfileStatus } = useAuth();
@@ -99,12 +95,7 @@ function AppContent() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 
-                {/* Blog Routes - Public, no authentication required */}
-                <Route path="/blog" element={<BlogLayout />}>
-                  <Route index element={<BlogHome />} />
-                  <Route path="category/:categorySlug" element={<BlogCategory />} />
-                  <Route path="post/:slug" element={<BlogPost />} />
-                </Route>
+                
                 
                 {/* Dashboard Routes - Protected */}
                 <Route 
