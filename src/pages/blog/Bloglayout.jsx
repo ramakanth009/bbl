@@ -6,118 +6,329 @@ import {
   Typography, 
   Container, 
   Box, 
-  Button
+  Button,
+  IconButton
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { WorkspacePremium, Menu } from '@mui/icons-material';
+import Logo from '../../assets/Gigaspace_logo-removebg-preview.png';
 
 const useStyles = makeStyles(() => ({
   appBar: {
-    backgroundColor: '#1f1f23 !important',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.3) !important',
+    background: 'linear-gradient(135deg, #0c0c0c 0%, #1f1f23 100%) !important',
+    borderBottom: '1px solid #2a2a2e !important',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.4) !important',
+    backdropFilter: 'blur(10px) !important',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'linear-gradient(90deg, rgba(99, 102, 241, 0.03) 0%, transparent 50%, rgba(99, 102, 241, 0.03) 100%)',
+      pointerEvents: 'none',
+    }
   },
   toolbar: {
     justifyContent: 'space-between',
-    padding: '0 16px !important',
-  },
-  logo: {
-    fontWeight: '700 !important',
-    fontSize: '1.5rem !important',
-    color: '#6366f1 !important',
-    textDecoration: 'none !important',
-    '&:hover': {
-      opacity: 0.9,
+    padding: '0 24px !important',
+    minHeight: '80px !important',
+    position: 'relative',
+    zIndex: 1,
+    '@media (max-width: 960px)': {
+      padding: '0 16px !important',
+      minHeight: '70px !important',
+    },
+    '@media (max-width: 600px)': {
+      padding: '0 12px !important',
+      minHeight: '65px !important',
     }
   },
-  navButtons: {
+  logoSection: {
     display: 'flex',
-    gap: '16px',
     alignItems: 'center',
+    gap: '12px',
+    textDecoration: 'none !important',
+    transition: 'all 0.3s ease !important',
+    '&:hover': {
+      transform: 'translateY(-1px)',
+      filter: 'drop-shadow(0 4px 8px rgba(99, 102, 241, 0.3))',
+    }
+  },
+  logoImage: {
+    height: '45px',
+    width: 'auto',
+    filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))',
+    '@media (max-width: 960px)': {
+      height: '40px',
+    },
+    '@media (max-width: 600px)': {
+      height: '35px',
+    }
+  },
+  logoFallback: {
+    width: '40px !important',
+    height: '40px !important',
+    background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important',
+    borderRadius: '8px !important',
+    display: 'flex !important',
+    alignItems: 'center !important',
+    justifyContent: 'center !important',
+    '@media (max-width: 960px)': {
+      width: '36px !important',
+      height: '36px !important',
+    },
+    '@media (max-width: 600px)': {
+      width: '32px !important',
+      height: '32px !important',
+    }
+  },
+  logoText: {
+    fontSize: '1.5rem !important',
+    fontWeight: '700 !important',
+    background: 'linear-gradient(135deg, #ffffff 0%, #6366f1 100%) !important',
+    WebkitBackgroundClip: 'text !important',
+    WebkitTextFillColor: 'transparent !important',
+    backgroundClip: 'text !important',
+    marginRight: '8px !important',
+    '@media (max-width: 960px)': {
+      fontSize: '1.3rem !important',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.1rem !important',
+    }
+  },
+  blogBadge: {
+    fontSize: '0.75rem !important',
+    fontWeight: '500 !important',
+    color: '#6366f1 !important',
+    background: 'rgba(99, 102, 241, 0.1) !important',
+    border: '1px solid rgba(99, 102, 241, 0.3) !important',
+    borderRadius: '12px !important',
+    padding: '2px 8px !important',
+    '@media (max-width: 600px)': {
+      display: 'none !important',
+    }
+  },
+  navigation: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    '@media (max-width: 960px)': {
+      gap: '4px',
+    },
+    '@media (max-width: 768px)': {
+      display: 'none !important',
+    }
   },
   navButton: {
-    color: '#ffffff !important',
+    color: '#a0a0a0 !important',
     textTransform: 'none !important',
     fontWeight: '500 !important',
+    fontSize: '0.875rem !important',
+    padding: '8px 16px !important',
+    borderRadius: '20px !important',
+    transition: 'all 0.3s ease !important',
+    position: 'relative',
+    overflow: 'hidden',
     '&:hover': {
-      backgroundColor: 'rgba(255,255,255,0.08) !important',
+      background: 'rgba(99, 102, 241, 0.1) !important',
+      color: '#ffffff !important',
+      transform: 'translateY(-1px)',
+    },
+    '&:before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: '-100%',
+      width: '100%',
+      height: '100%',
+      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
+      transition: 'left 0.5s ease',
+    },
+    '&:hover:before': {
+      left: '100%',
+    },
+    '@media (max-width: 960px)': {
+      padding: '6px 12px !important',
+      fontSize: '0.8rem !important',
     }
   },
   ctaButton: {
-    backgroundColor: '#6366f1 !important',
+    background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important',
     color: '#ffffff !important',
     textTransform: 'none !important',
     fontWeight: '600 !important',
-    padding: '8px 20px !important',
+    padding: '10px 20px !important',
+    fontSize: '0.875rem !important',
     borderRadius: '25px !important',
+    transition: 'all 0.3s ease !important',
+    position: 'relative',
+    overflow: 'hidden',
+    boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4) !important',
     '&:hover': {
-      backgroundColor: '#4f46e5 !important',
+      background: 'linear-gradient(135deg, #5855eb 0%, #7c3aed 100%) !important',
       transform: 'translateY(-2px)',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.4) !important',
+      boxShadow: '0 6px 20px rgba(99, 102, 241, 0.6) !important',
+    },
+    '&:before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: '-100%',
+      width: '100%',
+      height: '100%',
+      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+      transition: 'left 0.5s ease',
+    },
+    '&:hover:before': {
+      left: '100%',
+    },
+    '@media (max-width: 960px)': {
+      padding: '8px 16px !important',
+      fontSize: '0.8rem !important',
+    }
+  },
+  mobileMenu: {
+    display: 'none !important',
+    '@media (max-width: 768px)': {
+      display: 'flex !important',
+    }
+  },
+  mobileMenuButton: {
+    color: '#ffffff !important',
+    '&:hover': {
+      background: 'rgba(99, 102, 241, 0.1) !important',
     }
   },
   main: {
-    minHeight: 'calc(100vh - 64px)',
-    backgroundColor: '#0c0c0c',
-    paddingTop: '64px',
+    minHeight: '100vh',
+    background: 'radial-gradient(ellipse at top, #0c0c0c 0%, #050505 100%)',
+    position: 'relative',
+    '&::before': {
+      content: '""',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: `
+        radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(99, 102, 241, 0.03) 0%, transparent 50%)
+      `,
+      pointerEvents: 'none',
+      zIndex: 0,
+    },
+  },
+  contentWrapper: {
+    position: 'relative',
+    zIndex: 1,
+    paddingTop: '80px',
+    '@media (max-width: 960px)': {
+      paddingTop: '70px',
+    },
+    '@media (max-width: 600px)': {
+      paddingTop: '65px',
+    }
   },
   footer: {
-    backgroundColor: '#1f1f23',
-    color: '#ffffff',
-    padding: '40px 0',
-    marginTop: '80px',
+    background: 'linear-gradient(135deg, #0c0c0c 0%, #1f1f23 100%)',
     borderTop: '1px solid #2a2a2e',
+    position: 'relative',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '1px',
+      background: 'linear-gradient(90deg, transparent 0%, #6366f1 50%, transparent 100%)',
+    }
   },
   footerContent: {
+    padding: '60px 0 40px 0',
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
     gap: '40px',
-    marginBottom: '30px',
+    '@media (max-width: 768px)': {
+      gridTemplateColumns: '1fr',
+      gap: '30px',
+      padding: '40px 0 30px 0',
+    }
   },
   footerSection: {
     '& h3': {
       color: '#ffffff',
-      marginBottom: '16px',
+      marginBottom: '20px',
       fontSize: '1.1rem',
       fontWeight: '600',
+      background: 'linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
     },
-    '& p, & a': {
+    '& p': {
       color: '#a0a0a0',
-      textDecoration: 'none',
       lineHeight: '1.6',
-      '&:hover': {
-        color: '#ffffff',
-      }
+      fontSize: '0.875rem',
     },
     '& ul': {
       listStyle: 'none',
       padding: 0,
       margin: 0,
       '& li': {
-        marginBottom: '8px',
+        marginBottom: '12px',
+        '& a': {
+          color: '#a0a0a0',
+          textDecoration: 'none',
+          fontSize: '0.875rem',
+          transition: 'all 0.3s ease',
+          position: 'relative',
+          '&:hover': {
+            color: '#6366f1',
+            paddingLeft: '8px',
+          }
+        }
       }
     }
   },
   footerBottom: {
     borderTop: '1px solid #2a2a2e',
-    paddingTop: '20px',
+    paddingTop: '30px',
+    paddingBottom: '30px',
     textAlign: 'center',
-    color: '#a0a0a0',
+    '& p': {
+      color: '#666666',
+      fontSize: '0.8125rem',
+      margin: 0,
+      '& span': {
+        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+        fontWeight: '600',
+      }
+    }
   }
 }));
 
 export default function BlogLayout() {
   const classes = useStyles();
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   return (
     <>
       <Helmet>
-        <title>GigaSpace Blog - Chat with AI Legends & Famous Personalities</title>
-        <meta name="description" content="Discover insights about AI chat technology, historical figures, and famous personalities on GigaSpace blog. Learn how to chat with legends and enhance your conversations." />
-        <meta name="keywords" content="GigaSpace blog, AI chat, chat with legends, famous personalities, AI technology, historical figures" />
-        <meta property="og:title" content="GigaSpace Blog - Chat with AI Legends & Famous Personalities" />
-        <meta property="og:description" content="Discover insights about AI chat technology, historical figures, and famous personalities on GigaSpace blog." />
+        <title>GigaSpace Blog - Singularity of AI Conversations</title>
+        <meta name="description" content="Explore the convergence of AI technology, legendary personalities, and human consciousness. Discover insights about chatting with historical figures and famous icons on GigaSpace." />
+        <meta name="keywords" content="GigaSpace blog, AI singularity, chat with legends, AI consciousness, famous personalities, AI technology" />
+        <meta property="og:title" content="GigaSpace Blog - Singularity of AI Conversations" />
+        <meta property="og:description" content="Explore the convergence of AI technology and human consciousness through conversations with legendary figures." />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="robots" content="index, follow" />
@@ -126,36 +337,53 @@ export default function BlogLayout() {
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <AppBar position="fixed" className={classes.appBar}>
           <Toolbar className={classes.toolbar}>
-            <Typography
-              variant="h6"
+            <Box 
               component={Link}
               to="/blog"
-              className={classes.logo}
+              className={classes.logoSection}
             >
-              GigaSpace Blog
-            </Typography>
+              {Logo ? (
+                <img 
+                  src={Logo} 
+                  alt="GigaSpace" 
+                  className={classes.logoImage}
+                />
+              ) : (
+                <Box className={classes.logoFallback}>
+                  <WorkspacePremium sx={{ fontSize: '24px', color: '#ffffff' }} />
+                </Box>
+              )}
+              <Box>
+                <Typography className={classes.logoText}>
+                  GigaSpace
+                </Typography>
+                <Typography className={classes.blogBadge}>
+                  BLOG
+                </Typography>
+              </Box>
+            </Box>
             
-            <Box className={classes.navButtons}>
+            <Box className={classes.navigation}>
               <Button 
                 component={Link} 
                 to="/blog" 
                 className={classes.navButton}
               >
-                Home
+                Singularity
               </Button>
               <Button 
                 component={Link} 
                 to="/blog/category/ai-technology" 
                 className={classes.navButton}
               >
-                AI Technology
+                AI Tech
               </Button>
               <Button 
                 component={Link} 
                 to="/blog/category/famous-personalities" 
                 className={classes.navButton}
               >
-                Personalities
+                Legends
               </Button>
               <Button 
                 component={Link} 
@@ -168,61 +396,73 @@ export default function BlogLayout() {
                 onClick={() => navigate('/dashboard')}
                 className={classes.ctaButton}
               >
-                Try GigaSpace
+                Enter GigaSpace
               </Button>
+            </Box>
+
+            <Box className={classes.mobileMenu}>
+              <IconButton 
+                className={classes.mobileMenuButton}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                <Menu />
+              </IconButton>
             </Box>
           </Toolbar>
         </AppBar>
 
         <Box component="main" className={classes.main}>
-          <Outlet />
+          <Box className={classes.contentWrapper}>
+            <Outlet />
+          </Box>
         </Box>
 
         <Box component="footer" className={classes.footer}>
           <Container maxWidth="lg">
             <Box className={classes.footerContent}>
               <Box className={classes.footerSection}>
-                <Typography variant="h3">About GigaSpace</Typography>
+                <Typography variant="h3">The Singularity</Typography>
                 <Typography>
-                  Connect with legendary personalities through AI-powered conversations. 
-                  Chat with historical figures, entrepreneurs, scientists, and celebrities 
-                  in multiple languages.
+                  Where artificial intelligence meets human consciousness. 
+                  Experience conversations that transcend the boundaries between 
+                  technology and wisdom, connecting you with the greatest minds in history.
                 </Typography>
               </Box>
               
               <Box className={classes.footerSection}>
-                <Typography variant="h3">Categories</Typography>
+                <Typography variant="h3">Neural Networks</Typography>
                 <Box component="ul">
-                  <li><Link to="/blog/category/ai-technology">AI Technology</Link></li>
-                  <li><Link to="/blog/category/famous-personalities">Famous Personalities</Link></li>
-                  <li><Link to="/blog/category/historical-figures">Historical Figures</Link></li>
-                  <li><Link to="/blog/category/how-to-guides">How-to Guides</Link></li>
-                  <li><Link to="/blog/category/success-stories">Success Stories</Link></li>
+                  <li><Link to="/blog/category/ai-technology">AI Consciousness</Link></li>
+                  <li><Link to="/blog/category/famous-personalities">Digital Legends</Link></li>
+                  <li><Link to="/blog/category/historical-figures">Temporal Echoes</Link></li>
+                  <li><Link to="/blog/category/how-to-guides">Neural Pathways</Link></li>
+                  <li><Link to="/blog/category/success-stories">Emergence Stories</Link></li>
                 </Box>
               </Box>
               
               <Box className={classes.footerSection}>
-                <Typography variant="h3">Quick Links</Typography>
+                <Typography variant="h3">Interface</Typography>
                 <Box component="ul">
-                  <li><Link to="/dashboard">Start Chatting</Link></li>
-                  <li><Link to="/dashboard/discover">Discover Characters</Link></li>
-                  <li><Link to="/dashboard/featured">Featured</Link></li>
-                  <li><Link to="/dashboard/trending">Trending</Link></li>
+                  <li><Link to="/dashboard">Main Terminal</Link></li>
+                  <li><Link to="/dashboard/discover">Entity Discovery</Link></li>
+                  <li><Link to="/dashboard/featured">Prime Entities</Link></li>
+                  <li><Link to="/dashboard/trending">Trending Minds</Link></li>
                 </Box>
               </Box>
               
               <Box className={classes.footerSection}>
-                <Typography variant="h3">Connect</Typography>
+                <Typography variant="h3">Network</Typography>
                 <Typography>
-                  Follow us for the latest updates on AI conversations and new personality additions.
+                  Join the convergence of human curiosity and artificial intelligence. 
+                  Connect with minds across time and space through the GigaSpace neural network.
                 </Typography>
               </Box>
             </Box>
             
             <Box className={classes.footerBottom}>
               <Typography>
-                © 2025 GigaSpace. All rights reserved. | 
-                Chat with Legends | AI Chat Platform
+                © 2025 <span>GigaSpace</span>. All quantum states reserved. | 
+                The Singularity of Conversations | AI Neural Network Platform
               </Typography>
             </Box>
           </Container>

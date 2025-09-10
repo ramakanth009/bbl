@@ -156,7 +156,7 @@ async function fetchCharacter(id) {
   }
 }
 
-// Create slug from name
+// Create slug from name - FIXED TO MATCH REACT APP
 function createSlug(text) {
   if (!text) return 'character';
   return text.toLowerCase()
@@ -209,7 +209,7 @@ function generateHTML(character, baseHTML, pageType, url) {
   return html.replace('</head>', `${metaTags}</head>`);
 }
 
-// Process single character with all pages
+// Process single character with all pages - FIXED TO INCLUDE CHARACTER NAME SLUG
 async function processCharacter(id, baseHTML) {
   const characterData = await fetchCharacter(id);
   
@@ -231,11 +231,11 @@ async function processCharacter(id, baseHTML) {
   const slug = createSlug(character.name);
   const category = character.category || 'default';
   
-  // Define pages to create
+  // Define pages to create - FIXED TO INCLUDE CHARACTER NAME IN PATH
   const pages = [
     {
-      path: `./build/dashboard/${CONFIG.SECTION}/chat/${id}/index.html`,
-      url: `${CONFIG.SITE_BASE}/dashboard/${CONFIG.SECTION}/chat/${id}`
+      path: `./build/dashboard/${CONFIG.SECTION}/chat/${id}/${slug}/index.html`,
+      url: `${CONFIG.SITE_BASE}/dashboard/${CONFIG.SECTION}/chat/${id}/${slug}`
     }
   ];
   
@@ -328,7 +328,7 @@ async function detectTargetCount() {
   return 1500;
 }
 
-// Cleanup old files
+// Cleanup old files - UPDATED TO CLEAN CHARACTER NAME DIRECTORIES
 async function cleanup() {
   console.log('🧹 Cleaning up old files...');
   
@@ -369,7 +369,7 @@ async function setupEnvironment(options = { full: true }) {
     console.log('⚠️  Node.js < 18 detected - using https fallback');
   }
 
-  // Create build directory structure if it doesn't exist
+  // Create build directory structure if it doesn't exist - UPDATED FOR CHARACTER NAMES
   console.log('📁 Setting up directory structure...');
   const directories = [
     './build',
@@ -497,6 +497,7 @@ async function generateStatic() {
   console.log(`   Concurrency: ${CONFIG.MAX_CONCURRENT}`);
   console.log(`   Chunk Size: ${CONFIG.CHUNK_SIZE}`);
   console.log(`   Expected Pages: ~${CONFIG.CREATE_CATEGORY_PAGES ? CONFIG.TARGET_COUNT * 2 : CONFIG.TARGET_COUNT}`);
+  console.log(`   URL Format: /dashboard/discover/chat/{id}/{character-name}`);
   console.log('=' .repeat(60));
   
   // Step 4: Start progress display
@@ -530,12 +531,14 @@ async function generateStatic() {
   console.log(`📝 Missing (defaults): ${results.missing}`);
   console.log(`❌ Errors: ${results.errors}`);
   console.log(`📂 Categories found: ${results.categories.size}`);
+  console.log(`🔗 URL Format: /dashboard/discover/chat/{id}/{character-name}`);
   
   // Write summary
   const summary = {
     timestamp: new Date().toISOString(),
     duration: duration,
     speed: speed,
+    urlFormat: '/dashboard/discover/chat/{id}/{character-name}',
     stats: {
       total: CONFIG.TARGET_COUNT,
       successful: results.successful,
