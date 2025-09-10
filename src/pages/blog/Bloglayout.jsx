@@ -86,33 +86,7 @@ const useStyles = makeStyles(() => ({
       height: '32px !important',
     }
   },
-  logoText: {
-    fontSize: '1.5rem !important',
-    fontWeight: '700 !important',
-    background: 'linear-gradient(135deg, #ffffff 0%, #6366f1 100%) !important',
-    WebkitBackgroundClip: 'text !important',
-    WebkitTextFillColor: 'transparent !important',
-    backgroundClip: 'text !important',
-    marginRight: '8px !important',
-    '@media (max-width: 960px)': {
-      fontSize: '1.3rem !important',
-    },
-    '@media (max-width: 600px)': {
-      fontSize: '1.1rem !important',
-    }
-  },
-  blogBadge: {
-    fontSize: '0.75rem !important',
-    fontWeight: '500 !important',
-    color: '#6366f1 !important',
-    background: 'rgba(99, 102, 241, 0.1) !important',
-    border: '1px solid rgba(99, 102, 241, 0.3) !important',
-    borderRadius: '12px !important',
-    padding: '2px 8px !important',
-    '@media (max-width: 600px)': {
-      display: 'none !important',
-    }
-  },
+
   navigation: {
     display: 'flex',
     alignItems: 'center',
@@ -353,45 +327,11 @@ export default function BlogLayout() {
                   <WorkspacePremium sx={{ fontSize: '24px', color: '#ffffff' }} />
                 </Box>
               )}
-              <Box>
-                <Typography className={classes.logoText}>
-                  GigaSpace
-                </Typography>
-                <Typography className={classes.blogBadge}>
-                  BLOG
-                </Typography>
-              </Box>
+             
             </Box>
             
             <Box className={classes.navigation}>
-              <Button 
-                component={Link} 
-                to="/blog" 
-                className={classes.navButton}
-              >
-                Singularity
-              </Button>
-              <Button 
-                component={Link} 
-                to="/blog/category/ai-technology" 
-                className={classes.navButton}
-              >
-                AI Tech
-              </Button>
-              <Button 
-                component={Link} 
-                to="/blog/category/famous-personalities" 
-                className={classes.navButton}
-              >
-                Legends
-              </Button>
-              <Button 
-                component={Link} 
-                to="/blog/category/how-to-guides" 
-                className={classes.navButton}
-              >
-                Guides
-              </Button>
+             
               <Button 
                 onClick={() => navigate('/dashboard')}
                 className={classes.ctaButton}
