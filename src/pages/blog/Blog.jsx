@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Typography, Box, Card, CardContent, Button, TextField, Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import BlogNavbar from '../../components/blog/BlogNavbar';
 
 const useStyles = makeStyles({
   blogContainer: {
@@ -478,13 +479,25 @@ const useStyles = makeStyles({
     '& .MuiOutlinedInput-root': {
       backgroundColor: '#ffffff',
       borderRadius: '8px',
+      '&:hover .MuiOutlinedInput-notchedOutline': {
+        borderColor: '#6366f1',
+      },
+      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        borderColor: '#6366f1',
+        borderWidth: '1px',
+      },
       '& fieldset': {
-        border: 'none',
+        border: '1px solid #e2e8f0',
       },
     },
     '& .MuiInputBase-input': {
       padding: '1rem',
       fontSize: '1rem',
+      color: '#1a202c',
+      '&::placeholder': {
+        color: '#718096',
+        opacity: 1,
+      },
       '@media (max-width: 600px)': {
         padding: '0.875rem',
         fontSize: '0.9rem',
@@ -571,6 +584,7 @@ const Blog = () => {
 
   return (
     <Box className={classes.blogContainer}>
+      <BlogNavbar />
       <Container className={classes.styledContainer}>
         {/* Latest Articles */}
         <Box component="section">

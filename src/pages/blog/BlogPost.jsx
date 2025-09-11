@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Container, Typography, Box, Button } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import BlogNavbar from '../../components/blog/BlogNavbar';
 
 const useStyles = makeStyles({
   blogPostContainer: {
@@ -683,6 +684,7 @@ const BlogPost = () => {
 
   return (
     <Box className={classes.blogPostContainer}>
+      <BlogNavbar />
       <Container className={classes.styledContainer}>
         <Link to="/blog" className={classes.backButton}>
           <ArrowBackIcon />
