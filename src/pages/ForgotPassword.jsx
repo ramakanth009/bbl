@@ -282,6 +282,52 @@ const useStyles = makeStyles(() => ({
       fontSize: '24px !important',
     },
   },
+  // Footer styles (consistent with Login.jsx)
+  footerContainer: {
+    width: '100%',
+    padding: '24px 16px',
+    marginTop: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'transparent',
+  },
+  footerInner: {
+    width: '100%',
+    maxWidth: 960,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '12px',
+    color: '#aaa',
+    '@media (max-width: 600px)': {
+      flexDirection: 'column',
+      gap: '8px',
+      textAlign: 'center',
+    },
+  },
+  footerLinks: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    '@media (max-width: 600px)': {
+      gap: '12px',
+    },
+  },
+  footerLink: {
+    color: '#fff',
+    textDecoration: 'none',
+    fontWeight: 600,
+    borderBottom: '1px dashed rgba(255,255,255,0.35)',
+    transition: 'opacity 0.2s ease',
+    '&:hover': {
+      opacity: 0.85,
+    },
+  },
+  copyright: {
+    color: '#aaa',
+    fontSize: '0.9rem',
+  },
 }));
 
 const ForgotPassword = () => {
@@ -462,6 +508,17 @@ const ForgotPassword = () => {
           </Card>
         </Fade>
       </Container>
+      {/* Footer */}
+      <Box component="footer" className={classes.footerContainer}>
+        <Box className={classes.footerInner}>
+          <Typography variant="body2" className={classes.copyright}>
+            © {new Date().getFullYear()} GigaSpace. All rights reserved.
+          </Typography>
+          <Box className={classes.footerLinks}>
+            <Link to="/blog" className={classes.footerLink}>Blog</Link>
+          </Box>
+        </Box>
+      </Box>
     </>
   );
 };
