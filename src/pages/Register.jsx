@@ -350,6 +350,56 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  copyright: {
+    color: "#fff",
+    opacity: 0.8,
+    fontSize: "0.875rem",
+    "@media (max-width: 600px)": {
+      textAlign: "center",
+    },
+  },
+  footerContainer: {
+    width: '100%',
+    padding: '24px 16px',
+    marginTop: '16px',
+    display: 'flex',
+    justifyContent: 'center',
+    background: 'transparent',
+  },
+  footerInner: {
+    width: '100%',
+    maxWidth: 960,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: '16px',
+    '@media (max-width: 600px)': {
+      flexDirection: 'column',
+      textAlign: 'center',
+    },
+  },
+  footerLinks: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    '@media (max-width: 600px)': {
+      gap: '12px',
+    },
+  },
+  footerLink: {
+    color: '#fff',
+    textDecoration: 'none',
+    fontWeight: 600,
+    fontSize: '0.875rem',
+    opacity: 0.8,
+    transition: 'opacity 0.2s ease',
+    '&:hover': {
+      opacity: 1,
+      textDecoration: 'underline',
+    },
+  },
 }));
 
 const Register = () => {
@@ -883,6 +933,18 @@ const Register = () => {
           </Card>
         </Fade>
       </Container>
+      
+      {/* Footer */}
+      <Box component="footer" className={classes.footerContainer}>
+        <Box className={classes.footerInner}>
+          <Typography variant="body2" className={classes.copyright}>
+            &copy; {new Date().getFullYear()} GigaSpace. All rights reserved.
+          </Typography>
+          <Box className={classes.footerLinks}>
+            <Link to="/blog" className={classes.footerLink}>Blog</Link>
+          </Box>
+        </Box>
+      </Box>
     </>
   );
 };

@@ -14,6 +14,23 @@ const useStyles = makeStyles({
     maxWidth: '900px',
     margin: '0 auto',
     padding: '0 1.5rem',
+    '@media (max-width: 1200px)': {
+      maxWidth: '800px',
+      padding: '0 1.25rem',
+    },
+    '@media (max-width: 900px)': {
+      maxWidth: '100%',
+      padding: '0 1rem',
+    },
+    '@media (max-width: 600px)': {
+      padding: '0 0.75rem',
+    },
+    '@media (max-width: 480px)': {
+      padding: '0 0.5rem',
+    },
+    '@media (max-width: 375px)': {
+      padding: '0 0.25rem',
+    },
   },
   backButton: {
     display: 'inline-flex',
@@ -22,12 +39,35 @@ const useStyles = makeStyles({
     textDecoration: 'none',
     marginBottom: '1.5rem',
     fontWeight: 500,
+    padding: '0.5rem 0',
     '&:hover svg': {
       transform: 'translateX(-3px)',
     },
     '& svg': {
       marginRight: '0.5rem',
       transition: 'transform 0.2s',
+    },
+    '@media (max-width: 900px)': {
+      marginBottom: '1.25rem',
+      fontSize: '0.95rem',
+    },
+    '@media (max-width: 600px)': {
+      marginBottom: '1rem',
+      fontSize: '0.9rem',
+      '& svg': {
+        marginRight: '0.375rem',
+      },
+    },
+    '@media (max-width: 480px)': {
+      marginBottom: '0.875rem',
+      fontSize: '0.85rem',
+      '& svg': {
+        marginRight: '0.25rem',
+      },
+    },
+    '@media (max-width: 375px)': {
+      marginBottom: '0.75rem',
+      fontSize: '0.8rem',
     },
   },
   header: {
@@ -36,10 +76,41 @@ const useStyles = makeStyles({
     padding: '4rem 0',
     textAlign: 'center',
     marginBottom: '3rem',
+    '@media (max-width: 1200px)': {
+      padding: '3.5rem 0',
+      marginBottom: '2.5rem',
+    },
+    '@media (max-width: 900px)': {
+      padding: '3rem 0',
+      marginBottom: '2rem',
+    },
+    '@media (max-width: 600px)': {
+      padding: '2.5rem 0',
+      marginBottom: '1.5rem',
+    },
+    '@media (max-width: 480px)': {
+      padding: '2rem 0',
+      marginBottom: '1.25rem',
+    },
+    '@media (max-width: 375px)': {
+      padding: '1.5rem 0',
+      marginBottom: '1rem',
+    },
   },
   articleHeader: {
     maxWidth: '800px',
     margin: '0 auto',
+    padding: '0 1rem',
+    '@media (max-width: 900px)': {
+      maxWidth: '100%',
+      padding: '0 0.75rem',
+    },
+    '@media (max-width: 600px)': {
+      padding: '0 0.5rem',
+    },
+    '@media (max-width: 480px)': {
+      padding: '0 0.25rem',
+    },
   },
   categoryTag: {
     display: 'inline-block',
@@ -52,6 +123,30 @@ const useStyles = makeStyles({
     marginBottom: '1rem',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
+    '@media (max-width: 900px)': {
+      padding: '0.35rem 0.875rem',
+      fontSize: '0.8rem',
+      marginBottom: '0.875rem',
+      borderRadius: '16px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '0.3rem 0.75rem',
+      fontSize: '0.75rem',
+      marginBottom: '0.75rem',
+      borderRadius: '14px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '0.25rem 0.625rem',
+      fontSize: '0.7rem',
+      marginBottom: '0.625rem',
+      borderRadius: '12px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '0.2rem 0.5rem',
+      fontSize: '0.65rem',
+      marginBottom: '0.5rem',
+      borderRadius: '10px',
+    },
   },
   articleTitle: {
     fontSize: '2.5rem',
@@ -59,8 +154,26 @@ const useStyles = makeStyles({
     marginBottom: '1.5rem',
     fontWeight: 800,
     color: 'white',
+    '@media (max-width: 1200px)': {
+      fontSize: '2.25rem',
+      marginBottom: '1.375rem',
+    },
     '@media (max-width: 960px)': {
       fontSize: '2rem',
+      marginBottom: '1.25rem',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.75rem',
+      marginBottom: '1rem',
+      lineHeight: 1.1,
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '1.5rem',
+      marginBottom: '0.875rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '1.25rem',
+      marginBottom: '0.75rem',
     },
   },
   articleMeta: {
@@ -71,6 +184,23 @@ const useStyles = makeStyles({
     margin: '1rem 0',
     color: 'rgba(255, 255, 255, 0.9)',
     fontSize: '0.95rem',
+    '@media (max-width: 900px)': {
+      gap: '0.875rem',
+      fontSize: '0.9rem',
+    },
+    '@media (max-width: 600px)': {
+      gap: '0.75rem',
+      fontSize: '0.85rem',
+      flexWrap: 'wrap',
+    },
+    '@media (max-width: 480px)': {
+      gap: '0.5rem',
+      fontSize: '0.8rem',
+    },
+    '@media (max-width: 375px)': {
+      gap: '0.375rem',
+      fontSize: '0.75rem',
+    },
   },
   articleContent: {
     background: '#ffffff',
@@ -81,9 +211,29 @@ const useStyles = makeStyles({
     position: 'relative',
     maxWidth: '800px',
     color: '#1f2937',
+    '@media (max-width: 1200px)': {
+      padding: '2.5rem',
+      margin: '-1.75rem auto 3.5rem',
+    },
     '@media (max-width: 960px)': {
       padding: '2rem 1.5rem',
       margin: '-3rem 1rem 3rem',
+      borderRadius: '10px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '1.75rem 1.25rem',
+      margin: '-2rem 0.5rem 2.5rem',
+      borderRadius: '8px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '1.5rem 1rem',
+      margin: '-1.5rem 0.25rem 2rem',
+      borderRadius: '6px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '1.25rem 0.75rem',
+      margin: '-1rem 0 1.5rem',
+      borderRadius: '4px',
     },
   },
   featuredImage: {
@@ -93,9 +243,29 @@ const useStyles = makeStyles({
     objectFit: 'cover',
     margin: '2rem 0',
     boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+    '@media (max-width: 1200px)': {
+      height: '450px',
+      margin: '1.75rem 0',
+    },
     '@media (max-width: 960px)': {
       height: '300px',
       margin: '1.5rem 0',
+      borderRadius: '10px',
+    },
+    '@media (max-width: 600px)': {
+      height: '250px',
+      margin: '1.25rem 0',
+      borderRadius: '8px',
+    },
+    '@media (max-width: 480px)': {
+      height: '200px',
+      margin: '1rem 0',
+      borderRadius: '6px',
+    },
+    '@media (max-width: 375px)': {
+      height: '180px',
+      margin: '0.75rem 0',
+      borderRadius: '4px',
     },
   },
   contentText: {
@@ -103,18 +273,82 @@ const useStyles = makeStyles({
     fontSize: '1.1rem',
     lineHeight: 1.8,
     color: '#1f2937',
+    '@media (max-width: 1200px)': {
+      fontSize: '1.05rem',
+      marginBottom: '1.375rem',
+    },
+    '@media (max-width: 900px)': {
+      fontSize: '1rem',
+      marginBottom: '1.25rem',
+      lineHeight: 1.7,
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '0.95rem',
+      marginBottom: '1rem',
+      lineHeight: 1.6,
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.9rem',
+      marginBottom: '0.875rem',
+      lineHeight: 1.5,
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.85rem',
+      marginBottom: '0.75rem',
+      lineHeight: 1.4,
+    },
   },
   contentHeading: {
     fontSize: '1.8rem',
     margin: '2.5rem 0 1.5rem',
     color: '#1f2937',
     fontWeight: 700,
+    '@media (max-width: 1200px)': {
+      fontSize: '1.7rem',
+      margin: '2.25rem 0 1.375rem',
+    },
+    '@media (max-width: 900px)': {
+      fontSize: '1.6rem',
+      margin: '2rem 0 1.25rem',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.4rem',
+      margin: '1.75rem 0 1rem',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '1.25rem',
+      margin: '1.5rem 0 0.875rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '1.125rem',
+      margin: '1.25rem 0 0.75rem',
+    },
   },
   contentSubheading: {
     fontSize: '1.4rem',
     margin: '2rem 0 1rem',
     color: '#1f2937',
     fontWeight: 600,
+    '@media (max-width: 1200px)': {
+      fontSize: '1.3rem',
+      margin: '1.875rem 0 0.95rem',
+    },
+    '@media (max-width: 900px)': {
+      fontSize: '1.2rem',
+      margin: '1.75rem 0 0.9rem',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '1.1rem',
+      margin: '1.5rem 0 0.75rem',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '1rem',
+      margin: '1.25rem 0 0.625rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.95rem',
+      margin: '1rem 0 0.5rem',
+    },
   },
   contentList: {
     marginBottom: '1.5rem',
@@ -122,6 +356,51 @@ const useStyles = makeStyles({
     '& li': {
       marginBottom: '0.5rem',
       lineHeight: 1.6,
+      fontSize: '1.1rem',
+    },
+    '@media (max-width: 1200px)': {
+      marginBottom: '1.375rem',
+      paddingLeft: '1.375rem',
+      '& li': {
+        fontSize: '1.05rem',
+        marginBottom: '0.475rem',
+      },
+    },
+    '@media (max-width: 900px)': {
+      marginBottom: '1.25rem',
+      paddingLeft: '1.25rem',
+      '& li': {
+        fontSize: '1rem',
+        marginBottom: '0.45rem',
+        lineHeight: 1.5,
+      },
+    },
+    '@media (max-width: 600px)': {
+      marginBottom: '1rem',
+      paddingLeft: '1rem',
+      '& li': {
+        fontSize: '0.95rem',
+        marginBottom: '0.4rem',
+        lineHeight: 1.4,
+      },
+    },
+    '@media (max-width: 480px)': {
+      marginBottom: '0.875rem',
+      paddingLeft: '0.875rem',
+      '& li': {
+        fontSize: '0.9rem',
+        marginBottom: '0.35rem',
+        lineHeight: 1.3,
+      },
+    },
+    '@media (max-width: 375px)': {
+      marginBottom: '0.75rem',
+      paddingLeft: '0.75rem',
+      '& li': {
+        fontSize: '0.85rem',
+        marginBottom: '0.3rem',
+        lineHeight: 1.2,
+      },
     },
   },
   highlightBox: {
@@ -130,6 +409,32 @@ const useStyles = makeStyles({
     padding: '1.5rem',
     margin: '2rem 0',
     borderRadius: '0 8px 8px 0',
+    '@media (max-width: 1200px)': {
+      padding: '1.375rem',
+      margin: '1.875rem 0',
+    },
+    '@media (max-width: 900px)': {
+      padding: '1.25rem',
+      margin: '1.75rem 0',
+      borderRadius: '0 6px 6px 0',
+    },
+    '@media (max-width: 600px)': {
+      padding: '1rem',
+      margin: '1.5rem 0',
+      borderRadius: '0 5px 5px 0',
+      borderLeft: '3px solid #4f46e5',
+    },
+    '@media (max-width: 480px)': {
+      padding: '0.875rem',
+      margin: '1.25rem 0',
+      borderRadius: '0 4px 4px 0',
+    },
+    '@media (max-width: 375px)': {
+      padding: '0.75rem',
+      margin: '1rem 0',
+      borderRadius: '0 3px 3px 0',
+      borderLeft: '2px solid #4f46e5',
+    },
   },
 });
 
