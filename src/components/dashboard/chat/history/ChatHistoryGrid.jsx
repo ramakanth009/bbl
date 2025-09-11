@@ -761,12 +761,14 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
       }
       
       const now = new Date();
-      const diffTime = Math.abs(now - date);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const startOfThatDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const diffMs = startOfToday - startOfThatDay; // positive if "date" is in the past
+      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
       if (diffDays === 0) return 'Today';
       if (diffDays === 1) return 'Yesterday';
-      if (diffDays <= 7) return `${diffDays} days ago`;
+      if (diffDays > 1 && diffDays <= 7) return `${diffDays} days ago`;
       
       return date.toLocaleDateString('en-US', { 
         weekday: 'long', 

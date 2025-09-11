@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import {
   Box,
   Typography,
@@ -11,6 +12,8 @@ import {
   Divider,
   Chip,
 } from '@mui/material';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+
 import {
   Close,
   Add,
@@ -557,12 +560,14 @@ const ChatHistoryPanel = ({
       }
       
       const now = new Date();
-      const diffTime = Math.abs(now - date);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const startOfThatDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const diffMs = startOfToday - startOfThatDay; // positive if date is in the past
+      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
       if (diffDays === 0) return 'Today';
       if (diffDays === 1) return 'Yesterday';
-      if (diffDays <= 7) return `${diffDays} days ago`;
+      if (diffDays > 1 && diffDays <= 7) return `${diffDays} days ago`;
       
       return date.toLocaleDateString();
       
@@ -637,143 +642,209 @@ const ChatHistoryPanel = ({
 
   return (
     <>
-      {/* Mobile backdrop */}
+      {/* Mobile: show a backdrop that closes on click */}
       {isMobile && (
-        <Box
-          className={classes.backdrop}
-          onClick={onClose}
-        />
+        <Box className={classes.backdrop} onClick={onClose} />
       )}
-      
-      {/* Main panel */}
-      <Box
-        className={`${classes.panelContainer} ${!open ? classes.panelContainerClosed : ''}`}
-        style={panelStyle}
-      >
-        <Box className={classes.panelHeader}>
-          <Box>
-            <Typography 
-              variant="h6" 
-              fontWeight="bold" 
-              color={theme.palette.primary.main}
-              className={classes.headerTitle}
-            >
-              Chat History
-            </Typography>
-            <Typography 
-              variant="body2" 
-              color="text.secondary"
-              className={classes.headerSubtitle}
-            >
-              {characterName}
-            </Typography>
+
+      {/* Panel */}
+      {isMobile ? (
+        // On mobile we don't need ClickAwayListener, backdrop handles outside clicks
+        <Box className={`${classes.panelContainer} ${!open ? classes.panelContainerClosed : ''}`} style={panelStyle}>
+          {/* Header */}
+          <Box className={classes.panelHeader}>
+            <Box>
+              <Typography variant="h6" fontWeight="bold" color={theme.palette.primary.main} className={classes.headerTitle}>
+                Chat History
+              </Typography>
+              <Typography variant="body2" color="text.secondary" className={classes.headerSubtitle}>
+                {characterName}
+              </Typography>
+            </Box>
+            <IconButton onClick={onClose} size="small" sx={{ color: theme.palette.text.secondary }} className={classes.closeButton}>
+              <Close />
+            </IconButton>
           </Box>
-          <IconButton 
-            onClick={onClose} 
-            size="small" 
-            sx={{ color: theme.palette.text.secondary }}
-            className={classes.closeButton}
-          >
-            <Close />
-          </IconButton>
+
+          {/* Content */}
+          <Box className={classes.panelContent}>
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => { onNewSession(); if (isMobile) onClose(); }}
+              fullWidth
+              className={classes.newSessionButton}
+            >
+              Start New Conversation
+            </Button>
+
+            <Box className={classes.sessionCountText}>
+              <Typography variant="caption" color="text.disabled">
+                {sessions.length} conversation{sessions.length !== 1 ? 's' : ''}
+              </Typography>
+            </Box>
+
+            <Box className={classes.scrollableList}>
+              {sessions.length === 0 ? (
+                <Box className={classes.emptyStateContainer}>
+                  <Chat className={classes.emptyStateIcon} />
+                  <Typography variant="body2" color="text.secondary" className={classes.emptyStateText}>
+                    No previous conversations
+                  </Typography>
+                  <Typography variant="caption" color="text.disabled" className={classes.emptyStateText}>
+                    Start chatting to see your history here
+                  </Typography>
+                </Box>
+              ) : (
+                <List dense>
+                  {sessions.map((session) => (
+                    <ListItem
+                      key={session.session_id}
+                      onClick={() => handleSessionSelect(session.session_id)}
+                      className={
+                        currentSessionId === session.session_id
+                          ? `${classes.sessionItem} selected`
+                          : classes.sessionItem
+                      }
+                    >
+                      <ListItemIcon sx={{ 
+                        minWidth: 36,
+                        '@media (max-width: 1200px)': { minWidth: 34 },
+                        '@media (max-width: 960px)': { minWidth: 32 },
+                        '@media (max-width: 600px)': { minWidth: 30 },
+                        '@media (max-width: 480px)': { minWidth: 28 },
+                        '@media (max-width: 375px)': { minWidth: 26 },
+                      }}>
+                        <Chat fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText
+                        className={classes.listItemText}
+                        primary={
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <Typography variant="body2" fontWeight="medium">
+                              Session {session.session_id}
+                            </Typography>
+                            {currentSessionId === session.session_id && (
+                              <Chip label="Active" size="small" color="primary" className={classes.activeChip} />
+                            )}
+                          </Box>
+                        }
+                        secondary={
+                          <Box className={classes.sessionMeta}>
+                            <AccessTime fontSize="inherit" />
+                            <span>{formatSessionDate(session.created_at)}</span>
+                            <span>•</span>
+                            <span>{formatSessionTime(session.created_at)}</span>
+                          </Box>
+                        }
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </Box>
+          </Box>
         </Box>
-
-        <Box className={classes.panelContent}>
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={() => {
-              onNewSession();
-              if (isMobile) onClose(); // Close on mobile after action
-            }}
-            fullWidth
-            className={classes.newSessionButton}
-          >
-            Start New Conversation
-          </Button>
-
-          <Box className={classes.sessionCountText}>
-            <Typography variant="caption" color="text.disabled">
-              {sessions.length} conversation{sessions.length !== 1 ? 's' : ''}
-            </Typography>
-          </Box>
-
-          <Box className={classes.scrollableList}>
-            {sessions.length === 0 ? (
-              <Box className={classes.emptyStateContainer}>
-                <Chat className={classes.emptyStateIcon} />
-                <Typography variant="body2" color="text.secondary" className={classes.emptyStateText}>
-                  No previous conversations
+      ) : (
+        // Desktop: use ClickAwayListener to close on outside clicks
+        <ClickAwayListener onClickAway={onClose}>
+          <Box className={`${classes.panelContainer} ${!open ? classes.panelContainerClosed : ''}`} style={panelStyle}>
+            {/* Header */}
+            <Box className={classes.panelHeader}>
+              <Box>
+                <Typography variant="h6" fontWeight="bold" color={theme.palette.primary.main} className={classes.headerTitle}>
+                  Chat History
                 </Typography>
-                <Typography variant="caption" color="text.disabled" className={classes.emptyStateText}>
-                  Start chatting to see your history here
+                <Typography variant="body2" color="text.secondary" className={classes.headerSubtitle}>
+                  {characterName}
                 </Typography>
               </Box>
-            ) : (
-              <List dense>
-                {sessions.map((session) => (
-                  <ListItem
-                    key={session.session_id}
-                    onClick={() => handleSessionSelect(session.session_id)}
-                    className={
-                      currentSessionId === session.session_id
-                        ? `${classes.sessionItem} selected`
-                        : classes.sessionItem
-                    }
-                  >
-                    <ListItemIcon sx={{ 
-                      minWidth: 36,
-                      '@media (max-width: 1200px)': {
-                        minWidth: 34,
-                      },
-                      '@media (max-width: 960px)': {
-                        minWidth: 32,
-                      },
-                      '@media (max-width: 600px)': {
-                        minWidth: 30,
-                      },
-                      '@media (max-width: 480px)': {
-                        minWidth: 28,
-                      },
-                      '@media (max-width: 375px)': {
-                        minWidth: 26,
-                      },
-                    }}>
-                      <Chat fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText
-                      className={classes.listItemText}
-                      primary={
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <Typography variant="body2" fontWeight="medium">
-                            Session {session.session_id}
-                          </Typography>
-                          {currentSessionId === session.session_id && (
-                            <Chip
-                              label="Active"
-                              size="small"
-                              color="primary"
-                              className={classes.activeChip}
-                            />
-                          )}
-                        </Box>
-                      }
-                      secondary={
-                        <Box className={classes.sessionMeta}>
-                          <AccessTime fontSize="inherit" />
-                          <span>{formatSessionDate(session.created_at)}</span>
-                          <span>•</span>
-                          <span>{formatSessionTime(session.created_at)}</span>
-                        </Box>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            )}
+              <IconButton onClick={onClose} size="small" sx={{ color: theme.palette.text.secondary }} className={classes.closeButton}>
+                <Close />
+              </IconButton>
+            </Box>
+
+            {/* Content */}
+            <Box className={classes.panelContent}>
+              <Button
+                variant="contained"
+                startIcon={<Add />}
+                onClick={onNewSession}
+                fullWidth
+                className={classes.newSessionButton}
+              >
+                Start New Conversation
+              </Button>
+
+              <Box className={classes.sessionCountText}>
+                <Typography variant="caption" color="text.disabled">
+                  {sessions.length} conversation{sessions.length !== 1 ? 's' : ''}
+                </Typography>
+              </Box>
+
+              <Box className={classes.scrollableList}>
+                {sessions.length === 0 ? (
+                  <Box className={classes.emptyStateContainer}>
+                    <Chat className={classes.emptyStateIcon} />
+                    <Typography variant="body2" color="text.secondary" className={classes.emptyStateText}>
+                      No previous conversations
+                    </Typography>
+                    <Typography variant="caption" color="text.disabled" className={classes.emptyStateText}>
+                      Start chatting to see your history here
+                    </Typography>
+                  </Box>
+                ) : (
+                  <List dense>
+                    {sessions.map((session) => (
+                      <ListItem
+                        key={session.session_id}
+                        onClick={() => onSessionSelect(session.session_id)}
+                        className={
+                          currentSessionId === session.session_id
+                            ? `${classes.sessionItem} selected`
+                            : classes.sessionItem
+                        }
+                      >
+                        <ListItemIcon sx={{ 
+                          minWidth: 36,
+                          '@media (max-width: 1200px)': { minWidth: 34 },
+                          '@media (max-width: 960px)': { minWidth: 32 },
+                          '@media (max-width: 600px)': { minWidth: 30 },
+                          '@media (max-width: 480px)': { minWidth: 28 },
+                          '@media (max-width: 375px)': { minWidth: 26 },
+                        }}>
+                          <Chat fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText
+                          className={classes.listItemText}
+                          primary={
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <Typography variant="body2" fontWeight="medium">
+                                Session {session.session_id}
+                              </Typography>
+                              {currentSessionId === session.session_id && (
+                                <Chip label="Active" size="small" color="primary" className={classes.activeChip} />
+                              )}
+                            </Box>
+                          }
+                          secondary={
+                            <Box className={classes.sessionMeta}>
+                              <AccessTime fontSize="inherit" />
+                              <span>{formatSessionDate(session.created_at)}</span>
+                              <span>•</span>
+                              <span>{formatSessionTime(session.created_at)}</span>
+                            </Box>
+                          }
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                )}
+              </Box>
+            </Box>
           </Box>
-        </Box>
-      </Box>
+        </ClickAwayListener>
+      )}
     </>
   );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Typography, Box, Card, CardContent, Button, TextField, Grid } from '@mui/material';
+import { Container, Typography, Box, Card, CardContent, Button, TextField, Grid, CardMedia, Chip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import BlogNavbar from '../../components/blog/BlogNavbar';
 
@@ -9,6 +9,75 @@ const useStyles = makeStyles({
     background: '#0c0c0c',
     minHeight: '100vh',
     color: '#ffffff',
+  },
+  articleCard: {
+    margin: '2rem auto 0',
+    width: '100%',
+    '@media (max-width: 600px)': {
+      marginTop: '1.5rem',
+    },
+    '@media (max-width: 480px)': {
+      marginTop: '1rem',
+    },
+  },
+  card: {
+    background: '#1a1a1e',
+    borderRadius: '16px',
+    overflow: 'hidden',
+    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+    display: 'flex',
+    flexDirection: 'column',
+    '&:hover': {
+      transform: 'translateY(-5px)',
+      boxShadow: '0 15px 40px rgba(0, 0, 0, 0.3)',
+    },
+    '@media (max-width: 900px)': {
+      borderRadius: '12px',
+    },
+    '@media (max-width: 600px)': {
+      borderRadius: '10px',
+      boxShadow: '0 6px 22px rgba(0, 0, 0, 0.22)',
+    },
+  },
+  cardMedia: {
+    height: 240,
+    objectFit: 'cover',
+    '@media (max-width: 900px)': {
+      height: 220,
+    },
+    '@media (max-width: 600px)': {
+      height: 200,
+    },
+    '@media (max-width: 480px)': {
+      height: 180,
+    },
+  },
+  cardContent: {
+    padding: '1.5rem',
+    '@media (max-width: 900px)': {
+      padding: '1.25rem',
+    },
+    '@media (max-width: 600px)': {
+      padding: '1rem',
+    },
+  },
+  articleHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '0.75rem',
+    gap: '12px',
+    '@media (max-width: 600px)': {
+      marginBottom: '0.5rem',
+      gap: '8px',
+    },
+  },
+  categoryChip: {
+    background: 'rgba(99, 102, 241, 0.12)',
+    color: '#aab0ff',
+    border: '1px solid rgba(99, 102, 241, 0.35)',
+    fontWeight: 600,
   },
   styledContainer: {
     maxWidth: '1200px',
@@ -621,6 +690,45 @@ const Blog = () => {
                 </Box>
               </CardContent>
             </Card>
+            {/* Second Blog Card */}
+            <Box className={classes.articleCard}>
+              <Card className={classes.card}>
+                <CardMedia
+                  component="img"
+                  height="240"
+                  image="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&h=600&fit=crop"
+                  alt="AI Technology"
+                  className={classes.cardMedia}
+                />
+                <CardContent className={classes.cardContent}>
+                  <Box className={classes.articleHeader}>
+                    <Chip
+                      label="Technology"
+                      className={classes.categoryChip}
+                      size="small"
+                    />
+                    <Typography className={classes.readTime}>7 min read</Typography>
+                  </Box>
+                  <Typography className={classes.articleTitle}>
+                    How GigaSpace Brings AI Conversations to Life
+                  </Typography>
+                  <Typography className={classes.articleExcerpt}>
+                    Artificial Intelligence has come a long way from being just a buzzword. Today, it powers tools we use daily—whether that's asking a voice assistant for directions, generating art, or analyzing data. But among these innovations, GigaSpace stands out as a unique platform that allows people to interact directly with legendary personalities...
+                  </Typography>
+                  <Box className={classes.articleFooter}>
+                    <Box className={classes.author}>
+                      <Box className={classes.authorDetails}>
+                        <Typography className={classes.authorName}>GigaSpace Team</Typography>
+                        <Typography className={classes.publishDate}>Sep 12, 2025</Typography>
+                      </Box>
+                    </Box>
+                    <Link to="/blog/gigaspace-ai-conversations" className={classes.readMore}>
+                      Read More <span>→</span>
+                    </Link>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Box>
           </Box>
         </Box>
       </Container>

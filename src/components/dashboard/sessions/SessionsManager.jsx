@@ -199,16 +199,40 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 1) return 'Today';
-    if (diffDays === 2) return 'Yesterday';
-    if (diffDays <= 7) return `${diffDays} days ago`;
-    
-    return date.toLocaleDateString();
+    if (!dateString) return 'Unknown Date';
+
+    let date;
+    try {
+      if (typeof dateString === 'string') {
+        if (dateString.match(/^\d+$/)) {
+          const ts = parseInt(dateString);
+          date = new Date(ts < 10000000000 ? ts * 1000 : ts);
+        } else if (dateString.includes('IST')) {
+          const clean = dateString.replace(' IST', '').trim();
+          const iso = clean.replace(' ', 'T') + '+05:30';
+          date = new Date(iso);
+        } else {
+          date = new Date(dateString);
+        }
+      } else {
+        date = new Date(dateString);
+      }
+
+      if (isNaN(date.getTime())) return 'Invalid Date';
+
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const startOfThatDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const diffDays = Math.round((startOfToday - startOfThatDay) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) return 'Today';
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays > 1 && diffDays <= 7) return `${diffDays} days ago`;
+
+      return date.toLocaleDateString();
+    } catch (e) {
+      return 'Invalid Date';
+    }
   };
 
   const getSessionPreview = (session) => {
