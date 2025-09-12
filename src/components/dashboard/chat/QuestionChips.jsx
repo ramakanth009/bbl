@@ -9,6 +9,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     gap: '8px',
     padding: '0 4px',
+    width: '100%',
+    // Important: do NOT hide overflow here; the wrapper handles its own scrolling
     '@media (max-width: 600px)': {
       marginBottom: '1px',
       padding: '0 2px',
@@ -23,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
     scrollSnapType: 'x mandatory',
     paddingBottom: '4px',
     marginBottom: '4px',
+    width: '100%',
+    flexWrap: 'nowrap',
+    touchAction: 'pan-x',
     '&::-webkit-scrollbar': {
       height: '2px',
     },
@@ -40,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
     '@media (max-width: 600px)': {
       gap: '6px',
       paddingBottom: '2px',
+      '&::-webkit-scrollbar': {
+        height: '1px',
+      },
     },
   },
   quickAction: {
@@ -53,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
     transition: 'all 0.2s ease',
     userSelect: 'none',
     whiteSpace: 'nowrap',
+    flex: '0 0 auto',
     scrollSnapAlign: 'start',
     boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.06)',
     minWidth: 'fit-content',
@@ -227,7 +236,7 @@ const QuestionChips = ({
     <Fade in={fadeIn} timeout={300}>
       <Box className={classes.fadeContainer}>
         <Box className={classes.quickActionsContainer}>
-          <Box className={classes.quickActionsWrapper}>
+          <Box className={classes.quickActionsWrapper} data-allow-touch-scroll="true">
             {availableQuestions.map((question, index) => (
               <Fade
                 key={`${category}-${question}-${index}`}

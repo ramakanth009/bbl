@@ -748,10 +748,34 @@ const ChatPanel = ({
       const originalHeight = document.body.style.height;
       const originalHtmlOverscroll = document.documentElement.style.overscrollBehaviorY;
       const preventTouchMove = (e) => {
-        // Prevent background/body scrolling on mobile while chat is open
-        if (open) {
-          e.preventDefault();
+        // Prevent background/body scrolling on mobile while chat is open,
+        // but allow touch scroll inside designated containers
+        if (!open) return;
+
+        let el = e.target;
+        while (el && el !== document.body) {
+          // Explicit opt-in via data attribute
+          if (el.getAttribute && el.getAttribute('data-allow-touch-scroll') === 'true') {
+            return; // allow scrolling
+          }
+
+          // Allow if the element (or any ancestor) is scrollable
+          try {
+            const style = window.getComputedStyle(el);
+            const overflowX = style.overflowX;
+            const overflowY = style.overflowY;
+            if (
+              overflowX === 'auto' || overflowX === 'scroll' ||
+              overflowY === 'auto' || overflowY === 'scroll'
+            ) {
+              return; // allow scrolling
+            }
+          } catch {}
+          el = el.parentElement;
         }
+
+        // If we didn't find a scrollable container, block the gesture
+        e.preventDefault();
       };
       if (open) {
         // Store current scroll position and freeze body
