@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => ({
     color: '#fff',
     textDecoration: 'none',
     fontWeight: 600,
-    borderBottom: '1px dashed rgba(255,255,255,0.35)',
+    borderBottom: '1px solid #ffffff',
     transition: 'opacity 0.2s ease',
     '&:hover': {
       opacity: 0.85,
