@@ -75,14 +75,14 @@ const useStyles = makeStyles(() => ({
     '@media (max-width: 600px)': {
       '& .MuiOutlinedInput-root': {
         borderRadius: "20px !important",
-        minHeight: 44, // Increased for better mobile touch target
-        paddingRight: '40px',
+        minHeight: 40,
+        paddingRight: '36px',
         backgroundColor: 'rgba(42, 42, 42, 0.95)',
         border: '1px solid rgba(99, 102, 241, 0.3)',
         '& textarea': {
-          fontSize: '16px', // Prevent zoom on iOS
-          lineHeight: '1.4',
-          padding: '12px 16px',
+          fontSize: '16px',
+          lineHeight: '1.3',
+          padding: '6px 10px',
         },
         '&.Mui-focused': {
           borderColor: '#6366f1',
@@ -93,22 +93,22 @@ const useStyles = makeStyles(() => ({
     '@media (max-width: 480px)': {
       '& .MuiOutlinedInput-root': {
         borderRadius: "18px !important",
-        minHeight: 42,
-        paddingRight: '38px',
+        minHeight: 38,
+        paddingRight: '34px',
         '& textarea': {
-          fontSize: '16px', // Prevent zoom on iOS
-          padding: '10px 14px',
+          fontSize: '16px',
+          padding: '4px 8px',
         },
       },
     },
     '@media (max-width: 375px)': {
       '& .MuiOutlinedInput-root': {
         borderRadius: "16px !important",
-        minHeight: 40,
-        paddingRight: '36px',
+        minHeight: 36,
+        paddingRight: '32px',
         '& textarea': {
-          fontSize: '16px', // Prevent zoom on iOS
-          padding: '8px 12px',
+          fontSize: '16px',
+          padding: '2px 6px',
         },
       },
     },
