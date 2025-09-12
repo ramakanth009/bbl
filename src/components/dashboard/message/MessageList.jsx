@@ -39,6 +39,8 @@ const useStyles = makeStyles({
     marginBottom: '16px',
     width: '100%',
     justifyContent: 'flex-start',
+    transition: 'none', // FIXED: Remove transitions to prevent layout shifts
+    minHeight: 'auto', // FIXED: Prevent height jumping
     '@media (max-width: 1200px)': {
       marginBottom: '14.4px',
     },
@@ -275,30 +277,28 @@ const MessageList = forwardRef(({ messages, character, loading }, ref) => {
         </Fade>
       ))}
       
-      {/* UPDATED: Category-based loading animation outside the bubble, next to avatar */}
+      {/* CRITICAL FIX: Loading animation without Fade wrapper for immediate show/hide */}
       {loading && character && (
-        <Fade in timeout={400}>
-          <Box className={classes.loadingWrapper}>
-            <Box className={classes.loadingWithAvatar}>
-              <Avatar
-                src={character.img}
-                alt={character.name}
-                className={classes.characterAvatar}
+        <Box className={classes.loadingWrapper}>
+          <Box className={classes.loadingWithAvatar}>
+            <Avatar
+              src={character.img}
+              alt={character.name}
+              className={classes.characterAvatar}
+            />
+            <Box className={classes.loadingContainer}>
+              <CategoryLoadingAnimation
+                category={character.category}
+                loading={loading}
+                className={classes.loadingAnimationStyle}
+                size={getAnimationSize()}
+                autoPlay={true}
+                cycleInterval={3000} // 3 seconds per animation
+                onAnimationChange={handleAnimationChange}
               />
-              <Box className={classes.loadingContainer}>
-                <CategoryLoadingAnimation
-                  category={character.category}
-                  loading={loading}
-                  className={classes.loadingAnimationStyle}
-                  size={getAnimationSize()}
-                  autoPlay={true}
-                  cycleInterval={3000} // 3 seconds per animation
-                  onAnimationChange={handleAnimationChange}
-                />
-              </Box>
             </Box>
           </Box>
-        </Fade>
+        </Box>
       )}
       
       {/* Invisible element to mark the end of messages for scrolling */}

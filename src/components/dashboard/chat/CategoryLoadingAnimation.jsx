@@ -47,6 +47,16 @@ const CategoryLoadingAnimation = ({
     setAnimationsReady(false);
   }, []);
 
+  // FIXED: Enhanced stopCycling with immediate state reset
+  const stopCycling = useCallback(() => {
+    if (cycleTimerRef.current) {
+      clearInterval(cycleTimerRef.current);
+      cycleTimerRef.current = null;
+    }
+    // FIXED: Force immediate state reset to prevent race conditions
+    setCurrentAnimationIndex(0);
+  }, []);
+
   // Start the animation cycling
   const startCycling = useCallback(() => {
     if (!autoPlay || !animationsReady || animations.length <= 1) {
@@ -74,23 +84,19 @@ const CategoryLoadingAnimation = ({
     }, cycleInterval);
   }, [autoPlay, animationsReady, animations.length, cycleInterval, onAnimationChange]);
 
-  // Stop the animation cycling
-  const stopCycling = useCallback(() => {
-    if (cycleTimerRef.current) {
-      clearInterval(cycleTimerRef.current);
-      cycleTimerRef.current = null;
-    }
-  }, []);
-
-  // Effect to start/stop cycling based on loading state
+  // FIXED: Enhanced effect with immediate cleanup and prevention of race conditions
   useEffect(() => {
     if (loading && animationsReady && animations.length > 0) {
       startCycling();
     } else {
+      // FIXED: Immediate cleanup when loading stops
       stopCycling();
     }
 
-    return stopCycling;
+    // FIXED: Always return cleanup function to prevent race conditions
+    return () => {
+      stopCycling();
+    };
   }, [loading, animationsReady, animations.length, startCycling, stopCycling]);
 
   // Cleanup on unmount
@@ -110,15 +116,20 @@ const CategoryLoadingAnimation = ({
     setError(null);
   }, [category]);
 
+  // FIXED: Immediate return when loading stops to prevent render during cleanup
+  if (!loading) {
+    // FIXED: Stop any ongoing timers immediately
+    if (cycleTimerRef.current) {
+      clearInterval(cycleTimerRef.current);
+      cycleTimerRef.current = null;
+    }
+    return null;
+  }
+
   // Get current animation
   const currentAnimation = animationsReady && animations.length > 0 
     ? animations[currentAnimationIndex] 
     : null;
-
-  // Don't render if not loading
-  if (!loading) {
-    return null;
-  }
 
   // Show error state (fallback to default animation)
   if (error && !currentAnimation) {

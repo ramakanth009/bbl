@@ -497,6 +497,7 @@ const ChatPanel = ({
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showLoadingAnimation, setShowLoadingAnimation] = useState(false); // CRITICAL FIX: Separate animation state
   const [error, setError] = useState(null);
   const [sessionId, setSessionId] = useState(null);
   const [temporarySessionId, setTemporarySessionId] = useState(null);
@@ -707,6 +708,7 @@ const ChatPanel = ({
       abortControllerRef.current = null;
     }
     setLoading(false);
+    setShowLoadingAnimation(false); // CRITICAL FIX: Also clear animation
   };
 
   // Character change detection and cleanup
@@ -1001,6 +1003,7 @@ const ChatPanel = ({
     }
   };
 
+  // CRITICAL FIX: Updated handleSend function with separate animation state
   const handleSend = async (messageText = null) => {
     const message = messageText || inputValue.trim();
     
@@ -1044,7 +1047,10 @@ const ChatPanel = ({
     if (!messageText) {
       setInputValue(""); // Only clear input if message came from input field
     }
+    
+    // CRITICAL FIX: Separate animation and loading states
     setLoading(true);
+    setShowLoadingAnimation(true); // Show animation immediately
     setError(null);
 
     const newUserMessage = {
@@ -1055,13 +1061,18 @@ const ChatPanel = ({
     setMessages((prev) => [...prev, newUserMessage]);
 
     try {
+      // CRITICAL FIX: Hide animation the moment API promise resolves
       const response = await apiService.sendMessage(
         character.name,
         userMessage,
         !sessionId,
         { language },
-        abortController.signal // Pass abort signal to API
-      );
+        abortController.signal
+      ).then(response => {
+        // Animation disappears immediately when API responds
+        setShowLoadingAnimation(false);
+        return response;
+      });
 
       // Validate that this response is for the current character
       if (!currentCharacterRef.current || currentCharacterRef.current.id !== requestCharacterId) {
@@ -1147,6 +1158,9 @@ const ChatPanel = ({
 
       await loadUserSessions();
     } catch (error) {
+      // Hide animation immediately on error
+      setShowLoadingAnimation(false);
+      
       // Don't show error if request was aborted (user switched characters)
       if (error.name === 'AbortError' || abortController.signal.aborted) {
         console.log(`[ChatPanel] Request ${requestId} was aborted by user action`);
@@ -1192,7 +1206,7 @@ const ChatPanel = ({
             break;
           case 403:
             errorMessage = "Access denied. You don't have permission to perform this action.";
-            break;
+          break;
           case 404:
             errorMessage = "Character or service not found. Please try selecting a different character.";
             break;
@@ -1210,9 +1224,12 @@ const ChatPanel = ({
       setError(errorMessage);
       setMessages((prev) => prev.slice(0, -1));
     } finally {
-      // Only clear loading if this is still the current request
+      // Clear loading state and ensure animation is hidden
+      setLoading(false);
+      setShowLoadingAnimation(false);
+      
+      // Only clear controller if this is still the current request
       if (abortControllerRef.current === abortController) {
-        setLoading(false);
         abortControllerRef.current = null;
       }
     }
@@ -1714,10 +1731,11 @@ const ChatPanel = ({
       
       <Box className={classes.messagesWrapper} ref={messagesWrapperRef}>
         <Box className={classes.messagesContent}>
+          {/* CRITICAL FIX: Use showLoadingAnimation instead of loading */}
           <MessageList
             ref={messageListRef}
             messages={messages}
-            loading={loading}
+            loading={showLoadingAnimation}
             character={character}
             showLanguageLabels={language !== "english" && !isMobile}
           />
