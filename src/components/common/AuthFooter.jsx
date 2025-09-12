@@ -61,6 +61,7 @@ const AuthFooter = () => {
       <Box className={classes.footerInner}>
         <Box className={classes.footerLinks}>
           <Link to="/blog" className={classes.footerLink}>Blog</Link>
+          <Link to="/faq" className={classes.footerLink}>FAQ</Link>
         </Box>
         <Typography variant="body2" className={classes.copyright}>
           © {new Date().getFullYear()} GigaSpace. All rights reserved.

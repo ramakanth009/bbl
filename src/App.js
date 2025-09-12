@@ -22,6 +22,7 @@ import AuthCallback from './pages/AuthCallback';
 import Dashboard from './pages/Dashboard';
 import Blog from './pages/blog/Blog';
 import BlogPost from './pages/blog/BlogPost';
+import FAQ from './pages/faq/FAQ';
 import Discover from './pages/sections/Discover';
 import Featured from './pages/sections/Featured';
 import Recent from './pages/sections/Recent';
@@ -97,9 +98,10 @@ function AppContent() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 
-                {/* Blog Routes - Public */}
+                {/* Blog & FAQ Routes - Public */}
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/faq" element={<FAQ />} />
                 
                 {/* Dashboard Routes - Protected */}
                 <Route 
