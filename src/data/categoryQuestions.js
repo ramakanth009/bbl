@@ -3,51 +3,51 @@
 
 export const CATEGORY_QUESTIONS = {
   entertainment_arts: [
-    "What inspired you to pursue your artistic career?",
-    "Tell me about your most challenging creative project",
-    "How do you handle creative blocks and find inspiration?",
-    "What advice would you give to aspiring artists?",
-    "Which of your works are you most proud of and why?"
+    "Biggest challenge starting out?",
+    "Best advice you got early?",
+    "What would surprise people about you?",
+    "What’s your biggest fear?",
+    "What makes you laugh most?"
   ],
   
   leaders_historical: [
-    "What was the most difficult decision you had to make as a leader?",
-    "How did you handle criticism and opposition during your time?",
-    "What principles guided your leadership philosophy?",
-    "Tell me about a moment that changed your perspective on leadership",
-    "What legacy do you hope to leave behind?"
+    "What belief of yours do most disagree with?",
+    "Is it better for a leader to be right or persuasive?",
+    "When did you change your mind on an issue?",
+    "Better for a leader to be loved or feared?",
+    "What early life shaped your political views?"
   ],
   
   sports_champions: [
-    "What drives you to push beyond your limits in competition?",
-    "Tell me about your most memorable victory or defeat",
-    "How do you maintain mental strength during tough times?",
-    "What's your training routine and preparation strategy?",
-    "Who were your biggest inspirations in sports?"
+    "What drives your daily training?",
+    "What’s your training routine?",
+    "What advice for young athletes?",
+    "Mental prep or physical training—what matters more?",
+    "How do coaches and teammates help?"
   ],
   
   innovators_visionaries: [
-    "What problem are you most passionate about solving?",
-    "How do you approach innovation and creative thinking?",
-    "Tell me about a failure that led to your biggest breakthrough",
-    "What emerging technology excites you the most?",
-    "How do you balance vision with practical implementation?"
+    "How do you start your day?",
+    "What fuels your passion?",
+    "How do you handle overwhelm?",
+    "What do you do when ideas run out?",
+    "What idea did others call impossible?"
   ],
   
   spiritual_social: [
-    "What spiritual practices have shaped your worldview?",
-    "How do you find inner peace in challenging times?",
-    "What role does service to others play in your life?",
-    "Tell me about a transformative spiritual experience",
-    "How do you balance personal growth with helping others?"
+    "Difference between pleasure and joy?",
+    "How do you find strength in unfair challenges?",
+    "If failure was impossible, what would you attempt?",
+    "Who are you when no one is watching?",
+    "What does it mean to truly love?"
   ],
   
   fictional_anime: [
-    "What special abilities or powers define who you are?",
-    "Tell me about your greatest adventure or quest",
-    "Who are your closest allies and what bonds you together?",
-    "What challenges have you faced in your world?",
-    "What motivates you to keep fighting for what's right?"
+    "What’s your greatest secret?",
+    "What’s your worst habit?",
+    "WWhat belief did you stop holding?",
+    "How do you handle conflict with loved ones?",
+    "What keeps you up at night?"
   ],
   
   // Default questions for characters without specific categories
