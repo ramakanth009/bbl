@@ -22,9 +22,15 @@ import {
 import { makeStyles } from '@mui/styles';
 import { useAuth } from '../context/AuthContext';
 import GoogleLogo from '../assets/google-logo.svg';
+import AuthFooter from '../components/common/AuthFooter';
 
 const StarField = React.lazy(() => import('../components/common/StarField'));
 const useStyles = makeStyles(() => ({
+  appRoot: {
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+  },
   pageContainer: {
     minHeight: '100vh',
     display: 'flex',
@@ -33,11 +39,13 @@ const useStyles = makeStyles(() => ({
     position: 'relative',
     zIndex: 1,
     padding: '16px',
+    paddingBottom: '72px',
     '@media (max-height: 800px)': {
       padding: '8px',
     },
     '@media (max-height: 700px)': {
       padding: '4px',
+      paddingBottom: '64px',
     },
   },
   authCard: {
@@ -340,12 +348,15 @@ const useStyles = makeStyles(() => ({
   },
   footerContainer: {
     width: '100%',
-    padding: '24px 16px',
-    marginTop: '16px',
+    padding: '12px 16px',
+    position: 'fixed',
+    left: 0,
+    bottom: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     background: 'transparent',
+    pointerEvents: 'auto',
   },
   footerInner: {
     width: '100%',
@@ -554,7 +565,7 @@ const Login = () => {
   const oauthAvailability = getOAuthAvailability();
 
   return (
-    <>
+    <Box className={classes.appRoot}>
       <React.Suspense fallback={<div />}>
         <StarField />
       </React.Suspense>
@@ -758,17 +769,8 @@ const Login = () => {
         </Fade>
       </Container>
       {/* Footer */}
-      <Box component="footer" className={classes.footerContainer}>
-        <Box className={classes.footerInner}>
-          <Typography variant="body2" className={classes.copyright}>
-            © {new Date().getFullYear()} GigaSpace. All rights reserved.
-          </Typography>
-          <Box className={classes.footerLinks}>
-            <Link to="/blog" className={classes.footerLink}>Blog</Link>
-          </Box>
-        </Box>
-      </Box>
-    </>
+      <AuthFooter />
+    </Box>
   );
 };
 
