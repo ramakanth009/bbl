@@ -148,12 +148,19 @@ const useStyles = makeStyles(() => ({
         border: '1.5px solid #fff',
         boxShadow: '0 0 0 4px rgba(255,255,255,0.08)',
       },
+      '&.Mui-error': {
+        border: '1.5px solid #f44336',
+        boxShadow: '0 0 0 4px rgba(244, 67, 54, 0.08)'
+      },
     },
     '& .MuiInputLabel-root': {
       color: '#fff',
       fontSize: '0.9rem',
       '&.Mui-focused': {
         color: '#fff',
+      },
+      '&.Mui-error': {
+        color: '#f44336',
       },
     },
     '& .MuiInputBase-input': {
@@ -166,6 +173,9 @@ const useStyles = makeStyles(() => ({
       color: '#aaa',
       fontSize: '0.7rem',
       marginTop: '4px',
+      '&.Mui-error': {
+        color: '#f44336',
+      },
     },
     '@media (max-height: 700px)': {
       marginBottom: '12px',
@@ -388,6 +398,12 @@ const Login = () => {
   const { login, loginWithGoogle, isAuthenticated, oauthStatus, checkOAuthStatus } = useAuth();
   const navigate = useNavigate();
 
+  // Field-specific error states for inline helper text
+  const [fieldErrors, setFieldErrors] = useState({
+    username: '',
+    password: '',
+  });
+
   useEffect(() => {
     // Handle OAuth errors passed via URL params
     const error = searchParams.get('error');
@@ -410,120 +426,142 @@ const Login = () => {
       navigate('/dashboard', { replace: true });
     }
   }, [isAuthenticated, navigate]);
-// Check OAuth status on component mount with better error handling
-useEffect(() => {
-  const fetchOAuthStatus = async () => {
-    setOauthStatusLoading(true);
-    try {
-      await checkOAuthStatus();
-    } catch (error) {
-      console.warn('OAuth status check failed:', error);
-      // Don't show error to user, just disable OAuth silently
-    } finally {
-      setOauthStatusLoading(false);
+
+  // Check OAuth status on component mount with better error handling
+  useEffect(() => {
+    const fetchOAuthStatus = async () => {
+      setOauthStatusLoading(true);
+      try {
+        await checkOAuthStatus();
+      } catch (error) {
+        console.warn('OAuth status check failed:', error);
+        // Don't show error to user, just disable OAuth silently
+      } finally {
+        setOauthStatusLoading(false);
+      }
+    };
+
+    fetchOAuthStatus();
+  }, [checkOAuthStatus]);
+
+  // Field-specific validation messages
+  const validateField = (name, value) => {
+    if (!value || value.trim() === '') {
+      const messages = {
+        username: 'Please type your username',
+        password: 'Please type your password'
+      };
+      setFieldErrors((prev) => ({ ...prev, [name]: messages[name] || 'This field is required' }));
+      return false;
     }
+    setFieldErrors((prev) => ({ ...prev, [name]: '' }));
+    return true;
   };
 
-  fetchOAuthStatus();
-}, [checkOAuthStatus]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  setLoading(true);
-  setError('');
-
-  try {
-    const result = await login(username, password);
-
-    if (result.success) {
-      // Navigation is handled by the useEffect above
-    } else {
-      setError(result.error);
+    // Validate before calling API
+    const isUsernameOk = validateField('username', username);
+    const isPasswordOk = validateField('password', password);
+    if (!isUsernameOk || !isPasswordOk) {
+      return; // Do not proceed if fields are empty
     }
-  } catch (err) {
-    setError('An unexpected error occurred. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
 
-const handleGoogleLogin = async () => {
-  // Check OAuth availability with more detailed logic
-  if (oauthStatusLoading) {
-    setError('Please wait while we check Google sign-in availability.');
-    return;
-  }
-
-  if (!oauthStatus?.oauth_configured || !oauthStatus?.google_available) {
-    setError('Google OAuth is not available. Please use regular login or contact support.');
-    return;
-  }
-
-  try {
-    setGoogleLoading(true);
+    setLoading(true);
     setError('');
 
-    loginWithGoogle();
-  } catch (error) {
-    console.error('Google login failed:', error);
-    setError('Failed to initiate Google login. Please try again.');
-    setGoogleLoading(false);
-  }
-};
+    try {
+      const result = await login(username, password);
 
-// Determine OAuth availability with better logic
-const getOAuthAvailability = () => {
-  if (oauthStatusLoading) {
+      if (result.success) {
+        // Navigation is handled by the useEffect above
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    // Check OAuth availability with more detailed logic
+    if (oauthStatusLoading) {
+      setError('Please wait while we check Google sign-in availability.');
+      return;
+    }
+
+    if (!oauthStatus?.oauth_configured || !oauthStatus?.google_available) {
+      setError('Google OAuth is not available. Please use regular login or contact support.');
+      return;
+    }
+
+    try {
+      setGoogleLoading(true);
+      setError('');
+
+      loginWithGoogle();
+    } catch (error) {
+      console.error('Google login failed:', error);
+      setError('Failed to initiate Google login. Please try again.');
+      setGoogleLoading(false);
+    }
+  };
+
+  // Determine OAuth availability with better logic
+  const getOAuthAvailability = () => {
+    if (oauthStatusLoading) {
+      return {
+        available: false,
+        message: 'Checking availability...',
+        showButton: true
+      };
+    }
+
+    if (!oauthStatus) {
+      return {
+        available: false,
+        message: 'Unable to check Google Sign-In status',
+        showButton: false
+      };
+    }
+
+    if (!oauthStatus.oauth_configured) {
+      return {
+        available: false,
+        message: 'Google Sign-In not configured',
+        showButton: false
+      };
+    }
+
+    if (!oauthStatus.google_available) {
+      return {
+        available: false,
+        message: 'Google Sign-In temporarily unavailable',
+        showButton: false
+      };
+    }
+
     return {
-      available: false,
-      message: 'Checking availability...',
+      available: true,
+      message: '',
       showButton: true
     };
-  }
-
-  if (!oauthStatus) {
-    return {
-      available: false,
-      message: 'Unable to check Google Sign-In status',
-      showButton: false
-    };
-  }
-
-  if (!oauthStatus.oauth_configured) {
-    return {
-      available: false,
-      message: 'Google Sign-In not configured',
-      showButton: false
-    };
-  }
-
-  if (!oauthStatus.google_available) {
-    return {
-      available: false,
-      message: 'Google Sign-In temporarily unavailable',
-      showButton: false
-    };
-  }
-
-  return {
-    available: true,
-    message: '',
-    showButton: true
   };
-};
 
-const oauthAvailability = getOAuthAvailability();
+  const oauthAvailability = getOAuthAvailability();
 
-return (
-  <>
-    <React.Suspense fallback={<div />}>
-      <StarField />
-    </React.Suspense>
-    <Container maxWidth="sm" className={classes.pageContainer}>
+  return (
+    <>
+      <React.Suspense fallback={<div />}>
+        <StarField />
+      </React.Suspense>
+      <Container maxWidth="sm" className={classes.pageContainer}>
         <Fade in timeout={800}>
           <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
-          <Zoom in timeout={1000}>
+            <Zoom in timeout={1000}>
               <Box>
                 <Box className={classes.logoContainer}>
                   <Box className={classes.logoIcon}>
@@ -637,11 +675,19 @@ return (
                     fullWidth
                     label="Username"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => {
+                      setUsername(e.target.value);
+                      if (fieldErrors.username) {
+                        setFieldErrors((prev) => ({ ...prev, username: '' }));
+                      }
+                    }}
+                    onBlur={() => validateField('username', username)}
                     margin="normal"
                     autoFocus
                     className={classes.styledTextField}
                     disabled={loading}
+                    error={!!fieldErrors.username}
+                    helperText={fieldErrors.username}
                   />
 
                   <TextField
@@ -649,7 +695,13 @@ return (
                     label="Password"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (fieldErrors.password) {
+                        setFieldErrors((prev) => ({ ...prev, password: '' }));
+                      }
+                    }}
+                    onBlur={() => validateField('password', password)}
                     margin="normal"
                     className={classes.styledTextField}
                     disabled={loading}
@@ -667,6 +719,8 @@ return (
                         </InputAdornment>
                       ),
                     }}
+                    error={!!fieldErrors.password}
+                    helperText={fieldErrors.password}
                   />
 
                   <Button
