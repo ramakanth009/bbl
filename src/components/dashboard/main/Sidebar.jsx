@@ -43,7 +43,7 @@ const useStyles = makeStyles(() => ({
       height: '100vh !important',
       backgroundColor: 'rgba(26, 26, 26, 0.7) !important',
       borderRight: '1px solid rgba(42, 42, 42, 0.5) !important',
-      padding: '20px !important',
+      padding: '20px 20px 5px 20px !important',
       display: 'flex !important',
       flexDirection: 'column !important',
       overflow: 'hidden !important',
@@ -471,21 +471,45 @@ const useStyles = makeStyles(() => ({
     },
   },
   footerWrapper: {
-    paddingTop: '5px !important',
-    borderTop: '1px solid #333 !important',
-    marginTop: 'auto !important',
-    // FIXED: Unified tablet range
-    [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
-      paddingTop: '8px !important',
+    marginTop: 'auto',
+    paddingTop: '16px',
+    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+  },
+  versionChipContainer: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // margin: '8px 0 0 0 !important',
+    padding: '0 !important',
+  },
+  versionChip: {
+    backgroundColor: 'transparent',
+    color: '#6366f1',
+    fontWeight: 500,
+    fontSize: '11px',
+    height: '22px',
+    borderRadius: '6px',
+    letterSpacing: '0.5px',
+    padding: '0 12px',
+    boxShadow: 'none',
+    opacity: 1,
+    '&.MuiChip-sizeSmall': {
+      fontSize: '10px',
+      height: '18px',
+      padding: '0 8px',
     },
-    '@media (max-width: 600px)': {
-      paddingTop: '6px !important',
+    '&.MuiChip-root': {
+      margin: '8px 0 0 0 !important',
     },
-    '@media (max-width: 480px)': {
-      paddingTop: '4px !important',
+    '&.MuiChip-sizeSmall': {
+      fontSize: '10px',
+      height: '18px',
+      padding: '0 8px',
     },
-    '@media (max-width: 375px)': {
-      paddingTop: '2px !important',
+    '& .css-1tg7bjp': {
+      margin: '0 !important',
+      padding: '0 !important',
     },
   },
   iconSizing: {
@@ -555,6 +579,12 @@ const useStyles = makeStyles(() => ({
       marginRight: '10px !important',
     },
   },
+  logoutButton: {
+    backgroundColor: 'rgba(244, 67, 54, 0.05)',
+    '&:hover': {
+      backgroundColor: 'rgba(244, 67, 54, 0.08)',
+    },
+  },
 }));
 
 const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
@@ -619,7 +649,10 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
   };
 
   const handleCategorySelect = (categoryKey) => {
-    navigate(`/dashboard/categories/${categoryKey}`);
+    // Include reset flag for category navigation
+    navigate(`/dashboard/categories/${categoryKey}`, { 
+      state: { resetSearch: Date.now() } 
+    });
     // Close sidebar on mobile after navigation
     if (isMobileView && onToggle) {
       onToggle();
@@ -909,21 +942,33 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
               <Tooltip title="Logout" placement="right" arrow>
                 <ListItemButton 
                   onClick={logout} 
-                  className={`${classes.listItem} ${classes.listItemCollapsed}`}
+                  className={`${classes.listItem} ${classes.listItemCollapsed} ${classes.logoutButton}`}
                   sx={{
                     display: 'flex !important',
-                    alignItems: 'center !important',
-                    justifyContent: 'center !important',
-                    minHeight: '40px !important',
+                    justifyContent: 'center',
+                    padding: '8px 0 !important',
+                    border: '1px solid rgba(244, 67, 54, 0.05) !important',
+                    '&:hover': {
+                      border: '1px solid rgba(244, 67, 54, 0.1) !important'
+                    }
                   }}
-                >
+                >  
                   <ListItemIcon className={`${classes.listItemIcon} ${classes.listItemIconCollapsed}`}>
                     <Logout className={classes.iconSizing} />
                   </ListItemIcon>
                 </ListItemButton>
               </Tooltip>
             ) : (
-              <ListItemButton onClick={logout} className={classes.listItem}>
+              <ListItemButton 
+                onClick={logout} 
+                className={`${classes.listItem} ${classes.logoutButton}`}
+                sx={{
+                  border: '1px solid rgba(244, 67, 54, 0.05) !important',
+                  '&:hover': {
+                    border: '1px solid rgba(244, 67, 54, 0.1) !important'
+                  }
+                }}
+              >
                 <ListItemIcon className={classes.listItemIcon}>
                   <Logout className={classes.iconSizing} />
                 </ListItemIcon>
@@ -940,35 +985,11 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
           </Box>
           
           {/* Beta version label */}
-          <Box
-            sx={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              mt: 1,
-              mb: open ? 0.5 : 1,
-              pb: open ? 1 : 0,
-            }}
-          >
+          <Box className={classes.versionChipContainer}>
             <Chip
               label="GigaSpace v1.0 (beta)"
               size="small"
-              sx={{
-                backgroundColor: 'transparent',
-                color: '#6366f1',
-                fontWeight: 500,
-                fontSize: open ? '11px' : '10px',
-                height: open ? '22px' : '18px',
-                borderRadius: '6px',
-                letterSpacing: '0.5px',
-                px: open ? 1.5 : 1,
-                boxShadow: 'none',
-                opacity: 1,
-                width: '100%',
-                justifyContent: 'center',
-                textAlign: 'center',
-              }}
+              className={classes.versionChip}
             />
           </Box>
         </Box>

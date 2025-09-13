@@ -27,7 +27,7 @@ const useStyles = makeStyles({
     flex: 1,
     display: "flex",
     transition: 'margin-left 0.3s ease !important',
-       '@media (max-width: 900px)': {
+    '@media (max-width: 900px)': {
       marginLeft: '0 !important',
       padding: '0 !important',
     },
@@ -99,7 +99,7 @@ const Dashboard = () => {
   const [viewportWidth, setViewportWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1920
   );
-  
+
   const classes = useStyles();
   const theme = useTheme();
   const isMobile = isMobileViewport(viewportWidth);
@@ -115,7 +115,7 @@ const Dashboard = () => {
 
     updateViewport();
     window.addEventListener('resize', updateViewport);
-    
+
     return () => {
       window.removeEventListener('resize', updateViewport);
     };
@@ -177,7 +177,8 @@ const Dashboard = () => {
   };
 
   const handleSectionChange = (section) => {
-    if (section === 'discover') {
+    // Include reset flag for both discover and category sections
+    if (section === 'discover' || section.startsWith('categories/')) {
       navigate(`/dashboard/${section}`, { state: { resetSearch: Date.now() } });
     } else {
       navigate(`/dashboard/${section}`);
@@ -224,7 +225,7 @@ const Dashboard = () => {
   return (
     <>
       <StarField />
-      
+
       {/* Mobile TopBar - Hidden when chat is open */}
       {isMobile && !isChatOpen && (
         <TopBar
@@ -237,7 +238,7 @@ const Dashboard = () => {
 
       {/* Mobile overlay */}
       {isMobile && mobileSidebarOpen && (
-        <Box 
+        <Box
           className={classes.mobileOverlay}
           onClick={handleOverlayClick}
         />
@@ -246,7 +247,7 @@ const Dashboard = () => {
       <Box className={classes.dashboardContainer}>
         {/* Sidebar - Only render on desktop OR when mobile is open */}
         {(!isMobile || mobileSidebarOpen) && (
-          <Sidebar 
+          <Sidebar
             open={isMobile ? mobileSidebarOpen : sidebarOpen}
             onToggle={toggleSidebar}
             isMobile={isMobile}

@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Alert, Chip, useTheme, useMediaQuery } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
+import { useParams, useNavigate, useOutletContext, useLocation } from 'react-router-dom';
 import { flushSync } from 'react-dom';
 import Header from '../../components/dashboard/main/Header';
 import CharacterCard from '../../components/dashboard/character/CharacterCard';
 import CreateCharacterButton from '../../components/dashboard/character/creation/CreateCharacterButton';
 import ChatPanel from '../../components/dashboard/chat/ChatPanel';
 import TopBar from '../../components/dashboard/main/TopBar';
+import SearchComponent from '../../components/dashboard/search/SearchComponent';
 import apiService from '../../services/api';
 import { createCharacterPath, parseCharacterFromUrl, validateSlugMatch, createCharacterNavigationState } from '../../utils/slugUtils';
+import { useSearchPersistence } from '../../hooks/usePaginationPersistence';
 
 const useStyles = makeStyles({
   categoryContainer: {
@@ -105,7 +107,7 @@ const useStyles = makeStyles({
     flexDirection: 'column !important',
     gap: '8px !important',
     '@media (max-width: 600px)': {
-      display: 'none !important',
+      display: 'block !important', // Show on mobile when search is active
     },
   },
   sectionTitle: {
@@ -129,7 +131,7 @@ const useStyles = makeStyles({
       gap: '8px !important',
     },
     '@media (max-width: 600px)': {
-      display: 'none !important',
+      fontSize: '1.2rem !important', // Show smaller on mobile when search is active
     },
   },
   sectionSubtitle: {
@@ -144,7 +146,17 @@ const useStyles = makeStyles({
       fontSize: '0.8rem !important',
     },
     '@media (max-width: 600px)': {
-      display: 'none !important',
+      fontSize: '0.75rem !important', // Show smaller on mobile when search is active
+    },
+  },
+  searchContainer: {
+    minWidth: '300px !important',
+    '@media (max-width: 900px)': {
+      minWidth: '250px !important',
+    },
+    '@media (max-width: 600px)': {
+      minWidth: 'auto !important',
+      width: '100% !important',
     },
   },
   mobileCharacterCount: {
@@ -203,16 +215,16 @@ const useStyles = makeStyles({
   },
   characterBoxContainer: {
     display: 'grid !important',
-    gridTemplateColumns: 'repeat(6, 1fr) !important', // Fixed 5 columns
-    gap: '16px !important', // Slightly smaller gap to fit 5
+    gridTemplateColumns: 'repeat(6, 1fr) !important',
+    gap: '16px !important',
     marginBottom: '40px !important',
     minHeight: '200px !important',
-    '@media (max-width: 1800px)': { // Added breakpoint for extra large screens
+    '@media (max-width: 1800px)': {
       gridTemplateColumns: 'repeat(5, 1fr) !important',
       gap: '18px !important',
     },
     '@media (max-width: 1400px)': {
-      gridTemplateColumns: 'repeat(4, 1fr) !important', // Minimum 4 cards
+      gridTemplateColumns: 'repeat(4, 1fr) !important',
       gap: '18px !important',
     },
     '@media (max-width: 1200px)': {
@@ -347,14 +359,28 @@ const CategoryPage = ({ onSidebarToggle }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { categoryKey, characterId, characterName } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Search functionality integration
+  const { 
+    searchQuery: persistedSearchQuery, 
+    clearSearch: clearPersistedSearch
+  } = useSearchPersistence(`category-${categoryKey}`);
   
   const [characters, setCharacters] = useState([]);
+  const [originalCharacters, setOriginalCharacters] = useState([]);
   const [categoryName, setCategoryName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [existingSession, setExistingSession] = useState(null);
+  
+  // Search state
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [totalCount, setTotalCount] = useState(0);
+  const [searchResetTrigger, setSearchResetTrigger] = useState(0);
 
   // Get sidebar state from Dashboard context
   const context = useOutletContext();
@@ -369,7 +395,35 @@ const CategoryPage = ({ onSidebarToggle }) => {
     loadCategoryCharacters();
   }, [categoryKey]);
 
-  // FIXED: Handle URL-based chat opening with navigation state priority
+  // Reset search when navigating to category (similar to Discover page logic)
+  useEffect(() => {
+    console.log('🔄 Category changed, resetting search for:', categoryKey);
+    if (categoryKey) {
+      setSearchResetTrigger(prev => prev + 1);
+    }
+  }, [categoryKey]);
+
+  // Reset search when navigation state includes resetSearch flag (clicking same category tab)
+  useEffect(() => {
+    if (location?.state?.resetSearch) {
+      console.log('🔄 Reset flag detected, clearing category search');
+      setSearchResetTrigger(prev => prev + 1);
+    }
+  }, [location?.state?.resetSearch]);
+
+  // ADDITIONAL: Reset search when navigating within same category (URL change without categoryKey change)
+  useEffect(() => {
+    // Check if we're navigating to the same category without search params (category reset)
+    const urlParams = new URLSearchParams(location.search);
+    const hasSearchParams = urlParams.has(`category-${categoryKey}_q`);
+    
+    if (!hasSearchParams && (isSearching || searchQuery)) {
+      console.log('🔄 URL params cleared, resetting search state');
+      setSearchResetTrigger(prev => prev + 1);
+    }
+  }, [location.search, categoryKey, isSearching, searchQuery]);
+
+  // Handle URL-based chat opening with navigation state priority
   useEffect(() => {
     console.log('🔍 Category URL Effect - characterId:', characterId, 'characters.length:', characters.length);
     
@@ -389,7 +443,6 @@ const CategoryPage = ({ onSidebarToggle }) => {
     
     if (character) {
       console.log('✅ Found character for URL:', character.name);
-      // Only update if different character or chat is closed
       if (!selectedCharacter || selectedCharacter.id !== character.id || !isChatOpen) {
         console.log('🔄 Updating chat state from URL');
         setSelectedCharacter(character);
@@ -428,7 +481,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
     if (characters.length > 0) {
       fetchCharacterById();
     }
-  }, [characterId, characters])
+  }, [characterId, characters]);
 
   const loadCategoryCharacters = async () => {
     try {
@@ -436,8 +489,12 @@ const CategoryPage = ({ onSidebarToggle }) => {
       setError(null);
       
       const response = await apiService.getCharactersByCategory(categoryKey);
-      setCharacters(response.characters || []);
+      const categoryCharacters = response.characters || [];
+      
+      setCharacters(categoryCharacters);
+      setOriginalCharacters(categoryCharacters);
       setCategoryName(response.category_name || '');
+      setTotalCount(categoryCharacters.length);
     } catch (error) {
       console.error('Failed to load category characters:', error);
       setError('Failed to load characters for this category. Please try again.');
@@ -446,7 +503,47 @@ const CategoryPage = ({ onSidebarToggle }) => {
     }
   };
 
-  // FIXED: Improved handleStartChat with better state management
+  // Handle search results from backend
+  const handleSearchResults = ({ characters: searchCharacters, query, totalCount: searchTotalCount }) => {
+    console.log('🔍 Category search results from backend:', { 
+      query, 
+      resultCount: searchCharacters?.length || 0,
+      totalCount: searchTotalCount 
+    });
+
+    if (query) {
+      // Filter backend search results by category
+      const categoryFilteredCharacters = searchCharacters.filter(character =>
+        character.category === categoryKey
+      );
+      
+      setCharacters(categoryFilteredCharacters);
+      setTotalCount(categoryFilteredCharacters.length);
+      setIsSearching(true);
+      setSearchQuery(query);
+    } else {
+      // Reset to original characters
+      setCharacters(originalCharacters);
+      setTotalCount(originalCharacters.length);
+      setIsSearching(false);
+      setSearchQuery('');
+    }
+  };
+
+  // Handle search state changes
+  const handleSearchStateChange = ({ isSearching: searching, query, focused }) => {
+    console.log('🔍 Category search state changed:', { searching, query, focused });
+    
+    if (!searching && !query) {
+      // Reset to original characters when search is cleared
+      setCharacters(originalCharacters);
+      setTotalCount(originalCharacters.length);
+      setIsSearching(false);
+      setSearchQuery('');
+    }
+  };
+
+  // Improved handleStartChat with better state management
   const handleStartChat = async (character, session = null) => {
     console.log('🚀 Starting chat with character:', character.name);
     
@@ -460,7 +557,9 @@ const CategoryPage = ({ onSidebarToggle }) => {
       
       // Now navigate - states are guaranteed to be set using new URL structure
       const characterPath = createCharacterPath(`/dashboard/categories/${categoryKey}/chat`, character.id, character.name);
-      navigate(characterPath, { 
+      // Preserve current search params
+      const currentSearch = location.search || '';
+      navigate(`${characterPath}${currentSearch}`, { 
         replace: false,
         state: createCharacterNavigationState(character)
       });
@@ -468,7 +567,6 @@ const CategoryPage = ({ onSidebarToggle }) => {
       // If there's an existing session, load it
       if (session && session.session_id) {
         console.log('📝 Loading existing session:', session.session_id);
-        // The ChatPanel will handle loading the session
       } else {
         console.log('✨ Starting new conversation with', character.name);
       }
@@ -484,12 +582,17 @@ const CategoryPage = ({ onSidebarToggle }) => {
     setIsChatOpen(false);
     setSelectedCharacter(null);
     setExistingSession(null);
-    navigate(`/dashboard/categories/${categoryKey}`);
+    // Preserve current search params when closing chat
+    const currentSearch = location.search || '';
+    navigate(`/dashboard/categories/${categoryKey}${currentSearch}`);
   };
 
   const handleCharacterCreated = (newCharacter) => {
     if (newCharacter.category === categoryKey) {
-      setCharacters(prev => [newCharacter, ...prev]);
+      const updatedCharacters = [newCharacter, ...originalCharacters];
+      setCharacters(updatedCharacters);
+      setOriginalCharacters(updatedCharacters);
+      setTotalCount(updatedCharacters.length);
     }
   };
 
@@ -504,7 +607,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
   };
 
   const handleSearchToggle = () => {
-    console.log('Search toggle');
+    console.log('Search toggle - not implemented in mobile for category page');
   };
 
   // Enhanced count formatter
@@ -517,7 +620,10 @@ const CategoryPage = ({ onSidebarToggle }) => {
     return count.toString();
   };
 
-  const getCountLabel = (count) => {
+  const getCountLabel = (count, searching = false) => {
+    if (searching) {
+      return count === 1 ? 'result' : 'results';
+    }
     return count === 1 ? 'character' : 'characters';
   };
 
@@ -527,9 +633,11 @@ const CategoryPage = ({ onSidebarToggle }) => {
       selectedCharacter: selectedCharacter?.name || 'None',
       isChatOpen,
       characterId,
-      charactersLength: characters.length
+      charactersLength: characters.length,
+      isSearching,
+      searchQuery
     });
-  }, [selectedCharacter, isChatOpen, characterId, characters.length]);
+  }, [selectedCharacter, isChatOpen, characterId, characters.length, isSearching, searchQuery]);
 
   if (loading) {
     return (
@@ -589,6 +697,8 @@ const CategoryPage = ({ onSidebarToggle }) => {
     );
   }
 
+  const displayCharacters = characters.length === 0 && !isSearching ? originalCharacters : characters;
+
   return (
     <>
       <Box className={classes.categoryContainer}>
@@ -618,40 +728,59 @@ const CategoryPage = ({ onSidebarToggle }) => {
             <Box className={classes.sectionHeader}>
               <Box className={classes.sectionHeaderContent}>
                 <Typography className={classes.sectionTitle}>
-                  {categoryName || 'Category Characters'}
+                  {isSearching ? `Search Results for "${searchQuery}"` : (categoryName || 'Category Characters')}
                   <Chip 
-                    label={`${formatCount(characters.length)} ${getCountLabel(characters.length)}`} 
+                    label={`${formatCount(totalCount)} ${getCountLabel(totalCount, isSearching)}`} 
                     size="small"
                     className={classes.characterCount}
                   />
                 </Typography>
-                <Typography className={classes.sectionSubtitle}>
-                  Explore characters from the {categoryName?.toLowerCase()} category
-                </Typography>
+                {!isSearching && (
+                  <Typography className={classes.sectionSubtitle}>
+                    Explore characters from the {categoryName?.toLowerCase()} category
+                  </Typography>
+                )}
+              </Box>
+
+              {/* Search Component - Desktop and Mobile */}
+              <Box className={classes.searchContainer}>
+                <SearchComponent
+                  onSearchResults={handleSearchResults}
+                  onSearchStateChange={handleSearchStateChange}
+                  placeholder={`Search ${categoryName?.toLowerCase() || 'category'} characters...`}
+                  showSuggestions={true}
+                  section={`category-${categoryKey}`}
+                  resetTrigger={searchResetTrigger}
+                />
               </Box>
             </Box>
           
             {/* Mobile-only enhanced count */}
             <Box className={classes.mobileCharacterCount}>
               <Chip 
-                label={`${formatCount(characters.length)} ${getCountLabel(characters.length)}`} 
+                label={`${formatCount(totalCount)} ${getCountLabel(totalCount, isSearching)}`} 
                 size="small"
               />
             </Box>
             
-            {characters.length === 0 ? (
+            {displayCharacters.length === 0 ? (
               <Box className={classes.emptyState}>
                 <Typography className={classes.emptyStateTitle}>
-                  No characters found
+                  {isSearching ? 'No search results found' : 'No characters found'}
                 </Typography>
                 <Typography>
-                  No characters are available in this category yet.
+                  {isSearching 
+                    ? `No characters in ${categoryName?.toLowerCase()} match your search. Try different keywords.`
+                    : 'No characters are available in this category yet.'
+                  }
                 </Typography>
               </Box>
             ) : (
               <Box className={classes.characterBoxContainer}>
-                <CreateCharacterButton onCharacterCreated={handleCharacterCreated} />
-                {characters.map((character) => (
+                {!isSearching && (
+                  <CreateCharacterButton onCharacterCreated={handleCharacterCreated} />
+                )}
+                {displayCharacters.map((character) => (
                   <CharacterCard 
                     key={character.id} 
                     character={character}
