@@ -50,10 +50,10 @@ const useStyles = makeStyles(() => ({
     },
   },
   chatContainerOpen: {
-    width: "calc(100vw - 280px)",
+    width: "calc(100vw - 260px)",
     // FIXED: Unified tablet range (901-1200px)
     [`@media (max-width: ${BREAKPOINTS.TABLET}px)`]: {
-      width: "calc(100vw - 260px)",
+      width: "calc(100vw - 240px)",
     },
     [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
       width: "100vw",

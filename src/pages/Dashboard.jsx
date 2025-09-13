@@ -33,9 +33,9 @@ const useStyles = makeStyles({
     },
   },
   mainContentOpen: {
-    marginLeft: 280,
+    marginLeft: 260,
     '@media (max-width: 1200px)': {
-      marginLeft: 260,
+      marginLeft: 240,
     },
     '@media (max-width: 960px)': {
       marginLeft: 240,

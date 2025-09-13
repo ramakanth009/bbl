@@ -741,7 +741,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
         position: 'fixed !important',
         left: '0 !important',
         top: '0 !important',
-        width: open ? '280px !important' : '70px !important',
+        width: open ? '260px !important' : '70px !important',
         height: '100vh !important',
         backgroundColor: 'rgba(26, 26, 26, 0.7) !important',
         borderRight: '1px solid rgba(42, 42, 42, 0.5) !important',
@@ -751,6 +751,9 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
         overflow: 'hidden !important',
         zIndex: 1200,
         transition: 'all 0.3s ease',
+        '@media (max-width: 1200px)': {
+          width: open ? '240px !important' : '65px !important',
+        },
         [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
           width: '280px !important',
           padding: '20px !important',

@@ -16,8 +16,8 @@ export const BREAKPOINTS = {
 export const SIDEBAR_WIDTHS = {
   EXPANDED: {
     MOBILE: 280,      // Mobile overlay always 280px
-    TABLET: 260,      // 901-1200px viewport (unified range)
-    DESKTOP: 280      // >1200px viewport
+    TABLET: 240,      // 901-1200px viewport (unified range)
+    DESKTOP: 260      // >1200px viewport
   },
   COLLAPSED: {
     MOBILE: 0,        // Mobile doesn't use collapsed state (uses overlay)
