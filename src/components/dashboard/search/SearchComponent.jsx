@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
-    width: 220,
+    width: 320,
     boxShadow: 'none',
     backgroundColor: 'rgba(30,30,30,0.96)',
     border: '1.5px solid #333',
@@ -35,7 +35,7 @@ const useStyles = makeStyles({
       border: '1.5px solid #555',
     },
     '&.focused': {
-      width: 300,
+      width: 400,
       border: '1.5px solid #555',
     },
     '@media (max-width: 1200px)': {
