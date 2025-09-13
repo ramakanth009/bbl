@@ -8,7 +8,8 @@ import axios from 'axios';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://clone-7040.onrender.com';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://matrix.gigalabs.in';
 // const BASE_URL = process.env.REACT_APP_API_URL || 'https://matrix.gigalabs.in';
-const BASE_URL = process.env.REACT_APP_API_URL || 'https://space.GigaSpace.org';
+// const BASE_URL = process.env.REACT_APP_API_URL || 'https://space.GigaSpace.org';
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://apex.gigaSpace.org';
 
 class ApiService {
     constructor() {
