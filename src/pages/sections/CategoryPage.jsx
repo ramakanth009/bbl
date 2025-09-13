@@ -203,17 +203,25 @@ const useStyles = makeStyles({
   },
   characterBoxContainer: {
     display: 'grid !important',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr)) !important',
-    gap: '20px !important',
+    gridTemplateColumns: 'repeat(6, 1fr) !important', // Fixed 5 columns
+    gap: '16px !important', // Slightly smaller gap to fit 5
     marginBottom: '40px !important',
     minHeight: '200px !important',
+    '@media (max-width: 1800px)': { // Added breakpoint for extra large screens
+      gridTemplateColumns: 'repeat(5, 1fr) !important',
+      gap: '18px !important',
+    },
+    '@media (max-width: 1400px)': {
+      gridTemplateColumns: 'repeat(4, 1fr) !important', // Minimum 4 cards
+      gap: '18px !important',
+    },
     '@media (max-width: 1200px)': {
-      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr)) !important',
+      gridTemplateColumns: 'repeat(3, 1fr) !important',
       gap: '18px !important',
       marginBottom: '36px !important',
     },
     '@media (max-width: 960px)': {
-      gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr)) !important',
+      gridTemplateColumns: 'repeat(2, 1fr) !important',
       gap: '16px !important',
       marginBottom: '32px !important',
     },
