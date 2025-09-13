@@ -30,8 +30,8 @@ export const usePaginationPersistence = (defaultPage = 1, defaultPageSize = 24, 
   const getInitialPageSize = useCallback(() => {
     const urlPageSize = searchParams.get(pageSizeParam);
     const pageSize = urlPageSize ? parseInt(urlPageSize, 10) : defaultPageSize;
-    // Validate page size
-    const validSizes = [24, 50, 80, 100];
+    // Validate page size - Updated range from 24 to 100
+    const validSizes = [24, 48, 72, 100];
     return validSizes.includes(pageSize) ? pageSize : defaultPageSize;
   }, [searchParams, pageSizeParam, defaultPageSize]);
   

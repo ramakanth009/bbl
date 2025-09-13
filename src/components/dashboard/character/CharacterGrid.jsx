@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { 
-  Box, 
-  Typography, 
-  CircularProgress, 
-  Alert, 
-  Chip, 
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Alert,
+  Chip,
   Pagination,
   Stack,
   FormControl,
@@ -616,7 +616,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const location = useLocation();
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
-  
+
   // NEW: Use pagination persistence hook
   const {
     currentPage,
@@ -635,7 +635,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   const [error, setError] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Keep these for API compatibility
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
@@ -705,18 +705,18 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       if (page !== 1) {
         setPaginationLoading(true);
       }
-      
+
       const response = await apiService.getCharactersPaginated(page, limit);
       const apiTotalCount = response.total_count;
       const filteredCharacters = filterCharactersBySection(response.characters);
-      
+
       setCharacters(filteredCharacters);
       setOriginalCharacters(filteredCharacters);
       setAllCharacters(response.characters);
       setTotalPages(response.total_pages || 1);
       setTotalCount(apiTotalCount);
       setOriginalTotalCount(apiTotalCount);
-      
+
     } catch (error) {
       console.error('Failed to load characters:', error);
       throw error;
@@ -737,7 +737,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
 
   const handleSearchResults = (searchResults) => {
     const { characters: searchCharacters, query, totalCount: searchTotal } = searchResults;
-    
+
     if (query && searchCharacters.length >= 0) {
       setCharacters(searchCharacters);
       setTotalCount(searchTotal);
@@ -755,7 +755,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
 
   const handleSearchStateChange = (searchState) => {
     const { isSearching: searching, query } = searchState;
-    
+
     if (!searching && !query) {
       setCharacters(originalCharacters);
       setTotalCount(originalTotalCount);
@@ -851,7 +851,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   // CRITICAL FIX: Show skeleton loader while styles are loading
   if (!stylesReady) {
     return (
-      <Box sx={{ 
+      <Box sx={{
         display: 'grid !important',
         gridTemplateColumns: 'repeat(5, 1fr) !important',
         gap: '16px !important',
@@ -904,9 +904,9 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   if (error) {
     return (
       <Box py={4}>
-        <Alert 
-          severity="error" 
-          sx={{ 
+        <Alert
+          severity="error"
+          sx={{
             mb: 2,
             background: 'rgba(239, 68, 68, 0.1)',
             border: '1px solid rgba(239, 68, 68, 0.2)',
@@ -926,23 +926,23 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
           <Box>
             <Typography variant="h2" className={classes.sectionTitle}>
               Chat History
-              <Chip 
-                label={`${sessions.length} conversations`} 
+              <Chip
+                label={`${sessions.length} conversations`}
                 size="small"
                 className={classes.characterCount}
               />
             </Typography>
           </Box>
         </Box>
-        
+
         {/* Mobile-only count for History section */}
         <Box className={classes.mobileCharacterCount}>
-          <Chip 
-            label={`${sessions.length} conversation${sessions.length === 1 ? '' : 's'}`} 
+          <Chip
+            label={`${sessions.length} conversation${sessions.length === 1 ? '' : 's'}`}
             size="small"
           />
         </Box>
-        
+
         <ChatHistoryGrid sessions={sessions} onSessionOpen={handleSessionOpen} />
       </Box>
     );
@@ -955,8 +955,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
           <Box>
             <Typography variant="h2" className={classes.sectionTitle}>
               {isSearching ? `Search Results for "${searchQuery}"` : activeSection}
-              <Chip 
-                label={`${formatCount(totalCount)} ${getCountLabel(totalCount, isSearching)}`} 
+              <Chip
+                label={`${formatCount(totalCount)} ${getCountLabel(totalCount, isSearching)}`}
                 size="small"
                 className={classes.characterCount}
               />
@@ -967,7 +967,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
               </Typography>
             )}
           </Box>
-          
+
           <Box className={classes.searchContainer}>
             <SearchComponent
               onSearchResults={handleSearchResults}
@@ -979,15 +979,15 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
             />
           </Box>
         </Box>
-        
+
         {/* Mobile-only enhanced count */}
         <Box className={classes.mobileCharacterCount}>
-          <Chip 
-            label={`${formatCount(totalCount)} ${getCountLabel(totalCount, isSearching)}`} 
+          <Chip
+            label={`${formatCount(totalCount)} ${getCountLabel(totalCount, isSearching)}`}
             size="small"
           />
         </Box>
-         
+
         <Box className={classes.emptyState}>
           <Typography className={classes.emptyStateTitle}>
             {isSearching ? 'No search results found' : 'Loading Characters...'}
@@ -1003,8 +1003,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
         <Box>
           <Typography variant="h2" className={classes.sectionTitle}>
             {isSearching ? `Search Results for "${searchQuery}"` : activeSection}
-            <Chip 
-              label={`${formatCount(totalCount)} ${getCountLabel(totalCount, isSearching)}`} 
+            <Chip
+              label={`${formatCount(totalCount)} ${getCountLabel(totalCount, isSearching)}`}
               size="small"
               className={classes.characterCount}
             />
@@ -1015,7 +1015,7 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
             </Typography>
           )}
         </Box>
-        
+
         <Box className={classes.searchContainer}>
           <SearchComponent
             onSearchResults={handleSearchResults}
@@ -1027,15 +1027,15 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
           />
         </Box>
       </Box>
-      
+
       {/* Mobile-only enhanced count */}
       <Box className={classes.mobileCharacterCount}>
-        <Chip 
-          label={`${formatCount(totalCount)} ${getCountLabel(totalCount, isSearching)}`} 
+        <Chip
+          label={`${formatCount(totalCount)} ${getCountLabel(totalCount, isSearching)}`}
           size="small"
         />
       </Box>
-      
+
       {paginationLoading ? (
         <Box className={classes.loadingOverlay}>
           <CircularProgress sx={{ color: '#6366f1' }} />
@@ -1047,8 +1047,8 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
               <CreateCharacterButton onCharacterCreated={handleCharacterCreated} />
             )}
             {characters.map((character) => (
-              <CharacterCard 
-                key={character.id} 
+              <CharacterCard
+                key={character.id}
                 character={character}
                 onStartChat={handleStartChat}
               />
@@ -1067,17 +1067,17 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
 
               {!isMobileView && (
                 <FormControl size="small" className={classes.pageSizeSelect}>
-                    <InputLabel>Per page</InputLabel>
-                    <Select
-                      value={pageSize}
-                      onChange={handlePageSizeChange}
-                      label="Per page"
-                    >
-                      <MenuItem value={10}>10</MenuItem>
-                      <MenuItem value={20}>20</MenuItem>
-                      <MenuItem value={50}>50</MenuItem>
-                      <MenuItem value={100}>100</MenuItem>
-                    </Select>
+                  <InputLabel>Per page</InputLabel>
+                  <Select
+                    value={pageSize}
+                    onChange={handlePageSizeChange}
+                    label="Per page"
+                  >
+                    <MenuItem value={24}>24</MenuItem>
+                    <MenuItem value={48}>48</MenuItem>
+                    <MenuItem value={72}>72</MenuItem>
+                    <MenuItem value={100}>100</MenuItem>
+                  </Select>
                 </FormControl>
               )}
 
