@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, CircularProgress, Alert, Chip, useTheme, useMediaQuery } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, Chip, useTheme, useMediaQuery, Pagination, Stack, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
+
 import { makeStyles } from '@mui/styles';
 import { useParams, useNavigate, useOutletContext, useLocation } from 'react-router-dom';
 import { flushSync } from 'react-dom';
@@ -11,7 +12,7 @@ import TopBar from '../../components/dashboard/main/TopBar';
 import SearchComponent from '../../components/dashboard/search/SearchComponent';
 import apiService from '../../services/api';
 import { createCharacterPath, parseCharacterFromUrl, validateSlugMatch, createCharacterNavigationState } from '../../utils/slugUtils';
-import { useSearchPersistence } from '../../hooks/usePaginationPersistence';
+import { useSearchPersistence, usePaginationPersistence } from '../../hooks/usePaginationPersistence';
 
 const useStyles = makeStyles({
   categoryContainer: {
@@ -351,6 +352,40 @@ const useStyles = makeStyles({
       borderRadius: '6px !important',
     },
   },
+  paginationContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px',
+    '@media (max-width: 600px)': {
+      flexDirection: 'column',
+      padding: '8px',
+    },
+  },
+  paginationInfo: {
+    '@media (max-width: 600px)': {
+      display: 'none',
+    },
+  },
+  pageSizeSelect: {
+    '@media (max-width: 600px)': {
+      display: 'none',
+    },
+  },
+  mobilePagerPagination: {
+    '@media (min-width: 600px)': {
+      display: 'none',
+    },
+  },
+  enhancedPagination: {
+    '& .MuiPaginationItem-root': {
+      color: '#6366f1',
+      '&.Mui-selected': {
+        color: '#ffffff',
+        backgroundColor: '#6366f1',
+      },
+    },
+  },
 });
 
 const CategoryPage = ({ onSidebarToggle }) => {
@@ -358,9 +393,10 @@ const CategoryPage = ({ onSidebarToggle }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { categoryKey, characterId, characterName } = useParams();
+
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Search functionality integration
   const { 
     searchQuery: persistedSearchQuery, 
@@ -369,6 +405,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
   
   const [characters, setCharacters] = useState([]);
   const [originalCharacters, setOriginalCharacters] = useState([]);
+
   const [categoryName, setCategoryName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -380,6 +417,19 @@ const CategoryPage = ({ onSidebarToggle }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [paginationLoading, setPaginationLoading] = useState(false);
+
+  // Pagination persistence keyed per-category
+  const {
+    currentPage,
+    pageSize,
+    handlePageChange,
+    handlePageSizeChange,
+    resetPagination,
+    isInitialized
+  } = usePaginationPersistence(1, 24, `category-${categoryKey}`);
+
   const [searchResetTrigger, setSearchResetTrigger] = useState(0);
 
   // Get sidebar state from Dashboard context
@@ -392,8 +442,19 @@ const CategoryPage = ({ onSidebarToggle }) => {
   };
 
   useEffect(() => {
-    loadCategoryCharacters();
+    // When category changes, reset pagination to first page and reload
+    setCharacters([]);
+    setOriginalCharacters([]);
+    setTotalCount(0);
+    setTotalPages(1);
   }, [categoryKey]);
+
+  // Load category page when pagination changes (and initialized)
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (isSearching) return; // Do not load when search is active
+    loadCategoryCharactersPage(currentPage, pageSize);
+  }, [isInitialized, currentPage, pageSize, categoryKey, isSearching]);
 
   // Reset search when navigating to category (similar to Discover page logic)
   useEffect(() => {
@@ -483,23 +544,30 @@ const CategoryPage = ({ onSidebarToggle }) => {
     }
   }, [characterId, characters]);
 
-  const loadCategoryCharacters = async () => {
+  const loadCategoryCharactersPage = async (page = 1, limit = 24) => {
     try {
-      setLoading(true);
+      // For first page show main loader; for others show pagination loader
+      if (page === 1 && characters.length === 0) {
+        setLoading(true);
+      } else {
+        setPaginationLoading(true);
+      }
       setError(null);
-      
-      const response = await apiService.getCharactersByCategory(categoryKey);
+
+      const response = await apiService.getCharactersByCategoryPaginated(categoryKey, page, limit);
       const categoryCharacters = response.characters || [];
-      
+
       setCharacters(categoryCharacters);
       setOriginalCharacters(categoryCharacters);
       setCategoryName(response.category_name || '');
-      setTotalCount(categoryCharacters.length);
+      setTotalCount(response.total_count || categoryCharacters.length || 0);
+      setTotalPages(response.total_pages || 1);
     } catch (error) {
       console.error('Failed to load category characters:', error);
       setError('Failed to load characters for this category. Please try again.');
     } finally {
       setLoading(false);
+      setPaginationLoading(false);
     }
   };
 
@@ -521,6 +589,8 @@ const CategoryPage = ({ onSidebarToggle }) => {
       setTotalCount(categoryFilteredCharacters.length);
       setIsSearching(true);
       setSearchQuery(query);
+      // Reset pagination when searching
+      resetPagination();
     } else {
       // Reset to original characters
       setCharacters(originalCharacters);
@@ -776,18 +846,39 @@ const CategoryPage = ({ onSidebarToggle }) => {
                 </Typography>
               </Box>
             ) : (
-              <Box className={classes.characterBoxContainer}>
-                {!isSearching && (
-                  <CreateCharacterButton onCharacterCreated={handleCharacterCreated} />
+              <>
+                {paginationLoading ? (
+                  <Box className={classes.loadingOverlay}>
+                    <CircularProgress sx={{ color: '#6366f1' }} />
+                  </Box>
+                ) : (
+                  <>
+                    <Box className={classes.characterBoxContainer}>
+                      {!isSearching && (
+                        <CreateCharacterButton onCharacterCreated={handleCharacterCreated} />
+                      )}
+                      {displayCharacters.map((character) => (
+                        <CharacterCard 
+                          key={character.id} 
+                          character={character}
+                          onStartChat={handleStartChat}
+                        />
+                      ))}
+                    </Box>
+
+                    {!isSearching && totalPages > 1 && (
+                      <CategoryPagination
+                        totalPages={totalPages}
+                        totalCount={totalCount}
+                        currentPage={currentPage}
+                        pageSize={pageSize}
+                        onPageChange={handlePageChange}
+                        onPageSizeChange={handlePageSizeChange}
+                      />)
+                    }
+                  </>
                 )}
-                {displayCharacters.map((character) => (
-                  <CharacterCard 
-                    key={character.id} 
-                    character={character}
-                    onStartChat={handleStartChat}
-                  />
-                ))}
-              </Box>
+              </>
             )}
           </Box>
         </Box>
@@ -808,3 +899,62 @@ const CategoryPage = ({ onSidebarToggle }) => {
 };
 
 export default CategoryPage;
+
+// Local pagination component to keep JSX tidy and match CharacterGrid look-and-feel
+const CategoryPagination = ({ totalPages, totalCount, currentPage, pageSize, onPageChange, onPageSizeChange }) => {
+  const theme = useTheme();
+  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
+  const classes = useStyles();
+
+  return (
+    <Box className={classes.paginationContainer}>
+      {!isMobileView && (
+        <Box className={classes.paginationInfo}>
+          <Typography variant="body2">
+            Showing {Math.min(((currentPage - 1) * pageSize) + 1, totalCount)}-{Math.min(currentPage * pageSize, totalCount)} of {totalCount} characters
+          </Typography>
+        </Box>
+      )}
+
+      {!isMobileView && (
+        <FormControl size="small" className={classes.pageSizeSelect}>
+          <InputLabel>Per page</InputLabel>
+          <Select value={pageSize} onChange={onPageSizeChange} label="Per page">
+            <MenuItem value={24}>24</MenuItem>
+            <MenuItem value={48}>48</MenuItem>
+            <MenuItem value={72}>72</MenuItem>
+            <MenuItem value={100}>100</MenuItem>
+          </Select>
+        </FormControl>
+      )}
+
+      {isMobileView ? (
+        <Stack spacing={2} className={classes.mobilePagerPagination}>
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={onPageChange}
+            size="small"
+            color="primary"
+            siblingCount={1}
+            boundaryCount={1}
+            className={classes.enhancedPagination}
+          />
+        </Stack>
+      ) : (
+        <Stack spacing={2}>
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={onPageChange}
+            color="primary"
+            showFirstButton
+            showLastButton
+            size="large"
+            className={classes.enhancedPagination}
+          />
+        </Stack>
+      )}
+    </Box>
+  );
+};

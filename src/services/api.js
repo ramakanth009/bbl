@@ -582,6 +582,48 @@ class ApiService {
         }, 30000); // Cache for 30 seconds
     }
 
+    // Get paginated characters for a specific category with caching
+    async getCharactersByCategoryPaginated(categoryKey, page = 1, perPage = 24) {
+        const cacheKey = this.createCacheKey('GET', `/characters/category/${categoryKey}`, { page, perPage });
+
+        return await this.getCachedOrFetch(cacheKey, async () => {
+            try {
+                console.log(`🔄 Loading paginated characters for category: ${categoryKey} (page=${page}, perPage=${perPage})`);
+                const params = { page, per_page: perPage };
+                const response = await this.client.get(`/characters/category/${categoryKey}`, {
+                    params,
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                });
+
+                const data = response.data || {};
+                const pagination = data.pagination || {};
+
+                return {
+                    characters: Array.isArray(data.characters) ? data.characters : [],
+                    page: pagination.page || page,
+                    per_page: pagination.per_page || perPage,
+                    total_pages: pagination.total_pages || 1,
+                    total_count: pagination.total_count || 0,
+                    has_next: Boolean(pagination.has_next),
+                    has_prev: Boolean(pagination.has_prev),
+                    next_url: pagination.next_url || null,
+                    prev_url: pagination.prev_url || null,
+                    category_name: data.category_name || '',
+                    category_key: data.category_key || categoryKey,
+                    status: data.status || 'success',
+                };
+            } catch (error) {
+                console.error(`❌ Failed to load paginated characters for category ${categoryKey}:`, {
+                    status: error.response?.status,
+                    message: error.response?.data?.error || error.message,
+                });
+                throw this.handleError(error, `Failed to load paginated characters for category: ${categoryKey}`);
+            }
+        }, 15000); // Cache for 15 seconds
+    }
+
     // Search characters with pagination
     async searchCharacters(query) {
         try {
