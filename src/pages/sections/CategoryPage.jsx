@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, CircularProgress, Alert, Chip, useTheme, useMediaQuery, Pagination, Stack, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, Chip, useTheme, useMediaQuery, Pagination, Stack, FormControl, Select, MenuItem, InputLabel, IconButton } from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 import { makeStyles } from '@mui/styles';
 import { useParams, useNavigate, useOutletContext, useLocation } from 'react-router-dom';
@@ -353,37 +355,227 @@ const useStyles = makeStyles({
     },
   },
   paginationContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '16px',
+    display: 'flex !important',
+    justifyContent: 'space-between !important',
+    alignItems: 'center !important',
+    marginTop: '40px !important',
+    padding: '24px !important',
+    background: 'rgba(26, 26, 26, 0.8) !important',
+    borderRadius: '16px !important',
+    backdropFilter: 'blur(10px) !important',
+    border: '1px solid rgba(99, 102, 241, 0.1) !important',
+    '@media (max-width: 1200px)': {
+      marginTop: '36px !important',
+      padding: '22px !important',
+      borderRadius: '14px !important',
+    },
+    '@media (max-width: 960px)': {
+      marginTop: '32px !important',
+      padding: '20px !important',
+      borderRadius: '12px !important',
+    },
     '@media (max-width: 600px)': {
-      flexDirection: 'column',
-      padding: '8px',
+      flexDirection: 'column !important',
+      gap: '16px !important',
+      marginTop: '28px !important',
+      padding: '18px !important',
+      borderRadius: '10px !important',
+    },
+    '@media (max-width: 480px)': {
+      gap: '14px !important',
+      marginTop: '24px !important',
+      padding: '16px !important',
+      borderRadius: '8px !important',
+    },
+    '@media (max-width: 375px)': {
+      gap: '12px !important',
+      marginTop: '20px !important',
+      padding: '14px !important',
+      borderRadius: '6px !important',
     },
   },
   paginationInfo: {
+    display: 'flex !important',
+    alignItems: 'center !important',
+    gap: '16px !important',
+    color: '#d1d5db !important',
+    '@media (max-width: 1200px)': {
+      gap: '14px !important',
+    },
+    '@media (max-width: 960px)': {
+      gap: '12px !important',
+    },
     '@media (max-width: 600px)': {
-      display: 'none',
+      flexDirection: 'column !important',
+      gap: '8px !important',
+      textAlign: 'center !important',
+    },
+    '@media (max-width: 480px)': {
+      gap: '6px !important',
+      fontSize: '0.85rem !important',
+    },
+    '@media (max-width: 375px)': {
+      gap: '4px !important',
+      fontSize: '0.8rem !important',
     },
   },
   pageSizeSelect: {
-    '@media (max-width: 600px)': {
-      display: 'none',
+    minWidth: '120px !important',
+    '& .MuiOutlinedInput-root': {
+      background: 'rgba(42, 42, 42, 0.8) !important',
+      border: '1px solid rgba(99, 102, 241, 0.2) !important',
+      borderRadius: '8px !important',
+      color: '#ffffff !important',
+      '&:hover': {
+        borderColor: 'rgba(99, 102, 241, 0.5) !important',
+      },
+      '&.Mui-focused': {
+        borderColor: '#6366f1 !important',
+      },
     },
-  },
-  mobilePagerPagination: {
-    '@media (min-width: 600px)': {
-      display: 'none',
+    '& .MuiInputLabel-root': {
+      color: '#9ca3af !important',
+    },
+    '& .MuiSelect-icon': {
+      color: '#9ca3af !important',
+    },
+    '@media (max-width: 1200px)': {
+      minWidth: '110px !important',
+    },
+    '@media (max-width: 960px)': {
+      minWidth: '100px !important',
+    },
+    '@media (max-width: 600px)': {
+      minWidth: '90px !important',
+    },
+    '@media (max-width: 480px)': {
+      minWidth: '80px !important',
+      '& .MuiOutlinedInput-root': {
+        fontSize: '0.85rem !important',
+      },
+      '& .MuiInputLabel-root': {
+        fontSize: '0.85rem !important',
+      },
+    },
+    '@media (max-width: 375px)': {
+      minWidth: '70px !important',
+      '& .MuiOutlinedInput-root': {
+        fontSize: '0.8rem !important',
+      },
+      '& .MuiInputLabel-root': {
+        fontSize: '0.8rem !important',
+      },
     },
   },
   enhancedPagination: {
+    '& .MuiPagination-ul': {
+      gap: '8px !important',
+    },
     '& .MuiPaginationItem-root': {
-      color: '#6366f1',
-      '&.Mui-selected': {
-        color: '#ffffff',
-        backgroundColor: '#6366f1',
+      background: 'rgba(26, 26, 26, 0.8) !important',
+      border: '1px solid rgba(99, 102, 241, 0.2) !important',
+      color: '#9ca3af !important',
+      borderRadius: '12px !important',
+      backdropFilter: 'blur(10px) !important',
+      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important',
+      minWidth: '44px !important',
+      height: '44px !important',
+      '&:hover': {
+        background: 'rgba(42, 42, 42, 0.9) !important',
+        borderColor: 'rgba(99, 102, 241, 0.5) !important',
+        color: '#ffffff !important',
+        transform: 'translateY(-2px) !important',
+        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3) !important',
       },
+      '&.Mui-selected': {
+        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important',
+        borderColor: 'rgba(99, 102, 241, 0.8) !important',
+        color: 'white !important',
+        boxShadow: '0 8px 25px rgba(99, 102, 241, 0.4), 0 0 20px rgba(99, 102, 241, 0.2) !important',
+        transform: 'translateY(-2px) !important',
+        '&:hover': {
+          background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important',
+        },
+      },
+    },
+    '@media (max-width: 1200px)': {
+      '& .MuiPagination-ul': {
+        gap: '6px !important',
+      },
+      '& .MuiPaginationItem-root': {
+        minWidth: '40px !important',
+        height: '40px !important',
+        borderRadius: '10px !important',
+      },
+    },
+    '@media (max-width: 960px)': {
+      '& .MuiPagination-ul': {
+        gap: '4px !important',
+      },
+      '& .MuiPaginationItem-root': {
+        minWidth: '36px !important',
+        height: '36px !important',
+        borderRadius: '8px !important',
+        fontSize: '0.85rem !important',
+      },
+    },
+    '@media (max-width: 600px)': {
+      '& .MuiPagination-ul': {
+        gap: '2px !important',
+      },
+      '& .MuiPaginationItem-root': {
+        minWidth: '28px !important',
+        height: '28px !important',
+        borderRadius: '4px !important',
+        fontSize: '0.75rem !important',
+        '&:hover': {
+          transform: 'translateY(-1px) !important',
+        },
+        '&.Mui-selected': {
+          transform: 'translateY(-1px) !important',
+        },
+      },
+    },
+    '@media (max-width: 375px)': {
+      '& .MuiPaginationItem-root': {
+        minWidth: '24px !important',
+        height: '24px !important',
+        fontSize: '0.7rem !important',
+      },
+    },
+  },
+  mobilePagerCombined: {
+    display: 'none !important',
+    '@media (max-width: 600px)': {
+      display: 'flex !important',
+      alignItems: 'center !important',
+      justifyContent: 'space-between !important',
+      gap: '8px !important',
+      width: '100% !important',
+      padding: '8px 10px !important',
+      background: 'rgba(26, 26, 26, 0.8) !important',
+      border: '1px solid rgba(99, 102, 241, 0.2) !important',
+      borderRadius: '12px !important',
+      backdropFilter: 'blur(10px) !important',
+      flexWrap: 'nowrap !important',
+    },
+  },
+  mobilePagerButton: {
+    color: '#9ca3af !important',
+    border: '1px solid rgba(99, 102, 241, 0.2) !important',
+    borderRadius: '10px !important',
+    background: 'rgba(26, 26, 26, 0.6) !important',
+    '&:hover': {
+      background: 'rgba(42, 42, 42, 0.9) !important',
+      color: '#ffffff !important',
+    },
+  },
+  mobilePagerPagination: {
+    flex: '1 1 auto !important',
+    overflow: 'hidden !important',
+    '& .MuiPagination-ul': {
+      justifyContent: 'center !important',
+      flexWrap: 'nowrap !important',
     },
   },
 });
@@ -417,6 +609,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [totalCount, setTotalCount] = useState(0);
+  const [originalTotalCount, setOriginalTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [paginationLoading, setPaginationLoading] = useState(false);
 
@@ -446,6 +639,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
     setCharacters([]);
     setOriginalCharacters([]);
     setTotalCount(0);
+    setOriginalTotalCount(0);
     setTotalPages(1);
   }, [categoryKey]);
 
@@ -561,6 +755,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
       setOriginalCharacters(categoryCharacters);
       setCategoryName(response.category_name || '');
       setTotalCount(response.total_count || categoryCharacters.length || 0);
+      setOriginalTotalCount(response.total_count || categoryCharacters.length || 0);
       setTotalPages(response.total_pages || 1);
     } catch (error) {
       console.error('Failed to load category characters:', error);
@@ -594,7 +789,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
     } else {
       // Reset to original characters
       setCharacters(originalCharacters);
-      setTotalCount(originalCharacters.length);
+      setTotalCount(originalTotalCount);
       setIsSearching(false);
       setSearchQuery('');
     }
@@ -607,7 +802,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
     if (!searching && !query) {
       // Reset to original characters when search is cleared
       setCharacters(originalCharacters);
-      setTotalCount(originalCharacters.length);
+      setTotalCount(originalTotalCount);
       setIsSearching(false);
       setSearchQuery('');
     }
@@ -905,13 +1100,18 @@ const CategoryPagination = ({ totalPages, totalCount, currentPage, pageSize, onP
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
   const classes = useStyles();
+  const formatCountLocal = (count) => {
+    if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
+    if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
+    return count.toString();
+  };
 
   return (
     <Box className={classes.paginationContainer}>
       {!isMobileView && (
         <Box className={classes.paginationInfo}>
           <Typography variant="body2">
-            Showing {Math.min(((currentPage - 1) * pageSize) + 1, totalCount)}-{Math.min(currentPage * pageSize, totalCount)} of {totalCount} characters
+            Showing {Math.min(((currentPage - 1) * pageSize) + 1, totalCount)}-{Math.min(currentPage * pageSize, totalCount)} of {formatCountLocal(totalCount)} characters
           </Typography>
         </Box>
       )}
@@ -929,18 +1129,38 @@ const CategoryPagination = ({ totalPages, totalCount, currentPage, pageSize, onP
       )}
 
       {isMobileView ? (
-        <Stack spacing={2} className={classes.mobilePagerPagination}>
+        <Box className={classes.mobilePagerCombined}>
+          <IconButton
+            className={classes.mobilePagerButton}
+            size="small"
+            onClick={(e) => onPageChange(e, Math.max(1, currentPage - 1))}
+            disabled={currentPage <= 1}
+            aria-label="Previous page"
+          >
+            <ChevronLeftIcon fontSize="small" />
+          </IconButton>
           <Pagination
             count={totalPages}
             page={currentPage}
             onChange={onPageChange}
             size="small"
             color="primary"
+            showFirstButton={false}
+            showLastButton={false}
             siblingCount={1}
             boundaryCount={1}
-            className={classes.enhancedPagination}
+            className={`${classes.enhancedPagination} ${classes.mobilePagerPagination}`}
           />
-        </Stack>
+          <IconButton
+            className={classes.mobilePagerButton}
+            size="small"
+            onClick={(e) => onPageChange(e, Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage >= totalPages}
+            aria-label="Next page"
+          >
+            <ChevronRightIcon fontSize="small" />
+          </IconButton>
+        </Box>
       ) : (
         <Stack spacing={2}>
           <Pagination
