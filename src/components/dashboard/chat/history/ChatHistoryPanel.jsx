@@ -22,6 +22,7 @@ import {
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useTheme } from '@mui/material/styles';
+import apiService from '../../../../services/api';
 
 const useStyles = makeStyles((theme) => ({
   // Mobile backdrop for overlay
@@ -632,6 +633,18 @@ const ChatHistoryPanel = ({
     }
   };
 
+  // Prefetch session messages to warm cache before user clicks
+  const prefetchSession = (sessionId) => {
+    try {
+      const doPrefetch = () => apiService.getSessionMessages(sessionId).catch(() => {});
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(doPrefetch, { timeout: 800 });
+      } else {
+        setTimeout(doPrefetch, 120);
+      }
+    } catch {}
+  };
+
   // Don't render if not open
   if (!open) {
     return null;
@@ -799,6 +812,8 @@ const ChatHistoryPanel = ({
                       <ListItem
                         key={session.session_id}
                         onClick={() => onSessionSelect(session.session_id)}
+                        onMouseEnter={() => prefetchSession(session.session_id)}
+                        onFocus={() => prefetchSession(session.session_id)}
                         className={
                           currentSessionId === session.session_id
                             ? `${classes.sessionItem} selected`

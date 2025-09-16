@@ -23,6 +23,7 @@ import { makeStyles } from "@mui/styles";
 import { useAuth } from "../context/AuthContext";
 import GoogleLogo from "../assets/google-logo.svg";
 import apiService from "../services/api";
+import AuthFooter from "../components/common/AuthFooter";
 
 const StarField = React.lazy(() => import("../components/common/StarField"));
 
@@ -944,16 +945,7 @@ const Register = () => {
       </Container>
       
       {/* Footer */}
-      <Box component="footer" className={classes.footerContainer}>
-        <Box className={classes.footerInner}>
-          <Typography variant="body2" className={classes.copyright}>
-            &copy; {new Date().getFullYear()} GigaSpace. All rights reserved.
-          </Typography>
-          <Box className={classes.footerLinks}>
-            <Link to="/blog" className={classes.footerLink}>Blog</Link>
-          </Box>
-        </Box>
-      </Box>
+      <AuthFooter />
     </Box>
   );
 };

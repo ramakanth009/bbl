@@ -717,6 +717,20 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
       setTotalCount(apiTotalCount);
       setOriginalTotalCount(apiTotalCount);
 
+      // Prefetch next page in the background to improve perceived speed
+      const totalPages = response.total_pages || 1;
+      if (page < totalPages) {
+        const nextPage = page + 1;
+        const prefetch = () => {
+          apiService.getCharactersPaginated(nextPage, limit).catch(() => {});
+        };
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(prefetch, { timeout: 800 });
+        } else {
+          setTimeout(prefetch, 150);
+        }
+      }
+
     } catch (error) {
       console.error('Failed to load characters:', error);
       throw error;

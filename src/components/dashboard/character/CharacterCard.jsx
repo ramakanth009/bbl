@@ -628,7 +628,8 @@ const CharacterCard = ({ character, onStartChat }) => {
           <Avatar 
             src={character.img} 
             alt={character.name} 
-            className={classes.characterAvatar} 
+            className={classes.characterAvatar}
+            imgProps={{ loading: 'lazy', decoding: 'async', fetchpriority: 'low', referrerPolicy: 'no-referrer' }}
           />
           <Box className={classes.characterInfo}>
             <Typography className={classes.characterName}>
@@ -696,6 +697,7 @@ const CharacterCard = ({ character, onStartChat }) => {
             src={character.img} 
             alt={character.name} 
             className={classes.characterAvatar}
+            imgProps={{ loading: 'lazy', decoding: 'async', fetchpriority: 'low', referrerPolicy: 'no-referrer' }}
           />
         </Box>
         

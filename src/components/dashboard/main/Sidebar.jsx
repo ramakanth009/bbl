@@ -693,6 +693,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
         key={item.text}
         className={`${classes.listItem} ${!open ? classes.listItemCollapsed : ""} ${isActive ? "active" : ""}`}
         onClick={() => handleNavClick(item.path, item.comingSoon)}
+        disableRipple
       >
         <ListItemIcon className={`${classes.listItemIcon} ${!open ? classes.listItemIconCollapsed : ""}`}>
           {item.icon}
@@ -843,6 +844,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
           boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4) !important',
         }
       }}
+      disableRipple
     >
       {!open ? <Add className={classes.iconSizing} /> : "Create"}
     </Button>
@@ -881,6 +883,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
                     borderRadius: '6px !important',
                     boxShadow: 1,
                   }}
+                  disableRipple
                 >
                   {open ? <ChevronLeft sx={{ fontSize: '16px' }} /> : <ChevronRight sx={{ fontSize: '16px' }} />}
                 </IconButton>
@@ -925,6 +928,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
                 <IconButton 
                   className={classes.categoriesIcon}
                   onClick={handleCategoryIconClick}
+                  disableRipple
                 >
                   <Category className={classes.iconSizing} />
                 </IconButton>
@@ -955,6 +959,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
                       border: '1px solid rgba(244, 67, 54, 0.1) !important'
                     }
                   }}
+                  disableRipple
                 >  
                   <ListItemIcon className={`${classes.listItemIcon} ${classes.listItemIconCollapsed}`}>
                     <Logout className={classes.iconSizing} />
@@ -971,17 +976,13 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
                     border: '1px solid rgba(244, 67, 54, 0.1) !important'
                   }
                 }}
+                disableRipple
               >
-                <ListItemIcon className={classes.listItemIcon}>
+                <ListItemIcon className={`${classes.listItemIcon} ${!open ? classes.listItemIconCollapsed : ""}`}>
                   <Logout className={classes.iconSizing} />
                 </ListItemIcon>
                 {open && (
-                  <ListItemText
-                    primary="Logout"
-                    primaryTypographyProps={{ 
-                      className: classes.listItemText
-                    }}
-                  />
+                  <ListItemText primary="Logout" primaryTypographyProps={{ className: classes.listItemText }} />
                 )}
               </ListItemButton>
             )}

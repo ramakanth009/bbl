@@ -18,7 +18,8 @@ const useStyles = makeStyles({
     flex: 1,
     padding: '14px',
     overflow: 'auto',
-    transition: 'all 0.3s ease',
+    // Limit transitions to opacity only to avoid layout thrash on section changes
+    transition: 'opacity 0.2s ease',
     display: 'block',
     '@media (max-width: 1200px)': {
       padding: '12px',

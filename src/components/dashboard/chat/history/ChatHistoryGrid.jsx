@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -722,6 +722,18 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
     }
   };
 
+  // Prefetch session messages to warm the cache
+  const prefetchSession = (sessionId) => {
+    try {
+      const doPrefetch = () => apiService.getSessionMessages(sessionId).catch(() => {});
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(doPrefetch, { timeout: 800 });
+      } else {
+        setTimeout(doPrefetch, 120);
+      }
+    } catch {}
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) {
       console.warn('formatDate received empty dateString');
@@ -860,6 +872,8 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
       <Fade in timeout={300 + index * 100} key={session.session_id}>
         <Card 
           className={`${classes.sessionCard} ${isLoading ? 'loading' : ''}`}
+          onMouseEnter={() => prefetchSession(session.session_id)}
+          onFocus={() => prefetchSession(session.session_id)}
         >
           <CardContent className={classes.cardContent}>
             <Box className={classes.sessionHeader}>
@@ -910,6 +924,8 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
                   size="small"
                   disabled={isLoading}
                   onClick={() => handleSessionClick(session)}
+                  onMouseEnter={() => prefetchSession(session.session_id)}
+                  onFocus={() => prefetchSession(session.session_id)}
                   sx={{
                     fontWeight: 600,
                     borderRadius: 8,
@@ -929,6 +945,7 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
                       fontSize: '0.75rem',
                     },
                   }}
+                  disableRipple
                 >
                   Resume Chat
                 </Button>

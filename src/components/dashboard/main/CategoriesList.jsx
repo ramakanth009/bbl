@@ -1,4 +1,5 @@
 import React from "react";
+
 import { List, ListItemButton, ListItemIcon, ListItemText, Typography, Box } from "@mui/material";
 import { 
   Palette, 
@@ -13,6 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useCategories } from "../../../context/CategoriesContext";
 import { makeStyles } from '@mui/styles';
+import apiService from "../../../services/api";
 
 const useStyles = makeStyles(() => ({
   statusText: {
@@ -174,6 +176,23 @@ const CategoriesList = ({ onCategorySelect, activeCategory }) => {
   const { categories, loading, error } = useCategories();
   const navigate = useNavigate();
 
+  // Prefetch the first page of characters for a category to warm the cache
+  const prefetchCategory = (categoryKey) => {
+    // Fire-and-forget: caching in apiService will ensure subsequent click is instant
+    try {
+      // Small timeout to avoid spamming on super-fast pointer moves
+      window.requestIdleCallback?.(() => {
+        apiService.getCharactersByCategoryPaginated(categoryKey, 1, 24).catch(() => {});
+      }, { timeout: 500 });
+      if (!window.requestIdleCallback) {
+        // Fallback if requestIdleCallback is not supported
+        setTimeout(() => {
+          apiService.getCharactersByCategoryPaginated(categoryKey, 1, 24).catch(() => {});
+        }, 100);
+      }
+    } catch {}
+  };
+
   const handleCategoryClick = (categoryKey) => {
     if (onCategorySelect) {
       onCategorySelect(categoryKey);
@@ -216,7 +235,11 @@ const CategoriesList = ({ onCategorySelect, activeCategory }) => {
             key={key}
             selected={activeCategory === key}
             onClick={() => handleCategoryClick(key)}
+            onMouseEnter={() => prefetchCategory(key)}
+            onFocus={() => prefetchCategory(key)}
+            onTouchStart={() => prefetchCategory(key)}
             className={classes.listItemButton}
+            disableRipple
           >
             <ListItemIcon className={classes.listItemIcon}>
               {React.cloneElement(

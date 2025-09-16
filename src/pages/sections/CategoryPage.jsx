@@ -26,7 +26,7 @@ const useStyles = makeStyles({
     flex: 1,
     padding: '14px',
     overflow: 'auto',
-    transition: 'all 0.3s ease',
+    transition: 'opacity 0.2s ease',
     display: 'block',
     '@media (max-width: 1200px)': {
       padding: '12px',
@@ -635,12 +635,10 @@ const CategoryPage = ({ onSidebarToggle }) => {
   };
 
   useEffect(() => {
-    // When category changes, reset pagination to first page and reload
-    setCharacters([]);
-    setOriginalCharacters([]);
-    setTotalCount(0);
-    setOriginalTotalCount(0);
-    setTotalPages(1);
+    // When category changes, keep previous content for instant feedback (SWR pattern).
+    // Pagination is already keyed per-category via usePaginationPersistence,
+    // and loadCategoryCharactersPage will refresh data in the background.
+    // Intentionally do not clear character lists here to avoid a blank state.
   }, [categoryKey]);
 
   // Load category page when pagination changes (and initialized)
@@ -757,6 +755,21 @@ const CategoryPage = ({ onSidebarToggle }) => {
       setTotalCount(response.total_count || categoryCharacters.length || 0);
       setOriginalTotalCount(response.total_count || categoryCharacters.length || 0);
       setTotalPages(response.total_pages || 1);
+
+      // Prefetch next page in the background to make pagination instant
+      if (page === 1 && (response.total_pages || 1) > 1) {
+        const nextPage = 2;
+        const prefetch = () => {
+          apiService
+            .getCharactersByCategoryPaginated(categoryKey, nextPage, limit)
+            .catch(() => {});
+        };
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(prefetch, { timeout: 800 });
+        } else {
+          setTimeout(prefetch, 150);
+        }
+      }
     } catch (error) {
       console.error('Failed to load category characters:', error);
       setError('Failed to load characters for this category. Please try again.');
