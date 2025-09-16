@@ -58,7 +58,7 @@ const useStyles = makeStyles({
   },
   contentArea: {
     flex: 1,
-    overflow: "hidden",
+    overflow: "auto",
     '@media (max-width: 900px)': {
       overflow: "auto",
       paddingTop: '110px',

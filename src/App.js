@@ -23,6 +23,7 @@ import Dashboard from './pages/Dashboard';
 import Blog from './pages/blog/Blog';
 import BlogPost from './pages/blog/BlogPost';
 import FAQ from './pages/faq/FAQ';
+import TermsPolicies from './pages/terms/TermsPolicies';
 import Discover from './pages/sections/Discover';
 import Featured from './pages/sections/Featured';
 import Recent from './pages/sections/Recent';
@@ -31,6 +32,7 @@ import Foryou from './pages/sections/ForYou';
 import History from './pages/sections/History';
 import SessionChat from './pages/sections/SessionChat';
 import CategoryPage from './pages/sections/CategoryPage';
+import Upgrade from './pages/sections/Upgrade';
 
 
 
@@ -102,6 +104,7 @@ function AppContent() {
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/faq" element={<FAQ />} />
+                <Route path="/terms" element={<TermsPolicies />} />
                 
                 {/* Dashboard Routes - Protected */}
                 <Route 
@@ -129,6 +132,9 @@ function AppContent() {
                   {/* Category Routes */}
                   <Route path="categories/:categoryKey" element={<CategoryPage />} />
                   <Route path="categories/:categoryKey/chat/:characterId/:characterName" element={<CategoryPage />} />
+
+                  {/* Upgrade Plans */}
+                  <Route path="upgrade" element={<Upgrade />} />
                 </Route>
                 
                 {/* Default redirect */}

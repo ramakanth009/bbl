@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
 import { Box, Typography, CircularProgress, Alert, Chip, useTheme, useMediaQuery, Pagination, Stack, FormControl, Select, MenuItem, InputLabel, IconButton } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -588,6 +589,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const categoryLoadIdRef = useRef(0);
 
   // Search functionality integration
   const { 
@@ -644,9 +646,11 @@ const CategoryPage = ({ onSidebarToggle }) => {
   // Load category page when pagination changes (and initialized)
   useEffect(() => {
     if (!isInitialized) return;
-    if (isSearching) return; // Do not load when search is active
+    // Do not load when search is active. Also guard against URL-persisted search
+    // to avoid a race where pagination updates land before isSearching flips true.
+    if (isSearching || (persistedSearchQuery && persistedSearchQuery.trim())) return;
     loadCategoryCharactersPage(currentPage, pageSize);
-  }, [isInitialized, currentPage, pageSize, categoryKey, isSearching]);
+  }, [isInitialized, currentPage, pageSize, categoryKey, isSearching, persistedSearchQuery]);
 
   // Reset search when navigating to category (similar to Discover page logic)
   useEffect(() => {
@@ -737,6 +741,8 @@ const CategoryPage = ({ onSidebarToggle }) => {
   }, [characterId, characters]);
 
   const loadCategoryCharactersPage = async (page = 1, limit = 24) => {
+    // Bump request id to identify the latest load and ignore stale responses
+    const myLoadId = ++categoryLoadIdRef.current;
     try {
       // For first page show main loader; for others show pagination loader
       if (page === 1 && characters.length === 0) {
@@ -747,6 +753,14 @@ const CategoryPage = ({ onSidebarToggle }) => {
       setError(null);
 
       const response = await apiService.getCharactersByCategoryPaginated(categoryKey, page, limit);
+
+      // If another load started after this one, or a search is now active, ignore this response
+      if (categoryLoadIdRef.current !== myLoadId) {
+        return;
+      }
+      if (isSearching || (persistedSearchQuery && persistedSearchQuery.trim())) {
+        return;
+      }
       const categoryCharacters = response.characters || [];
 
       setCharacters(categoryCharacters);
@@ -788,14 +802,16 @@ const CategoryPage = ({ onSidebarToggle }) => {
     });
 
     if (query) {
+      // Invalidate in-flight category loads so their responses are ignored
+      categoryLoadIdRef.current++;
       // Filter backend search results by category
       const categoryFilteredCharacters = searchCharacters.filter(character =>
         character.category === categoryKey
       );
-      
+      // Flip search state first, then apply results
+      setIsSearching(true);
       setCharacters(categoryFilteredCharacters);
       setTotalCount(categoryFilteredCharacters.length);
-      setIsSearching(true);
       setSearchQuery(query);
       // Reset pagination when searching
       resetPagination();
@@ -812,6 +828,11 @@ const CategoryPage = ({ onSidebarToggle }) => {
   const handleSearchStateChange = ({ isSearching: searching, query, focused }) => {
     console.log('🔍 Category search state changed:', { searching, query, focused });
     
+    // If a search becomes active, immediately invalidate any in-flight category loads
+    if (searching && query) {
+      categoryLoadIdRef.current++;
+    }
+
     if (!searching && !query) {
       // Reset to original characters when search is cleared
       setCharacters(originalCharacters);

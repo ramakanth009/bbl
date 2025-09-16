@@ -14,6 +14,7 @@ import {
   Tooltip,
   IconButton,
 } from "@mui/material";
+
 import {
   WorkspacePremium,
   Add,
@@ -23,18 +24,18 @@ import {
   Favorite,
   Schedule,
   History,
-  Logout,
   Category,
   ChevronRight,
   ChevronLeft,
 } from "@mui/icons-material";
+
 import { makeStyles } from '@mui/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from "../../../context/AuthContext";
 import { isMobileViewport, SIDEBAR_WIDTHS, BREAKPOINTS } from "../../../utils/sidebarUtils";
-
 import CategoriesList from './CategoriesList';
 import CreateFeaturePopup from "../character/creation/CreateFeaturePopup";
+import ProfileSection from './ProfileSection';
 
 const useStyles = makeStyles(() => ({
   drawer: {
@@ -589,7 +590,7 @@ const useStyles = makeStyles(() => ({
 
 const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
   const classes = useStyles();
-  const { logout } = useAuth();
+  const { logout, getUserInfo } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -597,6 +598,16 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
 
   const [stylesReady, setStylesReady] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
+
+  const userInfo = getUserInfo ? getUserInfo() : null;
+  const displayName = userInfo?.username || userInfo?.name || userInfo?.email || "User";
+  const displayEmail = userInfo?.email || "";
+  const avatarInitials = (displayName || "U")
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   useEffect(() => {
     const timer = requestAnimationFrame(() => {
@@ -638,14 +649,6 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
         onToggle();
       }
     }
-  };
-
-  const handleCreateClick = () => {
-    setPopupOpen(true);
-  };
-
-  const handlePopupClose = () => {
-    setPopupOpen(false);
   };
 
   const handleCategorySelect = (categoryKey) => {
@@ -735,99 +738,13 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
     </Box>
   );
 
-  // Show skeleton loader while styles are loading
-  if (!stylesReady) {
-    return (
-      <Box sx={{
-        position: 'fixed !important',
-        left: '0 !important',
-        top: '0 !important',
-        width: open ? '260px !important' : '70px !important',
-        height: '100vh !important',
-        backgroundColor: 'rgba(26, 26, 26, 0.7) !important',
-        borderRight: '1px solid rgba(42, 42, 42, 0.5) !important',
-        padding: open ? '20px !important' : '20px 10px !important',
-        display: 'flex !important',
-        flexDirection: 'column !important',
-        overflow: 'hidden !important',
-        zIndex: 1200,
-        transition: 'all 0.3s ease',
-        '@media (max-width: 1200px)': {
-          width: open ? '240px !important' : '65px !important',
-        },
-        [`@media (max-width: ${BREAKPOINTS.MOBILE}px)`]: {
-          width: '280px !important',
-          padding: '20px !important',
-          transform: open ? 'translateX(0)' : 'translateX(-100%)',
-        },
-      }}>
-        {/* Logo skeleton */}
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: open ? '12px' : '0px',
-          marginBottom: '20px',
-          justifyContent: open ? 'flex-start' : 'center',
-        }}>
-          <Box sx={{
-            width: '28px',
-            height: '28px',
-            borderRadius: '6px',
-            background: 'rgba(99, 102, 241, 0.3)',
-            animation: 'pulse 1.5s ease-in-out infinite',
-            '@keyframes pulse': {
-              '0%, 100%': { opacity: 0.4 },
-              '50%': { opacity: 0.6 },
-            },
-          }} />
-          {open && (
-            <Box sx={{
-              width: '120px',
-              height: '16px',
-              borderRadius: '4px',
-              background: 'rgba(255, 255, 255, 0.3)',
-              animation: 'pulse 1.5s ease-in-out infinite',
-              '@keyframes pulse': {
-                '0%, 100%': { opacity: 0.4 },
-                '50%': { opacity: 0.6 },
-              },
-            }} />
-          )}
-        </Box>
-        
-        {/* Button skeleton */}
-        <Box sx={{
-          width: open ? '100%' : '40px',
-          height: '40px',
-          borderRadius: '8px',
-          background: 'rgba(99, 102, 241, 0.3)',
-          marginBottom: open ? '30px' : '20px',
-          animation: 'pulse 1.5s ease-in-out infinite',
-          '@keyframes pulse': {
-            '0%, 100%': { opacity: 0.4 },
-            '50%': { opacity: 0.6 },
-          },
-        }} />
-        
-        {/* Navigation items skeleton */}
-        {Array.from({ length: 6 }).map((_, index) => (
-          <Box key={index} sx={{
-            width: '100%',
-            height: '36px',
-            borderRadius: '6px',
-            background: 'rgba(255, 255, 255, 0.1)',
-            marginBottom: '2px',
-            animation: 'pulse 1.5s ease-in-out infinite',
-            animationDelay: `${index * 0.1}s`,
-            '@keyframes pulse': {
-              '0%, 100%': { opacity: 0.4 },
-              '50%': { opacity: 0.6 },
-            },
-          }} />
-        ))}
-      </Box>
-    );
-  }
+  const handleCreateClick = () => {
+    setPopupOpen(true);
+  };
+
+  const handlePopupClose = () => {
+    setPopupOpen(false);
+  };
 
   const createButtonContent = (
     <Button
@@ -920,7 +837,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
               CATEGORIES
             </Typography>
           )}
-          
+
           {/* Categories icon when collapsed */}
           {!open && !isMobile && (
             <Box className={classes.categoriesIconWrapper}>
@@ -935,7 +852,7 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
               </Tooltip>
             </Box>
           )}
-          
+
           {/* Dynamic categories section - scrollable when open */}
           <Box className={`${classes.scrollableContent} ${!open ? classes.scrollableContentCollapsed : ""}`}>
             <CategoriesList 
@@ -945,49 +862,16 @@ const Sidebar = ({ open, onToggle, onCharacterCreated, isMobile }) => {
           </Box>
 
           <Box className={classes.footerWrapper}>
-            {!open && !isMobile ? (
-              <Tooltip title="Logout" placement="right" arrow>
-                <ListItemButton 
-                  onClick={logout} 
-                  className={`${classes.listItem} ${classes.listItemCollapsed} ${classes.logoutButton}`}
-                  sx={{
-                    display: 'flex !important',
-                    justifyContent: 'center',
-                    padding: '8px 0 !important',
-                    border: '1px solid rgba(244, 67, 54, 0.05) !important',
-                    '&:hover': {
-                      border: '1px solid rgba(244, 67, 54, 0.1) !important'
-                    }
-                  }}
-                  disableRipple
-                >  
-                  <ListItemIcon className={`${classes.listItemIcon} ${classes.listItemIconCollapsed}`}>
-                    <Logout className={classes.iconSizing} />
-                  </ListItemIcon>
-                </ListItemButton>
-              </Tooltip>
-            ) : (
-              <ListItemButton 
-                onClick={logout} 
-                className={`${classes.listItem} ${classes.logoutButton}`}
-                sx={{
-                  border: '1px solid rgba(244, 67, 54, 0.05) !important',
-                  '&:hover': {
-                    border: '1px solid rgba(244, 67, 54, 0.1) !important'
-                  }
-                }}
-                disableRipple
-              >
-                <ListItemIcon className={`${classes.listItemIcon} ${!open ? classes.listItemIconCollapsed : ""}`}>
-                  <Logout className={classes.iconSizing} />
-                </ListItemIcon>
-                {open && (
-                  <ListItemText primary="Logout" primaryTypographyProps={{ className: classes.listItemText }} />
-                )}
-              </ListItemButton>
-            )}
+            <ProfileSection
+              open={open}
+              isMobile={isMobile}
+              logout={logout}
+              displayEmail={displayEmail}
+              displayName={displayName}
+              avatarInitials={avatarInitials}
+            />
           </Box>
-          
+
           {/* Beta version label */}
           <Box className={classes.versionChipContainer}>
             <Chip
