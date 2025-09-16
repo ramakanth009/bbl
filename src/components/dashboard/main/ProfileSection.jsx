@@ -105,7 +105,7 @@ const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, ava
   };
 
   return (
-    <Box sx={{ mt: "auto", px: 0.5 }}>
+    <Box sx={{ mt: "auto" }}>
       {/* Profile trigger - collapsed shows only avatar with tooltip */}
       {!open && !isMobile ? (
         <Tooltip title={displayEmail || displayName} placement="right" arrow>
