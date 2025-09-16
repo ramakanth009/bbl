@@ -354,12 +354,14 @@ const useStyles = makeStyles({
     },
   },
   characterAuthor: {
-    fontSize: '11px !important', // REDUCED from 12px
+    fontSize: '11px !important',
     color: '#ffffff',
-    marginBottom: '0px !important', // REMOVED margin since category moved out
+    marginBottom: '0px !important',
     whiteSpace: 'normal',
     overflowWrap: 'break-word',
     wordBreak: 'break-word',
+    fontFamily: '"Raleway", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important',
+    fontWeight: '500 !important',
     '@media (max-width: 1200px)': {
       fontSize: '10px !important', // REDUCED from 11px
     },
@@ -390,6 +392,7 @@ const useStyles = makeStyles({
     background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
     border: '1px solid rgba(99, 102, 241, 0.3)',
     color: '#ffffff',
+    fontStyle: 'italic',
     fontSize: '8px !important', // FURTHER REDUCED from 9px
     height: '18px !important', // FURTHER REDUCED from 20px
     borderRadius: '9px !important', // ADJUSTED for new height
