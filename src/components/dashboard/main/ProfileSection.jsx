@@ -38,15 +38,13 @@ const hsl = (h, s, l) => `hsl(${h}, ${s}%, ${l}%)`;
 
 const generateAvatarStyle = (key) => {
   const hash = hashCode(key || "default");
-  const h1 = hash % 360;
-  const h2 = (hash * 3) % 360;
-  const s1 = 75;
-  const s2 = 80;
-  const l1 = 48;
-  const l2 = 38;
-  const background = `linear-gradient(135deg, ${hsl(h1, s1, l1)} 0%, ${hsl(h2, s2, l2)} 100%)`;
-  // Use light text for strong, saturated gradients
-  const color = "#fff";
+  // Derive a single solid color from the hash (no gradients)
+  const h = hash % 360;      // hue
+  const s = 65;              // saturation
+  const l = 45;              // lightness
+  const background = hsl(h, s, l);
+  // Choose text color based on lightness for contrast
+  const color = l < 50 ? "#fff" : "#111";
   return { background, color };
 };
 
