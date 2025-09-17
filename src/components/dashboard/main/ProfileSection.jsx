@@ -12,7 +12,8 @@ import {
   MenuItem,
   Divider,
   ListItemIcon,
-  Button
+  Button,
+  Collapse
 } from "@mui/material";
 import {
   HelpOutline,
@@ -21,6 +22,8 @@ import {
   Article,
   Policy,
   ExpandMore,
+  KeyboardArrowDown,
+  KeyboardArrowUp
 } from "@mui/icons-material";
 
 // Deterministic avatar color generation based on a stable identifier (email/name)
@@ -52,6 +55,7 @@ const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, ava
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const [helpAnchorEl, setHelpAnchorEl] = useState(null);
   const [helpMenuOpen, setHelpMenuOpen] = useState(false);
+  const [helpAccordionOpen, setHelpAccordionOpen] = useState(false);
   const helpCloseTimerRef = useRef(null);
 
   const avatarKey = displayEmail || displayName || avatarInitials || "user";
@@ -65,6 +69,7 @@ const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, ava
     setProfileAnchorEl(null);
     setHelpAnchorEl(null);
     setHelpMenuOpen(false);
+    setHelpAccordionOpen(false);
     if (helpCloseTimerRef.current) {
       clearTimeout(helpCloseTimerRef.current);
       helpCloseTimerRef.current = null;
@@ -72,12 +77,18 @@ const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, ava
   };
 
   const handleOpenHelpMenu = (event) => {
-    setHelpAnchorEl(event?.currentTarget || null);
-    if (helpCloseTimerRef.current) {
-      clearTimeout(helpCloseTimerRef.current);
-      helpCloseTimerRef.current = null;
+    if (isMobile) {
+      // On mobile, toggle accordion
+      setHelpAccordionOpen(!helpAccordionOpen);
+    } else {
+      // On desktop, show submenu
+      setHelpAnchorEl(event?.currentTarget || null);
+      if (helpCloseTimerRef.current) {
+        clearTimeout(helpCloseTimerRef.current);
+        helpCloseTimerRef.current = null;
+      }
+      setHelpMenuOpen(true);
     }
-    setHelpMenuOpen(true);
   };
 
   const handleCloseHelpMenu = () => {
@@ -236,18 +247,68 @@ const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, ava
           Blog
         </MenuItem>
 
-        {/* Help with submenu */}
+        {/* Help - Accordion style on mobile, submenu on desktop */}
         <MenuItem
-          onMouseEnter={handleOpenHelpMenu}
-          onMouseLeave={handleCloseHelpMenu}
-          sx={{ "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)" } }}
+          onClick={isMobile ? handleOpenHelpMenu : undefined}
+          onMouseEnter={!isMobile ? handleOpenHelpMenu : undefined}
+          onMouseLeave={!isMobile ? handleCloseHelpMenu : undefined}
+          sx={{ 
+            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)" },
+            ...(isMobile && helpAccordionOpen && { backgroundColor: "rgba(255, 255, 255, 0.08)" })
+          }}
         >
           <ListItemIcon>
             <HelpOutline fontSize="small" />
           </ListItemIcon>
           Help
-          <ChevronRight sx={{ marginLeft: "auto", fontSize: 18, color: "#9ca3af" }} />
+          {isMobile ? (
+            helpAccordionOpen ? 
+              <KeyboardArrowUp sx={{ marginLeft: "auto", fontSize: 18, color: "#9ca3af" }} /> :
+              <KeyboardArrowDown sx={{ marginLeft: "auto", fontSize: 18, color: "#9ca3af" }} />
+          ) : (
+            <ChevronRight sx={{ marginLeft: "auto", fontSize: 18, color: "#9ca3af" }} />
+          )}
         </MenuItem>
+
+        {/* Help submenu items - Accordion style on mobile */}
+        {isMobile && (
+          <Collapse in={helpAccordionOpen} timeout={200}>
+            <Box sx={{ backgroundColor: "rgba(255, 255, 255, 0.02)" }}>
+              <MenuItem
+                component={Link}
+                to="/faq"
+                onClick={handleCloseProfileMenu}
+                sx={{
+                  pl: 5,
+                  fontSize: '14px',
+                  margin: "0 8px",
+                  marginLeft: "16px",
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: '36px' }}>
+                  <HelpOutline fontSize="small" />
+                </ListItemIcon>
+                FAQs
+              </MenuItem>
+              <MenuItem
+                component={Link}
+                to="/terms"
+                onClick={handleCloseProfileMenu}
+                sx={{
+                  pl: 5,
+                  fontSize: '14px',
+                  margin: "0 8px",
+                  marginLeft: "16px",
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: '36px' }}>
+                  <Policy fontSize="small" />
+                </ListItemIcon>
+                Terms & Policies
+              </MenuItem>
+            </Box>
+          </Collapse>
+        )}
 
         <Divider sx={{ my: 0.5 }} />
 
@@ -265,72 +326,76 @@ const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, ava
         </MenuItem>
       </Menu>
 
-      {/* Help submenu */}
-      <Menu
-        anchorEl={helpAnchorEl}
-        open={helpMenuOpen}
-        onClose={handleCloseHelpMenu}
-        disableAutoFocusItem
-        disableAutoFocus
-        disableEnforceFocus
-        MenuListProps={{
-          onMouseEnter: handleHelpMenuEnter,
-          onMouseLeave: handleHelpMenuLeave,
-        }}
-        PaperProps={{
-          sx: {
-            width: "200px",
-            maxHeight: "300px",
-            background: "rgba(26, 26, 26, 0.95)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid rgba(99, 102, 241, 0.2)",
-            borderRadius: "12px",
-            overflow: "hidden",
-            "& .MuiMenu-list": {
-              padding: "8px 0",
-            },
-            "& .MuiMenuItem-root": {
-              padding: "8px 16px",
-              margin: "0 8px",
-              borderRadius: "6px",
-              "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.08)",
+      {/* Help submenu - Only for desktop */}
+      {!isMobile && (
+        <Menu
+          anchorEl={helpAnchorEl}
+          open={helpMenuOpen}
+          onClose={handleCloseHelpMenu}
+          disableAutoFocusItem
+          disableAutoFocus
+          disableEnforceFocus
+          MenuListProps={{
+            onMouseEnter: handleHelpMenuEnter,
+            onMouseLeave: handleHelpMenuLeave,
+          }}
+          PaperProps={{
+            sx: {
+              width: "200px",
+              maxHeight: "300px",
+              background: "rgba(26, 26, 26, 0.95)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(99, 102, 241, 0.2)",
+              borderRadius: "12px",
+              overflow: "hidden",
+              "& .MuiMenu-list": {
+                padding: "8px 0",
+              },
+              "& .MuiMenuItem-root": {
+                padding: "8px 16px",
+                margin: "0 8px",
+                borderRadius: "6px",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.08)",
+                },
               },
             },
-          },
-        }}
-        anchorOrigin={{ horizontal: "right", vertical: "top" }}
-        transformOrigin={{ horizontal: "left", vertical: "top" }}
-        sx={fixedBottomMenu ? {
-          pointerEvents: "none",
-          "& .MuiPaper-root": {
-            pointerEvents: "auto",
-            position: "fixed",
-            bottom: "100px",
-            top: "auto !important",
-            margin: 0,
-          },
-        } : {}}
-      >
-        <MenuItem onClick={handleCloseHelpMenu}
-        component={Link}
-        to="/faq"
+          }}
+          anchorOrigin={{ horizontal: "right", vertical: "top" }}
+          transformOrigin={{ horizontal: "left", vertical: "top" }}
+          sx={fixedBottomMenu ? {
+            pointerEvents: "none",
+            "& .MuiPaper-root": {
+              pointerEvents: "auto",
+              position: "fixed",
+              bottom: "100px",
+              top: "auto !important",
+              margin: 0,
+            },
+          } : {}}
         >
-          <ListItemIcon>
-            <HelpOutline fontSize="small" />
-          </ListItemIcon>
-          FAQs
-        </MenuItem>
-        <MenuItem onClick={handleCloseHelpMenu}
-        component={Link}
-        to="/terms"
-        >
-          <ListItemIcon>
-            <Policy fontSize="small" />
-          </ListItemIcon>
-          Terms & Policies
-        </MenuItem>
-      </Menu>
+          <MenuItem
+            onClick={handleCloseHelpMenu}
+            component={Link}
+            to="/faq"
+          >
+            <ListItemIcon>
+              <HelpOutline fontSize="small" />
+            </ListItemIcon>
+            FAQs
+          </MenuItem>
+          <MenuItem
+            onClick={handleCloseHelpMenu}
+            component={Link}
+            to="/terms"
+          >
+            <ListItemIcon>
+              <Policy fontSize="small" />
+            </ListItemIcon>
+            Terms & Policies
+          </MenuItem>
+        </Menu>
+      )}
     </Box>
   );
 };
