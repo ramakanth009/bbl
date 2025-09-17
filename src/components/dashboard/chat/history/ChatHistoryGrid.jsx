@@ -856,16 +856,6 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
     }
   };
 
-  const getSessionDuration = (session) => {
-    if (session.duration) return session.duration;
-    const durations = ['5 min', '12 min', '23 min', '45 min', '1 hr 15 min'];
-    return durations[Math.floor(Math.random() * durations.length)];
-  };
-
-  const getMessageCount = (session) => {
-    if (session.message_count) return session.message_count;
-    return Math.floor(Math.random() * 20) + 5;
-  };
 
   const groupSessionsByDate = (sessions) => {
     return sessions.reduce((acc, session) => {
@@ -931,47 +921,32 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
                       gap: 0.5
                     }}
                   >
-                    <span>#{String(session.session_id).substring(0, 6)}</span>
-                    {session.primary_language && (
-                      <Chip 
-                        label={session.primary_language.toUpperCase()}
-                        size="small"
-                        sx={{
-                          height: 18,
-                          fontSize: '0.6rem',
-                          fontWeight: 600,
-                          color: '#fff',
-                          bgcolor: 'rgba(99, 102, 241, 0.2)',
-                          '& .MuiChip-label': {
-                            px: 0.5,
-                            py: 0.25
-                          }
-                        }}
-                      />
-                    )}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <span>#{String(session.session_id).substring(0, 6)}</span>
+                      {session.primary_language && (
+                        <Chip 
+                          icon={<Translate style={{ fontSize: '10px' }} />}
+                          label={session.primary_language.toUpperCase()}
+                          size="small"
+                          sx={{
+                            height: 18,
+                            fontSize: '0.6rem',
+                            fontWeight: 600,
+                            color: '#fff',
+                            bgcolor: 'rgba(99, 102, 241, 0.2)',
+                            '& .MuiChip-label': {
+                              px: 0.5,
+                              py: 0.25
+                            }
+                          }}
+                        />
+                      )}
+                    </Box>
                   </Typography>
                 </Box>
               </Box>
             </Box>
             <Box className={classes.sessionMeta}>
-              <Box className={classes.metaRow}>
-                <AccessTime fontSize="inherit" />
-                <span>{getSessionDuration(session)}</span>
-                <Chip 
-                  icon={<MessageOutlined style={{ fontSize: '12px' }} />}
-                  label={`${getMessageCount(session)} messages`}
-                  size="small"
-                  className={classes.metaChip}
-                />
-                {session.primary_language && (
-                  <Chip 
-                    icon={<Translate style={{ fontSize: '10px' }} />}
-                    label={session.primary_language.toUpperCase()}
-                    size="small"
-                    className={classes.languageChip}
-                  />
-                )}
-              </Box>
               {/* Arrange timestamp left, Resume Chat button right in one row */}
               <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
                 <Box display="flex" alignItems="center" gap={1}>
