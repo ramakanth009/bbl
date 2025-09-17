@@ -668,18 +668,6 @@ const CategoryPage = ({ onSidebarToggle }) => {
     }
   }, [location?.state?.resetSearch]);
 
-  // ADDITIONAL: Reset search when navigating within same category (URL change without categoryKey change)
-  useEffect(() => {
-    // Check if we're navigating to the same category without search params (category reset)
-    const urlParams = new URLSearchParams(location.search);
-    const hasSearchParams = urlParams.has(`category-${categoryKey}_q`);
-    
-    if (!hasSearchParams && (isSearching || searchQuery)) {
-      console.log('🔄 URL params cleared, resetting search state');
-      setSearchResetTrigger(prev => prev + 1);
-    }
-  }, [location.search, categoryKey, isSearching, searchQuery]);
-
   // Handle URL-based chat opening with navigation state priority
   useEffect(() => {
     console.log('🔍 Category URL Effect - characterId:', characterId, 'characters.length:', characters.length);
