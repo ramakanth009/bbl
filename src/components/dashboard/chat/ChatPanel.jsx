@@ -6,6 +6,7 @@ import {
   Avatar,
   Alert,
   Chip,
+  Tooltip,
 } from "@mui/material";
 import {
   ArrowBack,
@@ -220,14 +221,19 @@ const useStyles = makeStyles(() => ({
       border: "1px solid rgba(99, 102, 241, 0.2)",
       transition: "all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
       "&:hover": {
-        background:
-          "linear-gradient(145deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1))",
-        borderColor: "rgba(99, 102, 241, 0.6)",
+        background: "#6366f1 !important",
+        color: "#ffffff !important",
+        borderColor: "transparent !important",
         transform: "translateY(-2px)",
         boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
       },
       "&:active": {
         transform: "translateY(0)",
+      },
+    },
+    "& .MuiIconButton-root.closeDangerButton": {
+      "&:hover": {
+        background: "#dc2626 !important",
       },
     },
     // WhatsApp-style mobile icons
@@ -280,9 +286,9 @@ const useStyles = makeStyles(() => ({
     border: "1px solid rgba(99, 102, 241, 0.2) !important",
     transition: "all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important",
     "&:hover": {
-      background:
-        "linear-gradient(145deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1)) !important",
-      borderColor: "rgba(99, 102, 241, 0.6)",
+      background: "#6366f1 !important",
+      color: "#ffffff !important",
+      border: "none !important",
       transform: "translateY(-2px)",
       boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
     },
@@ -472,6 +478,15 @@ const useStyles = makeStyles(() => ({
   // Desktop-only buttons
   desktopOnlyButton: {
     "@media (max-width: 600px)": {
+      display: "none !important",
+    },
+  },
+  // Mobile-only generic button/display helper
+  mobileOnlyButton: {
+    "@media (max-width: 600px)": {
+      display: "flex !important",
+    },
+    "@media (min-width: 601px)": {
       display: "none !important",
     },
   },
@@ -943,21 +958,9 @@ const ChatPanel = ({
   const loadUserSessions = async () => {
     try {
       const userSessions = await apiService.getSessions();
-      // Filter and validate sessions for the current character
-      const characterSessions = userSessions.filter(session => 
-        session && 
-        session.character === character.name &&
-        session.character_img &&
-        session.primary_language
-      ).map(session => ({
-        ...session,
-        // Ensure all required fields have default values
-        character: session.character || 'Unknown Character',
-        character_img: session.character_img || '',
-        primary_language: session.primary_language || 'en',
-        created_at: session.created_at || new Date().toISOString()
-      }));
-      
+      const characterSessions = userSessions.filter(
+        (s) => s.character === character.name
+      );
       setSessions(characterSessions);
     } catch (error) {
       console.error("Failed to load sessions:", error);
@@ -1363,14 +1366,16 @@ const ChatPanel = ({
           </Box>
 
           <Box className={classes.chatHeaderRight}>
-            {/* Share Button - Desktop */}
-            <ShareButton 
-              character={character} 
-              section="discover" 
-              size="medium"
-              variant="icon"
-            />
-            
+            {/* New Chat - Desktop */}
+            <Tooltip title="New Chat" placement="bottom" arrow>
+              <IconButton
+                onClick={startNewSession}
+                className={classes.desktopOnlyButton}
+                aria-label="Start new chat"
+              >
+                <Add />
+              </IconButton>
+            </Tooltip>
             {/* Desktop buttons - hidden on mobile */}
             <Box
               onClick={handleHistoryToggle}
@@ -1387,64 +1392,31 @@ const ChatPanel = ({
                 }
               }}
             >
-              
-              <IconButton
-                className="history-icon"
-                sx={{
-                  color: "text.secondary",
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "12px",
-                  background:
-                    "linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(42, 42, 42, 0.8))",
-                  border: "1px solid rgba(99, 102, 241, 0.2)",
-                  transition: "all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                  "&:hover": {
+              <Tooltip title="Chat History" placement="bottom" arrow>
+                <IconButton
+                  className="history-icon"
+                  sx={{
+                    color: "text.secondary",
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "12px",
                     background:
-                      "linear-gradient(145deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1))",
-                    borderColor: "rgba(99, 102, 241, 0.6)",
-                    transform: "translateY(-2px)",
-                    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
-                  },
-                  "&:active": {
-                    transform: "translateY(0)",
-                  },
-                }}
-              >
-                
-                <HistoryIcon />
-              </IconButton>
-              <Box
-                className="speech-bubble"
-                sx={{
-                  position: 'relative',
-                  background: theme => theme.palette.primary.main,
-                  color: 'white',
-                  padding: '6px 12px',
-                  borderRadius: '12px',
-                  fontSize: '0.75rem',
-                  fontWeight: 500,
-                  whiteSpace: 'nowrap',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  marginBottom: '8px',
-                  '&:after': {
-                    content: '""',
-                    position: 'absolute',
-                    bottom: '-5px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: 0,
-                    height: 0,
-                    borderLeft: '6px solid transparent',
-                    borderRight: '6px solid transparent',
-                    borderTop: `6px solid ${theme => theme.palette.primary.main}`,
-                  },
-                  animation: 'bounce 2s infinite',
-                  transform: 'translateY(0)'
-                }}
-              >
-                History
-              </Box>
+                      "linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(42, 42, 42, 0.8))",
+                    border: "1px solid rgba(99, 102, 241, 0.2)",
+                    transition: "all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                    "&:hover": {
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
+                    },
+                    "&:active": {
+                      transform: "translateY(0)",
+                    },
+                  }}
+                  aria-label="Open chat history"
+                >
+                  <HistoryIcon />
+                </IconButton>
+              </Tooltip>
             </Box>
 
             <Box
@@ -1460,62 +1432,41 @@ const ChatPanel = ({
                 }
               }}
             >
-              
-              <Box className="language-selector">
-                <LanguageSelector
-                  currentLanguage={language}
-                  mode="single"
-                  compact={true}
-                  onLanguageChange={handleLanguageChange}
-                  title="Language Settings"
-                />
-              </Box>
-              <Box
-                className="speech-bubble"
-                sx={{
-                  position: 'relative',
-                  background: theme => theme.palette.primary.main,
-                  color: 'white',
-                  padding: '6px 12px',
-                  borderRadius: '12px',
-                  fontSize: '0.75rem',
-                  fontWeight: 500,
-                  whiteSpace: 'nowrap',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  marginBottom: '8px',
-                  '&:after': {
-                    content: '""',
-                    position: 'absolute',
-                    bottom: '-5px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: 0,
-                    height: 0,
-                    borderLeft: '6px solid transparent',
-                    borderRight: '6px solid transparent',
-                    borderTop: `6px solid ${theme => theme.palette.primary.main}`,
-                  },
-                  animation: 'bounce 2s infinite',
-                  transform: 'translateY(0)'
-                }}
-              >
-                Language
-              </Box>
+              <Tooltip title={`Language: ${language}`} placement="bottom" arrow>
+                <Box className="language-selector">
+                  <LanguageSelector
+                    currentLanguage={language}
+                    mode="single"
+                    compact={true}
+                    onLanguageChange={handleLanguageChange}
+                    title="Language Settings"
+                  />
+                </Box>
+              </Tooltip>
             </Box>
 
-            
-            <IconButton 
-              onClick={onClose} 
-              sx={{ 
-                color: "text.secondary",
-                display: { xs: 'none', sm: 'none', md: 'flex' } // Show only on desktop
-              }}
-              className={classes.desktopOnlyButton}
-            >
-              <Close />
-            </IconButton>
+            {/* Share Button - Desktop (moved next to Close) */}
+            <ShareButton 
+              character={character} 
+              section="discover" 
+              size="medium"
+              variant="icon"
+            />
 
-            {/* Mobile menu button - WhatsApp style three dots */}
+            <Tooltip title="Close" placement="bottom" arrow>
+              <IconButton 
+                onClick={onClose} 
+                sx={{ 
+                  color: "text.secondary",
+                  display: { xs: 'none', sm: 'none', md: 'flex' } // Show only on desktop
+                }}
+                className={`${classes.desktopOnlyButton} closeDangerButton`}
+                aria-label="Close chat"
+              >
+                <Close />
+              </IconButton>
+            </Tooltip>
+
             <IconButton
               onClick={handleMobileMenuToggle}
               sx={{ color: "text.secondary" }}
@@ -1585,7 +1536,6 @@ const ChatPanel = ({
               <Typography variant="body2">Chat History</Typography>
             </IconButton>
             
-            {/* Language accordion dropdown */}
             <IconButton
               onClick={() => {
                 console.log("[Mobile] Language dropdown toggle clicked");
@@ -1613,7 +1563,6 @@ const ChatPanel = ({
               </Box>
             </IconButton>
             
-            {/* Language options - accordion style */}
             {showLanguageDropdown && (
               <Box sx={{ 
                 ml: 2, 
@@ -1684,26 +1633,29 @@ const ChatPanel = ({
             </IconButton>
             
             <Box sx={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)", mt: 1, pt: 1 }}>
-              <IconButton
-                onClick={() => {
-                  onClose();
-                  setShowMobileMenu(false);
-                }}
-                sx={{
-                  width: "100%",
-                  justifyContent: "flex-start",
-                  gap: 2,
-                  p: 1.5,
-                  borderRadius: "6px",
-                  color: "#ef4444",
-                  "&:hover": {
-                    background: "rgba(239, 68, 68, 0.1)",
-                  },
-                }}
-              >
-                <Close fontSize="small" />
-                <Typography variant="body2">Close Chat</Typography>
-              </IconButton>
+              <Tooltip title="Close Chat" placement="left" arrow>
+                <IconButton
+                  onClick={() => {
+                    onClose();
+                    setShowMobileMenu(false);
+                  }}
+                  sx={{
+                    width: "100%",
+                    justifyContent: "flex-start",
+                    gap: 2,
+                    p: 1.5,
+                    borderRadius: "6px",
+                    color: "#ef4444",
+                    "&:hover": {
+                      background: "rgba(239, 68, 68, 0.1)",
+                    },
+                  }}
+                  aria-label="Close chat"
+                >
+                  <Close fontSize="small" />
+                  <Typography variant="body2">Close Chat</Typography>
+                </IconButton>
+              </Tooltip>
             </Box>
           </Box>
         </Box>
@@ -1832,10 +1784,6 @@ const ChatPanel = ({
                 transform: 'scale(1.1)'
               },
               "@media (max-width: 600px)": {
-                // Hide speech bubble on mobile for cleaner look
-                '& .speech-bubble': {
-                  display: 'none',
-                },
                 // Smaller new chat button on mobile
                 '& .plus-icon': {
                   width: '36px !important',
@@ -1843,38 +1791,8 @@ const ChatPanel = ({
                 },
               },
             }}
+            className={classes.mobileOnlyButton}
           >
-          <Box
-            className="speech-bubble"
-            sx={{
-              position: 'relative',
-              background: theme => theme.palette.primary.main,
-              color: 'white',
-              padding: '6px 12px',
-              borderRadius: '12px',
-              fontSize: '0.75rem',
-              fontWeight: 500,
-              whiteSpace: 'nowrap',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              marginBottom: '8px',
-              '&:after': {
-                content: '""',
-                position: 'absolute',
-                bottom: '-5px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: 0,
-                height: 0,
-                borderLeft: '6px solid transparent',
-                borderRight: '6px solid transparent',
-                borderTop: `6px solid ${theme => theme.palette.primary.main}`,
-              },
-              animation: 'bounce 2s infinite',
-              transform: 'translateY(0)'
-            }}
-          >
-            New Chat
-          </Box>
             <IconButton
               className="plus-icon"
               sx={{
@@ -1891,19 +1809,6 @@ const ChatPanel = ({
             >
               <Add />
             </IconButton>
-            <style jsx global>{`
-              @keyframes bounce {
-                0%, 20%, 50%, 80%, 100% {
-                  transform: translateY(0);
-                }
-                40% {
-                  transform: translateY(-5px);
-                }
-                60% {
-                  transform: translateY(-3px);
-                }
-              }
-            `}</style>
           </Box>
         </Box>
       </Box>
