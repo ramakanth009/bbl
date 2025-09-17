@@ -289,7 +289,21 @@ const ChatModal = ({ open, character, onClose }) => {
   const loadUserSessions = async () => {
     try {
       const userSessions = await apiService.getSessions();
-      const characterSessions = userSessions.filter(s => s.character === character.name);
+      // Filter and validate sessions for the current character
+      const characterSessions = userSessions.filter(session => 
+        session && 
+        session.character === character.name &&
+        session.character_img &&
+        session.primary_language
+      ).map(session => ({
+        ...session,
+        // Ensure all required fields have default values
+        character: session.character || 'Unknown Character',
+        character_img: session.character_img || '',
+        primary_language: session.primary_language || 'en',
+        created_at: session.created_at || new Date().toISOString()
+      }));
+      
       setSessions(characterSessions);
     } catch (error) {
       console.error('Failed to load sessions:', error);

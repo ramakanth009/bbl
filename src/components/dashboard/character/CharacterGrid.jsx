@@ -740,8 +740,30 @@ const CharacterGrid = ({ onCharacterClick, activeSection, onSessionOpen }) => {
   };
 
   const loadChatHistory = async () => {
-    const userSessions = await apiService.getSessions();
-    setSessions(userSessions);
+    try {
+      const userSessions = await apiService.getSessions();
+      // Filter and validate sessions
+      const validSessions = userSessions.filter(session => 
+        session && 
+        typeof session === 'object' &&
+        session.session_id &&
+        session.character &&
+        session.character_img &&
+        session.primary_language &&
+        session.created_at
+      ).map(session => ({
+        ...session,
+        // Ensure all required fields have default values
+        character: session.character || 'Unknown Character',
+        character_img: session.character_img || '',
+        primary_language: session.primary_language || 'en',
+        created_at: session.created_at || new Date().toISOString()
+      }));
+      
+      setSessions(validSessions);
+    } catch (error) {
+      console.error('Failed to load chat history:', error);
+    }
   };
 
   const handleCharacterCreated = (newCharacter) => {

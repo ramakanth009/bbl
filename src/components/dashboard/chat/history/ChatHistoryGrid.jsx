@@ -683,8 +683,21 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
   }
 
   const validSessions = sessions.filter(session => 
-    session.character && session.session_id && session.created_at
-  );
+    session && 
+    typeof session === 'object' &&
+    session.session_id &&
+    session.character &&
+    session.character_img &&
+    session.primary_language &&
+    session.created_at
+  ).map(session => ({
+    ...session,
+    // Ensure all required fields have default values if missing
+    character: session.character || 'Unknown Character',
+    character_img: session.character_img || '',
+    primary_language: session.primary_language || 'en',
+    created_at: session.created_at || new Date().toISOString()
+  }));
 
   if (validSessions.length === 0) {
     return (
@@ -844,11 +857,13 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
   };
 
   const getSessionDuration = (session) => {
+    if (session.duration) return session.duration;
     const durations = ['5 min', '12 min', '23 min', '45 min', '1 hr 15 min'];
     return durations[Math.floor(Math.random() * durations.length)];
   };
 
   const getMessageCount = (session) => {
+    if (session.message_count) return session.message_count;
     return Math.floor(Math.random() * 20) + 5;
   };
 
@@ -878,15 +893,62 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
           <CardContent className={classes.cardContent}>
             <Box className={classes.sessionHeader}>
               <Box className={classes.sessionInfo}>
-                <Avatar className={classes.characterAvatar}>
-                  <Chat fontSize="small" sx={{ color: '#ffffff' }} />
+                <Avatar 
+                  src={session.character_img}
+                  alt={session.character}
+                  className={classes.characterAvatar}
+                  sx={{ 
+                    background: session.character_img ? 'transparent' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    '& .MuiAvatar-img': {
+                      objectFit: 'cover',
+                      width: '100%',
+                      height: '100%'
+                    }
+                  }}
+                >
+                  {!session.character_img && (
+                    <Chat fontSize="small" sx={{ color: '#ffffff' }} />
+                  )}
                 </Avatar>
                 <Box>
-                  <Typography className={classes.sessionTitle}>
+                  <Typography 
+                    className={classes.sessionTitle}
+                    sx={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 1,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}
+                  >
                     {session.character}
                   </Typography>
-                  <Typography className={classes.characterName}>
-                    Session {String(session.session_id).substring(0, 8)}
+                  <Typography 
+                    className={classes.characterName}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5
+                    }}
+                  >
+                    <span>#{String(session.session_id).substring(0, 6)}</span>
+                    {session.primary_language && (
+                      <Chip 
+                        label={session.primary_language.toUpperCase()}
+                        size="small"
+                        sx={{
+                          height: 18,
+                          fontSize: '0.6rem',
+                          fontWeight: 600,
+                          color: '#fff',
+                          bgcolor: 'rgba(99, 102, 241, 0.2)',
+                          '& .MuiChip-label': {
+                            px: 0.5,
+                            py: 0.25
+                          }
+                        }}
+                      />
+                    )}
                   </Typography>
                 </Box>
               </Box>

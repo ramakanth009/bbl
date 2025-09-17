@@ -767,10 +767,28 @@ class ApiService {
     async getSessions() {
         try {
             const response = await this.client.get('/get_sessions');
-            // Filter and clean the sessions data
-            const sessions = response.data.sessions || response.data || [];
+            // Ensure we have a valid response with sessions array
+            const sessions = Array.isArray(response.data) 
+                ? response.data 
+                : (response.data?.sessions || []);
+                
             return sessions
-                .filter((session) => session && session.character && session.session_id)
+                .filter(session => 
+                    session && 
+                    typeof session === 'object' &&
+                    session.session_id &&
+                    session.character &&
+                    session.character_img &&
+                    session.primary_language &&
+                    session.created_at
+                )
+                .map(session => ({
+                    session_id: session.session_id,
+                    character: session.character,
+                    character_img: session.character_img,
+                    primary_language: session.primary_language,
+                    created_at: session.created_at
+                }))
                 .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         } catch (error) {
             console.error('Failed to load sessions:', error);
@@ -786,10 +804,31 @@ class ApiService {
                     per_page: perPage,
                 },
             });
-            const sessions = response.data.sessions || response.data || [];
+
+            // Handle both array and object responses
+            const sessions = Array.isArray(response.data)
+                ? response.data
+                : (response.data?.sessions || []);
+
             const validSessions = sessions
-                .filter((session) => session && session.character && session.session_id)
+                .filter(session => 
+                    session && 
+                    typeof session === 'object' &&
+                    session.session_id &&
+                    session.character &&
+                    session.character_img &&
+                    session.primary_language &&
+                    session.created_at
+                )
+                .map(session => ({
+                    session_id: session.session_id,
+                    character: session.character,
+                    character_img: session.character_img,
+                    primary_language: session.primary_language,
+                    created_at: session.created_at
+                }))
                 .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
             return {
                 sessions: validSessions,
                 page: response.data.page || 1,
@@ -797,6 +836,7 @@ class ApiService {
                 total_count: response.data.total_count || validSessions.length,
             };
         } catch (error) {
+            console.error('Failed to load paginated sessions:', error);
             throw this.handleError(error, 'Failed to load sessions');
         }
     }

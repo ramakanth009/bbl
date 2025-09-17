@@ -163,14 +163,33 @@ const SessionsManager = ({ open, onClose, onSessionSelect }) => {
     try {
       setLoading(true);
       const userSessions = await apiService.getSessions();
-      setSessions(userSessions);
+      
+      // Filter and validate sessions
+      const validSessions = userSessions.filter(session => 
+        session && 
+        typeof session === 'object' &&
+        session.session_id &&
+        session.character &&
+        session.character_img &&
+        session.primary_language &&
+        session.created_at
+      );
+      
+      setSessions(validSessions);
       
       // Group sessions by character
-      const grouped = userSessions.reduce((acc, session) => {
+      const grouped = validSessions.reduce((acc, session) => {
         if (!acc[session.character]) {
           acc[session.character] = [];
         }
-        acc[session.character].push(session);
+        acc[session.character].push({
+          ...session,
+          // Ensure all required fields have default values
+          character: session.character || 'Unknown Character',
+          character_img: session.character_img || '',
+          primary_language: session.primary_language || 'en',
+          created_at: session.created_at || new Date().toISOString()
+        });
         return acc;
       }, {});
       
