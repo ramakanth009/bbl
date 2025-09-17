@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Box, 
   Tab, 
   Tabs, 
-  IconButton, 
   Typography, 
-  Menu, 
-  MenuItem,
   Chip,
   useTheme,
   useMediaQuery
@@ -17,17 +14,16 @@ import {
   Whatshot,
   Favorite,
   Schedule,
-  History,
   MoreVert,
   Menu as MenuIcon,
   Search,
   LocationOn,
-  Logout,
   ChatBubbleOutline
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useCategories } from '../../../context/CategoriesContext';
 import { useAuth } from '../../../context/AuthContext';
+import ProfileSection from './ProfileSection';
 
 const useStyles = makeStyles({
   topBar: {
@@ -75,7 +71,7 @@ const useStyles = makeStyles({
     marginLeft: 'auto !important',
     display: 'flex !important',
     alignItems: 'center !important',
-    gap: '4px !important',
+    gap: '8px !important',
   },
   actionButton: {
     color: '#9ca3af !important',
@@ -159,8 +155,19 @@ const TopBar = ({ activeSection, onSectionChange, onMenuToggle, onSearchToggle }
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { categories, loading } = useCategories();
-  const { logout } = useAuth();
+  const { logout, getUserInfo } = useAuth();
   const [menuAnchor, setMenuAnchor] = useState(null);
+
+  // Prepare user display details for ProfileSection
+  const userInfo = getUserInfo ? getUserInfo() : null;
+  const displayName = userInfo?.username || userInfo?.name || userInfo?.email || 'User';
+  const displayEmail = userInfo?.email || '';
+  const avatarInitials = (displayName || 'U')
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
   const mainTabs = [
     { 
@@ -289,27 +296,25 @@ const TopBar = ({ activeSection, onSectionChange, onMenuToggle, onSearchToggle }
         </Box>
 
         <Box className={classes.headerActions}>
-          {/* <IconButton 
-            className={classes.actionButton}
-            onClick={onSearchToggle}
-          >
+          {/* Optional: search and more buttons can be re-enabled if needed */}
+          {/* <IconButton className={classes.actionButton} onClick={onSearchToggle}>
             <Search />
-          </IconButton> */}
-          
-          {/* <IconButton 
-            className={classes.actionButton}
-            onClick={handleMenuOpen}
-          >
+          </IconButton>
+          <IconButton className={classes.actionButton} onClick={handleMenuOpen}>
             <MoreVert />
           </IconButton> */}
-          <IconButton 
-            className={classes.actionButton}
-            onClick={logout}
-            aria-label="Logout"
-          >
-            <History sx={{ display: 'none' }} /> {/* Just to keep icon order, can be removed */}
-            <Logout />
-          </IconButton>
+
+          {/* Profile menu trigger for mobile */}
+          <ProfileSection
+            open={false}
+            isMobile={true}
+            logout={logout}
+            displayEmail={displayEmail}
+            displayName={displayName}
+            avatarInitials={avatarInitials}
+            compact={true}
+            fixedBottomMenu={false}
+          />
         </Box>
       </Box>
 

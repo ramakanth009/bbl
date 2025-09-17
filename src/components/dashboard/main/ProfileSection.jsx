@@ -48,7 +48,7 @@ const generateAvatarStyle = (key) => {
   return { background, color };
 };
 
-const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, avatarInitials }) => {
+const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, avatarInitials, compact = false, fixedBottomMenu = true }) => {
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const [helpAnchorEl, setHelpAnchorEl] = useState(null);
   const [helpMenuOpen, setHelpMenuOpen] = useState(false);
@@ -103,10 +103,10 @@ const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, ava
   };
 
   return (
-    <Box sx={{ mt: "auto" }}>
-      {/* Profile trigger - collapsed shows only avatar with tooltip */}
-      {!open && !isMobile ? (
-        <Tooltip title={displayEmail || displayName} placement="right" arrow>
+    <Box sx={{ mt: compact ? 0 : "auto" }}>
+      {/* Profile trigger */}
+      {(compact || (!open && !isMobile)) ? (
+        <Tooltip title={displayEmail || displayName} placement={compact ? "bottom" : "right"} arrow>
           <IconButton
             onClick={handleOpenProfileMenu}
             sx={{
@@ -205,14 +205,14 @@ const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, ava
         }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        sx={{
+        sx={fixedBottomMenu ? {
           "& .MuiPaper-root": {
             position: "fixed",
             bottom: "100px",
             top: "auto !important",
             margin: 0,
           },
-        }}
+        } : undefined}
       >
         {/* Header with email */}
         <Box sx={{ px: 2, pt: 1.5, pb: 1 }}>
@@ -301,7 +301,7 @@ const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, ava
         }}
         anchorOrigin={{ horizontal: "right", vertical: "top" }}
         transformOrigin={{ horizontal: "left", vertical: "top" }}
-        sx={{
+        sx={fixedBottomMenu ? {
           pointerEvents: "none",
           "& .MuiPaper-root": {
             pointerEvents: "auto",
@@ -310,7 +310,7 @@ const ProfileSection = ({ open, isMobile, logout, displayEmail, displayName, ava
             top: "auto !important",
             margin: 0,
           },
-        }}
+        } : {}}
       >
         <MenuItem onClick={handleCloseHelpMenu}
         component={Link}
