@@ -24,6 +24,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "server": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -53,5 +54,8 @@
     "transformIgnorePatterns": [
       "node_modules/(?!(axios)/)"
     ]
+  },
+  "devDependencies": {
+    "serve": "^14.2.5"
   }
 }
