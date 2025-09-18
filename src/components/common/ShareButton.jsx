@@ -14,11 +14,10 @@ import {
 import {
     Share as ShareIcon,
     Facebook as FacebookIcon,
-    Twitter as TwitterIcon,
+    X as XIcon,
     LinkedIn as LinkedInIcon,
     WhatsApp as WhatsAppIcon,
     Telegram as TelegramIcon,
-    Reddit as RedditIcon,
     Email as EmailIcon,
     ContentCopy as CopyIcon
 } from '@mui/icons-material';
@@ -53,7 +52,7 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
         return {
             copy: shareUrl,
             facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-            twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}&hashtags=BringBackLegends,AIChat`,
+            x: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}&hashtags=BringBackLegends,AIChat`,
             linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
             whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
             telegram: `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`,
@@ -95,7 +94,7 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
                     break;
                     
                 case 'facebook':
-                case 'twitter':
+                case 'x':
                 case 'linkedin':
                 case 'whatsapp':
                 case 'telegram':
@@ -137,16 +136,22 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
             color: '#666666' 
         },
         { 
+            platform: 'whatsapp', 
+            label: 'WhatsApp', 
+            icon: <WhatsAppIcon />, 
+            color: '#25D366' 
+        },
+        { 
+            platform: 'x', 
+            label: 'X', 
+            icon: <XIcon />, 
+            color: '#000000' 
+        },
+        { 
             platform: 'facebook', 
             label: 'Facebook', 
             icon: <FacebookIcon />, 
             color: '#1877F2' 
-        },
-        { 
-            platform: 'twitter', 
-            label: 'Twitter', 
-            icon: <TwitterIcon />, 
-            color: '#1DA1F2' 
         },
         { 
             platform: 'linkedin', 
@@ -155,22 +160,10 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
             color: '#0A66C2' 
         },
         { 
-            platform: 'whatsapp', 
-            label: 'WhatsApp', 
-            icon: <WhatsAppIcon />, 
-            color: '#25D366' 
-        },
-        { 
             platform: 'telegram', 
             label: 'Telegram', 
             icon: <TelegramIcon />, 
             color: '#0088CC' 
-        },
-        { 
-            platform: 'reddit', 
-            label: 'Reddit', 
-            icon: <RedditIcon />, 
-            color: '#FF4500' 
         },
         { 
             platform: 'email', 

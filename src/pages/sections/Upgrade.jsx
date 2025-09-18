@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Container } from '@mui/material';
-import UpgradePlans from '../../components/billing/UpgradePlans';
+import UpgradePlans from '../../components/extra/UpgradePlans';
 
 const Upgrade = () => {
   return (

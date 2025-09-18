@@ -1,48 +1,62 @@
-# Apache .htaccess for Create React App single-page application
-# Place in public/ so CRA copies it to the build output root.
+# Fixed .htaccess for React SPA on GoDaddy
+# This version properly excludes static assets from rewriting
 
 <IfModule mod_rewrite.c>
-  Options -MultiViews
   RewriteEngine On
-
-  # Serve existing files/directories directly
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  
+  # Don't rewrite files that actually exist
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+  
+  # Don't rewrite directories that actually exist  
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
-
-  # Otherwise, rewrite all to index.html (SPA fallback)
-  RewriteRule ^ index.html [L]
+  
+  # Don't rewrite common static file extensions
+  RewriteCond %{REQUEST_URI} \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|map|json|xml|txt|pdf)$ [NC]
+  RewriteRule ^ - [L]
+  
+  # Don't rewrite anything in the static directory
+  RewriteCond %{REQUEST_URI} ^/static/ [NC]
+  RewriteRule ^ - [L]
+  
+  # For everything else (actual routes), serve index.html
+  RewriteRule ^ /index.html [L]
 </IfModule>
 
-# Enable gzip/brotli compression if available
-<IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json application/xml image/svg+xml
-</IfModule>
-<IfModule mod_brotli.c>
-  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css application/javascript application/json application/xml image/svg+xml
+# Ensure correct MIME types for static assets
+<IfModule mod_mime.c>
+  AddType application/javascript .js
+  AddType text/css .css
+  AddType application/json .json
+  AddType image/svg+xml .svg
+  AddType font/woff .woff
+  AddType font/woff2 .woff2
 </IfModule>
 
-# Cache static assets aggressively; let CRA add content hashes to bust cache
+# Prevent caching of index.html but cache static assets
 <IfModule mod_expires.c>
   ExpiresActive On
-  ExpiresByType text/html                      "access plus 0 seconds"
-  ExpiresByType text/css                       "access plus 1 year"
-  ExpiresByType application/javascript         "access plus 1 year"
-  ExpiresByType application/json               "access plus 1 day"
-  ExpiresByType image/svg+xml                  "access plus 1 year"
-  ExpiresByType image/jpeg                     "access plus 1 year"
-  ExpiresByType image/png                      "access plus 1 year"
-  ExpiresByType image/gif                      "access plus 1 year"
-  ExpiresByType image/webp                     "access plus 1 year"
-  ExpiresByType font/woff2                     "access plus 1 year"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
 </IfModule>
 
-# Security headers (safe defaults; adjust as needed)
-<IfModule mod_headers.c>
-  Header set X-Content-Type-Options "nosniff"
-  Header set X-Frame-Options "SAMEORIGIN"
-  Header set Referrer-Policy "strict-origin-when-cross-origin"
-  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
-  # Allow SPA client-side routing
-  Header set Access-Control-Allow-Origin "*"
-</IfModule>
+# Specific cache control for index.html
+<Files "index.html">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </IfModule>
+</Files>
+
+# GoDaddy specific: Enable .htaccess override
+Options +FollowSymLinks
