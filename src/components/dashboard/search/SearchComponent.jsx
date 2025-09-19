@@ -13,7 +13,7 @@ import {
   Typography,
   CircularProgress,
 } from '@mui/material';
-import { Search as SearchIcon, Clear, TrendingUp } from '@mui/icons-material';
+import { Search as SearchIcon, Clear } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useSearchPersistence } from '../../../hooks/usePaginationPersistence';
 import apiService from '../../../services/api';
@@ -212,29 +212,6 @@ const useStyles = makeStyles({
       paddingRight: 8,
     },
   },
-  recentItem: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    '&:hover': {
-      backgroundColor: 'rgba(255,255,255,0.1)',
-    },
-    '@media (max-width: 600px)': {
-      paddingTop: 3,
-      paddingBottom: 3,
-      paddingLeft: 12,
-      paddingRight: 12,
-    },
-    '@media (max-width: 480px)': {
-      paddingTop: 2,
-      paddingBottom: 2,
-      paddingLeft: 10,
-      paddingRight: 10,
-    },
-    '@media (max-width: 375px)': {
-      paddingLeft: 8,
-      paddingRight: 8,
-    },
-  },
   primaryText: {
     color: '#fff',
     fontSize: '0.9rem',
@@ -288,20 +265,6 @@ const useStyles = makeStyles({
       gap: 2,
     },
   },
-  recentChip: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    color: '#bbb',
-    fontSize: '0.75rem',
-    '@media (max-width: 600px)': {
-      fontSize: '0.7rem',
-    },
-    '@media (max-width: 480px)': {
-      fontSize: '0.68rem',
-    },
-    '@media (max-width: 375px)': {
-      fontSize: '0.66rem',
-    },
-  },
   noResultsText: {
     color: '#bbb',
     fontSize: '0.9rem',
@@ -336,13 +299,12 @@ const SearchComponent = ({
   placeholder = "Search characters",
   showSuggestions = true,
   className,
-  section = null, // NEW: Add section prop for isolated search persistence
-  resetTrigger = null, // NEW: Add reset trigger prop
+  section = null, 
+  resetTrigger = null, 
   ...props 
 }) => {
   const classes = useStyles();
   
-  // NEW: Use search persistence hook
   const { 
     searchQuery: persistedQuery, 
     setSearchQuery: setPersistedQuery,
@@ -353,34 +315,18 @@ const SearchComponent = ({
   const [focused, setFocused] = useState(false);
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [recentSearches, setRecentSearches] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [isExecutingSearch, setIsExecutingSearch] = useState(false);
 
-  // Load recent searches from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('recentSearches');
-    if (saved) {
-      try {
-        setRecentSearches(JSON.parse(saved));
-      } catch (e) {
-        console.warn('Failed to load recent searches');
-      }
-    }
-  }, []);
-
-  // NEW: Initialize search value from persisted query
   useEffect(() => {
     if (persistedQuery && !searchValue) {
       setSearchValue(persistedQuery);
-      // Optionally trigger search automatically
       if (persistedQuery.trim()) {
         handleSearch(persistedQuery.trim());
       }
     }
   }, [persistedQuery]);
 
-  // NEW: Reset search when resetTrigger changes
   useEffect(() => {
     if (resetTrigger) {
       handleClear();
@@ -405,7 +351,6 @@ const SearchComponent = ({
       setIsExecutingSearch(true);
       setLoading(true);
       
-      // NEW: Persist search query to URL
       setPersistedQuery(query);
       
       const response = await apiService.searchCharacters(query);
@@ -434,7 +379,6 @@ const SearchComponent = ({
     
     if (!newValue) {
       setSuggestions([]);
-      // NEW: Clear persisted search when input is cleared
       clearPersistedSearch();
       
       if (onSearchStateChange) {
@@ -445,7 +389,6 @@ const SearchComponent = ({
         });
       }
       
-      // Clear search results
       if (onSearchResults) {
         onSearchResults({ characters: [], query: '', totalCount: 0 });
       }
@@ -463,7 +406,6 @@ const SearchComponent = ({
     setFocused(false);
     setShowResults(false);
     
-    // NEW: Clear persisted search
     clearPersistedSearch();
     
     if (onSearchResults) {
@@ -489,12 +431,7 @@ const SearchComponent = ({
     setSearchValue(query);
     setShowResults(false);
     
-    // NEW: Persist selected search
     setPersistedQuery(query);
-    
-    const newRecent = [query, ...recentSearches.filter(s => s !== query)].slice(0, 5);
-    setRecentSearches(newRecent);
-    localStorage.setItem('recentSearches', JSON.stringify(newRecent));
     
     if (onSearchResults) {
       onSearchResults({
@@ -505,24 +442,13 @@ const SearchComponent = ({
     }
   };
 
-  const handleRecentSearchClick = (searchTerm) => {
-    setSearchValue(searchTerm);
-    setShowResults(false);
-    
-    // NEW: Persist recent search selection
-    setPersistedQuery(searchTerm);
-    
-    // Trigger search with the recent term
-    handleSearch(searchTerm);
-  };
-
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
   };
 
-  const displaySuggestions = showSuggestions && showResults && (suggestions.length > 0 || recentSearches.length > 0);
+  const displaySuggestions = showSuggestions && showResults && suggestions.length > 0;
 
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
@@ -596,31 +522,6 @@ const SearchComponent = ({
                           secondaryTypographyProps={{ 
                             className: classes.secondaryText
                           }}
-                        />
-                      </ListItem>
-                    ))}
-                  </>
-                )}
-
-                {recentSearches.length > 0 && searchValue === '' && (
-                  <>
-                    <ListItem>
-                      <Typography variant="caption" color="text.secondary" className={classes.sectionHeader}>
-                        <TrendingUp fontSize="small" />
-                        Recent Searches
-                      </Typography>
-                    </ListItem>
-                    {recentSearches.map((term, index) => (
-                      <ListItem
-                        key={index}
-                        button
-                        onClick={() => handleRecentSearchClick(term)}
-                        className={classes.recentItem}
-                      >
-                        <Chip
-                          label={term}
-                          size="small"
-                          className={classes.recentChip}
                         />
                       </ListItem>
                     ))}
