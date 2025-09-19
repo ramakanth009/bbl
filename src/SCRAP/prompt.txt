@@ -1,51 +1,30 @@
-Application Name: Legendary Conversations (or your preferred name)
-
-Purpose: A modern, AI-powered chat platform designed for meaningful and engaging conversations. The application allows users to have natural, flowing discussions with an AI assistant.
-
-Color Scheme:
-
-Primary Color: #1976d2 (Material-UI blue) - Used for main buttons and key interactive elements
-Error Color: #f44336 - For error messages and alerts (as seen in your login form)
-Background:
-Light theme: #f5f5f5 (subtle gray)
-Dark theme: #121212 (deep dark)
-Text:
-Primary: rgba(0, 0, 0, 0.87) (dark gray for light theme)
-Secondary: rgba(255, 255, 255, 0.87) (light gray for dark theme)
-Accent Colors:
-Success: #4caf50
-Warning: #ff9800
-Info: #2196f3
-Key Features to Highlight:
-
-AI-Powered Chat - Natural, contextual conversations
-Secure Authentication - Protected user accounts
-Responsive Design - Works on all devices
-Real-time Messaging - Instant responses
-Conversation History - Save and revisit past chats
-UI Components (based on your code):
-
-Material-UI components
-Clean, modern interface
-Smooth transitions and animations
-Card-based layout
-Responsive design that works on mobile and desktop
-Visual Style:
-
-Modern and minimal
-Rounded corners (as seen in your alert component's borderRadius: 2)
-Subtle shadows and depth
-Clean typography with good hierarchy
-Ample white space
-Call-to-Action Buttons:
-
-Primary: "Get Started" - Using primary color
-Secondary: "Learn More" - Outlined variant
-Accent: "Try Demo" - Using accent color
-Additional Notes:
-
-The design should be consistent with the existing login page's style
-Include space for feature highlights
-Show a mockup of the chat interface
-Include testimonials or use cases
-Add a footer with links to About, Privacy Policy, and Terms of Service
+Primary Colors (from theme.js)
+Primary Blue: #6366f1 (main)
+Light Blue: #818cf8 (primary light)
+Dark Blue: #4f46e5 (primary dark)
+Background Colors
+Default Background: #0c0c0c (darkest)
+Paper/Secondary Background: #1f1f23
+Secondary Background: #171717
+Hover Background: #28282c
+Text Colors
+Primary Text: #ffffff (white)
+Secondary Text: #a0a0a0 (light gray)
+Disabled Text: #666666 (medium gray)
+Borders & Dividers
+Divider: #2a2a2e
+Border: #2a2a2e (used in cards and inputs)
+Scrollbar Colors
+Scrollbar Track: #171717
+Scrollbar Thumb: #2a2a2e
+Scrollbar Hover: #3a3a3e
+Scrollbar Active: #4a4a4e
+Chat-Specific Colors
+Chat Scrollbar Thumb: #1f1f23
+Chat Scrollbar Hover: #2f2f33
+Accent Colors
+Hover State: #28282c
+Input Hover Border: #6366f1
+Additional Colors from App.css
+App Header Background: #282c34
+App Link: #61dafb (light blue)
