@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Box, useTheme, useMediaQuery } from "@mui/material";
+import { Box, useTheme, useMediaQuery, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Divider } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/dashboard/main/Sidebar";
 import TopBar from "../components/dashboard/main/TopBar";
 import StarField from "../components/common/StarField";
 import { createSidebarState, isMobileViewport, getSidebarWidth } from "../utils/sidebarUtils";
+import { useAuth } from "../context/AuthContext";
+import { LogoutRounded, WarningAmberRounded } from "@mui/icons-material";
 
 const useStyles = makeStyles({
   dashboardContainer: {
@@ -99,12 +101,14 @@ const Dashboard = () => {
   const [viewportWidth, setViewportWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1920
   );
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   const classes = useStyles();
   const theme = useTheme();
   const isMobile = isMobileViewport(viewportWidth);
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout, isAuthenticated } = useAuth();
 
   // Enhanced viewport width tracking
   useEffect(() => {
@@ -192,6 +196,38 @@ const Dashboard = () => {
     console.log('Search toggle');
   };
 
+  // Intercept browser back button within dashboard and show logout confirmation
+  useEffect(() => {
+    if (!isAuthenticated) return; // Only intercept when authenticated
+
+    const handlePopState = (event) => {
+      // Immediately push state back to prevent navigation
+      window.history.pushState(null, '', window.location.href);
+      setLogoutConfirmOpen(true);
+    };
+
+    // Push a dummy state to trap the first back action
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isAuthenticated]);
+
+  const handleConfirmLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      setLogoutConfirmOpen(false);
+      navigate('/login', { replace: true });
+    }
+  };
+
+  const handleCancelLogout = () => {
+    setLogoutConfirmOpen(false);
+  };
+
   // Use centralized sidebar width calculation
   const currentSidebarWidth = getSidebarWidth(viewportWidth, isMobile ? mobileSidebarOpen : sidebarOpen, isMobile);
 
@@ -261,6 +297,65 @@ const Dashboard = () => {
           </Box>
         </Box>
       </Box>
+
+      {/* Logout confirmation dialog for back navigation */}
+      <Dialog
+        open={logoutConfirmOpen}
+        onClose={handleCancelLogout}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          backdrop: {
+            sx: {
+              backdropFilter: 'blur(4px)',
+              backgroundColor: 'rgba(0,0,0,0.4)'
+            }
+          }
+        }}
+        PaperProps={{
+          sx: (theme) => ({
+            bgcolor: theme.palette.background.paper,
+            borderRadius: 3,
+            border: `1px solid ${theme.palette.divider}`,
+            boxShadow: (theme.palette.mode === 'dark')
+              ? '0 20px 60px rgba(0,0,0,0.5)'
+              : '0 20px 60px rgba(0,0,0,0.15)'
+          })
+        }}
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.25, pb: 1 }}>
+          <Box
+            sx={(theme) => ({
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 36,
+              height: 36,
+              borderRadius: 2,
+              background: `linear-gradient(135deg, ${theme.palette.error.main} 0%, ${theme.palette.error.dark} 100%)`,
+              color: theme.palette.getContrastText(theme.palette.error.main),
+              boxShadow: '0 8px 20px rgba(244,67,54,0.35)'
+            })}
+          >
+            <LogoutRounded fontSize="small" />
+          </Box>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>Log out and leave?</Typography>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 0 }}>
+          <Typography variant="body2" color="text.secondary">
+            Are you sure you want to log out? You’ll need to sign in again to access the dashboard.
+          </Typography>
+        </DialogContent>
+        <Divider sx={{ my: 1 }} />
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleCancelLogout} variant="outlined" color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmLogout} color="error" variant="contained" startIcon={<LogoutRounded />}>
+            Log out
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

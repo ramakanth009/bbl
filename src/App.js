@@ -11,6 +11,7 @@ import { theme } from './styles/theme';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CategoriesProvider } from './context/CategoriesContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import PublicRoute from './components/common/PublicRoute';
 import MobileCollectionModal from './components/MobileCollectionModal';
 
 // Pages
@@ -93,11 +94,12 @@ function AppContent() {
           <AuthProvider>
             <BrowserRouter>
               <Routes>
-                {/* Auth Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
+                {/* Auth Routes (Public, but redirect if already authenticated) */}
+                <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+                <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+                <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+                <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 
                 {/* Blog & FAQ Routes - Public */}
