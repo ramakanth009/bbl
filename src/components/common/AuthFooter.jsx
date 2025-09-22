@@ -21,36 +21,14 @@ const useStyles = makeStyles(() => ({
     maxWidth: 960,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '12px',
+    justifyContent: 'center',
     color: '#aaa',
-    '@media (max-width: 600px)': {
-      flexDirection: 'column',
-      gap: '8px',
-      textAlign: 'center',
-    },
-  },
-  footerLinks: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    '@media (max-width: 600px)': {
-      gap: '12px',
-    },
-  },
-  footerLink: {
-    color: '#fff',
-    textDecoration: 'none',
-    fontWeight: 600,
-    borderBottom: '1px solid #ffffff',
-    transition: 'opacity 0.2s ease',
-    '&:hover': {
-      opacity: 0.85,
-    },
+    textAlign: 'center',
   },
   copyright: {
     color: '#aaa',
     fontSize: '0.9rem',
+    width: '100%',
   },
 }));
 
@@ -59,10 +37,6 @@ const AuthFooter = () => {
   return (
     <Box component="footer" className={classes.footerContainer}>
       <Box className={classes.footerInner}>
-        <Box className={classes.footerLinks}>
-          <Link to="/blog" className={classes.footerLink}>Blog</Link>
-          <Link to="/faq" className={classes.footerLink}>FAQ</Link>
-        </Box>
         <Typography variant="body2" className={classes.copyright}>
           © {new Date().getFullYear()} GigaSpace. All rights reserved.
         </Typography>

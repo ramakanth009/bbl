@@ -159,34 +159,155 @@ const TermsPolicies = () => {
 
   const sections = [
     {
-      title: 'Terms of Service',
+      title: 'Introduction',
       content:
-        'These are placeholder Terms of Service. By using GigaSpace, you agree to abide by community guidelines, respect intellectual property, and avoid misuse of the platform. This content is for demonstration purposes and should be replaced with your legal copy.',
+        'Gigaspace, hereinafter ("Gigaspace," "us," "we," "our," or "the Company") is committed to the security and proper management of personal data, to function effectively and successfully for the benefit of our stakeholders, customers, and the community. In doing so, it is essential that individuals’ privacy is protected through lawful and appropriate means of handling personal data. Therefore, we have implemented this Privacy Policy (hereinafter referred to as "Policy").',
     },
     {
-      title: 'Privacy Policy',
+      title: 'Aim',
       content:
-        'This is a sample Privacy Policy. We explain what data we collect, how we use it to improve the product, and how you can control your information. Replace this with your actual privacy practices and contact details.',
+        'This Policy aims to protect the personal data of users and stakeholders connected with our platform. It is designed to provide notice of the basic principles by which Gigaspace processes personal data of individuals ("Personal Data") who visit, use, deal with, and/or transact through our platform, including guest users and browsers (hereinafter "you" or "user").',
     },
     {
-      title: 'Cookie Policy',
-      content:
-        'We use cookies to keep you signed in, remember preferences, and measure usage. You can manage cookies through your browser settings. This is dummy text for layout parity with the FAQ page.',
+      title: 'Scope & Purpose',
+      content: [
+        'The purpose of this Policy is to describe how Gigaspace collects, uses, stores, and shares information about you through our online interfaces, including but not limited to https://gigaspace.org and related mobile/web applications (hereinafter the "Platform").',
+        'This Policy applies to all systems, people, and processes that constitute Gigaspace’s information environment, including directors, employees, contractors, and trusted third parties who have access to Personal Data.',
+        'Where third parties process data on behalf of Gigaspace, the Company endeavors to ensure such parties comply with this Policy and safeguard your data consistently.',
+      ],
     },
     {
-      title: 'User Content & Conduct',
+      title: 'Nature of the Platform',
       content:
-        'Users are responsible for the content they create and share. Prohibited activities include harassment, hate speech, impersonation, and any illegal activity. Violations may result in account suspension.',
+        'Gigaspace enables users to engage in <strong>AI-powered conversations with simulated personalities</strong> based on publicly known figures. All interactions are with AI-generated characters and <strong>do not represent real-time communication with actual persons.</strong>',
     },
     {
-      title: 'Account & Security',
-      content:
-        'Keep your account credentials secure and report suspicious activity promptly. We employ industry-standard security practices but cannot guarantee absolute security of information transmitted online.',
+      title: 'Types of Data Collected',
+      content: [
+        'The Personal Data collected depends on your interaction with Gigaspace. This may include, but is not limited to:',
+        '<strong>A. Personal Identification Data</strong>',
+        '• Name, username, or display name',
+        '• Profile image (if uploaded)',
+        '<strong>B. Contact Data</strong>',
+        '• Email address',
+        '• Phone number (if voluntarily provided)',
+        '• Social media handles (if connected)',
+        '<strong>C. Electronic Identification Data</strong>',
+        '• Login credentials (if registered)',
+        '• IP address',
+        '• Device type, operating system, and browser information',
+        '• Date and time of platform visit',
+        '• Pages visited and navigation behavior',
+        '• Language preferences',
+        '• Location (approximate, derived from IP)',
+        '<strong>D. Interaction Data</strong>',
+        '• Chat messages, responses, and conversation logs',
+        '• Voice or video inputs (if enabled)',
+        '• Feedback, ratings, or comments on the platform',
+        '• User preferences and personality interactions',
+        '<strong>E. Payment Data</strong>',
+        'If you make purchases for premium services, we may collect:',
+        '• Transaction details (amount, currency, date)',
+        '• Payment method (processed via third-party gateways; we do not store full card/bank details)',
+        '<strong>F. Marketing & Behavioral Data</strong>',
+        '• Preferences for notifications and marketing communications',
+        '• Data inferred from user behavior, such as topics of interest, frequently used personalities, and interaction style',
+      ],
     },
     {
-      title: 'Contact & Support',
+      title: 'Special Categories of Data',
       content:
-        'For questions about these terms or policies, please contact our support team. This section is a placeholder and should be updated with your official contact channels.',
+        'We do not intentionally collect <strong>special or sensitive data</strong> (e.g., race, religion, political views, health, sexual orientation). If you voluntarily share such data in chats or posts, you consent to its processing in line with this Policy.',
+    },
+    {
+      title: 'Sources of Data Collection',
+      content:[
+        'We collect Personal Data through:',
+        '• Direct input from you (account creation, profile setup, chat usage)',
+        '• Automatic collection via cookies and analytics tools',
+        '• Third-party integrations (payment gateways, social media login, advertising platforms)',
+      ],
+    },
+
+        {
+      title: 'Cookies',
+      content:[
+        'Gigaspace uses cookies and similar technologies to:',
+        '• Recognize returning users',
+        '• Improve platform performance and security',
+        '• Personalize your conversational experience',
+        '• Track analytics for platform optimization',
+        'We may allow trusted third-party providers (e.g., Google, Meta, analytics providers) to place cookies to deliver targeted content and ads',
+        'You can control or disable cookies via your browser settings, though this may affect your experience on the platform.',
+      ],
+    },
+    {
+      title: 'How We Use Your Data',
+      content:
+      [
+        'Your data is used to:',
+        '• Deliver and personalize Gigaspace services',
+        '• Improve conversational AI and user experience',
+        '• Process transactions and provide support',
+        '• Send updates, promotions, and offers (where opted-in)',
+        '• Ensure compliance with laws and prevent fraud',
+        '• Conduct research, analytics, and product improvements',
+      ],
+    },
+    {
+      title: 'Sharing of Data',
+      content: [
+        'We do not sell your Personal Data. We may share it only with:',
+        '• Trusted service providers (hosting, analytics, payment processors)',
+        '• Law enforcement or regulators, where legally required',
+        '• Partners and affiliates (with consent, where applicable)',
+      ],
+    },
+    {
+      title: 'Data Retention',
+      content:
+        'We retain your Personal Data only as long as necessary for service delivery, compliance with laws, or legitimate business interests. Chat logs may be anonymized and stored for AI improvement and moderation purposes.',
+    },
+    {
+      title: 'Security',
+      content:
+        'We implement appropriate technical and organizational measures (encryption, firewalls, secure servers) to protect your data. However, no transmission over the internet is fully secure, and users share data at their own risk.',
+    },
+    {
+      title: 'User Rights',
+      content:
+      [
+        'You have the right to:',
+        '• Access the data we hold about you',
+        '• Request corrections or updates',
+        '• Request deletion of your data (“Right to be Forgotten”)',
+        '• Withdraw consent to marketing communications',
+        '• Restrict or object to certain processing',
+        'For requests, contact us at <strong><a href="mailto:gigaspaceai@gmail.com">gigaspaceai@gmail.com</a></strong>',
+      ],
+    },
+    {
+      title: 'Children’s Privacy',
+      content:
+        'Gigaspace is not intended for children under 13 (or under 16 in certain jurisdictions). We do not knowingly collect data from children. If discovered, such data will be deleted promptly.',
+    },
+    {
+      title: 'International Data Transfers',
+      content:
+        'If your data is transferred outside your home country, we ensure safeguards (such as contractual clauses and compliance with applicable laws) are in place to protect your privacy.',
+    },
+    {
+      title: 'Updates to This Policy',
+      content:
+        'We may update this Policy periodically to reflect changes in technology, regulations, or our services. Updates will be posted on this page with the revised "Effective Date."',
+    },
+    {
+      title: 'Contact Us',
+      content: [
+        'For questions, concerns, or data requests, please contact:',
+        '<a href="mailto: gigaspaceai@gmail.com">gigaspaceai@gmail.com</a>',
+        '<a href="https://gigaspace.org">gigaspace.org</a>',
+      ]
     },
   ];
 
@@ -203,7 +324,21 @@ const TermsPolicies = () => {
                 <Typography className={classes.itemTitle}>{index + 1}. {item.title}</Typography>
               </AccordionSummary>
               <AccordionDetails className={classes.accordionDetails}>
-                <Typography className={classes.itemText}>{item.content}</Typography>
+                {Array.isArray(item.content) ? (
+                  item.content.map((paragraph, i) => (
+                    <Typography 
+                      key={i} 
+                      className={classes.itemText} 
+                      paragraph
+                      dangerouslySetInnerHTML={{ __html: paragraph }}
+                    />
+                  ))
+                ) : (
+                  <Typography 
+                    className={classes.itemText}
+                    dangerouslySetInnerHTML={{ __html: item.content }}
+                  />
+                )}
               </AccordionDetails>
             </Accordion>
           ))}

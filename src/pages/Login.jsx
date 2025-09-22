@@ -23,6 +23,7 @@ import { makeStyles } from '@mui/styles';
 import { useAuth } from '../context/AuthContext';
 import GoogleLogo from '../assets/google-logo.svg';
 import AuthFooter from '../components/common/AuthFooter';
+import AuthHeader from '../components/common/AuthHeader';
 
 const StarField = React.lazy(() => import('../components/common/StarField'));
 const useStyles = makeStyles(() => ({
@@ -569,6 +570,7 @@ const Login = () => {
       <React.Suspense fallback={<div />}>
         <StarField />
       </React.Suspense>
+      <AuthHeader />
       <Container maxWidth="sm" className={classes.pageContainer}>
         <Fade in timeout={800}>
           <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
