@@ -722,10 +722,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
       }
     };
 
-    // Only fetch if we have characters loaded but didn't find the one we need
-    if (characters.length > 0) {
-      fetchCharacterById();
-    }
+    fetchCharacterById();
   }, [characterId, characters]);
 
   const loadCategoryCharactersPage = async (page = 1, limit = 24) => {
@@ -843,7 +840,7 @@ const CategoryPage = ({ onSidebarToggle }) => {
       });
       
       // Now navigate - states are guaranteed to be set using new URL structure
-      const characterPath = createCharacterPath(`/dashboard/categories/${categoryKey}/chat`, character.id, character.name);
+      const characterPath = createCharacterPath(`/dashboard/categories/${categoryKey}`, character.id, character.name);
       // Preserve current search params
       const currentSearch = location.search || '';
       navigate(`${characterPath}${currentSearch}`, { 

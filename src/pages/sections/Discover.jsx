@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, useTheme, useMediaQuery } from '@mui/material';
+import { Box, useTheme, useMediaQuery, CircularProgress, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { flushSync } from 'react-dom';
 import Header from '../../components/dashboard/main/Header';
@@ -58,6 +58,7 @@ const Discover = () => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [characters, setCharacters] = useState([]);
+  const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'succeeded' | 'failed'
   const navigate = useNavigate();
   const location = useLocation();
   const { characterId: chatCharacterId, characterName: chatCharacterName } = useParams();
@@ -72,127 +73,52 @@ const Discover = () => {
     isCollapsed: false 
   };
 
-  // Load all characters once for lookup
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchCharacters = async () => {
+    const loadDiscoverData = async () => {
+      setStatus('loading');
       try {
+        // Step 1: Fetch all characters for the grid
         const chars = await apiService.getCharacters();
         const charArray = Array.isArray(chars)
           ? chars
           : Array.isArray(chars.characters)
             ? chars.characters
             : [];
-        
-        if (isMounted && JSON.stringify(charArray) !== JSON.stringify(characters)) {
-          setCharacters(charArray);
-        }
-      } catch (e) {
-        console.error('Failed to fetch characters:', e);
-      }
-    };
+        setCharacters(charArray);
 
-    fetchCharacters();
+        // Step 2: If a character ID is in the URL, handle it
+        if (chatCharacterId) {
+          let character = charArray.find(c => String(c.id) === String(chatCharacterId));
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  // FIXED: Handle URL-based chat opening with navigation state priority
-  useEffect(() => {
-    console.log('🔍 Discover URL Effect - chatCharacterId:', chatCharacterId);
-    
-    if (!chatCharacterId) {
-      if (isChatOpen) {
-        console.log('🚪 No character ID in URL, closing chat');
-        setIsChatOpen(false);
-        setTimeout(() => setSelectedCharacter(null), 300);
-      }
-      return;
-    }
-
-    // First priority: Check if character was passed through navigation state
-    const characterFromState = location.state?.character;
-    
-    if (characterFromState && String(characterFromState.id) === String(chatCharacterId)) {
-      console.log('✅ Found character from navigation state:', characterFromState.name);
-      if (!selectedCharacter || selectedCharacter.id !== characterFromState.id || !isChatOpen) {
-        console.log('🔄 Updating chat state from navigation state');
-        setSelectedCharacter(characterFromState);
-        setIsChatOpen(true);
-      }
-      return;
-    }
-
-    // Second priority: Find in loaded characters array
-    const foundInLoaded = characters.find(c => String(c.id) === String(chatCharacterId));
-    
-    if (foundInLoaded) {
-      console.log('✅ Found character in loaded array:', foundInLoaded.name);
-      if (!selectedCharacter || selectedCharacter.id !== foundInLoaded.id || !isChatOpen) {
-        console.log('🔄 Updating chat state from loaded characters');
-        setSelectedCharacter(foundInLoaded);
-        setIsChatOpen(true);
-      }
-      return;
-    }
-
-    // Third priority: Try to fetch character by ID (for direct URL access)
-    const fetchCharacterById = async () => {
-      try {
-        console.log('🔍 Character not found locally, fetching from API...');
-        
-        let foundCharacter = null;
-        
-        // Try to get the character directly by ID
-        try {
-          foundCharacter = await apiService.getCharacterById(chatCharacterId);
-          console.log('✅ Found character using getCharacterById:', foundCharacter?.name);
-        } catch (error) {
-          console.log('⚠️ getCharacterById failed, trying alternative method...');
-          
-          // Try alternative endpoint
-          try {
-            foundCharacter = await apiService.getSingleCharacter(chatCharacterId);
-            console.log('✅ Found character using getSingleCharacter:', foundCharacter?.name);
-          } catch (error2) {
-            console.log('⚠️ Alternative methods failed, character not found');
+          // If the character isn't in the main list, fetch it directly
+          if (!character) {
+            console.log(`Character ${chatCharacterId} not in main list, fetching directly...`);
+            character = await apiService.getCharacterById(chatCharacterId);
           }
-        }
-        
-        if (foundCharacter) {
-          console.log('✅ Successfully fetched character:', foundCharacter.name);
-          if (!selectedCharacter || selectedCharacter.id !== foundCharacter.id || !isChatOpen) {
-            console.log('🔄 Updating chat state from API fetch');
-            setSelectedCharacter(foundCharacter);
+
+          if (character) {
+            setSelectedCharacter(character);
             setIsChatOpen(true);
-            
-            // Add to characters array for future use
-            setCharacters(prev => {
-              const exists = prev.find(c => c.id === foundCharacter.id);
-              return exists ? prev : [foundCharacter, ...prev];
-            });
+          } else {
+            console.error(`Character with ID ${chatCharacterId} could not be found.`);
+            // Redirect to discover base page if character is not found
+            navigate('/dashboard/discover', { replace: true });
           }
         } else {
-          console.log('❌ Character not found anywhere for ID:', chatCharacterId);
-          setSelectedCharacter(null);
+          // If no character ID in URL, ensure chat is closed
           setIsChatOpen(false);
+          setSelectedCharacter(null);
         }
+
+        setStatus('succeeded');
       } catch (error) {
-        console.error('Failed to fetch character by ID:', error);
-        setSelectedCharacter(null);
-        setIsChatOpen(false);
+        console.error('Failed to load data for Discover page:', error);
+        setStatus('failed');
       }
     };
 
-    // Only fetch if we have characters loaded (to avoid running before initialization)
-    if (characters.length > 0) {
-      fetchCharacterById();
-    }
-    
-  }, [chatCharacterId, characters, location.state]);
+    loadDiscoverData();
+  }, [chatCharacterId, navigate]);
 
   // FIXED: When chat is started, pass character through navigation state
   const handleCharacterClick = (character) => {
@@ -206,7 +132,7 @@ const Discover = () => {
       });
       
       // Navigate with character data in state for immediate access using new URL structure
-      const characterPath = createCharacterPath('/dashboard/discover/chat', character.id, character.name);
+      const characterPath = createCharacterPath('/dashboard/discover', character.id, character.name);
       // Preserve current query params (e.g., discover_page) while navigating to chat
       const query = location.search || '';
       navigate(`${characterPath}${query}`, { 
@@ -244,6 +170,22 @@ const Discover = () => {
       hasNavigationState: !!location.state?.character
     });
   }, [selectedCharacter, isChatOpen, chatCharacterId, characters.length, location.state]);
+
+  if (status === 'loading' || status === 'idle') {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (status === 'failed') {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Typography color="error">Failed to load characters. Please try refreshing the page.</Typography>
+      </Box>
+    );
+  }
 
   return (
     <>

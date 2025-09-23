@@ -725,7 +725,7 @@ const ChatHistoryGrid = ({ sessions = [], onRefreshSessions }) => {
       
       console.log('Navigating to session:', session.session_id);
       
-      navigate(`/dashboard/history/session/${session.session_id}`);
+      navigate(`/dashboard/history/${session.session_id}`);
       
     } catch (error) {
       console.error('Failed to navigate to session:', error);
