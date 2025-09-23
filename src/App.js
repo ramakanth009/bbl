@@ -1,11 +1,8 @@
-// import React from 'react';
-// import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { ThemeProvider as StylesThemeProvider } from '@mui/styles';
-
 import { CssBaseline } from '@mui/material';
 import { theme } from './styles/theme';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -13,6 +10,7 @@ import { CategoriesProvider } from './context/CategoriesContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
 import MobileCollectionModal from './components/MobileCollectionModal';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Pages
 import Login from './pages/Login';
@@ -33,9 +31,6 @@ import Foryou from './pages/sections/ForYou';
 import History from './pages/sections/History';
 import SessionChat from './pages/sections/SessionChat';
 import CategoryPage from './pages/sections/CategoryPage';
-import Upgrade from './pages/sections/Upgrade';
-
-
 
 function DashboardWithMobileModal() {
   const { profileStatus, updateMobile, refreshProfileStatus } = useAuth();
@@ -92,57 +87,59 @@ function AppContent() {
         <StylesThemeProvider theme={theme}>
           <CssBaseline />
           <AuthProvider>
-            <BrowserRouter>
-              <Routes>
-                {/* Auth Routes (Public, but redirect if already authenticated) */}
-                <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-                <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-                <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
-                <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+            <ErrorBoundary>
+              <BrowserRouter>
+                <Routes>
+                  {/* Auth Routes (Public, but redirect if already authenticated) */}
+                  <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+                  <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+                  <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+                  <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
-                <Route path="/auth/callback" element={<AuthCallback />} />
-                
-                {/* Blog & FAQ Routes - Public */}
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:slug" element={<BlogPost />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/terms" element={<TermsPolicies />} />
-                
-                {/* Dashboard Routes - Protected */}
-                <Route 
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <CategoriesProvider>
-                        <DashboardWithMobileModal />
-                      </CategoriesProvider>
-                    </ProtectedRoute>
-                  } 
-                >
-                  {/* Nested routes for dashboard sections */}
-                  <Route index element={<Navigate to="discover" replace />} />
-                  <Route path="discover" element={<Discover />} />
-                  <Route path="discover/chat/:characterId/:characterName" element={<Discover />} />
-                  <Route path="featured" element={<Featured />} />
-                  <Route path="featured/chat/:characterId/:characterName" element={<Featured />} />
-                  <Route path="trending" element={<Trending />} />
-                  <Route path="foryou" element={<Foryou />} />
-                  <Route path="recent" element={<Recent />} />
-                  <Route path="history" element={<History />} />
-                  <Route path="history/session/:sessionId" element={<SessionChat />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
                   
-                  {/* Category Routes */}
-                  <Route path="categories/:categoryKey" element={<CategoryPage />} />
-                  <Route path="categories/:categoryKey/chat/:characterId/:characterName" element={<CategoryPage />} />
+                  {/* Blog & FAQ Routes - Public */}
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blog/:slug" element={<BlogPost />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/terms" element={<TermsPolicies />} />
+                  
+                  {/* Dashboard Routes - Protected */}
+                  <Route 
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <CategoriesProvider>
+                          <ErrorBoundary>
+                            <DashboardWithMobileModal />
+                          </ErrorBoundary>
+                        </CategoriesProvider>
+                      </ProtectedRoute>
+                    } 
+                  >
+                    {/* Nested routes for dashboard sections */}
+                    <Route index element={<Navigate to="discover" replace />} />
+                    <Route path="discover" element={<Discover />} />
+                    <Route path="discover/chat/:characterId/:characterName" element={<Discover />} />
+                    <Route path="featured" element={<Featured />} />
+                    <Route path="featured/chat/:characterId/:characterName" element={<Featured />} />
+                    <Route path="trending" element={<Trending />} />
+                    <Route path="foryou" element={<Foryou />} />
+                    <Route path="recent" element={<Recent />} />
+                    <Route path="history" element={<History />} />
+                    <Route path="history/session/:sessionId" element={<SessionChat />} />
+                    
+                    {/* Category Routes */}
+                    <Route path="categories/:categoryKey" element={<CategoryPage />} />
+                    <Route path="categories/:categoryKey/chat/:characterId/:characterName" element={<CategoryPage />} />
 
-                  {/* Upgrade Plans */}
-                  <Route path="upgrade" element={<Upgrade />} />
-                </Route>
-                
-                {/* Default redirect */}
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              </Routes>
-            </BrowserRouter>
+                  </Route>
+                  
+                  {/* Default redirect */}
+                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+              </BrowserRouter>
+            </ErrorBoundary>
           </AuthProvider>
         </StylesThemeProvider>
       </ThemeProvider>
