@@ -118,6 +118,7 @@ const QuestionChips = ({
   const [isLoading, setIsLoading] = useState(true);
   const [fadeIn, setFadeIn] = useState(false);
   const [sentQuestions, setSentQuestions] = useState(new Set()); // Track sent questions locally
+  const [displayedQuestions, setDisplayedQuestions] = useState([]);
 
   // Load questions based on character category
   const loadQuestions = useCallback(async () => {
@@ -143,14 +144,11 @@ const QuestionChips = ({
         characterCategory = getCategoryFromCharacter(character);
       }
 
-      // Get questions for the category
-      const categoryQuestions = getQuestionsForCategory(characterCategory);
-      
-      // Take only the specified number of questions
-      const selectedQuestions = categoryQuestions.slice(0, maxQuestions);
+      // Get all questions for the category
+      const allQuestions = getQuestionsForCategory(characterCategory);
       
       setCategory(characterCategory);
-      setQuestions(selectedQuestions);
+      setQuestions(allQuestions);
       
       // Add a small delay for smooth animation
       setTimeout(() => {
@@ -158,7 +156,7 @@ const QuestionChips = ({
         setIsLoading(false);
       }, animationDelay);
 
-      console.log(`📝 Loaded ${selectedQuestions.length} questions for category: ${characterCategory}`);
+      console.log(`📝 Loaded ${allQuestions.length} questions for category: ${characterCategory}`);
       
     } catch (error) {
       console.error('Failed to load questions:', error);
@@ -207,6 +205,11 @@ const QuestionChips = ({
   // Filter out sent questions
   const availableQuestions = questions.filter(question => !sentQuestions.has(question));
 
+  // Update displayed questions when available questions change
+  useEffect(() => {
+    setDisplayedQuestions(availableQuestions);
+  }, [availableQuestions]);
+
   // Don't render if no character or no available questions
   if (!character || (!isLoading && availableQuestions.length === 0)) {
     return null;
@@ -217,7 +220,7 @@ const QuestionChips = ({
     return (
       <Box className={classes.quickActionsContainer}>
         <Box className={classes.quickActionsWrapper}>
-          {[...Array(maxQuestions)].map((_, index) => (
+          {[...Array(5)].map((_, index) => (
             <Skeleton
               key={index}
               variant="rectangular"
@@ -237,7 +240,7 @@ const QuestionChips = ({
       <Box className={classes.fadeContainer}>
         <Box className={classes.quickActionsContainer}>
           <Box className={classes.quickActionsWrapper} data-allow-touch-scroll="true">
-            {availableQuestions.map((question, index) => (
+            {displayedQuestions.map((question, index) => (
               <Fade
                 key={`${category}-${question}-${index}`}
                 in={fadeIn}

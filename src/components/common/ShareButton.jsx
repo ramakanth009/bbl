@@ -40,7 +40,7 @@ const ShareButton = ({ character, section = 'discover', size = 'medium', variant
         const characterName = character.name ? character.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'character';
         
         // Updated to use the correct URL format for sharing
-        return `${baseUrl}/dashboard/discover/chat/${characterId}/${characterName}`;
+        return `${baseUrl}/dashboard/discover/${characterId}/${characterName}`;
     };
 
     const generateShareUrls = (character) => {

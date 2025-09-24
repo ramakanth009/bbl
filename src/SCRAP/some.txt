@@ -32,7 +32,7 @@ Requirements
 URL Transformation
 FROM: https://space.gigaspace.org/getcharacter/50
 
-TO: https://gigaspace.org/dashboard/discover/chat/50/martin-luther-king-jr
+TO: https://gigaspace.org/dashboard/discover/50/martin-luther-king-jr
 
 Dynamic Meta Tags
 Title: Chat with [Character Name] | GigaSpace
@@ -223,7 +223,7 @@ Description: Generic site description
 Image: Default app logo
 After Implementation:
 text
-URL: https://gigaspace.org/dashboard/discover/chat/50/martin-luther-king-jr
+URL: https://gigaspace.org/dashboard/discover/50/martin-luther-king-jr
 Title: "Chat with Martin Luther King Jr | GigaSpace"  
 Description: "Chat with Martin Luther King Jr. Iconic civil rights leader and Baptist minister who led the movement for racial equality through nonviolent protest. Known for his \"I Have a Dream\" speech... Start chatting now on GigaSpace."
 Image: https://upload.wikimedia.org/wikipedia/commons/0/05/Martin_Luther_King%2C_Jr..jpg
