@@ -24,6 +24,8 @@ class ApiService {
         // Add caching for API calls to prevent duplicates
         this.cache = new Map();
         this.pendingRequests = new Map();
+        // Track per-session requests to avoid duplicate loads for the same session
+        this.pendingSessionRequests = new Map();
 
         // Add auth token to requests
         this.client.interceptors.request.use(
@@ -841,17 +843,35 @@ class ApiService {
         }
     }
 
+    // In-memory cache for pending requests to prevent duplicate API calls
+    pendingSessionRequests = new Map();
+
     async getSessionMessages(sessionId) {
-        try {
-            const response = await this.client.get(`/get_session_messages?session_id=${sessionId}`);
-            // Ensure chat_history is always an array and sorted
-            if (response.data.chat_history && Array.isArray(response.data.chat_history)) {
-                response.data.chat_history = this.sortMessagesByTimestamp(response.data.chat_history);
-            }
-            return response.data;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to load session messages');
+        // Return existing request if one is in progress for this session
+        if (this.pendingSessionRequests.has(sessionId)) {
+            return this.pendingSessionRequests.get(sessionId);
         }
+
+        const requestPromise = (async () => {
+            try {
+                const response = await this.client.get(`/get_session_messages?session_id=${sessionId}`);
+                // Ensure chat_history is always an array and sorted
+                if (response.data.chat_history && Array.isArray(response.data.chat_history)) {
+                    response.data.chat_history = this.sortMessagesByTimestamp(response.data.chat_history);
+                }
+                return response.data;
+            } catch (error) {
+                throw this.handleError(error, 'Failed to load session messages');
+            } finally {
+                // Clean up the pending request
+                this.pendingSessionRequests.delete(sessionId);
+            }
+        })();
+
+        // Store the request promise
+        this.pendingSessionRequests.set(sessionId, requestPromise);
+        
+        return requestPromise;
     }
 
     // Character management - CREATE CHARACTER

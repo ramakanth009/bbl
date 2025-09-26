@@ -156,11 +156,70 @@ const SessionChat = () => {
       const charArray = Array.isArray(characters) ? characters : 
                        Array.isArray(characters.characters) ? characters.characters : [];
       
-      const selectedCharacter = charArray.find(char => 
-        char.name?.toLowerCase() === characterName.toLowerCase()
+      // Create a more flexible character name matcher
+      const normalizeName = (name) => {
+        if (!name) return '';
+        // Remove parenthetical nicknames, special characters and extra spaces, convert to lowercase
+        const withoutParens = name.replace(/\([^)]*\)/g, ' ');
+        return withoutParens.toLowerCase()
+          .replace(/[^\w\s]/g, '')  // Remove special characters
+          .replace(/\s+/g, ' ')      // Replace multiple spaces with single space
+          .trim();
+      };
+
+      const normalizedSearchName = normalizeName(characterName);
+      
+      // Try exact match first
+      let selectedCharacter = charArray.find(char => 
+        (char.name && normalizeName(char.name) === normalizedSearchName) ||
+        (char.title && normalizeName(char.title) === normalizedSearchName) ||
+        (char.character && normalizeName(char.character) === normalizedSearchName)
       );
 
+      // If exact match not found, try partial/contains match
       if (!selectedCharacter) {
+        selectedCharacter = charArray.find(char => {
+          const candidates = [char.name, char.title, char.character].filter(Boolean).map(normalizeName);
+          return candidates.some(c => c.includes(normalizedSearchName) || normalizedSearchName.includes(c));
+        });
+      }
+
+      // If still not found, try search API
+      if (!selectedCharacter) {
+        try {
+          const searchResult = await apiService.searchCharacters(characterName);
+          const candidates = Array.isArray(searchResult?.characters) ? searchResult.characters : [];
+          selectedCharacter = candidates.find(char => {
+            const names = [char.name, char.title, char.character].filter(Boolean).map(normalizeName);
+            return names.some(n => n === normalizedSearchName);
+          }) || candidates.find(char => {
+            const names = [char.name, char.title, char.character].filter(Boolean).map(normalizeName);
+            return names.some(n => n.includes(normalizedSearchName) || normalizedSearchName.includes(n));
+          });
+        } catch (e) {
+          console.warn('Search API failed while resolving character:', e?.message);
+        }
+      }
+
+      // Final fallback: load across pages (limited) using getAllCharacters
+      if (!selectedCharacter) {
+        try {
+          const allCharacters = await apiService.getAllCharacters();
+          selectedCharacter = allCharacters.find(char => {
+            const names = [char.name, char.title, char.character].filter(Boolean).map(normalizeName);
+            return names.some(n => n === normalizedSearchName);
+          }) || allCharacters.find(char => {
+            const names = [char.name, char.title, char.character].filter(Boolean).map(normalizeName);
+            return names.some(n => n.includes(normalizedSearchName) || normalizedSearchName.includes(n));
+          });
+        } catch (e) {
+          console.warn('Failed to load all characters for matching:', e?.message);
+        }
+      }
+
+      if (!selectedCharacter) {
+        console.warn('Character not found after all strategies. Available sample names:', 
+          (charArray || []).slice(0, 10).map(c => c?.name || c?.title || c?.character).filter(Boolean));
         throw new Error(`Character "${characterName}" not found`);
       }
 
