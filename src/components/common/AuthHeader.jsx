@@ -7,7 +7,6 @@ const useStyles = makeStyles(() => ({
   headerContainer: {
     width: '100%',
     padding: '16px 24px',
-    position: 'fixed',
     top: 0,
     right: 0,
     display: 'flex',

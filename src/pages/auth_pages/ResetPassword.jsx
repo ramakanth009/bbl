@@ -307,7 +307,6 @@ const useStyles = makeStyles(() => ({
   footerContainer: {
     width: '100%',
     padding: '12px 16px',
-    position: 'fixed',
     left: 0,
     bottom: 0,
     display: 'flex',
