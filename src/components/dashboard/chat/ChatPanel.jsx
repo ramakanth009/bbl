@@ -209,7 +209,7 @@ const useStyles = makeStyles(() => ({
   chatHeaderRight: {
     display: "flex",
     alignItems: "flex-start",
-    justifyContent:"space-evenly",
+    justifyContent: "space-evenly",
     gap: "8px",
     flexShrink: 0,
     "& .MuiIconButton-root": {
@@ -523,13 +523,13 @@ const ChatPanel = ({
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-  
+
   const messagesEndRef = useRef(null);
   const messagesWrapperRef = useRef(null);
   const messageListRef = useRef(null);
   const inputContainerRef = useRef(null);
   const bodyScrollYRef = useRef(0);
-  
+
   // Request tracking and cancellation
   const abortControllerRef = useRef(null);
   const currentCharacterRef = useRef(null);
@@ -566,7 +566,7 @@ const ChatPanel = ({
 
     checkIfMobile();
     window.addEventListener('resize', checkIfMobile);
-    
+
     return () => {
       window.removeEventListener('resize', checkIfMobile);
     };
@@ -662,12 +662,12 @@ const ChatPanel = ({
     if (sidebarState?.getCalculatedChatWidth) {
       return sidebarState.getCalculatedChatWidth();
     }
-    
+
     // Fallback to centralized utility if sidebarState helper not available
     const viewportWidth = sidebarState?.viewportWidth || window.innerWidth;
     const isMobileView = sidebarState?.isMobile || isMobile;
     const isOpen = sidebarState?.isOpen || false;
-    
+
     return getContentWidth(viewportWidth, isOpen, isMobileView);
   };
 
@@ -737,7 +737,7 @@ const ChatPanel = ({
       }
       currentCharacterRef.current = character;
     }
-    
+
     return () => {
       cleanupCurrentRequest();
     };
@@ -748,7 +748,7 @@ const ChatPanel = ({
     if (!open) {
       cleanupCurrentRequest();
     }
-    
+
     return () => {
       cleanupCurrentRequest();
     };
@@ -787,7 +787,7 @@ const ChatPanel = ({
             ) {
               return; // allow scrolling
             }
-          } catch {}
+          } catch { }
           el = el.parentElement;
         }
 
@@ -855,7 +855,7 @@ const ChatPanel = ({
           initializeNewTemporarySession();
         }
       }
-      
+
       const loadCharacter = async () => {
         try {
           const response = await apiService.getCharacterById(character.id);
@@ -867,7 +867,7 @@ const ChatPanel = ({
           setError('Failed to load character details');
         }
       };
-      
+
       loadCharacter();
       loadUserSessions();
       loadLanguagePreferences();
@@ -984,7 +984,7 @@ const ChatPanel = ({
       setTemporarySessionId(null);
       setShowHistory(false);
       setError(null);
-      
+
       updateUrlWithSessionId(sessionIdToLoad, false);
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     } catch (error) {
@@ -999,7 +999,7 @@ const ChatPanel = ({
     // Cancel any ongoing request before starting new session
     cleanupCurrentRequest();
     console.log('[ChatPanel] Starting new session - cleaned up previous requests');
-    
+
     initializeChat();
     setShowHistory(false);
   };
@@ -1008,7 +1008,7 @@ const ChatPanel = ({
     console.log("[ChatPanel] Language change requested:", languageCode);
     console.log("[ChatPanel] Current language before change:", language);
     console.log("[ChatPanel] Is mobile:", isMobile);
-    
+
     try {
       setLanguage(languageCode);
       await saveLanguagePreferences(languageCode);
@@ -1021,24 +1021,24 @@ const ChatPanel = ({
   // CRITICAL FIX: Updated handleSend function with separate animation state
   const handleSend = async (messageText = null) => {
     const message = messageText || inputValue.trim();
-    
+
     // Enhanced validation
     if (!message) {
       console.warn('[ChatPanel] No message to send');
       return;
     }
-    
+
     if (loading) {
       console.warn('[ChatPanel] Already sending a message');
       return;
     }
-    
+
     if (!character) {
       console.error('[ChatPanel] No character selected');
       setError('No character selected. Please select a character to chat with.');
       return;
     }
-    
+
     if (!character.id || !character.name) {
       console.error('[ChatPanel] Invalid character data:', character);
       setError('Invalid character data. Please try selecting the character again.');
@@ -1051,18 +1051,18 @@ const ChatPanel = ({
     // Create new abort controller for this request
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
-    
+
     // Generate unique request ID
     const requestId = ++requestIdRef.current;
     const requestCharacterId = character.id;
-    
+
     console.log(`[ChatPanel] Starting request ${requestId} for character ${character.name} (${requestCharacterId})`);
 
     const userMessage = message;
     if (!messageText) {
       setInputValue(""); // Only clear input if message came from input field
     }
-    
+
     // CRITICAL FIX: Separate animation and loading states
     setLoading(true);
     setShowLoadingAnimation(true); // Show animation immediately
@@ -1133,20 +1133,20 @@ const ChatPanel = ({
               msg.language || (msg.role === "user" ? language : language),
             timestamp: msg.timestamp,
             ...(isLastMessage &&
-            isAssistantMessage &&
-            response.has_voice &&
-            response.audio_base64
+              isAssistantMessage &&
+              response.has_voice &&
+              response.audio_base64
               ? {
-                  audio_base64: response.audio_base64,
-                  has_voice: true,
-                }
+                audio_base64: response.audio_base64,
+                has_voice: true,
+              }
               : {}),
             ...(isLastMessage &&
-            isAssistantMessage &&
-            response.grounding_info
+              isAssistantMessage &&
+              response.grounding_info
               ? {
-                  grounding_info: response.grounding_info,
-                }
+                grounding_info: response.grounding_info,
+              }
               : {}),
           };
         });
@@ -1158,14 +1158,14 @@ const ChatPanel = ({
           language: response.response_language || language,
           ...(response.has_voice && response.audio_base64
             ? {
-                audio_base64: response.audio_base64,
-                has_voice: true,
-              }
+              audio_base64: response.audio_base64,
+              has_voice: true,
+            }
             : {}),
           ...(response.grounding_info
             ? {
-                grounding_info: response.grounding_info,
-              }
+              grounding_info: response.grounding_info,
+            }
             : {}),
         };
         setMessages((prev) => [...prev, assistantMessage]);
@@ -1175,7 +1175,7 @@ const ChatPanel = ({
     } catch (error) {
       // Hide animation immediately on error
       setShowLoadingAnimation(false);
-      
+
       // Don't show error if request was aborted (user switched characters)
       if (error.name === 'AbortError' || abortController.signal.aborted) {
         console.log(`[ChatPanel] Request ${requestId} was aborted by user action`);
@@ -1191,7 +1191,7 @@ const ChatPanel = ({
       console.error(`[ChatPanel] Request ${requestId} failed:`, error);
 
       let errorMessage = "Failed to send message. Please try again.";
-      
+
       // Enhanced error handling
       if (error.message) {
         if (error.message.includes("language")) {
@@ -1221,7 +1221,7 @@ const ChatPanel = ({
             break;
           case 403:
             errorMessage = "Access denied. You don't have permission to perform this action.";
-          break;
+            break;
           case 404:
             errorMessage = "Character or service not found. Please try selecting a different character.";
             break;
@@ -1242,14 +1242,14 @@ const ChatPanel = ({
       // Clear loading state and ensure animation is hidden
       setLoading(false);
       setShowLoadingAnimation(false);
-      
+
       // Only clear controller if this is still the current request
       if (abortControllerRef.current === abortController) {
         abortControllerRef.current = null;
       }
     }
   };
- 
+
   const handleBackClick = () => {
     onClose();
   };
@@ -1316,7 +1316,7 @@ const ChatPanel = ({
               className={classes.backButton}
               onClick={handleBackClick}
               title="Back to Characters"
-              sx={{ 
+              sx={{
                 color: "rgba(255,255,255,0.7)",
                 display: { xs: 'flex', sm: 'flex', md: 'none' } // Hide on desktop
               }}
@@ -1332,12 +1332,12 @@ const ChatPanel = ({
               <Typography variant="h6" fontWeight="bold" noWrap>
                 {character.name}
               </Typography>
-              
+
               {/* Mobile status indicator - WhatsApp style */}
               <Typography className={classes.mobileStatusIndicator}>
                 by GigaSpace
               </Typography>
-            
+
               <Box
                 sx={{
                   display: "flex",
@@ -1446,17 +1446,17 @@ const ChatPanel = ({
             </Box>
 
             {/* Share Button - Desktop (moved next to Close) */}
-            <ShareButton 
-              character={character} 
-              section="discover" 
+            <ShareButton
+              character={character}
+              section="discover"
               size="medium"
               variant="icon"
             />
 
             <Tooltip title="Close" placement="bottom" arrow>
-              <IconButton 
-                onClick={onClose} 
-                sx={{ 
+              <IconButton
+                onClick={onClose}
+                sx={{
                   color: "text.secondary",
                   display: { xs: 'none', sm: 'none', md: 'flex' } // Show only on desktop
                 }}
@@ -1481,7 +1481,7 @@ const ChatPanel = ({
         {/* Desktop-only sections - completely hidden on mobile */}
         <Box sx={{ "@media (max-width: 600px)": { display: "none !important" } }}>
           {character.tags && (
-            <Box sx={{ width: "100%"}}>
+            <Box sx={{ width: "100%" }}>
               <Typography component="span" className={classes.characterTags}>
                 {character.tags}
               </Typography>
@@ -1535,7 +1535,7 @@ const ChatPanel = ({
               <HistoryIcon fontSize="small" />
               <Typography variant="body2">Chat History</Typography>
             </IconButton>
-            
+
             <IconButton
               onClick={() => {
                 console.log("[Mobile] Language dropdown toggle clicked");
@@ -1562,10 +1562,10 @@ const ChatPanel = ({
                 {showLanguageDropdown ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
               </Box>
             </IconButton>
-            
+
             {showLanguageDropdown && (
-              <Box sx={{ 
-                ml: 2, 
+              <Box sx={{
+                ml: 2,
                 borderLeft: "2px solid rgba(99, 102, 241, 0.3)",
                 pl: 1,
                 backgroundColor: "rgba(0, 0, 0, 0.2)",
@@ -1610,7 +1610,7 @@ const ChatPanel = ({
                 ))}
               </Box>
             )}
-            
+
             <IconButton
               onClick={() => {
                 startNewSession();
@@ -1631,7 +1631,7 @@ const ChatPanel = ({
               <Add fontSize="small" />
               <Typography variant="body2">New Chat</Typography>
             </IconButton>
-            
+
             <Box sx={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)", mt: 1, pt: 1 }}>
               <Tooltip title="Close Chat" placement="left" arrow>
                 <IconButton
@@ -1692,7 +1692,7 @@ const ChatPanel = ({
           </Alert>
         </Box>
       )}
-      
+
       <Box className={classes.messagesWrapper} ref={messagesWrapperRef}>
         <Box className={classes.messagesContent}>
           {/* CRITICAL FIX: Use showLoadingAnimation instead of loading */}
@@ -1707,10 +1707,10 @@ const ChatPanel = ({
         </Box>
       </Box>
 
-      <Box ref={inputContainerRef} sx={{ 
-        display: 'flex', 
+      <Box ref={inputContainerRef} sx={{
+        display: 'flex',
         flexDirection: 'column',
-        gap: 1, 
+        gap: 1,
         p: 2,
         // Mobile-specific input area styling
         "@media (max-width: 600px)": {
@@ -1745,33 +1745,16 @@ const ChatPanel = ({
           maxQuestions={isMobile ? 3 : 5}
           showCategoryLabel={!isMobile}
         />
-        
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
+
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
           gap: 2,
           "@media (max-width: 600px)": {
             gap: 1,
           },
         }}>
-          <Box sx={{ 
-            flexGrow: 1,
-            "@media (max-width: 600px)": {
-              // Ensure input takes most space on mobile
-              flex: 1,
-              minWidth: 0,
-            },
-          }}>
-            <ChatInput
-              value={inputValue}
-              onChange={setInputValue}
-              onSend={handleSend}
-              loading={loading}
-              placeholder={isMobile ? `Message ${character.name}...` : `Type in ${language}...`}
-               key={`chat-input-${language}`} // Force re-render when language changes
-            />
-          </Box>
-          
+
           <Box
             onClick={startNewSession}
             title="New Conversation"
@@ -1810,6 +1793,25 @@ const ChatPanel = ({
               <Add />
             </IconButton>
           </Box>
+          <Box sx={{
+            flexGrow: 1,
+            "@media (max-width: 600px)": {
+              // Ensure input takes most space on mobile
+              flex: 1,
+              minWidth: 0,
+            },
+          }}>
+            <ChatInput
+              value={inputValue}
+              onChange={setInputValue}
+              onSend={handleSend}
+              loading={loading}
+              placeholder={isMobile ? `Message ${character.name}...` : `Type in ${language}...`}
+              key={`chat-input-${language}`} // Force re-render when language changes
+            />
+          </Box>
+
+
         </Box>
       </Box>
       {showHistory && (
