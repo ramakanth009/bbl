@@ -39,7 +39,9 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     width: '100%',
     '@media (max-width: 960px)': {
-      flexDirection: 'column',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
       gap: '40px',
     },
     '@media (max-width: 600px)': {
@@ -53,7 +55,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'column',
     '@media (max-width: 960px)': {
-      flex: 'none',
+      flex: '0 0 calc(50% - 20px)',
       textAlign: 'center',
     },
   },
@@ -62,6 +64,8 @@ const useStyles = makeStyles(() => ({
   brandSection: {
     '@media (max-width: 960px)': {
       alignItems: 'center',
+      flex: '0 0 100%',
+      marginBottom: '20px',
     },
   },
   brandContainer: {
@@ -198,15 +202,9 @@ const Footer = () => {
                 <li className={classes.linkItem}>
                   <Typography
                     className={classes.footerLink}
-                    onClick={() => handleLinkClick('/about')}
-                  >
-                    About
-                  </Typography>
-                </li>
-                <li className={classes.linkItem}>
-                  <Typography
-                    className={classes.footerLink}
                     onClick={() => handleLinkClick('/blog')}
+                    component="a"
+                    href="/blog"
                   >
                     Blog
                   </Typography>
@@ -214,9 +212,11 @@ const Footer = () => {
                 <li className={classes.linkItem}>
                   <Typography
                     className={classes.footerLink}
-                    onClick={() => handleLinkClick('/careers')}
+                    onClick={() => handleLinkClick('/faq')}
+                    component="a"
+                    href="/faq"
                   >
-                    Careers
+                    FAQs
                   </Typography>
                 </li>
               </Box>
@@ -231,25 +231,11 @@ const Footer = () => {
                 <li className={classes.linkItem}>
                   <Typography
                     className={classes.footerLink}
-                    onClick={() => handleLinkClick('/privacy-policy')}
+                    onClick={() => handleLinkClick('/terms')}
+                    component="a"
+                    href="/terms"
                   >
-                    Privacy Policy
-                  </Typography>
-                </li>
-                <li className={classes.linkItem}>
-                  <Typography
-                    className={classes.footerLink}
-                    onClick={() => handleLinkClick('/terms-of-service')}
-                  >
-                    Terms of Service
-                  </Typography>
-                </li>
-                <li className={classes.linkItem}>
-                  <Typography
-                    className={classes.footerLink}
-                    onClick={() => handleLinkClick('/cookie-policy')}
-                  >
-                    Cookie Policy
+                    Terms & Policies
                   </Typography>
                 </li>
               </Box>

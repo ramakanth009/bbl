@@ -21,9 +21,15 @@ const useStyles = makeStyles(() => ({
   headerLinks: {
     display: 'flex',
     alignItems: 'center',
-    gap: '24px',
+    gap: '32px',
+    '@media (max-width: 768px)': {
+      gap: '24px',
+    },
     '@media (max-width: 600px)': {
       gap: '16px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '12px',
     },
   },
   headerLink: {
@@ -34,12 +40,23 @@ const useStyles = makeStyles(() => ({
     padding: '6px 0',
     borderBottom: '1px solid transparent',
     transition: 'all 0.2s ease',
+    whiteSpace: 'nowrap',
     '&:hover': {
       borderBottom: '1px solid #fff',
       opacity: 0.9,
     },
-    '@media (max-width: 600px)': {
+    '&.active': {
+      borderBottom: '1px solid #fff',
+      fontWeight: 600,
+    },
+    '@media (max-width: 768px)': {
       fontSize: '0.9rem',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '0.85rem',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.8rem',
     },
   },
 }));
@@ -50,6 +67,9 @@ const AuthHeader = () => {
   return (
     <Box component="header" className={classes.headerContainer}>
       <Box className={classes.headerLinks}>
+        <Link to="/" className={classes.headerLink}>
+          Home
+        </Link>
         <Link to="/blog" className={classes.headerLink}>
           Blog
         </Link>
@@ -57,7 +77,7 @@ const AuthHeader = () => {
           FAQ
         </Link>
         <Link to="/terms" className={classes.headerLink}>
-          Terms
+          Terms & Policies
         </Link>
       </Box>
     </Box>

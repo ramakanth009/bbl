@@ -3,6 +3,7 @@ import { Container, Typography, Box, Accordion, AccordionSummary, AccordionDetai
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { makeStyles } from '@mui/styles';
 import BlogNavbar from '../../components/blog/BlogNavbar';
+import Footer from '../landing_page/landing_components/Footer';
 
 const useStyles = makeStyles({
   faqContainer: {
@@ -310,11 +311,7 @@ const FAQ = () => {
       </Container>
 
       {/* Footer */}
-      <Box className={classes.footer}>
-        <Typography color="#a0a0a0">
-          &copy; 2025 GigaSpace. All rights reserved.
-        </Typography>
-      </Box>
+      <Footer />
     </Box>
   );
 };

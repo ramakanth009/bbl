@@ -79,6 +79,32 @@ const useStyles = makeStyles({
       display: 'none', // Hide text on very small screens
     },
   },
+  navLinks: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1.25rem',
+    marginLeft: '2rem',
+    '@media (max-width: 900px)': {
+      marginLeft: '1rem',
+      gap: '1rem',
+    },
+    '@media (max-width: 600px)': {
+      display: 'none',
+    },
+  },
+  navLink: {
+    color: '#ffffff',
+    textDecoration: 'none',
+    fontSize: '0.95rem',
+    fontWeight: 500,
+    borderBottom: '1px solid transparent',
+    padding: '6px 0',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      borderBottom: '1px solid #ffffff',
+      opacity: 0.9,
+    },
+  },
   navActions: {
     display: 'flex',
     alignItems: 'center',
@@ -203,6 +229,14 @@ const BlogNavbar = () => {
             className={classes.logo}
           />
         </Link>
+
+        {/* Primary Navigation Links */}
+        <Box className={classes.navLinks}>
+          <Link to="/" className={classes.navLink}>Home</Link>
+          <Link to="/blog" className={classes.navLink}>Blog</Link>
+          <Link to="/faq" className={classes.navLink}>FAQ</Link>
+          <Link to="/terms" className={classes.navLink}>Terms & Policies</Link>
+        </Box>
 
         {/* Navigation Actions */}
         <Box className={classes.navActions}>

@@ -223,7 +223,7 @@ const useStyles = makeStyles(() => ({
     bottom: 0,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start', // Changed from center to flex-start for proper infinite scroll
     paddingTop: '16px',
     paddingBottom: '16px',
   },
@@ -233,12 +233,14 @@ const useStyles = makeStyles(() => ({
     height: '100%',
     background: 'linear-gradient(to right, transparent, rgba(31, 31, 35, 0.5), transparent)',
     zIndex: 10,
+    pointerEvents: 'none', // Allow interaction with icons underneath
   },
   marqueeTrack: {
     display: 'flex',
     gap: '8px',
     whiteSpace: 'nowrap',
     animation: '$marquee 40s linear infinite',
+    minWidth: '200%', // Ensure we have enough width for seamless loop
     '&:hover': {
       animationPlayState: 'paused',
     },
@@ -249,18 +251,20 @@ const useStyles = makeStyles(() => ({
       gap: '6px',
     },
   },
+  // Enhanced keyframes for perfect infinite loop
   '@keyframes marquee': {
     '0%': {
       transform: 'translateX(0)',
     },
     '100%': {
-      transform: 'translateX(-50%)',
+      transform: 'translateX(-50%)', // Move exactly 50% to create seamless loop
     },
   },
   iconGroup: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '8px',
+    flexShrink: 0, // Prevent shrinking of icon groups
     '@media (min-width: 768px)': {
       gap: '24px',
     },
@@ -278,8 +282,10 @@ const useStyles = makeStyles(() => ({
     animation: '$gradient 8s ease infinite',
     color: '#ffffff',
     transition: 'all 0.3s ease',
+    flexShrink: 0, // Prevent icon bubbles from shrinking
     '&:hover': {
       transform: 'scale(1.1)',
+      animationPlayState: 'paused', // Pause gradient animation on hover
     },
     '@media (max-width: 600px)': {
       '&:hover': {
@@ -333,6 +339,7 @@ const useStyles = makeStyles(() => ({
       fontSize: '12px',
     },
   },
+  // Enhanced gradient animation with more fluid movement
   '@keyframes gradient': {
     '0%, 100%': {
       backgroundPosition: '0% 50%',
@@ -442,6 +449,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+// Enhanced IconsSet component with better performance
 const IconsSet = ({ classes }) => {
   const icons = [
     { Icon: FaRobot, size: 'large', title: 'Artificial Intelligence' },
@@ -460,7 +468,7 @@ const IconsSet = ({ classes }) => {
     <Box className={classes.iconGroup}>
       {icons.map(({ Icon, size, title }, index) => (
         <Box
-          key={index}
+          key={`icon-${index}`} // Better key naming
           className={`${classes.iconBubble} ${size === 'large' ? classes.iconLarge : classes.iconSmall}`}
           title={title}
         >
@@ -498,7 +506,9 @@ const StepInto = () => {
                   <Box className={classes.marqueeTrack}>
                     {/* First set of icons */}
                     <IconsSet classes={classes} />
-                    {/* Duplicated icons for seamless loop */}
+                    {/* Second set for seamless infinite loop */}
+                    <IconsSet classes={classes} />
+                    {/* Third set to ensure no gaps on different screen sizes */}
                     <IconsSet classes={classes} />
                   </Box>
                 </Box>

@@ -78,10 +78,6 @@ const useStyles = makeStyles(() => ({
   section: {
     paddingTop: '80px',
     paddingBottom: '80px',
-    '@media (max-width: 768px)': {
-      paddingTop: '60px',
-      paddingBottom: '60px',
-    },
   },
   contentWrapper: {
     width: '100%',
@@ -102,34 +98,11 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center',
     width: '100%',
     gap: '24px',
-    '@media (max-width: 768px)': {
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
   },
   cardWrapper: {
     flex: '1',
     minWidth: '250px',
     maxWidth: '280px',
-    '@media (max-width: 1200px)': {
-      minWidth: '220px',
-    },
-    '@media (max-width: 992px)': {
-      minWidth: '200px',
-    },
-    '@media (max-width: 768px)': {
-      width: '100%',
-      maxWidth: '100%',
-      marginBottom: '24px',
-      '&:last-child': {
-        marginBottom: '0',
-      },
-    },
-  },
-  '@media (max-width: 768px)': {
-    sectionTitle: {
-      fontSize: '1.875rem',
-    },
   },
 }));
 
@@ -181,7 +154,7 @@ const ChatWithLegends = () => {
         id="personalities"
         className={classes.section}
       >
-        <Container className={classes.container}>
+        <Container maxWidth={false} className={classes.container}>
           <Box className={classes.contentWrapper}>
             <Typography 
               component="h2" 

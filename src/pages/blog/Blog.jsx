@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Typography, Box, Card, CardContent, Button, TextField, Grid, CardMedia, Chip } from '@mui/material';
+import Footer from '../landing_page/landing_components/Footer';
 import { makeStyles } from '@mui/styles';
 import BlogNavbar from '../../components/blog/BlogNavbar';
 
@@ -614,9 +615,6 @@ const useStyles = makeStyles({
     },
   },
   footer: {
-    background: '#0c0c0c',
-    color: '#ffffff',
-    padding: '2rem',
     marginTop: '5rem',
     textAlign: 'center',
     borderTop: '1px solid #2a2a2e',
@@ -753,11 +751,7 @@ const Blog = () => {
       </Box>
 
       {/* Footer */}
-      <Box className={classes.footer}>
-        <Typography color="#a0a0a0">
-          &copy; 2025 GigaSpace. All rights reserved.
-        </Typography>
-      </Box>
+      <Footer />
     </Box>
   );
 };

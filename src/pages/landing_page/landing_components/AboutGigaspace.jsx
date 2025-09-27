@@ -9,42 +9,116 @@ const useStyles = makeStyles({
     minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
-    padding: '48px 0',
+    padding: '64px 0',
     background: 'rgba(31,31,35,0.2)',
+    '@media (max-width: 1200px)': {
+      padding: '56px 0',
+    },
+    '@media (max-width: 960px)': {
+      padding: '48px 0',
+      minHeight: 'auto',
+    },
+    '@media (max-width: 600px)': {
+      padding: '40px 0',
+    },
+    '@media (max-width: 480px)': {
+      padding: '32px 0',
+    },
   },
   container: {
     width: '100%',
-    maxWidth: 1280,
     margin: '0 auto',
-    padding: '0 16px',
+    padding: '0 32px',
+    '@media (max-width: 1440px)': {
+      padding: '0 28px',
+    },
+    '@media (max-width: 1200px)': {
+      padding: '0 24px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '0 20px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '0 16px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '0 12px',
+    },
   },
   titleWrapper: {
     textAlign: 'center',
-    margin: '0 auto 32px',
+    margin: '0 auto 48px',
     maxWidth: 896,
+    '@media (max-width: 960px)': {
+      margin: '0 auto 40px',
+    },
+    '@media (max-width: 600px)': {
+      margin: '0 auto 32px',
+    },
+    '@media (max-width: 480px)': {
+      margin: '0 auto 24px',
+    },
   },
   title: {
     display: 'inline-block',
-    fontSize: '2.5rem',
+    fontSize: '3.5rem',
     fontWeight: 800,
     color: '#ffffff',
     position: 'relative',
     textShadow: '0 0 15px rgba(99,102,241,0.5)',
-    '@media (min-width: 600px)': {
+    lineHeight: 1.2,
+    '@media (max-width: 1440px)': {
+      fontSize: '3.25rem',
+    },
+    '@media (max-width: 1200px)': {
       fontSize: '3rem',
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '2.75rem',
+    },
+    '@media (max-width: 768px)': {
+      fontSize: '2.5rem',
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '2.25rem',
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '2rem',
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '1.875rem',
+    },
+    '@media (max-width: 320px)': {
+      fontSize: '1.75rem',
     },
   },
   bubbles: {
     display: 'flex',
-    flexWrap: 'wrap',
+    flexWrap: 'nowrap',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '40px',
+    gap: '32px',
     padding: '16px 0',
+    maxWidth: '100%',
+    overflowX: 'auto',
+    '@media (max-width: 1200px)': {
+      gap: '24px',
+    },
+    '@media (max-width: 960px)': {
+      flexWrap: 'wrap',
+      gap: '20px',
+      flexDirection: 'column',
+      alignItems: 'center',
+      overflowX: 'visible',
+    },
+    '@media (max-width: 600px)': {
+      gap: '16px',
+      padding: '8px 0',
+    },
   },
   bubble: {
-    width: 350,
-    height: 350,
+    width: 420,
+    height: 420,
     borderRadius: '50%',
     background: 'radial-gradient(circle at 30% 30%, rgba(99,102,241,0.15), rgba(31,31,35,0.9))',
     backdropFilter: 'blur(5px)',
@@ -57,32 +131,121 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',
+    flex: 'none',
+    '@media (max-width: 1440px)': {
+      width: 400,
+      height: 400,
+    },
+    '@media (max-width: 1200px)': {
+      width: 380,
+      height: 380,
+    },
+    '@media (max-width: 960px)': {
+      width: 360,
+      height: 360,
+      maxWidth: '90vw',
+      maxHeight: '90vw',
+    },
     '@media (max-width: 768px)': {
+      width: 340,
+      height: 340,
+    },
+    '@media (max-width: 600px)': {
+      width: 320,
+      height: 320,
+    },
+    '@media (max-width: 480px)': {
+      width: 300,
+      height: 300,
+    },
+    '@media (max-width: 375px)': {
       width: 280,
       height: 280,
-      margin: '16px 0',
+    },
+    '@media (max-width: 320px)': {
+      width: 260,
+      height: 260,
     },
     '&:hover': {
       transform: 'scale(1.03)',
-      boxShadow: '0 0 35px rgba(99,102,241,0.3), inset 0 0 25px rgba(255,255,255,0.15)'
+      boxShadow: '0 0 35px rgba(99,102,241,0.3), inset 0 0 25px rgba(255,255,255,0.15)',
+      '@media (max-width: 768px)': {
+        transform: 'scale(1.02)',
+      },
+      '@media (max-width: 480px)': {
+        transform: 'scale(1.01)',
+      },
     }
   },
   bubbleContent: {
     position: 'relative',
     zIndex: 2,
-    padding: '24px',
+    padding: '40px',
     width: '100%',
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+    alignItems: 'center',
+    boxSizing: 'border-box',
+    '@media (max-width: 1200px)': {
+      padding: '36px',
+    },
+    '@media (max-width: 960px)': {
+      padding: '32px',
+    },
+    '@media (max-width: 600px)': {
+      padding: '28px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '24px',
+    },
+    '@media (max-width: 375px)': {
+      padding: '20px',
+    },
+    '@media (max-width: 320px)': {
+      padding: '18px',
+    },
   },
   bubbleText: {
-    fontSize: '0.95rem',
-    lineHeight: 1.7,
+    fontSize: '1.1rem',
+    lineHeight: 1.6,
     color: '#e0e0e0',
     margin: 0,
-    textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+    textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+    textAlign: 'center',
+    wordWrap: 'break-word',
+    overflowWrap: 'break-word',
+    hyphens: 'auto',
+    maxWidth: '100%',
+    '@media (max-width: 1200px)': {
+      fontSize: '1.05rem',
+      lineHeight: 1.55,
+    },
+    '@media (max-width: 960px)': {
+      fontSize: '1rem',
+      lineHeight: 1.5,
+    },
+    '@media (max-width: 768px)': {
+      fontSize: '0.95rem',
+      lineHeight: 1.45,
+    },
+    '@media (max-width: 600px)': {
+      fontSize: '0.9rem',
+      lineHeight: 1.4,
+    },
+    '@media (max-width: 480px)': {
+      fontSize: '0.85rem',
+      lineHeight: 1.35,
+    },
+    '@media (max-width: 375px)': {
+      fontSize: '0.8rem',
+      lineHeight: 1.3,
+    },
+    '@media (max-width: 320px)': {
+      fontSize: '0.75rem',
+      lineHeight: 1.25,
+    },
   },
 });
 
@@ -106,6 +269,7 @@ const AboutGigaspace = () => {
               </Typography>
             </Box>
           </Box>
+          
           <Box className={classes.bubble}>
             <Box className={classes.bubbleContent}>
               <Typography className={classes.bubbleText}>
@@ -113,6 +277,7 @@ const AboutGigaspace = () => {
               </Typography>
             </Box>
           </Box>
+          
           <Box className={classes.bubble}>
             <Box className={classes.bubbleContent}>
               <Typography className={classes.bubbleText}>

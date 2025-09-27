@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Paper, Container, Button } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { FaCrown, FaOm, FaEdit, FaArrowRight } from 'react-icons/fa';
+import { FaCrown, FaHistory, FaEdit, FaArrowRight } from 'react-icons/fa';
 
 const useStyles = makeStyles(() => ({
   section: {
@@ -264,6 +264,11 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'flex-start',
     gap: '64px',
+    padding: '24px',
+    borderRadius: '16px',
+    background: 'linear-gradient(180deg, rgba(99,102,241,0.06), rgba(99,102,241,0.02))',
+    border: '1px solid rgba(99,102,241,0.15)',
+    boxShadow: '0 20px 40px -20px rgba(99,102,241,0.35), inset 0 0 0 1px rgba(255,255,255,0.02)',
     '@media (max-width: 1200px)': {
       gap: '48px',
     },
@@ -344,13 +349,14 @@ const useStyles = makeStyles(() => ({
   illustration: {
     width: '100%',
     height: '300px',
-    backgroundColor: '#6366f1',
+    background: 'radial-gradient(circle at 30% 30%, #818cf8 0%, #6366f1 60%, #4f46e5 100%)',
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    opacity: 0.8,
+    opacity: 0.95,
+    boxShadow: '0 20px 40px -15px rgba(79,70,229,0.5), inset 0 -10px 30px rgba(0,0,0,0.2)',
     '@media (max-width: 1200px)': {
       height: '250px',
     },
@@ -377,6 +383,31 @@ const useStyles = makeStyles(() => ({
       fontSize: '36px',
     },
   },
+  bubble: {
+    position: 'absolute',
+    borderRadius: '50%',
+    background: 'rgba(255, 255, 255, 0.1)',
+    boxShadow: '0 10px 20px -10px rgba(0,0,0,0.4)',
+    backdropFilter: 'blur(2px)',
+  },
+  bubble1: {
+    width: '48px',
+    height: '48px',
+    top: '-12px',
+    right: '22px',
+  },
+  bubble2: {
+    width: '72px',
+    height: '72px',
+    bottom: '18px',
+    right: '-8px',
+  },
+  bubble3: {
+    width: '36px',
+    height: '36px',
+    top: '26px',
+    left: '-6px',
+  },
   exploreButton: {
     backgroundColor: '#6366f1',
     color: '#ffffff',
@@ -390,7 +421,8 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    margin: '0 auto',
+    marginTop:"20px",
+    // margin: '0 auto',
     '&:hover': {
       backgroundColor: '#5145cd',
       transform: 'translateY(-2px)',
@@ -412,7 +444,7 @@ const historicalFigures = [
     century: '4th Century BCE',
   },
   {
-    icon: FaOm,
+    icon: FaHistory,
     title: 'Swami Vivekananda',
     subtitle: 'Spiritual Leader & Reformer',
     description: 'Ask the influential spiritual leader about Vedanta philosophy, meditation, and his vision for youth empowerment.',
@@ -507,7 +539,10 @@ const ChatWithHistoricalFigures = () => {
 
           <Box className={classes.illustrationSection}>
             <Box className={classes.illustration}>
-              <FaOm className={classes.illustrationIcon} />
+              <FaHistory className={classes.illustrationIcon} />
+              <Box className={`${classes.bubble} ${classes.bubble1}`} />
+              <Box className={`${classes.bubble} ${classes.bubble2}`} />
+              <Box className={`${classes.bubble} ${classes.bubble3}`} />
             </Box>
           </Box>
         </Box>
