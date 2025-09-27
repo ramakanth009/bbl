@@ -133,54 +133,7 @@ const CategoryLoadingAnimation = ({
 
   // Show error state (fallback to default animation)
   if (error && !currentAnimation) {
-    return (
-      <Box
-        className={className}
-        style={style}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Box
-          component="div"
-          sx={{
-            width: `${size}px`,
-            height: `${size}px`,
-            backgroundColor: 'rgba(99, 102, 241, 0.1)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            animation: 'pulse 1.5s ease-in-out infinite',
-            '@keyframes pulse': {
-              '0%': {
-                opacity: 0.6,
-                transform: 'scale(0.95)',
-              },
-              '50%': {
-                opacity: 1,
-                transform: 'scale(1.05)',
-              },
-              '100%': {
-                opacity: 0.6,
-                transform: 'scale(0.95)',
-              },
-            },
-          }}
-        >
-          <Box
-            sx={{
-              width: `${size * 0.3}px`,
-              height: `${size * 0.3}px`,
-              backgroundColor: '#6366f1',
-              borderRadius: '50%',
-            }}
-          />
-        </Box>
-      </Box>
-    );
+    return null;
   }
 
   return (
