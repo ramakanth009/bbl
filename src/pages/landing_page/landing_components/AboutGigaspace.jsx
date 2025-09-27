@@ -6,7 +6,6 @@ const useStyles = makeStyles({
   section: {
     position: 'relative',
     overflow: 'hidden',
-    minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
     padding: '64px 0',

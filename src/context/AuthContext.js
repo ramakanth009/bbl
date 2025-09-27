@@ -174,7 +174,6 @@ export const AuthProvider = ({ children }) => {
   // Login with username/password
   const login = async (username, password) => {
     try {
-      setLoading(true);
       const response = await apiService.login(username, password);
       
       if (response.token) {
@@ -194,8 +193,6 @@ export const AuthProvider = ({ children }) => {
         success: false,
         error: error.response?.data?.error || error.response?.data?.detail || error.message || 'Login failed'
       };
-    } finally {
-      setLoading(false);
     }
   };
 

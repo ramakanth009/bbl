@@ -38,7 +38,7 @@ function DashboardWithMobileModal() {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [modalError, setModalError] = React.useState('');
   const [modalLoading, setModalLoading] = React.useState(false);
-
+ 
   // Show modal only after dashboard is loaded and needs_mobile is true
   React.useEffect(() => {
     if (profileStatus && profileStatus.needs_mobile) {

@@ -6,26 +6,22 @@ import { FaCrown, FaHistory, FaSmile } from 'react-icons/fa';
 
 const useStyles = makeStyles(() => ({
   section: {
-    minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
-    paddingTop: '80px',
-    paddingBottom: '80px',
+    paddingTop: '10px',
+    paddingBottom: '20px',
     backgroundColor: '#0c0c0c',
     '@media (max-width: 1200px)': {
-      paddingTop: '70px',
-      paddingBottom: '70px',
-      minHeight: '90vh',
+      paddingTop: '10px',
+      paddingBottom: '18px',
     },
     '@media (max-width: 960px)': {
-      paddingTop: '60px',
-      paddingBottom: '60px',
-      minHeight: '80vh',
+      paddingTop: '8px',
+      paddingBottom: '16px',
     },
     '@media (max-width: 600px)': {
-      paddingTop: '50px',
-      paddingBottom: '50px',
-      minHeight: '70vh',
+      paddingTop: '6px',
+      paddingBottom: '12px',
     },
   },
   container: {

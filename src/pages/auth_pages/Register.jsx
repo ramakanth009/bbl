@@ -25,7 +25,7 @@ import GoogleLogo from "../../assets/google-logo.svg";
 import apiService from "../../services/api";
 import AuthFooter from "../../components/common/AuthFooter";
 import AuthHeader from "../../components/common/AuthHeader";
-
+ 
 const StarField = React.lazy(() => import("../../components/common/StarField"));
 
 const useStyles = makeStyles(() => ({
@@ -576,12 +576,14 @@ const Register = () => {
     }
   };
 
-  // Handle form submission - NO FRONTEND VALIDATION, all handled by backend
+  // Handle form submission with frontend validation
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     setLoading(true);
     setError("");
+    
+    // Reset all field errors
     setFieldErrors({
       username: "",
       email: "",
@@ -589,6 +591,27 @@ const Register = () => {
       password: "",
       confirmPassword: "",
     });
+    
+    // Validate all fields
+    const isUsernameValid = validateField('username', username);
+    const isEmailValid = validateField('email', email);
+    const isMobileValid = validateField('mobileNumber', mobileNumber);
+    const isPasswordValid = validateField('password', password);
+    const isConfirmPasswordValid = password === confirmPassword && confirmPassword !== '';
+    
+    // Set confirm password error if needed
+    if (!isConfirmPasswordValid) {
+      setFieldError('confirmPassword', 'Passwords do not match');
+    } else {
+      clearFieldError('confirmPassword');
+    }
+    
+    // If any validation fails, stop submission
+    if (!isUsernameValid || !isEmailValid || !isMobileValid || !isPasswordValid || !isConfirmPasswordValid) {
+      setLoading(false);
+      setError("Please fill in all required fields correctly.");
+      return;
+    }
 
     try {
       const result = await register(username, email, mobileNumber, password);

@@ -8,12 +8,16 @@ const useStyles = makeStyles(() => ({
     margin: '0 auto',
     padding: '0 10px !important',
   },
+  section: {
+    paddingTop: '40px',
+    paddingBottom: '40px',
+  },
   sectionTitle: {
     position: 'relative',
     display: 'inline-block',
     fontSize: '2.25rem',
     fontWeight: 'bold',
-    marginBottom: '10rem',
+    marginBottom: '2.5rem',
     color: '#ffffff',
     '&::after': {
       content: '""',
@@ -74,10 +78,6 @@ const useStyles = makeStyles(() => ({
     borderBottom: '4px solid #818cf8',
     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
     margin: 0,
-  },
-  section: {
-    paddingTop: '80px',
-    paddingBottom: '80px',
   },
   contentWrapper: {
     width: '100%',

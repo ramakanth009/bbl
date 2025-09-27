@@ -21,7 +21,6 @@ const HeroSection = () => {
       sx={{
         position: 'relative',
         display: 'flex',
-        // minHeight: '100vh',
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',

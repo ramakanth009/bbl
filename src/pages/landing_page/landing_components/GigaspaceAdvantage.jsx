@@ -5,28 +5,28 @@ import { FaBrain, FaGamepad, FaLightbulb, FaHeart } from 'react-icons/fa';
 
 const useStyles = makeStyles(() => ({
   section: {
-    paddingTop: '80px',
-    paddingBottom: '80px',
+    paddingTop: '30px',
+    paddingBottom: '10px',
     backgroundColor: '#0c0c0c',
     '@media (max-width: 1200px)': {
-      paddingTop: '70px',
-      paddingBottom: '70px',
+      paddingTop: '28px',
+      paddingBottom: '10px',
     },
     '@media (max-width: 960px)': {
-      paddingTop: '60px',
-      paddingBottom: '60px',
+      paddingTop: '24px',
+      paddingBottom: '8px',
     },
     '@media (max-width: 600px)': {
-      paddingTop: '50px',
-      paddingBottom: '50px',
+      paddingTop: '20px',
+      paddingBottom: '8px',
     },
     '@media (max-width: 480px)': {
-      paddingTop: '40px',
-      paddingBottom: '40px',
+      paddingTop: '16px',
+      paddingBottom: '6px',
     },
     '@media (max-width: 375px)': {
-      paddingTop: '30px',
-      paddingBottom: '30px',
+      paddingTop: '12px',
+      paddingBottom: '4px',
     },
   },
   container: {

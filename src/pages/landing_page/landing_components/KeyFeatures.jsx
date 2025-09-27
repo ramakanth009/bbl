@@ -17,16 +17,16 @@ import {
 
 const useStyles = makeStyles(() => ({
   section: {
-    paddingTop: '80px',
-    paddingBottom: '80px',
+    paddingTop: '40px',
+    paddingBottom: '40px',
     backgroundColor: '#1f1f23',
     '@media (max-width: 1200px)': {
-      paddingTop: '70px',
-      paddingBottom: '70px',
+      paddingTop: '35px',
+      paddingBottom: '35px',
     },
     '@media (max-width: 960px)': {
-      paddingTop: '60px',
-      paddingBottom: '60px',
+      paddingTop: '30px',
+      paddingBottom: '30px',
     },
     '@media (max-width: 600px)': {
       paddingTop: '50px',

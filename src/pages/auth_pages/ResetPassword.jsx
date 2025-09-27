@@ -25,7 +25,7 @@ import { makeStyles } from '@mui/styles';
 import apiService from '../../services/api';
 import AuthFooter from '../../components/common/AuthFooter';
 import AuthHeader from '../../components/common/AuthHeader';
-
+  
 const StarField = React.lazy(() => import('../../components/common/StarField'));
 const CardAnimation = React.lazy(() => import('../../components/common/CardAnimation'));
 
