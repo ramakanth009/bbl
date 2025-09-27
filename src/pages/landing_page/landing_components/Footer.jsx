@@ -8,15 +8,15 @@ const useStyles = makeStyles(() => ({
   footer: {
     backgroundColor: '#0a0a0a',
     borderTop: '1px solid #1f1f1f',
-    paddingTop: '80px',
-    paddingBottom: '40px',
+    paddingTop: '30px',
+    paddingBottom: '10px',
     '@media (max-width: 960px)': {
-      paddingTop: '60px',
-      paddingBottom: '32px',
+      paddingTop: '24px',
+      paddingBottom: '8px',
     },
     '@media (max-width: 600px)': {
-      paddingTop: '48px',
-      paddingBottom: '24px',
+      paddingTop: '20px',
+      paddingBottom: '6px',
     },
   },
   container: {
@@ -146,10 +146,10 @@ const useStyles = makeStyles(() => ({
   // Bottom Bar
   bottomBar: {
     borderTop: '1px solid #1f1f1f',
-    paddingTop: '32px',
+    paddingTop: '10px',
     textAlign: 'center',
     '@media (max-width: 600px)': {
-      paddingTop: '24px',
+      paddingTop: '5px',
     },
   },
   copyright: {
