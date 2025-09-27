@@ -20,13 +20,13 @@ import {
   VisibilityOff,
 } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
-import { useAuth } from "../context/AuthContext";
-import GoogleLogo from "../assets/google-logo.svg";
-import apiService from "../services/api";
-import AuthFooter from "../components/common/AuthFooter";
-import AuthHeader from "../components/common/AuthHeader";
+import { useAuth } from "../../context/AuthContext";
+import GoogleLogo from "../../assets/google-logo.svg";
+import apiService from "../../services/api";
+import AuthFooter from "../../components/common/AuthFooter";
+import AuthHeader from "../../components/common/AuthHeader";
 
-const StarField = React.lazy(() => import("../components/common/StarField"));
+const StarField = React.lazy(() => import("../../components/common/StarField"));
 
 const useStyles = makeStyles(() => ({
   appRoot: {

@@ -13,12 +13,13 @@ import MobileCollectionModal from './components/MobileCollectionModal';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Pages
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
+import Login from './pages/auth_pages/Login';
+import Register from './pages/auth_pages/Register';
+import ForgotPassword from './pages/auth_pages/ForgotPassword';
+import ResetPassword from './pages/auth_pages/ResetPassword';
 import AuthCallback from './pages/AuthCallback';
 import Dashboard from './pages/Dashboard';
+import Landing from './pages/landing_page/Landing';
 import Blog from './pages/blog/Blog';
 import BlogPost from './pages/blog/BlogPost';
 import FAQ from './pages/faq/FAQ';
@@ -90,12 +91,14 @@ function AppContent() {
             <ErrorBoundary>
               <BrowserRouter>
                 <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Landing />} />
+                  
                   {/* Auth Routes (Public, but redirect if already authenticated) */}
                   <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                   <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
                   <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
                   <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
-
                   <Route path="/auth/callback" element={<AuthCallback />} />
                   
                   {/* Blog & FAQ Routes - Public */}
@@ -131,11 +134,7 @@ function AppContent() {
                     {/* Category Routes */}
                     <Route path="categories/:categoryKey" element={<CategoryPage />} />
                     <Route path="categories/:categoryKey/:characterId/:characterName" element={<CategoryPage />} />
-
                   </Route>
-                  
-                  {/* Default redirect */}
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </BrowserRouter>
             </ErrorBoundary>

@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Gigaspace - Experience Real Conversations with Your Favourite Personalities</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#6366f1",
+            "primary-light": "#818cf8",
+            "primary-dark": "#4f46e5",
+            "dark-bg": "#0c0c0c",
+            "dark-card": "#1f1f23",
+            "dark-secondary": "#171717",
+            "dark-hover": "#28282c",
+            "dark-text": "#ffffff",
+            "dark-muted": "#a0a0a0",
+            "dark-disabled": "#666666",
+            "dark-border": "#2a2a2e",
+            "dark-divider": "#2a2a2e",
+            "accent": "#61dafb"
+          },
+          fontFamily: {
+            display: ["Inter", "sans-serif"],
+          },
+          animation: {
+            'gradient': 'gradient 8s linear infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'fadeIn': 'fadeIn 1s ease-in-out',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'spin-slow': 'spin 3s linear infinite',
+            'bubble-float': 'bubble-float 15s ease-in-out infinite',
+            'ripple': 'ripple 1s linear infinite',
+            'sparkle': 'sparkle 1.5s ease-in-out infinite',
+          },
+          keyframes: {
+            gradient: {
+              '0%, 100%': { 'background-position': '0% 50%' },
+              '50%': { 'background-position': '100% 50%' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            'bubble-float': {
+              '0%': { transform: 'translateY(0) translateX(0) rotate(0deg)' },
+              '33%': { transform: 'translateY(-20px) translateX(10px) rotate(3deg)' },
+              '66%': { transform: 'translateY(10px) translateX(-8px) rotate(-2deg)' },
+              '100%': { transform: 'translateY(0) translateX(0) rotate(0deg)' },
+            },
+            ripple: {
+              '0%': { transform: 'scale(0.8)', opacity: '1' },
+              '100%': { transform: 'scale(2.5)', opacity: '0' },
+            },
+            sparkle: {
+              '0%, 100%': { opacity: '0.5', transform: 'scale(1) translateY(0)' },
+              '50%': { opacity: '1', transform: 'scale(1.2) translateY(-5px)' },
+            }
+          }
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      scroll-behavior: smooth;
+      font-family: 'Inter', sans-serif;
+      cursor: none;
+      overflow-x: hidden;
+    }
+    
+    /* Section Titles */
+    .section-title {
+      position: relative;
+      display: inline-block;
+    }
+    .section-title:after {
+      content: '';
+      position: absolute;
+      width: 60%;
+      height: 4px;
+      bottom: -10px;
+      left: 20%;
+      background: linear-gradient(90deg, #6366f1, #818cf8);
+      border-radius: 2px;
+    }
+    
+    /* Gradient Backgrounds */
+    .gradient-bg {
+      background: linear-gradient(270deg, #6366f1, #818cf8, #4f46e5);
+      background-size: 200% 200%;
+      animation: gradient 8s ease infinite;
+    }
+    
+    /* Hero Section Styles */
+    .paragraph-card {
+      background: linear-gradient(145deg, rgba(31,31,35,0.7), rgba(31,31,35,0.4));
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+    }
+    .paragraph-icon {
+      background: linear-gradient(135deg, #6366f1, #818cf8);
+      border-radius: 12px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Custom cursor */
+    .cursor-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #6366f1;
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s, background-color 0.3s;
+    }
+    
+    .cursor-outline {
+      width: 40px;
+      height: 40px;
+      border: 2px solid rgba(99, 102, 241, 0.5);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.3s ease-out;
+    }
+    
+    .cursor-dot.hover, .cursor-outline.hover {
+      width: 16px;
+      height: 16px;
+      background-color: #818cf8;
+    }
+    
+    .cursor-outline.hover {
+      width: 60px;
+      height: 60px;
+      border-width: 1px;
+      background-color: rgba(99, 102, 241, 0.1);
+    }
+    
+    /* Bubble styles for About section */
+    .bubble {
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.15), rgba(31, 31, 35, 0.9));
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      box-shadow: 
+        0 0 25px rgba(99, 102, 241, 0.2),
+        inset 0 0 20px rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      animation: bubble-float 15s ease-in-out infinite;
+      cursor: none;
+    }
+    
+    .bubble:nth-child(1) {
+      width: 350px;
+      height: 350px;
+      animation-delay: 0s;
+    }
+    
+    .bubble:nth-child(2) {
+      width: 400px;
+      height: 400px;
+      animation-delay: 5s;
+    }
+    
+    .bubble:nth-child(3) {
+      width: 350px;
+      height:350px;
+      animation-delay: 10s;
+    }
+    
+    .bubble:hover {
+      transform: scale(1.03);
+      box-shadow: 
+        0 0 35px rgba(99, 102, 241, 0.3),
+        inset 0 0 25px rgba(255, 255, 255, 0.15);
+    }
+    
+    .bubble-content {
+      position: relative;
+      z-index: 2;
+      padding: 2rem;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .bubble-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #e0e0e0;
+      margin: 0;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    
+    .bubble:before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+      transform: rotate(30deg);
+      z-index: 1;
+    }
+    
+    .bubble-reflections {
+      position: absolute;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+      top: 15%;
+      left: 20%;
+      z-index: 1;
+      transition: all 0.5s ease;
+    }
+    
+    .bubble-reflections:nth-child(2) {
+      width: 20%;
+      height: 20%;
+      top: 60%;
+      left: 65%;
+    }
+    
+    .bubbles-container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      padding: 2rem 0;
+    }
+    
+    .bubble-interactive-area {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 5;
+      border-radius: 50%;
+    }
+    
+    /* Advantage Section Styles */
+    .neural-network {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .neural-node {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(99, 102, 241, 0.6);
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    }
+    .neural-line {
+      position: absolute;
+      background: linear-gradient(to right, rgba(99, 102, 241, 0.2), rgba(129, 140, 248, 0.4), rgba(99, 102, 241, 0.2));
+      transform-origin: 0 0;
+    }
+    .floating-mind {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #4f46e5, #6366f1);
+      filter: blur(12px);
+      opacity: 0.3;
+      animation: float 8s ease-in-out infinite;
+    }
+    .glow-card {
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);
+      transition: box-shadow 0.5s ease;
+    }
+    .glow-card:hover {
+      box-shadow: 0 0 60px rgba(99, 102, 241, 0.25);
+    }
+    
+    /* Features Section Styles */
+    .card-hover {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .card-hover::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #6366f1, #818cf8);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+      z-index: 2;
+    }
+    .card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.3);
+      background-color: #28282c;
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+    .card-hover:hover::before {
+      transform: scaleX(1);
+    }
+    .card-hover .icon-wrapper {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.1);
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover .icon-wrapper {
+      background: rgba(99, 102, 241, 0.2);
+      transform: scale(1.1);
+    }
+    .card-hover .learn-more {
+      opacity: 0.7;
+      transform: translateY(0);
+      transition: all 0.3s ease;
+      color: #818cf8;
+      font-weight: 500;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .card-hover:hover .learn-more {
+      opacity: 1;
+      color: #6366f1;
+    }
+    
+    /* Legends Section Styles */
+    .personality-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      transition: all 0.4s ease;
+      height: 100%;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .personality-card:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1;
+      transition: background 0.3s ease;
+    }
+    .personality-card:hover:before {
+      background: rgba(0, 0, 0, 0.7);
+    }
+    .personality-card-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+    .personality-card-content p {
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+    
+    /* Historical Figures Section Styles */
+    .glow {
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+    }
+    .figure-card {
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+    .figure-card:hover {
+      border-left-color: #6366f1;
+      transform: translateY(-5px);
+    }
+    .figure-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #6366f1, #818cf8);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .figure-card:hover::before {
+      transform: scaleX(1);
+    }
+    .quote-icon {
+      opacity: 0.1;
+      transition: opacity 0.3s ease;
+    }
+    .figure-card:hover .quote-icon {
+      opacity: 0.2;
+    }
+    .timeline-connector {
+      position: relative;
+    }
+    .timeline-connector::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -20px;
+      width: 40px;
+      height: 2px;
+      background: linear-gradient(90deg, #6366f1, #818cf8);
+      transform: translateY(-50%);
+    }
+    
+    /* Learn Smarter Section Styles */
+    .feature-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #1f1f23, #25252a);
+      box-shadow: 5px 5px 15px #0d0d0f, -5px -5px 15px #313137;
+      margin-bottom: 20px;
+    }
+    
+    /* Languages Section Styles */
+    .language-chip {
+      display: inline-flex;
+      align-items: center;
+      background: linear-gradient(145deg, rgba(99, 102, 241, 0.8), rgba(129, 140, 248, 0.8));
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    .language-chip:hover {
+      background: linear-gradient(145deg, rgba(99, 102, 241, 1), rgba(129, 140, 248, 1));
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      border: none;
+    }
+    
+    /* How It Works Section Styles */
+    .card-hover-basic {
+      transition: all 0.3s ease;
+    }
+    .card-hover-basic:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+      background-color: #28282c;
+    }
+    
+    /* Entertainment Section Styles */
+    .entertainment-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    
+    /* Particles */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .particle {
+      position: absolute;
+      background: linear-gradient(45deg, #6366f1, #818cf8);
+      border-radius: 50%;
+      opacity: 0.1;
+      animation: float 15s infinite linear;
+    }
+    
+    .glow-text {
+      text-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .bubbles-container {
+        flex-direction: column;
+      }
+      
+      .bubble {
+        width: 280px !important;
+        height: 280px !important;
+        margin: 1rem 0;
+      }
+      
+      .bubble-text {
+        font-size: 0.9rem;
+      }
+      
+      body {
+        cursor: auto;
+      }
+      
+      .cursor-dot, .cursor-outline {
+        display: none;
+      }
+      
+      .timeline-connector::after {
+        display: none;
+      }
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #171717;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2a2a2e;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3a3a3e;
+    }
+    ::-webkit-scrollbar-thumb:active {
+      background: #4a4a4e;
+    }
+  </style>
+</head>
+<body class="font-display bg-dark-bg text-dark-text">
+  <!-- Custom cursor elements -->
+  <div class="cursor-dot"></div>
+  <div class="cursor-outline"></div>
+  
+  <!-- Header -->
+  <header class="sticky top-0 z-50 w-full border-b border-dark-border bg-dark-bg/95 backdrop-blur-md">
+    <div class="container mx-auto flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-3">
+        <div class="bg-primary rounded-xl p-2">
+          <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_6_330)">
+              <path clip-rule="evenodd"
+                d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z"
+                fill="currentColor" fill-rule="evenodd"></path>
+            </g>
+            <defs>
+              <clipPath id="clip0_6_330">
+                <rect fill="white" height="48" width="48"></rect>
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold text-primary-light">Gigaspace</h2>
+      </div>
+      <nav class="hidden items-center gap-8 md:flex">
+        <a class="text-sm font-medium text-dark-muted hover:text-primary transition-colors"
+          href="#features">Features</a>
+        <a class="text-sm font-medium text-dark-muted hover:text-primary transition-colors"
+          href="#how-it-works">How It Works</a>
+        <a class="text-sm font-medium text-dark-muted hover:text-primary transition-colors"
+          href="#personalities">Personalities</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <a class="hidden rounded-full bg-primary/20 px-4 py-2 text-sm font-bold text-primary transition-all hover:bg-primary/30 sm:block"
+          href="#">Log In</a>
+        <a class="rounded-full bg-primary px-4 py-2 text-sm font-bold text-white transition-transform hover:scale-105"
+          href="#">Get Started</a>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Hero Section -->
+  <section class="relative flex min-h-screen items-center justify-center overflow-hidden pt-20">
+    <div class="absolute inset-0 z-0 overflow-hidden">
+      <div class="absolute -top-1/2 -right-1/4 h-full w-full rounded-full bg-primary/10 blur-3xl"></div>
+      <div class="absolute -bottom-1/2 -left-1/4 h-full w-full rounded-full bg-primary-light/10 blur-3xl"></div>
+    </div>
+    
+    <div class="container relative z-10 mx-auto px-4 text-center">
+      <div class="mb-6 inline-block rounded-full bg-white/10 px-4 py-1 text-sm font-medium text-white backdrop-blur-sm">
+        <span class="mr-2 text-accent">✦</span> Gigaspace</div>
+      <h1 class="text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl mb-6">
+        <span class="bg-gradient-to-r from-primary via-primary-light to-primary-dark bg-clip-text text-transparent">Chat</span> with Legends
+      </h1>
+      <p class="mx-auto mt-6 max-w-2xl text-xl font-medium text-dark-muted">
+        Experience Real Conversations with Your Favourite Personalities
+      </p>
+      
+      <div class="mx-auto mt-10 max-w-3xl space-y-6">
+        <!-- First Paragraph with Left Icon -->
+        <div class="paragraph-card animate-fadeIn p-6 flex items-start">
+          <div class="paragraph-icon mr-4 flex-shrink-0">
+            <i class="fas fa-rocket text-white"></i>
+          </div>
+          <p class="text-lg leading-relaxed text-dark-muted text-left">
+            Step into a world where intelligence meets personality. Gigaspace, a flagship product of Gigaversity, is more than just an AI chat platform — it's a gateway to conversations with legendary minds, visionary leaders, iconic entrepreneurs, inspiring celebrities, and even fictional heroes.
+          </p>
+        </div>
+        
+        <!-- Second Paragraph with Right Icon -->
+        <div class="paragraph-card animate-fadeIn p-6 flex items-start" style="animation-delay: 0.2s;">
+          <p class="text-lg leading-relaxed text-dark-muted text-left mr-4">
+            With an added layer of mindset, Gigaspace allows you to experience how personalities think, respond, and communicate—just as they would in real life.
+          </p>
+          <div class="paragraph-icon flex-shrink-0">
+            <i class="fas fa-brain text-white"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-10 flex flex-wrap justify-center gap-4">
+        <a class="rounded-full gradient-bg px-8 py-4 text-base font-bold text-white shadow-lg shadow-primary/30 transition-all hover:scale-105 hover:shadow-xl"
+          href="#">Start Chatting Now</a>
+        <a class="rounded-full border border-primary/30 bg-white/5 px-8 py-4 text-base font-bold text-white backdrop-blur-sm transition-all hover:bg-primary/10 hover:shadow-lg"
+          href="#"><i class="fas fa-play-circle mr-2"></i> Watch Demo</a>
+      </div>
+      <div class="mt-16 animate-float">
+        <div class="inline-flex items-center gap-2 rounded-xl bg-dark-card/80 p-4 backdrop-blur-md">
+          <div class="h-2 w-2 rounded-full bg-accent"></div>
+          <span class="text-sm text-dark-muted">Scroll to explore</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Gigaspace Section -->
+  <section class="py-12 relative overflow-hidden min-h-screen flex items-center">
+    <!-- Animated background particles -->
+    <div class="particles" id="particles"></div>
+    
+    <div class="absolute inset-0 -z-10 bg-dark-card/20"></div>
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-4xl text-center mb-12">
+        <h2 class="section-title text-4xl font-bold text-white sm:text-5xl mb-4 glow-text">About Gigaspace</h2>
+      </div>
+      
+      <div class="bubbles-container">
+        <!-- First bubble -->
+        <div class="bubble">
+          <div class="bubble-reflections"></div>
+          <div class="bubble-reflections"></div>
+          <div class="bubble-content">
+            <p class="bubble-text">Gigaspace is designed to make conversations truly meaningful. Built by Gigaversity, it reflects the mindset, wisdom, and communication style of real and fictional figures from across history, politics, cinema, business, and culture.</p>
+          </div>
+          <div class="bubble-interactive-area"></div>
+        </div>
+        
+        <!-- Second bubble -->
+        <div class="bubble">
+          <div class="bubble-reflections"></div>
+          <div class="bubble-reflections"></div>
+          <div class="bubble-content">
+            <p class="bubble-text">Unlike ordinary AI that gives robotic answers, Gigaspace delivers authentic exchanges. Every chat mirrors how a personality would genuinely analyze, respond, and inspire — whether it's a leader sharing governance insights, an entrepreneur offering startup advice, or an anime hero teaching resilience.</p>
+          </div>
+          <div class="bubble-interactive-area"></div>
+        </div>
+        
+        <!-- Third bubble -->
+        <div class="bubble">
+          <div class="bubble-reflections"></div>
+          <div class="bubble-reflections"></div>
+          <div class="bubble-content">
+            <p class="bubble-text">By combining advanced AI with Gigaversity's innovation-first vision, Gigaspace offers a platform where learning, entertainment, and personal growth all merge into one seamless experience.</p>
+          </div>
+          <div class="bubble-interactive-area"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Gigaspace Advantage Section -->
+  <section class="py-20 bg-dark-bg relative overflow-hidden">
+    <!-- Animated background particles -->
+    <div class="particle w-4 h-4 top-1/4 left-1/4 animate-float"></div>
+    <div class="particle w-6 h-6 top-1/3 right-1/4 animate-float" style="animation-delay: 1s;"></div>
+    <div class="particle w-3 h-3 bottom-1/4 left-1/3 animate-float" style="animation-delay: 2s;"></div>
+    <div class="particle w-5 h-5 bottom-1/3 right-1/3 animate-float" style="animation-delay: 3s;"></div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="mx-auto max-w-4xl text-center">
+        <h2 class="section-title text-3xl font-bold text-white sm:text-4xl mb-2">The Gigaspace Advantage</h2>
+        
+        <div class="mt-12 transform hover:scale-[1.02] transition-transform duration-500">
+          <div class="rounded-3xl bg-dark-card p-8 md:p-12 relative">
+              <!-- Decorative corner accents with animation -->
+              <div class="corner-accent absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary-light rounded-tl-3xl hover:border-primary"></div>
+              <div class="corner-accent absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-primary-light rounded-tr-3xl hover:border-primary"></div>
+              <div class="corner-accent absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-primary-light rounded-bl-3xl hover:border-primary"></div>
+              <div class="corner-accent absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary-light rounded-br-3xl hover:border-primary"></div>
+              
+              <div class="relative">
+                <div class="relative py-12 mb-12 overflow-hidden" style="min-height: 120px;">
+                  <div class="absolute inset-0 flex items-center justify-center py-4">
+                    <div class="absolute w-full h-full bg-gradient-to-r from-transparent via-dark-card/50 to-transparent z-10"></div>
+                    <div class="flex space-x-2 md:space-x-4 animate-marquee whitespace-nowrap">
+                      <!-- First set of icons (duplicated for seamless loop) -->
+                      <div class="inline-flex items-center space-x-2 md:space-x-6">
+                        <div class="w-14 h-14 md:w-20 md:h-20 rounded-full gradient-bg flex items-center justify-center transform hover:rotate-12 transition-all duration-300 hover:scale-110" title="Artificial Intelligence">
+                          <i class="fas fa-robot text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full gradient-bg flex items-center justify-center transform hover:-rotate-12 transition-all duration-300 hover:scale-110" title="Neural Network">
+                          <i class="fas fa-project-diagram text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-14 h-14 md:w-20 md:h-20 rounded-full gradient-bg flex items-center justify-center transform hover:rotate-12 transition-all duration-300 hover:scale-110" title="Data Analysis">
+                          <i class="fas fa-chart-line text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full gradient-bg flex items-center justify-center transform hover:-rotate-12 transition-all duration-300 hover:scale-110" title="Machine Learning">
+                          <i class="fas fa-brain text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-14 h-14 md:w-20 md:h-20 rounded-full gradient-bg flex items-center justify-center transform hover:rotate-12 transition-all duration-300 hover:scale-110" title="Natural Language Processing">
+                          <i class="fas fa-comment-dots text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full gradient-bg flex items-center justify-center transform hover:-rotate-12 transition-all duration-300 hover:scale-110" title="Deep Learning">
+                          <i class="fas fa-layer-group text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-14 h-14 md:w-20 md:h-20 rounded-full gradient-bg flex items-center justify-center transform hover:rotate-12 transition-all duration-300 hover:scale-110" title="Knowledge Base">
+                          <i class="fas fa-book text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full gradient-bg flex items-center justify-center transform hover:-rotate-12 transition-all duration-300 hover:scale-110" title="Algorithm">
+                          <i class="fas fa-code text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-14 h-14 md:w-20 md:h-20 rounded-full gradient-bg flex items-center justify-center transform hover:rotate-12 transition-all duration-300 hover:scale-110" title="Cloud Computing">
+                          <i class="fas fa-cloud text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full gradient-bg flex items-center justify-center transform hover:-rotate-12 transition-all duration-300 hover:scale-110" title="Innovation">
+                          <i class="fas fa-lightbulb text-white text-xl md:text-3xl"></i>
+                        </div>
+                      </div>
+                      <!-- Duplicated icons for seamless loop -->
+                      <div class="inline-flex items-center space-x-2 md:space-x-6" aria-hidden="true">
+                        <div class="w-14 h-14 md:w-20 md:h-20 rounded-full gradient-bg flex items-center justify-center transform hover:rotate-12 transition-all duration-300 hover:scale-110" title="Artificial Intelligence">
+                          <i class="fas fa-robot text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full gradient-bg flex items-center justify-center transform hover:-rotate-12 transition-all duration-300 hover:scale-110" title="Neural Network">
+                          <i class="fas fa-project-diagram text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-14 h-14 md:w-20 md:h-20 rounded-full gradient-bg flex items-center justify-center transform hover:rotate-12 transition-all duration-300 hover:scale-110" title="Data Analysis">
+                          <i class="fas fa-chart-line text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full gradient-bg flex items-center justify-center transform hover:-rotate-12 transition-all duration-300 hover:scale-110" title="Machine Learning">
+                          <i class="fas fa-brain text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-14 h-14 md:w-20 md:h-20 rounded-full gradient-bg flex items-center justify-center transform hover:rotate-12 transition-all duration-300 hover:scale-110" title="Natural Language Processing">
+                          <i class="fas fa-comment-dots text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full gradient-bg flex items-center justify-center transform hover:-rotate-12 transition-all duration-300 hover:scale-110" title="Deep Learning">
+                          <i class="fas fa-layer-group text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-14 h-14 md:w-20 md:h-20 rounded-full gradient-bg flex items-center justify-center transform hover:rotate-12 transition-all duration-300 hover:scale-110" title="Knowledge Base">
+                          <i class="fas fa-book text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full gradient-bg flex items-center justify-center transform hover:-rotate-12 transition-all duration-300 hover:scale-110" title="Algorithm">
+                          <i class="fas fa-code text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-14 h-14 md:w-20 md:h-20 rounded-full gradient-bg flex items-center justify-center transform hover:rotate-12 transition-all duration-300 hover:scale-110" title="Cloud Computing">
+                          <i class="fas fa-cloud text-white text-xl md:text-3xl"></i>
+                        </div>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full gradient-bg flex items-center justify-center transform hover:-rotate-12 transition-all duration-300 hover:scale-110" title="Innovation">
+                          <i class="fas fa-lightbulb text-white text-xl md:text-3xl"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <style>
+                  @keyframes marquee {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                  }
+                  .animate-marquee {
+                    display: flex;
+                    width: 200%; /* Double the width to accommodate the duplicate content */
+                    animation: marquee 40s linear infinite;
+                  }
+                  .animate-marquee:hover {
+                    animation-play-state: paused;
+                  }
+                </style>
+                
+                <div class="group">
+                  <p class="text-lg md:text-xl text-dark-muted leading-relaxed transition-all duration-300 pl-2 border-l-4 border-primary-light/30 group-hover:text-gray-200 group-hover:pl-3 group-hover:border-primary-light">
+                    What makes Gigaspace unique is its fusion of intelligence and mindset. Each personality is trained not just on knowledge, but on how they actually thought, spoke, and made decisions.
+                  </p>
+                </div>
+                <div class="my-6 h-px bg-gradient-to-r from-transparent via-primary-dark to-transparent"></div>
+                <div class="group text-right">
+                  <p class="text-lg md:text-xl text-dark-muted leading-relaxed transition-all duration-300 pr-2 border-r-4 border-primary-light/30 group-hover:text-gray-200 group-hover:pr-3 group-hover:border-primary-light">
+                    This approach creates conversations that feel alive. It's not just text — it's a chance to step into the thought process of legends, leaders, and creative icons. With Gigaspace, you don't just chat with AI. You chat with legends.
+                  </p>
+                </div>
+                
+                <div class="mt-10 pt-6 ">
+                  <div class="text-center">
+                    <span class="text-primary-light text-lg font-medium tracking-wide">
+                      The Future of Conversation
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Features Section -->
+  <section id="features" class="py-20 bg-dark-card">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-4xl text-center">
+        <h2 class="section-title text-3xl font-bold text-white sm:text-4xl">Key Features of Gigaspace</h2>
+        <p class="mt-4 text-lg text-dark-muted">Explore the vast possibilities with Gigaspace.</p>
+      </div>
+      <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div class="flex flex-col rounded-2xl bg-dark-secondary p-6 border border-dark-border card-hover">
+          <div class="icon-wrapper">
+            <i class="fas fa-crown text-primary text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-white text-lg mb-2">Chat with Legends</h3>
+          <p class="text-sm text-dark-muted mb-4">from history, politics, cinema, innovation, and fiction</p>
+          <a href="#" class="learn-more">Meet the legends <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+        <div class="flex flex-col rounded-2xl bg-dark-secondary p-6 border border-dark-border card-hover">
+          <div class="icon-wrapper">
+            <i class="fas fa-landmark text-primary text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-white text-lg mb-2">Historical Figures</h3>
+          <p class="text-sm text-dark-muted mb-4">AI Historical Figures Chat to explore timeless wisdom.</p>
+          <a href="#" class="learn-more">Explore history <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+        <div class="flex flex-col rounded-2xl bg-dark-secondary p-6 border border-dark-border card-hover">
+          <div class="icon-wrapper">
+            <i class="fas fa-landmark-dome text-primary text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-white text-lg mb-2">Political Leaders</h3>
+          <p class="text-sm text-dark-muted mb-4">Chat with Political Leaders to understand governance and leadership.</p>
+          <a href="#" class="learn-more">Understand leadership <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+        <div class="flex flex-col rounded-2xl bg-dark-secondary p-6 border border-dark-border card-hover">
+          <div class="icon-wrapper">
+            <i class="fas fa-chart-line text-primary text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-white text-lg mb-2">Entrepreneurs</h3>
+          <p class="text-sm text-dark-muted mb-4">Chat with Famous Entrepreneurs to unlock insights into startups and business growth.</p>
+          <a href="#" class="learn-more">Gain insights <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+        <div class="flex flex-col rounded-2xl bg-dark-secondary p-6 border border-dark-border card-hover">
+          <div class="icon-wrapper">
+            <i class="fas fa-star text-primary text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-white text-lg mb-2">Celebrities</h3>
+          <p class="text-sm text-dark-muted mb-4">Chat with Celebrities to dive into art, creativity, and cultural influence.</p>
+          <a href="#" class="learn-more">Discover culture <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+        <div class="flex flex-col rounded-2xl bg-dark-secondary p-6 border border-dark-border card-hover">
+          <div class="icon-wrapper">
+            <i class="fas fa-mask text-primary text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-white text-lg mb-2">Fiction & Anime</h3>
+          <p class="text-sm text-dark-muted mb-4">Conversations with Loki, Rocky Bhai, Naruto, and Uchiha Itachi.</p>
+          <a href="#" class="learn-more">Enter the story <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+        <div class="flex flex-col rounded-2xl bg-dark-secondary p-6 border border-dark-border card-hover">
+          <div class="icon-wrapper">
+            <i class="fas fa-language text-primary text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-white text-lg mb-2">10+ Language Support</h3>
+          <p class="text-sm text-dark-muted mb-4">Including English, Hindi, Telugu, Marathi, Bengali, French, and more.</p>
+          <a href="#" class="learn-more">Change language <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+        <div class="flex flex-col rounded-2xl bg-dark-secondary p-6 border border-dark-border card-hover">
+          <div class="icon-wrapper">
+            <i class="fas fa-brain text-primary text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-white text-lg mb-2">Mindset Simulation</h3>
+          <p class="text-sm text-dark-muted mb-4">Mindset Simulation Layer for realistic responses.</p>
+          <a href="#" class="learn-more">Experience AI <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+        <div class="flex flex-col rounded-2xl bg-dark-secondary p-6 border border-dark-border card-hover">
+          <div class="icon-wrapper">
+            <i class="fas fa-globe-americas text-primary text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-white text-lg mb-2">One AI Platform</h3>
+          <p class="text-sm text-dark-muted mb-4">One AI Chat Platform that blends education, entertainment, and personal growth.</p>
+          <a href="#" class="learn-more">Start exploring <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chat with Legends & Leaders Section -->
+  <section id="personalities" class="py-20 px-4 sm:px-6 lg:px-8 bg-dark-bg">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="w-full text-center">
+        <h2 class="section-title text-3xl font-bold text-white sm:text-4xl">Chat with Legends & Leaders</h2>
+        <div class="mt-12 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- Card 1 -->
+          <div class="personality-card" style="background-image: url('https://media.licdn.com/dms/image/v2/C5112AQElI93ULJqyeg/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1520206705043?e=2147483647&v=beta&t=QK8W9salEE0y4C3G7fnyLeV0ITWhPKVgv1ptFC6MXms')">
+            <div class="personality-card-content">
+              <p class="text-white bg-gradient-to-r from-primary/30 to-primary/10 backdrop-blur-sm p-6 pb-8 rounded-xl border-b-4 border-primary-light shadow-lg">Imagine asking Mahatma Gandhi how non-violence could solve today's conflicts. Or talking to Dr. A. P. J. Abdul Kalam about his dream for India's youth.</p>
+            </div>
+          </div>
+          
+          <!-- Card 2 -->
+          <div class="personality-card" style="background-image: url('https://sc0.blr1.cdn.digitaloceanspaces.com/article/133954-wpkmdadwge-1578033091.jpg')">
+            <div class="personality-card-content">
+              <p class="text-white bg-gradient-to-r from-primary/30 to-primary/10 backdrop-blur-sm p-6 pb-8 rounded-xl border-b-4 border-primary-light shadow-lg">With Gigaspace, you can chat with political leaders, learn their philosophies, and see how their leadership mindset applies today.</p>
+            </div>
+          </div>
+          
+          <!-- Card 3 -->
+          <div class="personality-card" style="background-image: url('https://static.toiimg.com/thumb/msid-112903454,width-1280,height-720,resizemode-4/112903454.jpg')">
+            <div class="personality-card-content">
+              <p class="text-white bg-gradient-to-r from-primary/30 to-primary/10 backdrop-blur-sm p-6 pb-8 rounded-xl border-b-4 border-primary-light shadow-lg">If business inspires you, you can chat with famous entrepreneurs like Ratan Tata or Elon Musk about vision, innovation, and what it takes to build impactful companies.</p>
+            </div>
+          </div>
+          
+          <!-- Card 4 -->
+          <div class="personality-card" style="background-image: url('https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')">
+            <div class="personality-card-content">
+              <p class="text-white bg-gradient-to-r from-primary/30 to-primary/10 backdrop-blur-sm p-6 pb-8 rounded-xl border-b-4 border-primary-light shadow-lg">And if culture excites you, you can chat with celebrities who shaped generations, gaining fresh perspectives on art and creativity.</p>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chat with Historical Figures Section -->
+  <section class="py-20">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="section-title text-3xl font-bold text-white sm:text-4xl inline-block">Chat with Historical Figures</h2>
+        <p class="mt-4 max-w-2xl mx-auto text-dark-muted">Engage in meaningful conversations with the greatest minds from history</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <!-- Chanakya Card -->
+        <div class="figure-card rounded-xl bg-dark-card p-6 glow flex flex-col">
+          <div class="mb-4 flex items-center">
+            <div class="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center mr-4">
+              <i class="fas fa-crown text-white"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white">Chanakya</h3>
+              <p class="text-primary-light text-sm">Strategist & Philosopher</p>
+            </div>
+          </div>
+          <p class="text-dark-muted flex-grow">Talk to the ancient Indian teacher and strategist about statecraft, economic policy, and military strategy.</p>
+          <div class="mt-4 pt-4 border-t border-dark-border flex justify-between items-center">
+            <span class="text-primary-light text-sm">4th Century BCE</span>
+            <button class="text-primary hover:text-primary-light text-sm font-medium">Start Chat →</button>
+          </div>
+          <div class="quote-icon absolute bottom-4 right-4 text-6xl text-primary">
+            <i class="fas fa-quote-right"></i>
+          </div>
+        </div>
+
+        <!-- Swami Vivekananda Card -->
+        <div class="figure-card rounded-xl bg-dark-card p-6 glow flex flex-col timeline-connector">
+          <div class="mb-4 flex items-center">
+            <div class="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center mr-4">
+              <i class="fa-solid fa-om"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white">Swami Vivekananda</h3>
+              <p class="text-primary-light text-sm">Spiritual Leader & Reformer</p>
+            </div>
+          </div>
+          <p class="text-dark-muted flex-grow">Ask the influential spiritual leader about Vedanta philosophy, meditation, and his vision for youth empowerment.</p>
+          <div class="mt-4 pt-4 border-t border-dark-border flex justify-between items-center">
+            <span class="text-primary-light text-sm">19th Century</span>
+            <button class="text-primary hover:text-primary-light text-sm font-medium">Start Chat →</button>
+          </div>
+          <div class="quote-icon absolute bottom-4 right-4 text-6xl text-primary">
+            <i class="fas fa-quote-right"></i>
+          </div>
+        </div>
+
+        <!-- Rabindranath Tagore Card -->
+        <div class="figure-card rounded-xl bg-dark-card p-6 glow flex flex-col">
+          <div class="mb-4 flex items-center">
+            <div class="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center mr-4">
+              <i class="fas fa-pen-fancy text-white"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white">Rabindranath Tagore</h3>
+              <p class="text-primary-light text-sm">Poet & Philosopher</p>
+            </div>
+          </div>
+          <p class="text-dark-muted flex-grow">Conversate with the Nobel laureate about literature, education, and his humanistic philosophy.</p>
+          <div class="mt-4 pt-4 border-t border-dark-border flex justify-between items-center">
+            <span class="text-primary-light text-sm">20th Century</span>
+            <button class="text-primary hover:text-primary-light text-sm font-medium">Start Chat →</button>
+          </div>
+          <div class="quote-icon absolute bottom-4 right-4 text-6xl text-primary">
+            <i class="fas fa-quote-right"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl bg-gradient-to-br from-dark-bg to-dark-card p-8 glow">
+        <div class="flex flex-col md:flex-row items-center">
+          <div class="md:w-2/3 mb-6 md:mb-0 md:pr-8">
+            <h3 class="text-xl font-bold text-white mb-4">Experience History Through Conversation</h3>
+            <p class="text-dark-muted mb-4">Books preserve history — but conversations bring it alive. With Gigaspace, the AI historical figures chat lets you interact with great thinkers and reformers.</p>
+            <p class="text-dark-muted mb-4">Talk to strategists like Chanakya, reformers like Swami Vivekananda, or poets like Rabindranath Tagore. Ask them timeless questions and experience their wisdom in a modern context.</p>
+            <p class="text-dark-muted">"Swami Vivekananda, how can today's youth stay focused in a distracted world?" — with Gigaspace, answers like these aren't imagined, they're experienced.</p>
+          </div>
+          <div class="md:w-1/3 flex justify-center">
+            <div class="relative">
+              <div class="w-48 h-48 rounded-full bg-gradient-to-br from-primary-dark to-primary-light flex items-center justify-center">
+                <i class="fas fa-history text-white text-5xl"></i>
+              </div>
+              <div class="absolute -top-4 -right-4 w-24 h-24 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
+                <i class="fas fa-comments text-primary-light text-2xl"></i>
+              </div>
+              <div class="absolute -bottom-4 -left-4 w-20 h-20 rounded-full bg-primary/30 backdrop-blur-sm flex items-center justify-center">
+                <i class="fas fa-brain text-primary-light text-xl"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-12 text-center">
+        <button class="px-6 py-3 bg-primary hover:bg-primary-dark rounded-lg text-white font-medium transition-colors duration-300 glow">
+          Explore All Historical Figures
+          <i class="fas fa-arrow-right ml-2"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Learn Smarter Section -->
+  <section class="py-20 bg-dark-bg w-full">
+    <div class="w-full px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <h2 class="section-title text-3xl font-bold text-white sm:text-4xl">Learn Smarter with Gigaspace</h2>
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div class="rounded-2xl bg-dark-card p-8 text-left card-hover-basic">
+            <i class="fas fa-graduation-cap text-3xl text-accent mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-4">Interactive Education</h3>
+            <p class="text-dark-muted">Education doesn't need to be boring. With Gigaspace, every conversation becomes a classroom.</p>
+          </div>
+          <div class="rounded-2xl bg-dark-card p-8 text-left card-hover-basic">
+            <i class="fas fa-lightbulb text-3xl text-accent mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-4">Expert Knowledge</h3>
+            <p class="text-dark-muted">Imagine learning economics from Amartya Sen, law and social reform from B. R. Ambedkar, or literature from Tagore. Each exchange is interactive, giving you clarity and perspective.</p>
+          </div>
+          <div class="rounded-2xl bg-dark-card p-8 text-left card-hover-basic">
+            <i class="fas fa-globe-americas text-3xl text-accent mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-4">Modern Issues</h3>
+            <p class="text-dark-muted">You can even explore pressing modern issues: "Amartya Sen, how would you solve today's global inequality problems?" — making Gigaspace a powerful new tool for learning.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Entertainment, Fiction & Fun Section -->
+  <section class="py-20 bg-dark-card">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <h2 class="section-title text-3xl font-bold text-white sm:text-4xl">Entertainment, Fiction & Fun with Gigaspace</h2>
+        <p class="mt-4 text-lg text-dark-muted max-w-3xl mx-auto">Gigaspace isn't only about learning — it's also your portal to entertainment and imagination.</p>
+        
+        <div class="mt-12 entertainment-grid">
+          <div class="rounded-2xl bg-dark-secondary p-8 text-left card-hover-basic">
+            <i class="fas fa-theater-masks text-3xl text-accent mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-4">Celebrity Conversations</h3>
+            <p class="text-dark-muted">You can chat with celebrities, artists, and entertainers who defined creativity and culture. Want to know how an actor prepares for an iconic role or how a musician composes melodies? Gigaspace gives you a personal backstage pass.</p>
+          </div>
+          
+          <div class="rounded-2xl bg-dark-secondary p-8 text-left card-hover-basic">
+            <i class="fas fa-dragon text-3xl text-accent mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-4">Fiction & Anime Heroes</h3>
+            <p class="text-dark-muted">But it doesn't stop there. You can dive into the worlds of fiction and anime. Ask Loki how he would outsmart his enemies today, learn about determination from Naruto, or explore Uchiha Itachi's thoughts on sacrifice.</p>
+          </div>
+          
+          <div class="rounded-2xl bg-dark-secondary p-8 text-left card-hover-basic">
+            <i class="fas fa-heart text-3xl text-accent mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-4">Inspiring Mindsets</h3>
+            <p class="text-dark-muted">Even Rocky Bhai's fearless mindset can inspire you in powerful ways. Entertainment meets imagination — and it's all just a conversation away.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem-Solving & Personal Growth Section -->
+  <section class="py-20 bg-dark-bg">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <h2 class="section-title text-3xl font-bold text-white sm:text-4xl">Problem-Solving & Personal Growth</h2>
+        <p class="mt-4 text-lg text-dark-muted max-w-3xl mx-auto">Every great mind offers a unique way to overcome challenges. With Gigaspace, you can seek guidance tailored to your situation.</p>
+        
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="rounded-2xl bg-dark-card p-8 text-center card-hover-basic">
+            <i class="fas fa-chess text-3xl text-accent mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-4">Strategic Thinking</h3>
+            <p class="text-dark-muted">Gain strategic thinking from a political leader</p>
+          </div>
+          
+          <div class="rounded-2xl bg-dark-card p-8 text-center card-hover-basic">
+            <i class="fas fa-rocket text-3xl text-accent mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-4">Business Advice</h3>
+            <p class="text-dark-muted">Get business advice from a famous entrepreneur</p>
+          </div>
+          
+          <div class="rounded-2xl bg-dark-card p-8 text-center card-hover-basic">
+            <i class="fas fa-shield-alt text-3xl text-accent mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-4">Resilience Lessons</h3>
+            <p class="text-dark-muted">Learn resilience lessons from an anime hero</p>
+          </div>
+        </div>
+        
+        <div class="mt-12 rounded-2xl bg-gradient-to-br from-dark-card to-dark-secondary p-8 glow">
+          <p class="text-lg text-dark-muted max-w-4xl mx-auto">
+            The mindset simulation ensures responses aren't generic — they feel like true advice shaped by the personality you're speaking to.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Conversations in 10+ Languages Section -->
+  <section id="languages" class="py-20">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-4xl text-center">
+        <h2 class="section-title text-3xl font-bold text-white sm:text-4xl">Conversations in 10+ Languages</h2>
+        <div class="mt-12">
+          <div class="rounded-2xl bg-dark-secondary p-8 border border-dark-border card-hover-basic">
+            <p class="text-lg text-dark-muted">True wisdom knows no boundaries. With Gigaspace, you can chat in 10+ languages, including</p>
+            <div class="my-4 flex flex-wrap justify-center gap-2">
+              <span class="language-chip">English</span>
+              <span class="language-chip">हिंदी</span>
+              <span class="language-chip">తెలుగు</span>
+              <span class="language-chip">मराठी</span>
+              <span class="language-chip">বাংলা</span>
+              <span class="language-chip">Français</span>
+              <span class="language-chip">+ More</span>
+            </div>
+            <p class="mt-2 text-lg text-dark-muted">This multilingual experience makes the platform inclusive for global users. Whether you want to connect in your native language or practice a new one, Gigaspace adapts seamlessly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How Gigaspace Works Section -->
+  <section id="how-it-works" class="py-20 bg-dark-bg">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-4xl text-center">
+        <h2 class="section-title text-3xl font-bold text-white sm:text-4xl">How Gigaspace Works</h2>
+        <p class="mt-4 text-lg text-dark-muted">Behind the scenes, Gigaspace is powered by advanced training on large datasets, but with a unique twist — every personality is trained to reflect their mindset, tone, and decision-making style.</p>
+        
+        <div class="mt-12 grid gap-8 md:grid-cols-3">
+          <div class="rounded-2xl bg-dark-card p-6 text-center card-hover-basic">
+            <div class="mx-auto mb-4 text-4xl text-primary">1</div>
+            <h3 class="text-lg font-bold text-white">Advanced Training</h3>
+            <p class="mt-2 text-dark-muted">Every great mind offers a unique way to overcome challenges. With Gigaspace, you can seek guidance tailored to your situation.</p>
+          </div>
+          <div class="rounded-2xl bg-dark-card p-6 text-center card-hover-basic">
+            <div class="mx-auto mb-4 text-4xl text-primary">2</div>
+            <h3 class="text-lg font-bold text-white">Mindset Reflection</h3>
+            <p class="mt-2 text-dark-muted">Gain strategic thinking from a political leader, business advice from a famous entrepreneur, or resilience lessons from an anime hero.</p>
+          </div>
+          <div class="rounded-2xl bg-dark-card p-6 text-center card-hover-basic">
+            <div class="mx-auto mb-4 text-4xl text-primary">3</div>
+            <h3 class="text-lg font-bold text-white">Authentic Conversations</h3>
+            <p class="mt-2 text-dark-muted">The mindset simulation ensures responses aren't generic — they feel like true advice shaped by the personality you're speaking to.</p>
+          </div>
+        </div>
+        
+        <div class="mt-12 rounded-2xl bg-dark-card p-8 glow">
+          <p class="text-lg text-dark-muted max-w-4xl mx-auto">
+            That's why when you ask Naruto about chasing dreams, or Ambedkar about building equality, the answers feel authentic, as if you're speaking directly to them. The result? A conversation that feels human, immersive, and unforgettable.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Start Your Journey Section -->
+  <section class="min-h-screen flex items-center justify-center py-20 bg-dark-bg">
+    <div class="container mx-auto px-4 text-center">
+      <div class="rounded-3xl bg-dark-card p-8 border border-dark-border max-w-5xl mx-auto w-full">
+        <h2 class="text-3xl font-bold text-white sm:text-4xl">Start Your Journey with Gigaspace</h2>
+        <p class="mx-auto mt-4 max-w-xl text-lg text-dark-muted">The best conversations happen here. With Gigaspace, you can explore knowledge, entertainment, and imagination—all through meaningful chats</p>
+        <div class="mt-8 grid gap-4 md:grid-cols-3">
+          <div class="rounded-xl bg-dark-secondary p-4 transition-transform hover:scale-105">
+            <i class="fas fa-crown text-2xl text-primary mb-2"></i>
+            <p class="text-white">Chat with legends</p>
+          </div>
+          <div class="rounded-xl bg-dark-secondary p-4 transition-transform hover:scale-105">
+            <i class="fas fa-history text-2xl text-primary mb-2"></i>
+            <p class="text-white">Learn from historical figures</p>
+          </div>
+          <div class="rounded-xl bg-dark-secondary p-4 transition-transform hover:scale-105">
+            <i class="fas fa-smile text-2xl text-primary mb-2"></i>
+            <p class="text-white">Have fun with celebrities</p>
+          </div>
+        </div>
+        <div class="mt-8">
+          <p class="mx-auto max-w-4xl text-lg text-dark-muted">Don't just imagine greatness. <button class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-2 text-lg font-bold text-white transition-transform hover:scale-105">Talk to it</button> Start your journey with Gigaspace today.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JavaScript for interactions -->
+  <script>
+    // Create animated background particles
+    document.addEventListener('DOMContentLoaded', function() {
+      const particlesContainer = document.getElementById('particles');
+      if (particlesContainer) {
+        const particleCount = 20;
+        
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.classList.add('particle');
+          
+          // Random properties
+          const size = Math.random() * 20 + 5;
+          const posX = Math.random() * 100;
+          const posY = Math.random() * 100;
+          const animationDelay = Math.random() * 15;
+          const animationDuration = Math.random() * 20 + 15;
+          
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          particle.style.left = `${posX}%`;
+          particle.style.top = `${posY}%`;
+          particle.style.animationDelay = `${animationDelay}s`;
+          particle.style.animationDuration = `${animationDuration}s`;
+          
+          particlesContainer.appendChild(particle);
+        }
+      }
+      
+      // Custom cursor logic
+      const cursorDot = document.querySelector('.cursor-dot');
+      const cursorOutline = document.querySelector('.cursor-outline');
+      
+      if (cursorDot && cursorOutline) {
+        document.addEventListener('mousemove', function(e) {
+          cursorDot.style.left = e.clientX + 'px';
+          cursorDot.style.top = e.clientY + 'px';
+          
+          cursorOutline.style.left = e.clientX + 'px';
+          cursorOutline.style.top = e.clientY + 'px';
+        });
+      }
+      
+      // Bubble hover effects
+      const bubbles = document.querySelectorAll('.bubble');
+      const interactiveAreas = document.querySelectorAll('.bubble-interactive-area');
+      
+      interactiveAreas.forEach(area => {
+        area.addEventListener('mouseenter', function() {
+          if (cursorDot && cursorOutline) {
+            cursorDot.classList.add('hover');
+            cursorOutline.classList.add('hover');
+          }
+        });
+        
+        area.addEventListener('mouseleave', function() {
+          if (cursorDot && cursorOutline) {
+            cursorDot.classList.remove('hover');
+            cursorOutline.classList.remove('hover');
+          }
+        });
+        
+        area.addEventListener('mousemove', function(e) {
+          const rect = this.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          this.parentElement.style.transform = `scale(1.03) translate(${(x - rect.width/2) / 25}px, ${(y - rect.height/2) / 25}px)`;
+          
+          // Move reflections based on mouse position
+          const reflections = this.parentElement.querySelectorAll('.bubble-reflections');
+          if (reflections.length >= 2) {
+            reflections[0].style.left = `${20 - (x - rect.width/2) / rect.width * 5}%`;
+            reflections[0].style.top = `${15 - (y - rect.height/2) / rect.height * 5}%`;
+            reflections[1].style.left = `${65 - (x - rect.width/2) / rect.width * 5}%`;
+            reflections[1].style.top = `${60 - (y - rect.height/2) / rect.height * 5}%`;
+          }
+        });
+        
+        area.addEventListener('mouseleave', function() {
+          this.parentElement.style.transform = '';
+          const reflections = this.parentElement.querySelectorAll('.bubble-reflections');
+          reflections.forEach(reflection => {
+            reflection.style.left = '';
+            reflection.style.top = '';
+          });
+        });
+        
+        // Create ripple effect on click
+        area.addEventListener('click', function(e) {
+          const rect = this.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const ripple = document.createElement('div');
+          ripple.classList.add('ripple');
+          ripple.style.left = `${x}px`;
+          ripple.style.top = `${y}px`;
+          this.parentElement.appendChild(ripple);
+          
+          // Create sparkles
+          for (let i = 0; i < 5; i++) {
+            createSparkle(this.parentElement, x, y);
+          }
+          
+          setTimeout(() => {
+            ripple.remove();
+          }, 1000);
+        });
+      });
+      
+      function createSparkle(bubble, x, y) {
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+        
+        const size = Math.random() * 4 + 2;
+        sparkle.style.width = `${size}px`;
+        sparkle.style.height = `${size}px`;
+        
+        sparkle.style.left = `${x}px`;
+        sparkle.style.top = `${y}px`;
+        
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 50 + 30;
+        
+        bubble.appendChild(sparkle);
+        
+        setTimeout(() => {
+          sparkle.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
+          sparkle.style.opacity = '0';
+        }, 10);
+        
+        setTimeout(() => {
+          sparkle.remove();
+        }, 1500);
+      }
+      
+      // Add subtle interactive effect to bubbles on page load
+      setTimeout(() => {
+        bubbles.forEach((bubble, index) => {
+          setTimeout(() => {
+            bubble.style.transform = 'scale(1.02)';
+            
+            // Create initial sparkles
+            for (let i = 0; i < 3; i++) {
+              const x = Math.random() * bubble.offsetWidth;
+              const y = Math.random() * bubble.offsetHeight;
+              createSparkle(bubble, x, y);
+            }
+            
+            setTimeout(() => {
+              bubble.style.transform = '';
+            }, 600);
+          }, index * 300);
+        });
+      }, 1000);
+      
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+    });
+  </script>
+
+  <style>
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(0);
+      animation: ripple 1s linear;
+      pointer-events: none;
+    }
+    
+    .sparkle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: sparkle 1.5s ease-in-out infinite;
+      opacity: 0;
+    }
+    
+    .corner-accent {
+      transition: all 0.5s ease-in-out;
+      opacity: 0.7;
+    }
+    .corner-accent:hover {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+  </style>
+
+  <!-- Footer -->
+  <footer class="border-t border-dark-border bg-dark-card">
+    <div class="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <div class="bg-primary rounded-xl p-2">
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_6_330)">
+                  <path clip-rule="evenodd"
+                    d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z"
+                    fill="currentColor" fill-rule="evenodd"></path>
+                </g>
+              </svg>
+            </div>
+            <h2 class="text-xl font-bold text-white">Gigaspace</h2>
+          </div>
+          <p class="text-dark-muted">A flagship product of Gigaversity</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-white mb-4">Product</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-dark-muted hover:text-primary transition-colors">Features</a></li>
+            <li><a href="#" class="text-dark-muted hover:text-primary transition-colors">Pricing</a></li>
+            <li><a href="#" class="text-dark-muted hover:text-primary transition-colors">Use Cases</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-white mb-4">Company</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-dark-muted hover:text-primary transition-colors">About</a></li>
+            <li><a href="#" class="text-dark-muted hover:text-primary transition-colors">Blog</a></li>
+            <li><a href="#" class="text-dark-muted hover:text-primary transition-colors">Careers</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-white mb-4">Legal</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-dark-muted hover:text-primary transition-colors">Privacy Policy</a></li>
+            <li><a href="#" class="text-dark-muted hover:text-primary transition-colors">Terms of Service</a></li>
+            <li><a href="#" class="text-dark-muted hover:text-primary transition-colors">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-12 pt-8 border-t border-dark-border text-center">
+        <p class="text-dark-muted">© 2023 Gigaspace. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

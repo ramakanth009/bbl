@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -11,23 +11,18 @@ import {
   Fade,
   Zoom,
   CircularProgress,
-  InputAdornment,
-  IconButton,
 } from '@mui/material';
 import {
   ArrowBack,
   WorkspacePremium,
-  Visibility,
-  VisibilityOff,
-  CheckCircle,
+  Email,
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
-import apiService from '../services/api';
-import AuthFooter from '../components/common/AuthFooter';
-import AuthHeader from '../components/common/AuthHeader';
+import apiService from '../../services/api';
+import AuthFooter from '../../components/common/AuthFooter';
+import AuthHeader from '../../components/common/AuthHeader';
 
-const StarField = React.lazy(() => import('../components/common/StarField'));
-const CardAnimation = React.lazy(() => import('../components/common/CardAnimation'));
+const StarField = React.lazy(() => import('../../components/common/StarField'));
 
 const useStyles = makeStyles(() => ({
   appRoot: {
@@ -296,13 +291,6 @@ const useStyles = makeStyles(() => ({
       fontSize: '24px !important',
     },
   },
-  tokenInfo: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: 8,
-    padding: '12px',
-    marginBottom: '16px',
-  },
   // Footer styles (fixed at bottom)
   footerContainer: {
     width: '100%',
@@ -353,65 +341,20 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ResetPassword = () => {
+const ForgotPassword = () => {
   const classes = useStyles();
-  const [searchParams] = useSearchParams();
-  const [token, setToken] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [verifying, setVerifying] = useState(false);
-  const [tokenValid, setTokenValid] = useState(false);
-  const [tokenInfo, setTokenInfo] = useState(null);
   const navigate = useNavigate();
 
-
-  // Get token from URL parameters and verify it
-  useEffect(() => {
-    const tokenFromUrl = searchParams.get('token');
-    if (tokenFromUrl) {
-      setToken(tokenFromUrl);
-      verifyToken(tokenFromUrl);
-    } else {
-      setError('No reset token provided. Please check your email for the correct reset link.');
-    }
-  }, [searchParams]);
-
-  const verifyToken = async (tokenToVerify) => {
-    setVerifying(true);
-    setError('');
-    
-    try {
-      const result = await apiService.verifyResetToken(tokenToVerify);
-      setTokenValid(true);
-      setTokenInfo(result);
-    } catch (err) {
-      setError(err.message || 'Invalid or expired reset token. Please request a new password reset.');
-      setTokenValid(false);
-    } finally {
-      setVerifying(false);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!newPassword.trim()) {
-      setError('Please enter a new password');
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
+    if (!email.trim()) {
+      setError('Please enter your email address');
       return;
     }
 
@@ -420,15 +363,11 @@ const ResetPassword = () => {
     setSuccess('');
 
     try {
-      const result = await apiService.resetPassword(token, newPassword);
-      setSuccess(result.message || 'Password has been reset successfully! You can now login with your new password.');
-      
-      // Redirect to login after 3 seconds
-      setTimeout(() => {
-        navigate('/login');
-      }, 3000);
+      const result = await apiService.forgotPassword(email);
+      setSuccess(result.message || 'If your email is registered, you\'ll receive a password reset link shortly.');
+      setEmail(''); // Clear email field on success
     } catch (err) {
-      setError(err.message || 'Failed to reset password. Please try again.');
+      setError(err.message || 'Failed to send password reset email. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -437,33 +376,6 @@ const ResetPassword = () => {
   const handleBackToLogin = () => {
     navigate('/login');
   };
-
-  const handleRequestNewReset = () => {
-    navigate('/forgot-password');
-  };
-
-  if (verifying) {
-    return (
-      <Box className={classes.appRoot}>
-        <React.Suspense fallback={<div />}>
-          <StarField />
-        </React.Suspense>
-        
-        <Container maxWidth="sm" className={classes.pageContainer}>
-          <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
-            <Box display="flex" flexDirection="column" alignItems="center" py={4}>
-              <CircularProgress sx={{ color: '#fff', mb: 2 }} />
-              <Typography variant="h6" sx={{ color: '#fff', textAlign: 'center' }}>
-                Verifying reset token...
-              </Typography>
-            </Box>
-          </Card>
-        </Container>
-        {/* Footer */}
-        <AuthFooter />
-      </Box>
-    );
-  }
 
   return (
     <Box className={classes.appRoot}>
@@ -475,7 +387,6 @@ const ResetPassword = () => {
       <Container maxWidth="sm" className={classes.pageContainer}>
         <Fade in timeout={800}>
           <Card className={classes.authCard} style={{ position: 'relative', overflow: 'hidden' }}>
-            <Zoom in timeout={1000}>
               <Box>
                 <Box className={classes.logoContainer}>
                   <Box className={classes.logoIcon}>
@@ -509,7 +420,7 @@ const ResetPassword = () => {
                     letterSpacing: '0.01em',
                   }}
                 >
-                  Set New Password
+                  Reset Password
                 </Typography>
                 
                 <Typography 
@@ -521,20 +432,8 @@ const ResetPassword = () => {
                     opacity: 0.9,
                   }}
                 >
-                  Enter your new password below
+                  Enter your email address and we'll send you a link to reset your password
                 </Typography>
-
-                {/* Token Info Display */}
-                {tokenValid && tokenInfo && (
-                  <Box className={classes.tokenInfo}>
-                    <Typography variant="body2" sx={{ color: '#fff', mb: 1 }}>
-                      <strong>Account:</strong> {tokenInfo.user?.email}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#fff', fontSize: '0.8rem', opacity: 0.8 }}>
-                      Token expires in {tokenInfo.expires_in_minutes} minutes
-                    </Typography>
-                  </Box>
-                )}
 
                 {error && (
                   <Fade in>
@@ -566,111 +465,58 @@ const ResetPassword = () => {
                         borderRadius: 2,
                         fontWeight: 500,
                       }}
-                      icon={<CheckCircle sx={{ color: '#4caf50' }} />}
+                      icon={<Email sx={{ color: '#4caf50' }} />}
                     >
                       {success}
                     </Alert>
                   </Fade>
                 )}
 
-                {tokenValid ? (
-                  <Box component="form" onSubmit={handleSubmit}>
-                    <TextField
-                      fullWidth
-                      label="New Password"
-                      type={showPassword ? 'text' : 'password'}
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      margin="normal"
-                      autoFocus
-                      className={classes.styledTextField}
-                      disabled={loading}
-                      helperText="Password must be at least 6 characters long"
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={() => setShowPassword(!showPassword)}
-                              edge="end"
-                              sx={{ color: '#fff' }}
-                              disabled={loading}
-                            >
-                              {showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
+                <Box component="form" onSubmit={handleSubmit}>
+                  <TextField
+                    fullWidth
+                    label="Email Address"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    margin="normal"
+                    autoFocus
+                    className={classes.styledTextField}
+                    disabled={loading}
+                    helperText="We'll send a password reset link to this email"
+                  />
 
-                    <TextField
-                      fullWidth
-                      label="Confirm New Password"
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      margin="normal"
-                      className={classes.styledTextField}
-                      disabled={loading}
-                      helperText="Re-enter your new password to confirm"
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                              edge="end"
-                              sx={{ color: '#fff' }}
-                              disabled={loading}
-                            >
-                              {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-
-                    <Button
-                      type="submit"
-                      disabled={loading || !tokenValid}
-                      className={classes.submitButton}
-                      startIcon={loading ? <CircularProgress size={20} sx={{ color: '#111' }} /> : null}
-                    >
-                      {loading ? 'Resetting Password...' : 'Reset Password'}
-                    </Button>
-                  </Box>
-                ) : (
-                  <Box>
-                    <Button
-                      onClick={handleRequestNewReset}
-                      className={classes.submitButton}
-                      disabled={verifying}
-                    >
-                      Request New Reset Link
-                    </Button>
-                  </Box>
-                )}
-
-                <Button
-                  onClick={handleBackToLogin}
-                  className={classes.backButton}
-                  disabled={loading}
-                  startIcon={<ArrowBack />}
-                >
-                  Back to Sign In
-                </Button>
-
-                <Box textAlign="center">
-                  <Typography 
-                    variant="body2" 
-                    sx={{ color: '#fff', opacity: 0.8 }}
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className={classes.submitButton}
+                    startIcon={loading ? <CircularProgress size={20} sx={{ color: '#111' }} /> : null}
                   >
-                    Remember your password?{' '}
-                    <Link to="/login" className={classes.styledLink}>
-                      Sign In
-                    </Link>
-                  </Typography>
+                    {loading ? 'Sending Reset Link...' : 'Send Reset Link'}
+                  </Button>
+
+                  <Button
+                    onClick={handleBackToLogin}
+                    className={classes.backButton}
+                    disabled={loading}
+                    startIcon={<ArrowBack />}
+                  >
+                    Back to Sign In
+                  </Button>
+
+                  <Box textAlign="center">
+                    <Typography 
+                      variant="body2" 
+                      sx={{ color: '#fff', opacity: 0.8 }}
+                    >
+                      Remember your password?{' '}
+                      <Link to="/login" className={classes.styledLink}>
+                        Sign In
+                      </Link>
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
-            </Zoom>
           </Card>
         </Fade>
       </Container>
@@ -680,4 +526,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ForgotPassword;
